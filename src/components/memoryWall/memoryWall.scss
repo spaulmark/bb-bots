@@ -1,0 +1,11 @@
+@import "../../../node_modules/bulma/sass/utilities/_all.sass";
+@import "../../../node_modules/bulma/sass/elements/box.sass";
+@import "../../../node_modules/bulma/sass/grid/columns.sass";
+
+.grayscale-image {
+  filter: grayscale(100%);
+}
+
+.memory-wall-portrait {
+  padding: 5px;
+}
