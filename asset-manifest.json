@@ -1,13 +1,13 @@
 {
-  "main.css": "/bb-bots/static/css/main.d1b45961.chunk.css",
-  "main.js": "/bb-bots/static/js/main.1831dae7.chunk.js",
-  "main.js.map": "/bb-bots/static/js/main.1831dae7.chunk.js.map",
-  "runtime~main.js": "/bb-bots/static/js/runtime~main.b21ee189.js",
-  "runtime~main.js.map": "/bb-bots/static/js/runtime~main.b21ee189.js.map",
-  "static/js/2.c88c70e5.chunk.js": "/bb-bots/static/js/2.c88c70e5.chunk.js",
-  "static/js/2.c88c70e5.chunk.js.map": "/bb-bots/static/js/2.c88c70e5.chunk.js.map",
+  "main.css": "/bb-bots/static/css/main.0a29fb54.chunk.css",
+  "main.js": "/bb-bots/static/js/main.8a315e8f.chunk.js",
+  "main.js.map": "/bb-bots/static/js/main.8a315e8f.chunk.js.map",
+  "runtime~main.js": "/bb-bots/static/js/runtime~main.ee1276bc.js",
+  "runtime~main.js.map": "/bb-bots/static/js/runtime~main.ee1276bc.js.map",
+  "static/js/2.ac674e02.chunk.js": "/bb-bots/static/js/2.ac674e02.chunk.js",
+  "static/js/2.ac674e02.chunk.js.map": "/bb-bots/static/js/2.ac674e02.chunk.js.map",
   "index.html": "/bb-bots/index.html",
-  "precache-manifest.d9fc44b5af4e06465f8d91cca089cff0.js": "/bb-bots/precache-manifest.d9fc44b5af4e06465f8d91cca089cff0.js",
+  "precache-manifest.a14070925c9375e9d6d9437da00dc8cb.js": "/bb-bots/precache-manifest.a14070925c9375e9d6d9437da00dc8cb.js",
   "service-worker.js": "/bb-bots/service-worker.js",
-  "static/css/main.d1b45961.chunk.css.map": "/bb-bots/static/css/main.d1b45961.chunk.css.map"
+  "static/css/main.0a29fb54.chunk.css.map": "/bb-bots/static/css/main.0a29fb54.chunk.css.map"
 }
