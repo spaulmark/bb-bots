@@ -21,21 +21,30 @@ function getPlayers(props: IMemoryWallProps): any {
         ? evictedImageURL
         : houseguest.profileData.imageURL;
 
-    const className =
-      houseguest.isEvicted && evictedImageURL === "BW" ? "grayscale-image" : "";
+    const imageClass =
+      houseguest.isEvicted && evictedImageURL === "BW" ? "grayscale" : "";
+
     rows.push(
-      <div className="box memory-wall-portrait">
+      <div
+        className={`memory-wall-portrait ${
+          houseguest.isEvicted ? "evicted" : ""
+        }`}
+      >
         <img
-          className={className}
+          className={imageClass}
           src={imageSrc}
           style={{ width: 100, height: 100 }}
         />
         <br />
         {houseguest.profileData.name}
-        {/* TODO: Color the name. center it. format it. */}
+        {/* TODO: Color the name based on popularity. */}
       </div>
     );
   });
 
-  return <div className="columns is-gapless is-multiline">{rows}</div>;
+  return (
+    <div className="columns is-gapless is-mobile is-multiline is-centered">
+      {rows}
+    </div>
+  );
 }

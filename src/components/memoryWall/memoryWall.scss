@@ -2,10 +2,27 @@
 @import "../../../node_modules/bulma/sass/elements/box.sass";
 @import "../../../node_modules/bulma/sass/grid/columns.sass";
 
-.grayscale-image {
+$primary: #f0ffe6;
+
+.grayscale {
   filter: grayscale(100%);
 }
 
 .memory-wall-portrait {
   padding: 5px;
+  margin: 5px;
+  border: 1px solid grey;
+  background-color: $primary;
+  color: findColorInvert($primary);
+  border-radius: 5px;
+  text-align: center;
+  font-weight: 510;
+  max-width: 110px;
+  word-wrap: break-word;
+
+  &.evicted {
+    font-weight: 100;
+    color: black;
+    background-color: #e6e6e6;
+  }
 }
