@@ -2,8 +2,6 @@
 @import "../../../node_modules/bulma/sass/elements/box.sass";
 @import "../../../node_modules/bulma/sass/grid/columns.sass";
 
-$primary: #f0ffe6;
-
 .grayscale {
   filter: grayscale(100%);
 }
@@ -12,17 +10,16 @@ $primary: #f0ffe6;
   padding: 5px;
   margin: 5px;
   border: 1px solid grey;
-  background-color: $primary;
-  color: findColorInvert($primary);
+  color: black;
   border-radius: 5px;
   text-align: center;
-  font-weight: 510;
+  font-weight: 600;
   max-width: 110px;
   word-wrap: break-word;
 
   &.evicted {
     font-weight: 100;
-    color: black;
-    background-color: #e6e6e6;
+    color: grey;
+    background-color: #111111;
   }
 }
