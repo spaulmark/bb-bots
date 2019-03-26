@@ -21,15 +21,11 @@ export class Stats {
 const statCap = 650;
 
 export function isValidStats(input: Stats) {
-  let zeroStats = 0;
   const statsAreNegative = some(input, property => {
-    if (property == 0) {
-      zeroStats++;
-    }
-    return property >= 0;
+    return property < 0;
   });
 
   const statsAreBelowMax = sum(values(input)) <= statCap;
 
-  return !statsAreNegative && statsAreBelowMax && zeroStats <= 1;
+  return !statsAreNegative && statsAreBelowMax;
 }

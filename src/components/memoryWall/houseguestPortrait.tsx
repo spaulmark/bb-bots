@@ -1,5 +1,4 @@
 import React from "react";
-import { Houseguest } from "../../model/houseguest";
 
 function componentToHex(c: any) {
   var hex = Math.round(c).toString(16);
@@ -13,18 +12,30 @@ function rgbToHex(r: any, g: any, b: any) {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-export const HouseguestPortrait = (props: any) => {
-  const evictedImageURL = props.houseguest.profileData.evictedImageURL;
+export interface IPortraitProps {
+  evictedImageURL: string;
+  imageURL: string;
+  name: string;
+  isEvicted: boolean;
+  popularity: number;
+  hohWins?: number;
+  povWins?: number;
+  noms?: number;
+  tags?: string[];
+}
+
+export const HouseguestPortrait = (props: IPortraitProps) => {
+  const evictedImageURL = props.evictedImageURL;
   const imageSrc =
-    props.houseguest.isEvicted && evictedImageURL !== "BW"
+    props.isEvicted && evictedImageURL !== "BW"
       ? evictedImageURL
-      : props.houseguest.profileData.imageURL;
+      : props.imageURL;
 
   const imageClass =
-    props.houseguest.isEvicted && evictedImageURL === "BW" ? "grayscale" : "";
+    props.isEvicted && evictedImageURL === "BW" ? "grayscale" : "";
 
-  const percent = (props.houseguest.popularity + 1) / 2;
-  const backgroundColor = props.houseguest.isEvicted
+  const percent = (props.popularity + 1) / 2;
+  const backgroundColor = props.isEvicted
     ? undefined
     : rgbToHex(
         maxPopularity.r + percent * (minPopularity.r - maxPopularity.r),
@@ -33,13 +44,11 @@ export const HouseguestPortrait = (props: any) => {
       );
   return (
     <div
-      key={props.houseguest.profileData.name}
+      key={props.name}
       style={{
         backgroundColor
       }}
-      className={`memory-wall-portrait ${
-        props.houseguest.isEvicted ? "evicted" : ""
-      }`}
+      className={`memory-wall-portrait ${props.isEvicted ? "evicted" : ""}`}
     >
       <img
         className={imageClass}
@@ -47,7 +56,9 @@ export const HouseguestPortrait = (props: any) => {
         style={{ width: 100, height: 100 }}
       />
       <br />
-      {props.houseguest.profileData.name}
+      {props.name}
+      <br />
+      {`${props.hohWins ? `HoH: ${props.hohWins}` : ""}`}
     </div>
   );
 };

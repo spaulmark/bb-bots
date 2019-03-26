@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { MemoryWall } from "./components/memoryWall/memoryWall";
 import { Houseguest } from "./model/houseguest";
 
+const isEvicted = () => Math.random() > 0.75;
+const popularity = () => Math.random() * 2 - 1;
 const stats = {
   str: 0,
   int: 1,
@@ -9,6 +11,17 @@ const stats = {
   will: 3,
   luck: 5,
   memory: 500
+};
+
+const othercrap = () => {
+  return {
+    nominations: 0,
+    hohWins: 0,
+    povWins: 0,
+    isEvicted: isEvicted(),
+    isJury: false,
+    popularity: popularity()
+  };
 };
 
 const evictedImageURL = "BW";
@@ -24,110 +37,128 @@ class App extends Component {
                 name: "Shawn",
                 imageURL: "https://i.ibb.co/1GjNdN7/linkedin.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Uncle Grug",
                 imageURL: "https://i.ibb.co/y6yYxcX/uncle-grug.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Brian",
                 imageURL: "https://i.ibb.co/k18Zb6v/brian.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Akane Owari",
                 imageURL:
                   "https://raw.githubusercontent.com/YKG123/imagesource/master/DanganRonpa/IMG/2/Akane_Owari.png",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Ronnie",
                 imageURL: "https://i.ibb.co/1GGgqWk/ronny.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
-                name: "Triangle Zodiac",
-                imageURL: "https://i.ibb.co/yf55ncJ/triangle.jpg",
+                name: "Richard Smiles",
+                imageURL: "https://i.ibb.co/RzsPYtx/smiley-dick.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Judge Brown",
                 imageURL: "https://i.ibb.co/SryCtL6/judge-brown.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Bryce",
                 imageURL: "https://i.ibb.co/YQrYLzp/frie-nd.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
-                name: "Samsora",
-                imageURL: "https://i.ibb.co/f9Ngmgj/samsso.jpg",
+                name: "Mole Amaz",
+                imageURL: "https://i.ibb.co/vjRkKL4/the-mole.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
-                name: "The Rock",
-                imageURL: "https://i.ibb.co/mR56Ymb/rock.jpg",
+                name: "The Colonel",
+                imageURL: "https://i.ibb.co/3fCJB6r/grug2.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Oz",
                 imageURL: "https://i.ibb.co/2h7M382/australian.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Elinda",
                 imageURL: "https://i.ibb.co/PCs87bN/granny.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Marth",
                 imageURL: "https://i.ibb.co/j5P82xQ/marth.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
-                name: "mmmmmmmmmmmmmmmmmmmmmmmm",
-                imageURL: "https://i.ibb.co/wNmVRJ5/honistia.jpg",
+                name: "Lindsey",
+                imageURL: "https://i.ibb.co/NTzVgX3/cool-tour-guide.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Sponge",
                 imageURL: "https://i.ibb.co/zrpwcbj/nohair.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Scamantha",
                 imageURL: "https://i.ibb.co/zXZ0t99/chinese.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
                 name: "Miss Match",
                 imageURL: "https://i.ibb.co/K9v84pV/hehadband.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               }),
               new Houseguest({
-                name: "Wakasagihime Shinmyoumaru",
-                imageURL: "https://i.ibb.co/CP2q4qH/bbbq.jpg",
+                name: "Madame Carnivale",
+                imageURL: "https://i.ibb.co/FskLmrr/carnivale.jpg",
                 evictedImageURL,
-                stats
+                stats,
+                ...othercrap()
               })
             ]}
           />

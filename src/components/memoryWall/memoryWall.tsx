@@ -18,8 +18,15 @@ function getPlayers(props: IMemoryWallProps): any {
   props.houseguests.forEach((houseguest: Houseguest) => {
     rows.push(
       <HouseguestPortrait
-        houseguest={houseguest}
-        key={houseguest.profileData.name}
+        evictedImageURL={houseguest.evictedImageURL}
+        imageURL={houseguest.imageURL}
+        name={houseguest.name}
+        isEvicted={houseguest.isEvicted}
+        popularity={houseguest.popularity}
+        key={houseguest.name}
+        povWins={houseguest.povWins}
+        hohWins={houseguest.hohWins}
+        noms={houseguest.nominations}
       />
     );
   });
