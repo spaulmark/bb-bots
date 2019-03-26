@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { MemoryWall } from "./components/memoryWall/memoryWall";
 import { Houseguest } from "./model/houseguest";
 
-const isEvicted = () => Math.random() > 0.75;
-const popularity = () => Math.random() * 2 - 1;
 const stats = {
   str: 0,
   int: 1,
@@ -15,12 +13,12 @@ const stats = {
 
 const othercrap = () => {
   return {
-    nominations: 0,
-    hohWins: 0,
-    povWins: 0,
-    isEvicted: isEvicted(),
+    nominations: Math.round(Math.random()),
+    hohWins: Math.round(Math.random()),
+    povWins: Math.round(Math.random()),
+    isEvicted: Math.random() < Math.random() / 2,
     isJury: false,
-    popularity: popularity()
+    popularity: Math.random() * 2 - 1
   };
 };
 

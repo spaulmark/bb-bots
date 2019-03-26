@@ -58,7 +58,17 @@ export const HouseguestPortrait = (props: IPortraitProps) => {
       <br />
       {props.name}
       <br />
-      {`${props.hohWins ? `HoH: ${props.hohWins}` : ""}`}
+      <div className="portrait-history">
+        {`${props.hohWins ? `♔ ${props.hohWins}` : ""}${
+          props.povWins && props.hohWins
+            ? `|🛇 ${props.povWins}`
+            : props.povWins
+            ? `🛇 ${props.povWins}`
+            : ""
+        }${(props.hohWins || props.povWins) && props.noms ? "|" : ""}${
+          props.noms ? `⛒ ${props.noms}` : ""
+        }`}
+      </div>
     </div>
   );
 };
