@@ -18,11 +18,14 @@ function hashcode(string: string): number {
 
 export class EpisodeFactory {
   private rng: any;
+  //ie. "Week 1", "Double Eviction"
+  readonly title: string;
 
-  public constructor(init: GameState) {
+  public constructor(init: GameState, title: string) {
     // generate seed
     let castNames = "";
     init.houseguests.forEach(houseguest => (castNames += houseguest.name));
     this.rng = new MersenneTwister(hashcode(castNames));
+    this.title = title;
   }
 }

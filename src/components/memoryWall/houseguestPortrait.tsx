@@ -23,14 +23,13 @@ export interface IPortraitProps {
 }
 
 export const HouseguestPortrait = (props: IPortraitProps) => {
-  const evictedImageURL = props.evictedImageURL;
-  const imageSrc =
-    props.isEvicted && evictedImageURL !== "BW"
-      ? evictedImageURL
-      : props.imageURL;
+  const evictedImageURL =
+    props.evictedImageURL === "BW" ? props.imageURL : props.evictedImageURL;
+
+  const imageSrc = props.isEvicted ? evictedImageURL : props.imageURL;
 
   const imageClass =
-    props.isEvicted && evictedImageURL === "BW" ? "grayscale" : "";
+    props.isEvicted && props.evictedImageURL === "BW" ? "grayscale" : "";
 
   const percent = (props.popularity + 1) / 2;
   const backgroundColor = props.isEvicted
