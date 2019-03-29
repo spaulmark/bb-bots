@@ -18,9 +18,7 @@ export interface IPortraitProps {
   name: string;
   isEvicted: boolean;
   popularity: number;
-  hohWins?: number;
-  povWins?: number;
-  noms?: number;
+  subtitle?: string;
   tags?: string[];
 }
 
@@ -58,17 +56,9 @@ export const HouseguestPortrait = (props: IPortraitProps) => {
       <br />
       {props.name}
       <br />
-      <div className="portrait-history">
-        {`${props.hohWins ? `♔ ${props.hohWins}` : ""}${
-          props.povWins && props.hohWins
-            ? `|🛇 ${props.povWins}`
-            : props.povWins
-            ? `🛇 ${props.povWins}`
-            : ""
-        }${(props.hohWins || props.povWins) && props.noms ? "|" : ""}${
-          props.noms ? `⛒ ${props.noms}` : ""
-        }`}
-      </div>
+      {!!props.subtitle && (
+        <div className="portrait-history">{props.subtitle}</div>
+      )}
     </div>
   );
 };

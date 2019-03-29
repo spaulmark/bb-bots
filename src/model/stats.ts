@@ -11,7 +11,7 @@ export class Stats {
   public luck: number = 0;
 
   constructor(init: Stats) {
-    if (!init || !isValidStats(init)) {
+    if (!init) {
       return;
     }
     Object.assign(this, init);

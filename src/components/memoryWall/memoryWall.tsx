@@ -24,9 +24,17 @@ function getPlayers(props: IMemoryWallProps): any {
         isEvicted={houseguest.isEvicted}
         popularity={houseguest.popularity}
         key={houseguest.name}
-        povWins={houseguest.povWins}
-        hohWins={houseguest.hohWins}
-        noms={houseguest.nominations}
+        subtitle={`${houseguest.hohWins ? `♔ ${houseguest.hohWins}` : ""}${
+          houseguest.povWins && houseguest.hohWins
+            ? `|🛇 ${houseguest.povWins}`
+            : houseguest.povWins
+            ? `🛇 ${houseguest.povWins}`
+            : ""
+        }${
+          (houseguest.hohWins || houseguest.povWins) && houseguest.nominations
+            ? "|"
+            : ""
+        }${houseguest.nominations ? `⛒ ${houseguest.nominations}` : ""}`}
       />
     );
   });
