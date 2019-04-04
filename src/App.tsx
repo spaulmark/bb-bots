@@ -11,6 +11,8 @@ const stats = {
   memory: 500
 };
 
+let id = 0;
+
 const othercrap = () => {
   return {
     nominations: Math.round(Math.random()),
@@ -18,7 +20,9 @@ const othercrap = () => {
     povWins: Math.round(Math.random()),
     isEvicted: Math.random() < Math.random() / 2,
     isJury: false,
-    popularity: Math.random() * 2 - 1
+    popularity: Math.random() * 2 - 1,
+    relationships: {},
+    id: ++id
   };
 };
 
