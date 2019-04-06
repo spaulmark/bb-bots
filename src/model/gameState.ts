@@ -1,7 +1,7 @@
 import { Houseguest } from "./houseguest";
 import { PlayerProfile } from "./playerProfile";
-import { newRelationshipMap } from "../utils/relationshipMap";
 import _ from "lodash";
+import { newRelationshipMap } from "../utils/rMap";
 
 export class GameState {
   // Current state of the game after a phase.

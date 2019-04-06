@@ -1,5 +1,5 @@
 import { PlayerProfile } from "./playerProfile";
-import { RelationshipMap } from "../utils/RelationshipMap";
+import { RelationshipMap } from "../utils/rMap";
 
 export class Houseguest extends PlayerProfile {
   readonly isEvicted: boolean = false;
