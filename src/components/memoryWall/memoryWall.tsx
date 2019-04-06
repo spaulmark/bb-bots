@@ -16,6 +16,8 @@ function getPlayers(props: IMemoryWallProps): any {
   }
   const rows: JSX.Element[] = [];
   props.houseguests.forEach((houseguest: Houseguest) => {
+    // TODO: Organizing and formatting so it looks better. Hard cap of 6 people per row.
+    // Trying to even the rows and preventing rows of only one person.
     rows.push(
       <HouseguestPortrait
         evictedImageURL={houseguest.evictedImageURL}
@@ -34,7 +36,7 @@ function getPlayers(props: IMemoryWallProps): any {
           (houseguest.hohWins || houseguest.povWins) && houseguest.nominations
             ? "|"
             : ""
-        }${houseguest.nominations ? `⛒ ${houseguest.nominations}` : ""}`}
+        }${houseguest.nominations ? `✘ ${houseguest.nominations}` : ""}`}
       />
     );
   });

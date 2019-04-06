@@ -3,6 +3,7 @@ import { MemoryWall } from "../memoryWall";
 import { Houseguest } from "../../model";
 import React from "react";
 import { Sidebar } from "../sidebar/sidebar";
+import { Topbar } from "../topbar/topBar";
 const stats = {
   str: 0,
   int: 1,
@@ -35,9 +36,10 @@ export class MainPage extends React.Component {
 
   public render() {
     // top bar on the top
-    // side bar on the side, main content area in the middle
+    // main content area container
     return (
       <div className="main-page">
+        <Topbar />
         <div className="columns">
           <div className="column is-narrow">
             <Sidebar />
