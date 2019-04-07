@@ -1,11 +1,6 @@
-import "./mainPage.scss";
 import { MemoryWall } from "../memoryWall";
 import { Houseguest } from "../../model";
 import React from "react";
-import { Sidebar } from "../sidebar/sidebar";
-import { Topbar } from "../topbar/topBar";
-import { MainContentArea } from "./mainContentArea";
-import { MainPageController } from "./bigBrotherController";
 const stats = {
   str: 0,
   int: 1,
@@ -14,11 +9,9 @@ const stats = {
   luck: 5,
   memory: 500
 };
-
 const evictedImageURL = "BW";
 
 let id = 0;
-
 const othercrap = () => {
   return {
     nominations: Math.round(Math.random()),
@@ -31,7 +24,6 @@ const othercrap = () => {
     id: ++id
   };
 };
-
 const memoryWall = (
   <MemoryWall
     houseguests={[
@@ -165,36 +157,3 @@ const memoryWall = (
     ]}
   />
 );
-
-interface MainPageProps {
-  controller: MainPageController;
-}
-
-export class MainPage extends React.Component<MainPageProps, any> {
-  // main page has a cast
-
-  public constructor(props: MainPageProps) {
-    super(props);
-    props.controller.inject(this);
-  }
-
-  public componentWillReceiveProps(newProps: MainPageProps) {
-    newProps.controller.inject(this);
-  }
-
-  public render() {
-    return (
-      <div className="main-page">
-        <Topbar />
-        <div className="columns">
-          <div className="column is-narrow">
-            <Sidebar />
-          </div>
-          <div className="column">
-            <MainContentArea />
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
