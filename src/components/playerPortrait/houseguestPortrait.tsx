@@ -16,7 +16,7 @@ export interface IPortraitProps {
   evictedImageURL: string;
   imageURL: string;
   name: string;
-  isEvicted: boolean;
+  isEvicted?: boolean;
   popularity?: number;
   subtitle?: string;
   tags?: string[];
@@ -24,7 +24,7 @@ export interface IPortraitProps {
 
 function backgroundColor(props: IPortraitProps) {
   if (!props.popularity) {
-    return "#000000";
+    return "#FFFFFF";
   }
 
   const percent = (props.popularity + 1) / 2;

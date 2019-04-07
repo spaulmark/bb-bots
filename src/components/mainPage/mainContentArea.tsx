@@ -4,7 +4,7 @@ import { BehaviorSubject } from "rxjs";
 export const mainContentStream$ = new BehaviorSubject(<div />);
 
 export class MainContentArea extends React.Component<any, any> {
-  // just a class that displays whatever it gets fed through the stream.
+  // a simple class that displays whatever it gets fed through the main content stream.
 
   private contentStream: any;
 

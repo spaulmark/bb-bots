@@ -1,11 +1,10 @@
 import React from "react";
 import FileDrop from "react-file-drop";
+import { HouseguestPortrait } from "../memoryWall";
 
 interface SetupScreenState {
   files: FileList | null;
 }
-
-let imageId = 0;
 
 export class SetupScreen extends React.Component<any, SetupScreenState> {
   constructor(props: any) {
@@ -14,7 +13,8 @@ export class SetupScreen extends React.Component<any, SetupScreenState> {
       files: null
     };
   }
-  // on submit, this needs to use rx-js to submit a list of player profiles back to the main page.
+  // TODO: on submit, this needs to use rx-js to submit a list of player profiles back to the main page.
+  // obviously, subscribing to this stream and getting a notification from it resets the season.
 
   private getFiles() {
     const rows = [];
@@ -25,11 +25,23 @@ export class SetupScreen extends React.Component<any, SetupScreenState> {
     }
 
     for (let i = 0; i < files.length; i++) {
-      if (files[i].type.match(/image\/*/)) {
-        rows.push(<img key={++imageId} src={URL.createObjectURL(files[i])} />);
+      const file = files[i];
+      if (file.type.match(/image\/*/)) {
+        rows.push(
+          <HouseguestPortrait
+            name={file.name.substr(0, file.name.lastIndexOf(".")) || file.name}
+            imageURL={URL.createObjectURL(file)}
+            evictedImageURL="BW"
+            key={i.toString()}
+          />
+        );
       }
     }
-    return rows;
+    return (
+      <div className="columns is-gapless is-mobile is-multiline is-centered">
+        {rows}
+      </div>
+    );
   }
 
   public render() {

@@ -1,2 +1,2 @@
-export * from "./houseguestPortrait";
+export * from "../playerPortrait/houseguestPortrait";
 export * from "./memoryWall";

@@ -1,9 +1,17 @@
 import React from "react";
 import "./memoryWall.scss";
-import { Houseguest } from "../../model/houseguest";
-import { HouseguestPortrait } from "./houseguestPortrait";
+import { HouseguestPortrait } from "../playerPortrait/houseguestPortrait";
+import { PlayerProfile } from "../../model";
 export interface IMemoryWallProps {
-  readonly houseguests: Houseguest[];
+  readonly houseguests: ProfileHouseguest[];
+}
+
+interface ProfileHouseguest extends PlayerProfile {
+  isEvicted?: boolean;
+  popularity?: number;
+  hohWins?: number;
+  povWins?: number;
+  nominations?: number;
 }
 
 export function MemoryWall(props: IMemoryWallProps): JSX.Element {
@@ -15,7 +23,7 @@ function getPlayers(props: IMemoryWallProps): any {
     return null;
   }
   const rows: JSX.Element[] = [];
-  props.houseguests.forEach((houseguest: Houseguest) => {
+  props.houseguests.forEach((houseguest: ProfileHouseguest) => {
     // TODO: Organizing and formatting so it looks better. Hard cap of 6 people per row.
     // Trying to even the rows and preventing rows of only one person.
     rows.push(
