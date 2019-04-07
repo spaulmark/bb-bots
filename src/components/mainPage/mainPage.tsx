@@ -191,6 +191,7 @@ export class MainPage extends React.Component<MainPageProps, any> {
             <Sidebar />
           </div>
           <div className="column">
+            {/* {memoryWall} */}
             <MainContentArea />
           </div>
         </div>

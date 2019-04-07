@@ -17,9 +17,25 @@ export interface IPortraitProps {
   imageURL: string;
   name: string;
   isEvicted: boolean;
-  popularity: number;
+  popularity?: number;
   subtitle?: string;
   tags?: string[];
+}
+
+function backgroundColor(props: IPortraitProps) {
+  if (!props.popularity) {
+    return "#000000";
+  }
+
+  const percent = (props.popularity + 1) / 2;
+
+  return props.isEvicted
+    ? undefined
+    : rgbToHex(
+        maxPopularity.r + percent * (minPopularity.r - maxPopularity.r),
+        maxPopularity.g + percent * (minPopularity.g - maxPopularity.g),
+        maxPopularity.b + percent * (minPopularity.b - maxPopularity.b)
+      );
 }
 
 export const HouseguestPortrait = (props: IPortraitProps) => {
@@ -31,19 +47,11 @@ export const HouseguestPortrait = (props: IPortraitProps) => {
   const imageClass =
     props.isEvicted && props.evictedImageURL === "BW" ? "grayscale" : "";
 
-  const percent = (props.popularity + 1) / 2;
-  const backgroundColor = props.isEvicted
-    ? undefined
-    : rgbToHex(
-        maxPopularity.r + percent * (minPopularity.r - maxPopularity.r),
-        maxPopularity.g + percent * (minPopularity.g - maxPopularity.g),
-        maxPopularity.b + percent * (minPopularity.b - maxPopularity.b)
-      );
   return (
     <div
       key={props.name}
       style={{
-        backgroundColor
+        backgroundColor: backgroundColor(props)
       }}
       className={`memory-wall-portrait ${props.isEvicted ? "evicted" : ""}`}
     >

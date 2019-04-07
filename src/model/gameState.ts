@@ -35,12 +35,9 @@ export class GameState {
     */
 
   public constructor(init: PlayerProfile[] | GameState) {
-    // TODO: sadly we can't do multiple constructors - need to initalize a gamestate from playerprofiles, give em id's and relationships.
     if (init instanceof GameState) {
       Object.assign(this, init);
     } else {
-      // need to initalize a gamestate!
-      // turn each PlayerProfile into a Houseguest, giving them an id and everything
       const profiles = init as PlayerProfile[];
       const blankRelationshipMap = newRelationshipMap(profiles.length);
       let id = 0;
@@ -55,6 +52,14 @@ export class GameState {
             nominations: 0,
             hohWins: 0,
             povWins: 0,
+            stats: {
+              str: 1, // TODO: make these stats random based on the game + the rng seed.
+              dex: 1,
+              int: 1,
+              will: 1,
+              luck: 1,
+              memory: 1
+            },
             popularity: 0,
             relationships: _.cloneDeep(blankRelationshipMap)
           })
