@@ -11,6 +11,17 @@
   font-size: small;
 }
 
+.edit-portrait {
+  padding: 5px;
+  margin: 5px;
+  border: 1px solid grey;
+  color: black;
+  border-radius: 5px;
+  font-weight: 600;
+  max-width: 7rem;
+  word-wrap: break-word;
+}
+
 .memory-wall-portrait {
   padding: 5px;
   margin: 5px;
@@ -27,4 +38,12 @@
     color: grey;
     background-color: #111111;
   }
+}
+.x-button {
+  color: #df4040;
+}
+
+.x-button:hover {
+  color: red;
+  background-color: #ffe1ea;
 }
