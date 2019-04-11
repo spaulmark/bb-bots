@@ -1,6 +1,7 @@
 @import "../../../node_modules/bulma/sass/utilities/_all.sass";
 @import "../../../node_modules/bulma/sass/elements/box.sass";
 @import "../../../node_modules/bulma/sass/grid/columns.sass";
+@import "../../../node_modules/bulma/sass/elements/form.sass";
 
 .grayscale {
   filter: grayscale(100%);
@@ -46,4 +47,17 @@
 .x-button:hover {
   color: red;
   background-color: #ffe1ea;
+}
+
+.x-button:active {
+  color: #ff7133;
+  background-color: #ffd8c7;
+}
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

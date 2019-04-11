@@ -2,6 +2,7 @@ import React from "react";
 import FileDrop from "react-file-drop";
 import { PlayerProfile } from "../../model";
 import { SetupPortrait } from "../playerPortrait/setupPortrait";
+import { ImportLinks } from "./importLinks";
 
 interface SetupScreenState {
   players: PlayerProfile[];
@@ -10,13 +11,24 @@ interface SetupScreenState {
 export class SetupScreen extends React.Component<any, SetupScreenState> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      players: []
-    };
+    this.state = { players: [] };
   }
   // TODO: on submit, this needs to use rx-js to submit a list of player profiles back to the main page.
   // obviously, subscribing to this stream and getting a notification from it resets the season.
   // it should probably be injected with this stream to submit back to.
+
+  private handleChange(i: number) {
+    return (event: any) => {
+      const newName = event.target.value.replace(/\r?\n|\r/g, "");
+      const newState = { ...this.state };
+      newState.players[i] = new PlayerProfile({
+        imageURL: newState.players[i].imageURL,
+        name: newName,
+        evictedImageURL: newState.players[i].evictedImageURL
+      });
+      this.setState(newState);
+    };
+  }
 
   private deleteMethod(i: number) {
     return () => {
@@ -41,6 +53,7 @@ export class SetupScreen extends React.Component<any, SetupScreenState> {
           name={player.name}
           imageUrl={player.imageURL}
           onDelete={this.deleteMethod(i)}
+          onChange={this.handleChange(i)}
           key={(++i).toString()}
         />
       )
@@ -53,9 +66,24 @@ export class SetupScreen extends React.Component<any, SetupScreenState> {
     );
   }
 
+  private appendProfiles = (profiles: PlayerProfile[]) => {
+    const newState = { ...this.state };
+    profiles.forEach(profile => newState.players.push(profile));
+    this.setState(newState);
+  };
+
   public render() {
     return (
       <FileDrop onDrop={this.handleDrop}>
+        <div className="level">
+          <ImportLinks onSubmit={this.appendProfiles} />
+          <button
+            className="level-item"
+            onClick={() => this.setState({ players: [] })}
+          >
+            Delete all
+          </button>
+        </div>
         ~ Drop images ~{this.getFiles()}
       </FileDrop>
     );
@@ -70,7 +98,6 @@ export class SetupScreen extends React.Component<any, SetupScreenState> {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const rows = [];
 
       if (file.type.match(/image\/*/)) {
         newState.players.push(
