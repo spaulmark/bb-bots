@@ -17,14 +17,19 @@ export class ImportLinks extends React.Component<ImportLinksProps, any> {
     // for each line, try to split into a space for the name
     const profiles: PlayerProfile[] = [];
     lines.forEach((line: string) => {
-      const a = line.split("/").pop();
-      const name = a
-        ? a
+      const temp = line.split("/").pop();
+      let name = temp
+        ? temp
             .split("#")[0]
             .split("?")[0]
             .replace(/\.[^/.]+$/, "")
-            .replace("-", " ")
+            .replace(/[-_]/g, " ")
         : null;
+
+      const spaceName = line.substr(0, line.indexOf(" "));
+      if (spaceName) {
+        name = line.substr(line.indexOf(" ") + 1);
+      }
       if (name) {
         profiles.push({
           name,
@@ -47,7 +52,7 @@ export class ImportLinks extends React.Component<ImportLinksProps, any> {
           }}
           value={this.state.text}
         />
-        <button onClick={() => this.onSubmit()}>Submit</button>
+        <button onClick={() => this.onSubmit()}>Import links</button>
       </div>
     );
   }
