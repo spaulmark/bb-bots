@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { MainPage } from "./components/mainPage/mainPage";
-import { BigBrotherController } from "./components/mainPage/bigBrotherController";
+import { MainPageController } from "./components/mainPage/mainPageController";
 
 class App extends Component {
   render() {
-    return <MainPage controller={new BigBrotherController()} />;
+    return <MainPage controller={new MainPageController()} />;
   }
 }
 

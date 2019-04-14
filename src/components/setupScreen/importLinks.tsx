@@ -14,7 +14,7 @@ export class ImportLinks extends React.Component<ImportLinksProps, any> {
 
   private onSubmit() {
     const lines = this.state.text.split(/\r?\n/);
-    // for each line, try to split into a space for the name
+    // ugly, but it works.
     const profiles: PlayerProfile[] = [];
     lines.forEach((line: string) => {
       const temp = line.split("/").pop();
@@ -26,8 +26,7 @@ export class ImportLinks extends React.Component<ImportLinksProps, any> {
             .replace(/[-_]/g, " ")
         : null;
 
-      const spaceName = line.substr(0, line.indexOf(" "));
-      if (spaceName) {
+      if (line.substr(0, line.indexOf(" "))) {
         name = line.substr(line.indexOf(" ") + 1);
       }
       if (name) {

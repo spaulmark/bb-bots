@@ -3,19 +3,26 @@ import FileDrop from "react-file-drop";
 import { PlayerProfile } from "../../model";
 import { SetupPortrait } from "../playerPortrait/setupPortrait";
 import { ImportLinks } from "./importLinks";
+import { updateCast } from "../mainPage/mainPageController";
+import { mainContentStream$ } from "../mainPage/mainContentArea";
+import { PregameScreen } from "../pregameScreen/pregameScreen";
 
 interface SetupScreenState {
   players: PlayerProfile[];
 }
 
-export class SetupScreen extends React.Component<any, SetupScreenState> {
-  constructor(props: any) {
+interface SetupScreenProps {
+  cast?: PlayerProfile[];
+}
+
+export class SetupScreen extends React.Component<
+  SetupScreenProps,
+  SetupScreenState
+> {
+  constructor(props: SetupScreenProps) {
     super(props);
-    this.state = { players: [] };
+    this.state = { players: props.cast || [] };
   }
-  // TODO: on submit, this needs to use rx-js to submit a list of player profiles back to the main page.
-  // obviously, subscribing to this stream and getting a notification from it resets the season.
-  // it should probably be injected with this stream to submit back to.
 
   private handleChange(i: number) {
     return (event: any) => {
@@ -72,17 +79,33 @@ export class SetupScreen extends React.Component<any, SetupScreenState> {
     this.setState(newState);
   };
 
+  private submit = () => {
+    updateCast(this.state.players);
+    mainContentStream$.next(<PregameScreen cast={this.state.players} />);
+  };
+
   public render() {
     return (
       <FileDrop onDrop={this.handleDrop}>
         <div className="level">
           <ImportLinks onSubmit={this.appendProfiles} />
-          <button
-            className="level-item"
-            onClick={() => this.setState({ players: [] })}
-          >
-            Delete all
-          </button>
+          <div className="level-item">
+            <button
+              className="button is-danger"
+              onClick={() => this.setState({ players: [] })}
+            >
+              Delete all
+            </button>
+          </div>
+          <div className="level-item">
+            <button
+              className="button is-primary"
+              disabled={this.state.players.length === 0}
+              onClick={this.submit}
+            >
+              Submit
+            </button>
+          </div>
         </div>
         ~ Drop images ~{this.getFiles()}
       </FileDrop>

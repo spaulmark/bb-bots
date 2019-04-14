@@ -23,11 +23,7 @@ export interface IPortraitProps {
 }
 
 function backgroundColor(props: IPortraitProps) {
-  if (!props.popularity) {
-    return "#FFFFFF";
-  }
-
-  const percent = (props.popularity + 1) / 2;
+  const percent = props.popularity ? (props.popularity + 1) / 2 : 0.5;
 
   return props.isEvicted
     ? undefined

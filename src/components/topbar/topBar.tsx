@@ -2,6 +2,7 @@ import React from "react";
 import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { SetupScreen } from "../setupScreen/setupScreen";
 import "./topBar.scss";
+import { getCast } from "../mainPage/mainPageController";
 
 export class Topbar extends React.Component {
   public render() {
@@ -10,7 +11,7 @@ export class Topbar extends React.Component {
         <div
           className="level-item topbar-link"
           onClick={() => {
-            mainContentStream$.next(<SetupScreen />);
+            mainContentStream$.next(<SetupScreen cast={getCast()} />);
           }}
         >
           Edit Cast
