@@ -11,15 +11,15 @@ interface SetupScreenState {
   players: PlayerProfile[];
 }
 
-interface SetupScreenProps {
+interface CastingScreenProps {
   cast?: PlayerProfile[];
 }
 
-export class SetupScreen extends React.Component<
-  SetupScreenProps,
+export class CastingScreen extends React.Component<
+  CastingScreenProps,
   SetupScreenState
 > {
-  constructor(props: SetupScreenProps) {
+  constructor(props: CastingScreenProps) {
     super(props);
     this.state = { players: props.cast || [] };
   }

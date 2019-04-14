@@ -1,9 +1,4 @@
-import { EpisodeFragment } from "./episodeFragment";
-
-export interface Episode {
-  readonly episodeFragments: EpisodeFragment[];
-  readonly title: string;
-}
+import { Episode } from "./Episode";
 
 export interface EpisodeLibrary {
   readonly episodes: Episode[];

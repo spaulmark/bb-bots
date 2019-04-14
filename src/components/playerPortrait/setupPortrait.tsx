@@ -39,6 +39,7 @@ export class SetupPortrait extends React.Component<
           <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
           <br />
           <input
+            className="memory-wall-portrait"
             contentEditable={true}
             onChange={() => this.props.onChange}
             spellCheck={false}

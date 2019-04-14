@@ -1,6 +1,6 @@
 import { GameState } from "../gameState";
 import { hashcode } from "../../utils/hashcode";
-import { Episode } from "./episodeLibrary";
+import { Episode } from "./Episode";
 var MersenneTwister = require("mersenne-twister");
 export class EpisodeFactory {
   private rng: any;
