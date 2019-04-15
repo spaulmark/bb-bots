@@ -15,24 +15,7 @@ export function getCast(): PlayerProfile[] {
 export class MainPageController {
   private view: MainPage = new MainPage({ controller: this });
 
-  private cast$ = cast$.subscribe({
-    next: newCast => {
-      this.resetSeason();
-    }
-  });
-
-  // TODO: Default cast
-  private cast: PlayerProfile[] = [];
-
   public inject(page: MainPage) {
     this.view = page;
-  }
-
-  private resetSeason() {
-    // TODO: reset season
-  }
-
-  public destroy() {
-    this.cast$.unsubscribe();
   }
 }

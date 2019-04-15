@@ -15,10 +15,6 @@ export class MainPage extends React.Component<MainPageProps, any> {
     props.controller.inject(this);
   }
 
-  public componentWillUnmount() {
-    this.props.controller.destroy();
-  }
-
   public render() {
     return (
       <div className="main-page">

@@ -6,6 +6,7 @@ import { ImportLinks } from "./importLinks";
 import { updateCast } from "../mainPage/mainPageController";
 import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
+import { newEpisode } from "../sidebar/sidebarController";
 
 interface SetupScreenState {
   players: PlayerProfile[];
@@ -82,6 +83,12 @@ export class CastingScreen extends React.Component<
   private submit = () => {
     updateCast(this.state.players);
     mainContentStream$.next(<PregameScreen cast={this.state.players} />);
+    newEpisode(null);
+    newEpisode({
+      render: <PregameScreen cast={this.state.players} />,
+      title: "Pregame",
+      episodeFragments: []
+    });
   };
 
   public render() {

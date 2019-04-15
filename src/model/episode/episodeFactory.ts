@@ -1,6 +1,6 @@
 import { GameState } from "../gameState";
 import { hashcode } from "../../utils/hashcode";
-import { Episode } from "./Episode";
+import { Episode } from "..";
 var MersenneTwister = require("mersenne-twister");
 export class EpisodeFactory {
   private rng: any;
@@ -21,8 +21,6 @@ export class EpisodeFactory {
     // and then the veto ceremony
 
     // and then the live eviction.
-
-    // return [null, null];
   }
 
   public constructor(init: GameState, title: string) {
