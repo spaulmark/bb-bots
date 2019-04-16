@@ -15,7 +15,7 @@ interface ProfileHouseguest extends PlayerProfile {
 }
 
 export function MemoryWall(props: IMemoryWallProps): JSX.Element {
-  return <div className="box memory-wall">{getPlayers(props)}</div>;
+  return <div className="memory-wall">{getPlayers(props)}</div>;
 }
 
 function getPlayers(props: IMemoryWallProps): any {
@@ -23,6 +23,7 @@ function getPlayers(props: IMemoryWallProps): any {
     return null;
   }
   const rows: JSX.Element[] = [];
+  let key = 0;
   props.houseguests.forEach((houseguest: ProfileHouseguest) => {
     // TODO: Organizing and formatting so it looks better. Hard cap of 6 people per row.
     // Trying to even the rows and preventing rows of only one person.
@@ -33,7 +34,7 @@ function getPlayers(props: IMemoryWallProps): any {
         name={houseguest.name}
         isEvicted={houseguest.isEvicted}
         popularity={houseguest.popularity}
-        key={houseguest.name}
+        key={++key}
         subtitle={`${houseguest.hohWins ? `♔ ${houseguest.hohWins}` : ""}${
           houseguest.povWins && houseguest.hohWins
             ? `|🛇 ${houseguest.povWins}`

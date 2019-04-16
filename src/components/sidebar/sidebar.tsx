@@ -1,7 +1,8 @@
 import React from "react";
 import { Episode, EpisodeFragment } from "../../model";
-import { SidebarController } from "./sidebarController";
+import { SidebarController, newEpisode } from "./sidebarController";
 import { mainContentStream$ } from "../mainPage/mainContentArea";
+import { PregameScreen } from "../pregameScreen/pregameScreen";
 
 interface SidebarState {
   episodes: Episode[];
@@ -13,6 +14,11 @@ export class Sidebar extends React.Component<{}, SidebarState> {
     super(props);
     this.controller = new SidebarController(this);
     this.state = { episodes: [] };
+    newEpisode({
+      render: <PregameScreen cast={[]} />,
+      title: "Pregame",
+      episodeFragments: []
+    });
   }
 
   public componentWillUnmount() {
@@ -20,14 +26,20 @@ export class Sidebar extends React.Component<{}, SidebarState> {
   }
 
   public render() {
-    return <div className="box">{this.getEpisodes()}</div>;
+    return (
+      <div className="box" style={{ minWidth: 140 }}>
+        {this.getEpisodes()}
+      </div>
+    );
   }
 
   private getEpisodes() {
     const result: JSX.Element[] = [];
+    let i = 0;
     this.state.episodes.forEach((episode: Episode) => {
       result.push(
         <b
+          key={++i}
           onClick={() => {
             mainContentStream$.next(episode.render);
           }}
@@ -35,12 +47,15 @@ export class Sidebar extends React.Component<{}, SidebarState> {
           {episode.title}
         </b>
       );
-      result.push(<br />);
+      result.push(<br key={++i} />);
       episode.episodeFragments.forEach((fragment: EpisodeFragment) => {
         result.push(
-          <a onClick={() => mainContentStream$.next(fragment.render)} />
+          <a
+            key={++i}
+            onClick={() => mainContentStream$.next(fragment.render)}
+          />
         );
-        result.push(<br />);
+        result.push(<br key={++i} />);
       });
     });
     return result;

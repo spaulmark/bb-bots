@@ -28,7 +28,7 @@ export class SetupPortrait extends React.Component<
 
   public render() {
     return (
-      <div key={this.props.name} className={`edit-portrait`}>
+      <div className={`edit-portrait`}>
         <div style={{ textAlign: "center" }}>
           <div
             className="x-button noselect"

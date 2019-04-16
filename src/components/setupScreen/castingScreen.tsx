@@ -80,11 +80,11 @@ export class CastingScreen extends React.Component<
     this.setState(newState);
   };
 
-  private submit = () => {
+  private submit = async () => {
     updateCast(this.state.players);
     mainContentStream$.next(<PregameScreen cast={this.state.players} />);
-    newEpisode(null);
-    newEpisode({
+    await newEpisode(null);
+    await newEpisode({
       render: <PregameScreen cast={this.state.players} />,
       title: "Pregame",
       episodeFragments: []

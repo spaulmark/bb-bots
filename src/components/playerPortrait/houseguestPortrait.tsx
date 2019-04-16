@@ -45,7 +45,6 @@ export const HouseguestPortrait = (props: IPortraitProps) => {
 
   return (
     <div
-      key={props.name}
       style={{
         backgroundColor: backgroundColor(props)
       }}
