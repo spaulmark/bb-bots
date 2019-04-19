@@ -1,5 +1,5 @@
 import React from "react";
-import { Episode, EpisodeFragment } from "../../model";
+import { Episode, EpisodeFragment, GameState } from "../../model";
 import { SidebarController, newEpisode } from "./sidebarController";
 import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
@@ -17,7 +17,8 @@ export class Sidebar extends React.Component<{}, SidebarState> {
     newEpisode({
       render: <PregameScreen cast={[]} />,
       title: "Pregame",
-      episodeFragments: []
+      episodeFragments: [],
+      gameState: new GameState([])
     });
   }
 

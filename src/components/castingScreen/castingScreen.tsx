@@ -1,6 +1,6 @@
 import React from "react";
 import FileDrop from "react-file-drop";
-import { PlayerProfile } from "../../model";
+import { PlayerProfile, GameState } from "../../model";
 import { SetupPortrait } from "../playerPortrait/setupPortrait";
 import { ImportLinks } from "./importLinks";
 import { updateCast } from "../mainPage/mainPageController";
@@ -8,7 +8,7 @@ import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { newEpisode } from "../sidebar/sidebarController";
 
-interface SetupScreenState {
+interface CastingScreenState {
   players: PlayerProfile[];
 }
 
@@ -18,7 +18,7 @@ interface CastingScreenProps {
 
 export class CastingScreen extends React.Component<
   CastingScreenProps,
-  SetupScreenState
+  CastingScreenState
 > {
   constructor(props: CastingScreenProps) {
     super(props);
@@ -87,7 +87,8 @@ export class CastingScreen extends React.Component<
     await newEpisode({
       render: <PregameScreen cast={this.state.players} />,
       title: "Pregame",
-      episodeFragments: []
+      episodeFragments: [],
+      gameState: new GameState(this.state.players)
     });
   };
 

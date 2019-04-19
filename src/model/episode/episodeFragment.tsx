@@ -4,6 +4,7 @@ export interface Episode {
   readonly episodeFragments: EpisodeFragment[];
   readonly title: string;
   readonly render: JSX.Element;
+  readonly gameState: GameState;
 }
 
 export interface EpisodeType {
@@ -14,7 +15,9 @@ export interface EpisodeType {
 export class EpisodeFragment {
   readonly title: string = "";
   readonly gameState!: GameState; // TODO: for generating graphs on the side.
-  readonly render: JSX.Element = <div />;
+  readonly render: JSX.Element = (
+    <div>{`Error while rendering ${this.title}`}</div>
+  );
   public constructor(init: EpisodeFragment) {
     Object.assign(this, init);
   }
