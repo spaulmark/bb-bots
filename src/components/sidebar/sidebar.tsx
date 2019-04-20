@@ -6,6 +6,7 @@ import { PregameScreen } from "../pregameScreen/pregameScreen";
 
 interface SidebarState {
   episodes: Episode[];
+  selectedEpisode: number;
 }
 
 export class Sidebar extends React.Component<{}, SidebarState> {
@@ -13,7 +14,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
   public constructor(props: {}) {
     super(props);
     this.controller = new SidebarController(this);
-    this.state = { episodes: [] };
+    this.state = { episodes: [], selectedEpisode: 0 };
     newEpisode({
       render: <PregameScreen cast={[]} />,
       title: "Pregame",
@@ -36,27 +37,28 @@ export class Sidebar extends React.Component<{}, SidebarState> {
 
   private getEpisodes() {
     const result: JSX.Element[] = [];
-    let i = 0;
+    // Weird OBOE to make keys start at 0
+    let episodeKey = -1;
+    let breakKey = 0;
     this.state.episodes.forEach((episode: Episode) => {
+      const id = ++episodeKey;
       result.push(
         <b
-          key={++i}
+          key={id}
           onClick={() => {
-            mainContentStream$.next(episode.render);
+            this.controller.switchToEpisode(id);
           }}
         >
           {episode.title}
         </b>
       );
-      result.push(<br key={++i} />);
+      result.push(<br key={--breakKey} />);
       episode.episodeFragments.forEach((fragment: EpisodeFragment) => {
+        const id = ++episodeKey;
         result.push(
-          <a
-            key={++i}
-            onClick={() => mainContentStream$.next(fragment.render)}
-          />
+          <a key={id} onClick={() => this.controller.switchToEpisode(id)} />
         );
-        result.push(<br key={++i} />);
+        result.push(<br key={--breakKey} />);
       });
     });
     return result;
