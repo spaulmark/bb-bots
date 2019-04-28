@@ -73,7 +73,7 @@ export class SidebarController {
         );
         this.switchSceneRelative(1);
       } else {
-        throw new Error(
+        console.log(
           `Cannot run a ${
             nextEpisodeType.title
           } episode at final ${newPlayerCount}`
@@ -84,7 +84,7 @@ export class SidebarController {
 
   private onNewEpisode(episode: Episode | null) {
     if (!episode) {
-      this.view.setState({ episodes: [] });
+      this.view.setState({ episodes: [], selectedScene: 0 });
       this.scenes = [];
     } else {
       const newState = { ...this.view.state };

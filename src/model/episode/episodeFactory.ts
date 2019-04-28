@@ -10,14 +10,13 @@ export class EpisodeFactory {
   public nextEpisode(gameState: GameState, episodeType: EpisodeType): Episode {
     switch (episodeType) {
       case BigBrotherEpisodeType:
-        return new BigBrotherEpisode(gameState);
+        return new BigBrotherEpisode(gameState, this.rng);
       default:
         throw new Error("Unsupported Episode Type");
     }
   }
 
   public constructor(init: GameState) {
-    // generate seed
     let castNames = "";
     init.houseguests.forEach(houseguest => (castNames += houseguest.name));
     this.rng = new MersenneTwister(hashcode(castNames));

@@ -19,9 +19,8 @@ export class BigBrotherEpisode implements Episode {
   readonly gameState: GameState;
   readonly type = BigBrotherEpisodeType;
 
-  public constructor(gameState: GameState) {
+  public constructor(gameState: GameState, rng: any) {
     this.title = `Week ${gameState.phase}`;
-    // Generating the scenes would solve the gamestate problem.
     this.render = (
       <div>
         {/* TODO: custom title here*/}

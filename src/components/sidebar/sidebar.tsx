@@ -29,6 +29,13 @@ export class Sidebar extends React.Component<{}, SidebarState> {
     );
   }
 
+  private getHighlight(title: string, key: number) {
+    if (key === this.state.selectedScene) {
+      return <mark>{title}</mark>;
+    }
+    return title;
+  }
+
   private getEpisodes() {
     const result: JSX.Element[] = [];
     // Weird OBOE to make keys start at 0
@@ -43,7 +50,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
             this.controller.switchToScene(id);
           }}
         >
-          {episode.title}
+          {this.getHighlight(episode.title, id)}
         </b>
       );
       result.push(<br key={--breakKey} />);
@@ -51,7 +58,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
         const id = ++episodeKey;
         result.push(
           <a key={id} onClick={() => this.controller.switchToScene(id)}>
-            {scene.title}
+            {this.getHighlight(scene.title, id)}
           </a>
         );
         result.push(<br key={--breakKey} />);
