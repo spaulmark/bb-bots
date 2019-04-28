@@ -1,8 +1,9 @@
 import { Subject, Subscription, BehaviorSubject } from "rxjs";
-import { Episode } from "../../model";
+import { Episode, Scene, GameState } from "../../model";
 import { Sidebar } from "./sidebar";
 import { Season } from "../../model/season";
 import { mainContentStream$ } from "../mainPage/mainContentArea";
+import { cast$ } from "../mainPage/mainPageController";
 
 // Null resets the season
 const episodes$ = new BehaviorSubject<Episode | null>(null);
@@ -18,56 +19,83 @@ export function switchEpisodeRelative(n: number) {
 
 export class SidebarController {
   private view: Sidebar;
-  private episodeSub: Subscription;
-  private switchEpisodeSub: Subscription;
-  private season: Season = new Season();
+  private subscriptions: Subscription[] = [];
+  private season: Season = new Season(new GameState([]));
+  private scenes: Scene[] = [];
 
   public constructor(view: Sidebar) {
     this.view = view;
-    this.episodeSub = episodes$.subscribe({
-      next: episode => this.onNewEpisode(episode)
-    });
-    this.switchEpisodeSub = switchEpisode$.subscribe({
-      next: (value: number) => this.switchEpisodeRelative(value)
-    });
+    this.subscriptions.push(
+      episodes$.subscribe({
+        next: episode => this.onNewEpisode(episode)
+      })
+    );
+    this.subscriptions.push(
+      switchEpisode$.subscribe({
+        next: (value: number) => this.switchSceneRelative(value)
+      })
+    );
+    this.subscriptions.push(
+      cast$.subscribe({
+        next: newCast => (this.season = new Season(new GameState(newCast)))
+      })
+    );
   }
 
-  public switchToEpisode(episode: number) {
-    mainContentStream$.next(this.view.state.episodes[episode].render);
-    this.view.setState({ selectedEpisode: episode });
+  public switchToScene(scene: number) {
+    mainContentStream$.next(this.scenes[scene].render);
+    this.view.setState({ selectedScene: scene });
   }
 
-  private switchEpisodeRelative(delta: number) {
-    const selectedEpisode = this.view.state.selectedEpisode;
-    const renderedEpisodes = this.view.state.episodes.length;
-    const targetEpisode = selectedEpisode + delta;
+  private switchSceneRelative(delta: number) {
+    const selectedScene = this.view.state.selectedScene;
+    const renderedScenes = this.scenes.length;
+    const targetScene = selectedScene + delta;
 
-    if (targetEpisode < 0) {
+    if (targetScene < 0) {
       throw new Error(
-        `Tried to go to episode ${targetEpisode} from ${selectedEpisode}`
+        `Tried to go to episode ${targetScene} from ${selectedScene}`
       );
     }
-    if (targetEpisode < renderedEpisodes) {
-      // easy case - just select the episode
-      this.switchToEpisode(targetEpisode);
-    } else {
-      // difficult case - need to ask the season if that's a valid option,
-      // and if it is, then render it.
+    if (targetScene < renderedScenes) {
+      this.switchToScene(targetScene);
+    } else if (targetScene == renderedScenes) {
+      const lastEpisode = this.view.state.episodes[
+        this.view.state.episodes.length - 1
+      ];
+      const nextPhase = this.view.state.episodes.length;
+      const currentGameState = lastEpisode.gameState;
+      const newPlayerCount = lastEpisode.gameState.houseguests.length;
+      const nextEpisodeType = this.season.whichEpisodeType(nextPhase);
+      if (this.season.canEpisodeExist(newPlayerCount)) {
+        newEpisode(
+          this.season.renderEpisode(currentGameState, nextEpisodeType)
+        );
+        this.switchSceneRelative(1);
+      } else {
+        throw new Error(
+          `Cannot run a ${
+            nextEpisodeType.title
+          } episode at final ${newPlayerCount}`
+        );
+      }
     }
   }
 
   private onNewEpisode(episode: Episode | null) {
     if (!episode) {
       this.view.setState({ episodes: [] });
+      this.scenes = [];
     } else {
       const newState = { ...this.view.state };
+      this.scenes.push(episode);
+      this.scenes = this.scenes.concat(episode.scenes);
       newState.episodes.push(episode);
       this.view.setState(newState);
     }
   }
 
   public destroy() {
-    this.episodeSub.unsubscribe();
-    this.switchEpisodeSub.unsubscribe();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

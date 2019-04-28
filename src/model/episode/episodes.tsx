@@ -1,24 +1,26 @@
 import { GameState } from "../gameState";
 
 export interface Episode {
-  readonly episodeFragments: EpisodeFragment[];
+  readonly scenes: Scene[];
   readonly title: string;
   readonly render: JSX.Element;
   readonly gameState: GameState;
+  readonly type: EpisodeType;
 }
 
 export interface EpisodeType {
   readonly canPlayWith: (n: number) => boolean;
   readonly eliminates: number;
+  readonly title: string;
 }
 
-export class EpisodeFragment {
+export class Scene {
   readonly title: string = "";
-  readonly gameState!: GameState; // TODO: for generating graphs on the side.
+  readonly gameState: GameState = new GameState([]);
   readonly render: JSX.Element = (
     <div>{`Error while rendering ${this.title}`}</div>
   );
-  public constructor(init: EpisodeFragment) {
+  public constructor(init: Partial<Scene>) {
     Object.assign(this, init);
   }
 }

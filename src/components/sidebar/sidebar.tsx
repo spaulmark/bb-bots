@@ -1,12 +1,11 @@
 import React from "react";
-import { Episode, EpisodeFragment, GameState } from "../../model";
+import { Episode, Scene, GameState } from "../../model";
 import { SidebarController, newEpisode } from "./sidebarController";
-import { mainContentStream$ } from "../mainPage/mainContentArea";
-import { PregameScreen } from "../pregameScreen/pregameScreen";
+import { PregameEpisode } from "../../model/episode/pregameEpisode";
 
 interface SidebarState {
   episodes: Episode[];
-  selectedEpisode: number;
+  selectedScene: number;
 }
 
 export class Sidebar extends React.Component<{}, SidebarState> {
@@ -14,13 +13,8 @@ export class Sidebar extends React.Component<{}, SidebarState> {
   public constructor(props: {}) {
     super(props);
     this.controller = new SidebarController(this);
-    this.state = { episodes: [], selectedEpisode: 0 };
-    newEpisode({
-      render: <PregameScreen cast={[]} />,
-      title: "Pregame",
-      episodeFragments: [],
-      gameState: new GameState([])
-    });
+    this.state = { episodes: [], selectedScene: 0 };
+    newEpisode(new PregameEpisode(new GameState([])));
   }
 
   public componentWillUnmount() {
@@ -46,17 +40,19 @@ export class Sidebar extends React.Component<{}, SidebarState> {
         <b
           key={id}
           onClick={() => {
-            this.controller.switchToEpisode(id);
+            this.controller.switchToScene(id);
           }}
         >
           {episode.title}
         </b>
       );
       result.push(<br key={--breakKey} />);
-      episode.episodeFragments.forEach((fragment: EpisodeFragment) => {
+      episode.scenes.forEach((scene: Scene) => {
         const id = ++episodeKey;
         result.push(
-          <a key={id} onClick={() => this.controller.switchToEpisode(id)} />
+          <a key={id} onClick={() => this.controller.switchToScene(id)}>
+            {scene.title}
+          </a>
         );
         result.push(<br key={--breakKey} />);
       });
