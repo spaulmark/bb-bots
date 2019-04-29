@@ -1,4 +1,5 @@
 import React from "react";
+import { ProfileHouseguest } from "../memoryWall";
 
 function componentToHex(c: any) {
   var hex = Math.round(c).toString(16);
@@ -32,6 +33,33 @@ function backgroundColor(props: IPortraitProps) {
         maxPopularity.g + percent * (minPopularity.g - maxPopularity.g),
         maxPopularity.b + percent * (minPopularity.b - maxPopularity.b)
       );
+}
+
+export function houseguestToPortrait(
+  houseguest: ProfileHouseguest,
+  key: any = 0
+): JSX.Element {
+  return (
+    <HouseguestPortrait
+      evictedImageURL={houseguest.evictedImageURL}
+      imageURL={houseguest.imageURL}
+      name={houseguest.name}
+      isEvicted={houseguest.isEvicted}
+      key={key}
+      popularity={houseguest.popularity}
+      subtitle={`${houseguest.hohWins ? `♔ ${houseguest.hohWins}` : ""}${
+        houseguest.povWins && houseguest.hohWins
+          ? `|🛇 ${houseguest.povWins}`
+          : houseguest.povWins
+          ? `🛇 ${houseguest.povWins}`
+          : ""
+      }${
+        (houseguest.hohWins || houseguest.povWins) && houseguest.nominations
+          ? "|"
+          : ""
+      }${houseguest.nominations ? `✘ ${houseguest.nominations}` : ""}`}
+    />
+  );
 }
 
 export const HouseguestPortrait = (props: IPortraitProps) => {

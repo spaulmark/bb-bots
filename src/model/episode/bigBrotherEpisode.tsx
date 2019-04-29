@@ -1,8 +1,12 @@
 import React from "react";
-import { Episode, GameState } from "..";
-import { MemoryWall } from "../../components/memoryWall";
+import { Episode, GameState, randomPlayer } from "..";
+import { MemoryWall, houseguestToPortrait } from "../../components/memoryWall";
 import { NextEpisodeButton } from "../../components/buttons/nextEpisodeButton";
 import { EpisodeType, Scene } from "./episodes";
+import { BbRandomGenerator } from "../../utils";
+import { Houseguest } from "../houseguest";
+import _ from "lodash";
+import { MutableGameState } from "../gameState";
 
 export const BigBrotherEpisodeType: EpisodeType = {
   canPlayWith: (n: number) => {
@@ -12,6 +16,36 @@ export const BigBrotherEpisodeType: EpisodeType = {
   title: "Big Brother Episode"
 };
 
+function generateHohCompScene(
+  initialGameState: GameState,
+  rng: BbRandomGenerator
+): [GameState, Scene] {
+  const newGameState = new MutableGameState(initialGameState);
+
+  const previousHoh = initialGameState.previousHOH
+    ? [initialGameState.previousHOH]
+    : [];
+  const newHoH: Houseguest = randomPlayer(newGameState, rng, previousHoh);
+  newGameState.previousHOH = newHoH;
+  newGameState.phase++;
+  newHoH.hohWins += 1; // TODO: this isn't okay. We need to clone the players too.
+
+  const scene = {
+    title: "HoH Competition",
+    gameState: initialGameState,
+    render: (
+      <div>
+        {houseguestToPortrait(newHoH)}
+        {newHoH.name} has won Head of Household!
+        <br />
+        <NextEpisodeButton />
+      </div>
+    )
+  };
+
+  return [new GameState(newGameState), scene];
+}
+
 export class BigBrotherEpisode implements Episode {
   readonly title: string;
   readonly scenes: Scene[] = [];
@@ -19,31 +53,34 @@ export class BigBrotherEpisode implements Episode {
   readonly gameState: GameState;
   readonly type = BigBrotherEpisodeType;
 
-  public constructor(gameState: GameState, rng: any) {
-    this.title = `Week ${gameState.phase}`;
+  public constructor(initialGameState: GameState, rng: BbRandomGenerator) {
+    this.title = `Week ${initialGameState.phase}`;
     this.render = (
       <div>
         {/* TODO: custom title here*/}
-        {`Week ${gameState.phase}`}
-        <MemoryWall houseguests={gameState.houseguests} /> <br />
+        {`Week ${initialGameState.phase}`}
+        <MemoryWall houseguests={initialGameState.houseguests} /> <br />
         <NextEpisodeButton />
       </div>
     );
+
+    // TODO: if it's phase 1, run a first impressions algorithm.
+
     // run the gamestate through the HoH Competition function
-    this.scenes.push({
-      title: "HoH Competition",
-      gameState: gameState,
-      render: (
-        <div>
-          This is the HoH Competition <NextEpisodeButton />
-        </div>
-      )
-    });
+    let currentGameState;
+    let hohCompScene;
+
+    [currentGameState, hohCompScene] = generateHohCompScene(
+      initialGameState,
+      rng
+    );
+
+    this.scenes.push(hohCompScene);
 
     // then through the nomination ceremony function
     this.scenes.push({
       title: "Nomination Ceremony",
-      gameState: gameState,
+      gameState: initialGameState,
       render: (
         <div>
           This is the Nomination Ceremony <NextEpisodeButton />
@@ -53,7 +90,7 @@ export class BigBrotherEpisode implements Episode {
     // then to the veto competition
     this.scenes.push({
       title: "Veto Competition",
-      gameState: gameState,
+      gameState: initialGameState,
       render: (
         <div>
           This is the Veto Competition <NextEpisodeButton />
@@ -63,7 +100,7 @@ export class BigBrotherEpisode implements Episode {
     // and then the veto ceremony
     this.scenes.push({
       title: "Veto Ceremony",
-      gameState: gameState,
+      gameState: initialGameState,
       render: (
         <div>
           This is the Veto Ceremony <NextEpisodeButton />
@@ -73,14 +110,15 @@ export class BigBrotherEpisode implements Episode {
     // and then the live eviction.
     this.scenes.push({
       title: "Live Eviction",
-      gameState: gameState,
+      gameState: initialGameState,
       render: (
         <div>
           This is the Live Eviction <NextEpisodeButton />
         </div>
       )
     });
-    // TODO: after all the logic has been processed, set the gamestate of the episode.
-    this.gameState = new GameState(gameState.houseguests);
+    // after all the logic has been processed, set the gamestate of the episode.
+    // also gamestate.phase++
+    this.gameState = new GameState(currentGameState);
   }
 }

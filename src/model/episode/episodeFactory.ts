@@ -3,9 +3,9 @@ import { hashcode } from "../../utils/hashcode";
 import { Episode } from "..";
 import { EpisodeType } from "./episodes";
 import { BigBrotherEpisodeType, BigBrotherEpisode } from "./bigBrotherEpisode";
-var MersenneTwister = require("mersenne-twister");
+import { BbRandomGenerator } from "../../utils";
 export class EpisodeFactory {
-  private rng: any;
+  private rng: BbRandomGenerator;
 
   public nextEpisode(gameState: GameState, episodeType: EpisodeType): Episode {
     switch (episodeType) {
@@ -19,6 +19,6 @@ export class EpisodeFactory {
   public constructor(init: GameState) {
     let castNames = "";
     init.houseguests.forEach(houseguest => (castNames += houseguest.name));
-    this.rng = new MersenneTwister(hashcode(castNames));
+    this.rng = new BbRandomGenerator(hashcode(castNames));
   }
 }

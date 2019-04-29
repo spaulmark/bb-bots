@@ -59,7 +59,7 @@ export class SidebarController {
     }
     if (targetScene < renderedScenes) {
       this.switchToScene(targetScene);
-    } else if (targetScene == renderedScenes) {
+    } else if (targetScene === renderedScenes) {
       const lastEpisode = this.view.state.episodes[
         this.view.state.episodes.length - 1
       ];

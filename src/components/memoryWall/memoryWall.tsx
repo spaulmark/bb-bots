@@ -1,12 +1,12 @@
 import React from "react";
 import "./memoryWall.scss";
-import { HouseguestPortrait } from "../playerPortrait/houseguestPortrait";
-import { PlayerProfile } from "../../model";
+import { houseguestToPortrait } from "../playerPortrait/houseguestPortrait";
+import { PlayerProfile, Houseguest } from "../../model";
 export interface IMemoryWallProps {
   readonly houseguests: ProfileHouseguest[];
 }
 
-interface ProfileHouseguest extends PlayerProfile {
+export interface ProfileHouseguest extends PlayerProfile {
   isEvicted?: boolean;
   popularity?: number;
   hohWins?: number;
@@ -27,27 +27,7 @@ function getPlayers(props: IMemoryWallProps): any {
   props.houseguests.forEach((houseguest: ProfileHouseguest) => {
     // TODO: Organizing and formatting so it looks better. Hard cap of 6 people per row.
     // Trying to even the rows and preventing rows of only one person.
-    rows.push(
-      <HouseguestPortrait
-        evictedImageURL={houseguest.evictedImageURL}
-        imageURL={houseguest.imageURL}
-        name={houseguest.name}
-        isEvicted={houseguest.isEvicted}
-        popularity={houseguest.popularity}
-        key={++key}
-        subtitle={`${houseguest.hohWins ? `♔ ${houseguest.hohWins}` : ""}${
-          houseguest.povWins && houseguest.hohWins
-            ? `|🛇 ${houseguest.povWins}`
-            : houseguest.povWins
-            ? `🛇 ${houseguest.povWins}`
-            : ""
-        }${
-          (houseguest.hohWins || houseguest.povWins) && houseguest.nominations
-            ? "|"
-            : ""
-        }${houseguest.nominations ? `✘ ${houseguest.nominations}` : ""}`}
-      />
-    );
+    rows.push(houseguestToPortrait(houseguest, key++));
   });
 
   return (

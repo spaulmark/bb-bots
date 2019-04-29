@@ -6,27 +6,27 @@ import { getCast } from "../mainPage/mainPageController";
 
 export function EditCastLink(): JSX.Element {
   return (
-    <a
+    <div
       className="topbar-link"
       onClick={() => {
         mainContentStream$.next(<CastingScreen cast={getCast()} />);
       }}
     >
       Edit Cast
-    </a>
+    </div>
   );
 }
 
 export function EditSeasonLink(): JSX.Element {
   return (
-    <a
+    <div
       className="topbar-link"
       onClick={() => {
         mainContentStream$.next(<CastingScreen cast={getCast()} />); // TODO: Proper edit season linking
       }}
     >
       Edit Season
-    </a>
+    </div>
   );
 }
 
