@@ -28,7 +28,7 @@ function generateHohCompScene(
   const newHoH: Houseguest = randomPlayer(newGameState, rng, previousHoh);
   newGameState.previousHOH = newHoH;
   newGameState.phase++;
-  newHoH.hohWins += 1; // TODO: this isn't okay. We need to clone the players too.
+  newHoH.hohWins += 1;
 
   const scene = {
     title: "HoH Competition",
