@@ -11,7 +11,10 @@ export function randomPlayer(
   if (gameState.houseguests.length === 0) {
     throw new Error("Tried to get a random player from a list of 0 players.");
   }
-  const options = gameState.houseguests.filter(n => !exclusions.includes(n));
+  const excludedIds = exclusions.map(hg => hg.id);
+  const options = gameState.houseguests.filter(
+    n => !excludedIds.includes(n.id)
+  );
   const choice = rng.randomInt(0, options.length - 1);
 
   return options[choice];

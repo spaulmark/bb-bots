@@ -10,6 +10,6 @@ export class BbRandomGenerator {
   }
 
   public constructor(seed: number) {
-    this.rng = prand.mersenne(seed);
+    this.rng = prand.xorshift128plus(seed);
   }
 }
