@@ -39,6 +39,10 @@ function generateHohCompScene(
     gameState: initialGameState,
     render: (
       <div>
+        {previousHoh.length > 0 &&
+          `Houseguests, it's time to find a new Head of Household. As outgoing HoH, ${
+            previousHoh[0].name
+          } will not compete. `}
         {houseguestToPortrait(newHoH)}
         {newHoH.name} has won Head of Household!
         <br />
