@@ -1,6 +1,10 @@
 import React from "react";
 import { Episode, GameState, randomPlayer } from "..";
-import { MemoryWall, houseguestToPortrait } from "../../components/memoryWall";
+import {
+  MemoryWall,
+  houseguestToPortrait,
+  HouseguestPortrait
+} from "../../components/memoryWall";
 import { NextEpisodeButton } from "../../components/buttons/nextEpisodeButton";
 import { EpisodeType, Scene } from "./episodes";
 import { BbRandomGenerator } from "../../utils";
@@ -19,7 +23,7 @@ export const BigBrotherEpisodeType: EpisodeType = {
 function generateHohCompScene(
   initialGameState: GameState,
   rng: BbRandomGenerator
-): [GameState, Scene] {
+): [GameState, Scene, Houseguest] {
   const newGameState = new MutableGameState(initialGameState);
 
   const previousHoh = initialGameState.previousHOH
@@ -43,7 +47,49 @@ function generateHohCompScene(
     )
   };
 
-  return [new GameState(newGameState), scene];
+  return [new GameState(newGameState), scene, newHoH];
+}
+
+function generateNomCeremonyScene(
+  initialGameState: GameState,
+  rng: BbRandomGenerator,
+  HoH: Houseguest
+): [GameState, Scene, Houseguest[]] {
+  const newGameState = new MutableGameState(initialGameState);
+
+  const nom1 = randomPlayer(newGameState, rng, [HoH]);
+  const nom2 = randomPlayer(newGameState, rng, [HoH, nom1]);
+  nom1.nominations++;
+  nom2.nominations++;
+
+  const scene = {
+    title: "Nomination Ceremony",
+    gameState: newGameState,
+    render: (
+      <div>
+        {houseguestToPortrait(HoH)}
+        <br />
+        This is the nomination ceremony. It is my responsibility as the Head of
+        Household to nominate two people for eviction.
+        <br />
+        <b>
+          My first nominee is...
+          <br />
+          {houseguestToPortrait(nom1)}
+          <br />
+          My second nominee is...
+          <br />
+          {houseguestToPortrait(nom2)}
+          {`I have nominated you, ${nom1.name} and you, ${
+            nom2.name
+          } for eviction.`}
+          <br />
+        </b>
+        <NextEpisodeButton />
+      </div>
+    )
+  };
+  return [new GameState(newGameState), scene, [nom1, nom2]];
 }
 
 export class BigBrotherEpisode implements Episode {
@@ -66,27 +112,25 @@ export class BigBrotherEpisode implements Episode {
 
     // TODO: if it's phase 1, run a first impressions algorithm.
 
-    // run the gamestate through the HoH Competition function
     let currentGameState;
     let hohCompScene;
+    let hoh: Houseguest;
 
-    [currentGameState, hohCompScene] = generateHohCompScene(
+    [currentGameState, hohCompScene, hoh] = generateHohCompScene(
       initialGameState,
       rng
     );
-
     this.scenes.push(hohCompScene);
 
-    // then through the nomination ceremony function
-    this.scenes.push({
-      title: "Nomination Ceremony",
-      gameState: initialGameState,
-      render: (
-        <div>
-          This is the Nomination Ceremony <NextEpisodeButton />
-        </div>
-      )
-    });
+    let nomCeremonyScene;
+    let nominees: Houseguest[];
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(
+      currentGameState,
+      rng,
+      hoh
+    );
+    this.scenes.push(nomCeremonyScene);
+
     // then to the veto competition
     this.scenes.push({
       title: "Veto Competition",

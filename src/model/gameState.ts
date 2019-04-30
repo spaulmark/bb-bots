@@ -13,7 +13,7 @@ export function randomPlayer(
   }
   const excludedIds = exclusions.map(hg => hg.id);
   const options = gameState.houseguests.filter(
-    n => !excludedIds.includes(n.id)
+    hg => !excludedIds.includes(hg.id) && !hg.isEvicted
   );
   const choice = rng.randomInt(0, options.length - 1);
 
