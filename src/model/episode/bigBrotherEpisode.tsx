@@ -204,8 +204,8 @@ function generateVetoCeremonyScene(
     povTarget = povWinner;
     descisionText += "...to use the power of veto on myself.";
   } else {
-    const save = rng.randomInt(0, 3);
-    if (save < 2) {
+    const save = rng.randomInt(0, 7);
+    if (save < 2 && nonEvictedHouseguests(initialGameState).length !== 4) {
       povTarget = initialNominees[save];
       descisionText += `...to use the power of veto on ${
         initialNominees[save].name
@@ -262,7 +262,41 @@ function generateVetoCeremonyScene(
       </div>
     )
   };
-  return [scene, initialNominees];
+  return [scene, finalNominees];
+}
+
+function generateEvictionScene(
+  initialGameState: GameState,
+  rng: BbRandomGenerator,
+  HoH: Houseguest,
+  nominees: Houseguest[]
+): [GameState, Scene] {
+  // randomly evict someone lol
+  const evictee = nominees[rng.randomInt(0, 1)];
+  evictee.isEvicted = true;
+  getById(initialGameState, evictee.id).isEvicted = true;
+  const scene = {
+    title: "Live Eviction",
+    gameState: initialGameState,
+    render: (
+      <div>
+        By a random vote...
+        <br />
+        <div className="columns">
+          <div className="column is-narrow">
+            {houseguestToPortrait(nominees[0])}
+          </div>
+          <div className="column is-narrow">
+            {houseguestToPortrait(nominees[1])}
+          </div>
+        </div>
+        <br />
+        {`${evictee.name}... you have been evicted from the Big Brother House.`}
+        <NextEpisodeButton />
+      </div>
+    )
+  };
+  return [initialGameState, scene];
 }
 
 export class BigBrotherEpisode implements Episode {
@@ -327,15 +361,14 @@ export class BigBrotherEpisode implements Episode {
     this.scenes.push(vetoCeremonyScene);
 
     // and then the live eviction.
-    this.scenes.push({
-      title: "Live Eviction",
-      gameState: initialGameState,
-      render: (
-        <div>
-          This is the Live Eviction <NextEpisodeButton />
-        </div>
-      )
-    });
+    let evictionScene;
+    [currentGameState, evictionScene] = generateEvictionScene(
+      currentGameState,
+      rng,
+      hoh,
+      nominees
+    );
+    this.scenes.push(evictionScene);
     // after all the logic has been processed, set the gamestate of the episode.
     // also gamestate.phase++
     this.gameState = new GameState(currentGameState);

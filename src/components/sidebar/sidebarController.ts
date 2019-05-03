@@ -1,5 +1,5 @@
 import { Subject, Subscription, BehaviorSubject } from "rxjs";
-import { Episode, Scene, GameState } from "../../model";
+import { Episode, Scene, GameState, nonEvictedHouseguests } from "../../model";
 import { Sidebar } from "./sidebar";
 import { Season } from "../../model/season";
 import { mainContentStream$ } from "../mainPage/mainContentArea";
@@ -53,9 +53,7 @@ export class SidebarController {
     const targetScene = selectedScene + delta;
 
     if (targetScene < 0) {
-      throw new Error(
-        `Tried to go to episode ${targetScene} from ${selectedScene}`
-      );
+      return;
     }
     if (targetScene < renderedScenes) {
       this.switchToScene(targetScene);
@@ -65,19 +63,14 @@ export class SidebarController {
       ];
       const nextPhase = this.view.state.episodes.length;
       const currentGameState = lastEpisode.gameState;
-      const newPlayerCount = lastEpisode.gameState.houseguests.length;
+      const newPlayerCount = nonEvictedHouseguests(lastEpisode.gameState)
+        .length;
       const nextEpisodeType = this.season.whichEpisodeType(nextPhase);
       if (this.season.canEpisodeExist(newPlayerCount)) {
         newEpisode(
           this.season.renderEpisode(currentGameState, nextEpisodeType)
         );
         this.switchSceneRelative(1);
-      } else {
-        console.log(
-          `Cannot run a ${
-            nextEpisodeType.title
-          } episode at final ${newPlayerCount}`
-        );
       }
     }
   }
