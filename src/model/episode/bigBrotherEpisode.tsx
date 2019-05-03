@@ -1,16 +1,12 @@
 import React from "react";
 import { Episode, GameState, randomPlayer } from "..";
-import {
-  MemoryWall,
-  houseguestToPortrait,
-  HouseguestPortrait
-} from "../../components/memoryWall";
+import { MemoryWall, houseguestToPortrait } from "../../components/memoryWall";
 import { NextEpisodeButton } from "../../components/buttons/nextEpisodeButton";
 import { EpisodeType, Scene } from "./episodes";
 import { BbRandomGenerator } from "../../utils";
 import { Houseguest } from "../houseguest";
 import _ from "lodash";
-import { MutableGameState } from "../gameState";
+import { MutableGameState, nonEvictedHouseguests, getById } from "../gameState";
 
 export const BigBrotherEpisodeType: EpisodeType = {
   canPlayWith: (n: number) => {
@@ -19,6 +15,14 @@ export const BigBrotherEpisodeType: EpisodeType = {
   eliminates: 1,
   title: "Big Brother Episode"
 };
+
+// TODO: Refactoring ideas
+/**
+ * Might be nice to always have players appear in multiline narrow columns.
+ * Just a nice component that reads <Portraits houseguests={[HoH, nom1, nom2]}>
+ * Might also be nice to have a global rng object that resets with the cast in a behaviorsubject
+ *
+ */
 
 function generateHohCompScene(
   initialGameState: GameState,
@@ -29,7 +33,11 @@ function generateHohCompScene(
   const previousHoh = initialGameState.previousHOH
     ? [initialGameState.previousHOH]
     : [];
-  const newHoH: Houseguest = randomPlayer(newGameState, rng, previousHoh);
+  const newHoH: Houseguest = randomPlayer(
+    newGameState.houseguests,
+    rng,
+    previousHoh
+  );
   newGameState.previousHOH = newHoH;
   newGameState.phase++;
   newHoH.hohWins += 1;
@@ -61,8 +69,8 @@ function generateNomCeremonyScene(
 ): [GameState, Scene, Houseguest[]] {
   const newGameState = new MutableGameState(initialGameState);
 
-  const nom1 = randomPlayer(newGameState, rng, [HoH]);
-  const nom2 = randomPlayer(newGameState, rng, [HoH, nom1]);
+  const nom1 = randomPlayer(newGameState.houseguests, rng, [HoH]);
+  const nom2 = randomPlayer(newGameState.houseguests, rng, [HoH, nom1]);
   nom1.nominations++;
   nom2.nominations++;
 
@@ -94,6 +102,167 @@ function generateNomCeremonyScene(
     )
   };
   return [new GameState(newGameState), scene, [nom1, nom2]];
+}
+
+function generateVetoCompScene(
+  initialGameState: GameState,
+  rng: BbRandomGenerator,
+  HoH: Houseguest,
+  nom1: Houseguest,
+  nom2: Houseguest
+): [GameState, Scene, Houseguest] {
+  const newGameState = new MutableGameState(initialGameState);
+
+  // pick players
+  const choices = nonEvictedHouseguests(newGameState);
+  let povPlayers: Houseguest[] = [];
+  const everyoneWillPlay = choices.length <= 6;
+
+  if (everyoneWillPlay) {
+    povPlayers.push({ ...HoH });
+    povPlayers.push({ ...nom1 });
+    povPlayers.push({ ...nom2 });
+    while (povPlayers.length < choices.length) {
+      povPlayers.push({ ...randomPlayer(choices, rng, povPlayers) });
+    }
+  } else {
+    // TODO: houseguests choice picks
+    povPlayers.push({ ...HoH });
+    povPlayers.push({ ...nom1 });
+    povPlayers.push({ ...nom2 });
+    povPlayers.push({ ...randomPlayer(choices, rng, povPlayers) });
+    povPlayers.push({ ...randomPlayer(choices, rng, povPlayers) });
+    povPlayers.push({ ...randomPlayer(choices, rng, povPlayers) });
+  }
+  let povWinner = randomPlayer(povPlayers, rng);
+  povWinner = getById(newGameState, povWinner.id);
+  povWinner.povWins++;
+
+  let introText: string;
+  if (everyoneWillPlay) {
+    introText = "Everyone left in the house will compete in this challenge.";
+  } else {
+    introText = `${HoH.name}, as Head of Household, and ${nom1.name} and ${
+      nom2.name
+    } as nominees, will compete, as well as 3 others chosen by random draw.`;
+  }
+  const scene = {
+    title: "Veto Competition",
+    gameState: initialGameState,
+    render: (
+      <div>
+        It's time to pick players for the veto competition.
+        <br />
+        <div className="columns">
+          <div className="column is-narrow">{houseguestToPortrait(HoH)}</div>
+          <div className="column is-narrow">{houseguestToPortrait(nom1)}</div>
+          <div className="column is-narrow">{houseguestToPortrait(nom2)}</div>
+        </div>
+        <br />
+        {introText}
+        <br />
+        <div className="columns">
+          <div className="column is-narrow">
+            {houseguestToPortrait(povPlayers[3])}
+          </div>
+          {povPlayers[4] && (
+            <div className="column is-narrow">
+              {houseguestToPortrait(povPlayers[4])}
+            </div>
+          )}
+          {povPlayers[5] && (
+            <div className="column is-narrow">
+              {houseguestToPortrait(povPlayers[5])}
+            </div>
+          )}
+        </div>
+        ...
+        {houseguestToPortrait(povWinner)}
+        {`${povWinner.name} has won the Golden Power of Veto!`}
+        <br />
+        <NextEpisodeButton />
+      </div>
+    )
+  };
+
+  return [new GameState(newGameState), scene, povWinner];
+}
+
+function generateVetoCeremonyScene(
+  initialGameState: GameState,
+  rng: BbRandomGenerator,
+  HoH: Houseguest,
+  initialNominees: Houseguest[],
+  povWinner: Houseguest
+): [Scene, Houseguest[]] {
+  let povTarget: Houseguest | null = null;
+  let descisionText = "I have decided... ";
+  if (
+    povWinner.id == initialNominees[0].id ||
+    povWinner.id == initialNominees[1].id
+  ) {
+    povTarget = povWinner;
+    descisionText += "...to use the power of veto on myself.";
+  } else {
+    const save = rng.randomInt(0, 3);
+    if (save < 2) {
+      povTarget = initialNominees[save];
+      descisionText += `...to use the power of veto on ${
+        initialNominees[save].name
+      }.`;
+    } else {
+      descisionText += "... not to use the power of veto.";
+    }
+  }
+
+  let replacementSpeech = "";
+  let nameAReplacement = "";
+  let finalNominees = initialNominees;
+  if (povTarget) {
+    finalNominees = initialNominees.filter(hg => hg.id != povTarget!.id);
+    nameAReplacement += ` ${
+      HoH.name
+    }, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
+    // Name a replacement
+    const replacementNom = randomPlayer(initialGameState.houseguests, rng, [
+      HoH,
+      initialNominees[0],
+      initialNominees[1],
+      povWinner
+    ]);
+    finalNominees.push(replacementNom);
+    replacementNom.nominations++;
+    replacementSpeech = `My replacement nominee is ${replacementNom.name}.`;
+  }
+
+  const scene = {
+    title: "Veto Ceremony",
+    gameState: initialGameState,
+    render: (
+      <div>
+        {houseguestToPortrait(povWinner)}
+        This is the Veto Ceremony.
+        <br />
+        {`${initialNominees[0].name} and ${
+          initialNominees[1].name
+        } have been nominated for eviction. But I have the power to veto one of these nominations.`}
+        <br />
+        {houseguestToPortrait(initialNominees[0])}
+        {houseguestToPortrait(initialNominees[1])}
+        <br />
+        <b>{descisionText} </b>
+        <br />
+        {nameAReplacement}
+        <br />
+        {replacementSpeech && houseguestToPortrait(HoH)}
+        <b>{replacementSpeech}</b>
+        {houseguestToPortrait(finalNominees[0])}
+        {houseguestToPortrait(finalNominees[1])}
+        <NextEpisodeButton />
+      </div>
+    )
+  };
+  return [scene, initialNominees];
 }
 
 export class BigBrotherEpisode implements Episode {
@@ -135,26 +304,28 @@ export class BigBrotherEpisode implements Episode {
     );
     this.scenes.push(nomCeremonyScene);
 
-    // then to the veto competition
-    this.scenes.push({
-      title: "Veto Competition",
-      gameState: initialGameState,
-      render: (
-        <div>
-          This is the Veto Competition <NextEpisodeButton />
-        </div>
-      )
-    });
+    let vetoCompScene;
+    let povWinner: Houseguest;
+    [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
+      currentGameState,
+      rng,
+      hoh,
+      nominees[0],
+      nominees[1]
+    );
+    this.scenes.push(vetoCompScene);
     // and then the veto ceremony
-    this.scenes.push({
-      title: "Veto Ceremony",
-      gameState: initialGameState,
-      render: (
-        <div>
-          This is the Veto Ceremony <NextEpisodeButton />
-        </div>
-      )
-    });
+    let vetoCeremonyScene;
+
+    [vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
+      currentGameState,
+      rng,
+      hoh,
+      nominees,
+      povWinner
+    );
+    this.scenes.push(vetoCeremonyScene);
+
     // and then the live eviction.
     this.scenes.push({
       title: "Live Eviction",

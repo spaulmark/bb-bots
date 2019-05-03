@@ -3,21 +3,33 @@ import { PlayerProfile } from "./playerProfile";
 import _ from "lodash";
 import { newRelationshipMap, BbRandomGenerator } from "../utils";
 
+export function getById(gameState: GameState, id: number): Houseguest {
+  const result = gameState.houseguests.find(hg => hg.id === id);
+  if (!result) {
+    throw new Error(`Failed to find houseguest with id ${id}`);
+  }
+  return result;
+}
+
 export function randomPlayer(
-  gameState: GameState,
+  inclusions: Houseguest[],
   rng: BbRandomGenerator,
   exclusions: Houseguest[] = []
 ): Houseguest {
-  if (gameState.houseguests.length === 0) {
+  if (inclusions.length === 0) {
     throw new Error("Tried to get a random player from a list of 0 players.");
   }
   const excludedIds = exclusions.map(hg => hg.id);
-  const options = gameState.houseguests.filter(
+  const options = inclusions.filter(
     hg => !excludedIds.includes(hg.id) && !hg.isEvicted
   );
   const choice = rng.randomInt(0, options.length - 1);
 
   return options[choice];
+}
+
+export function nonEvictedHouseguests(gameState: GameState) {
+  return gameState.houseguests.filter(hg => !hg.isEvicted);
 }
 
 export function calculatePopularity(gameState: GameState, targetId: number) {

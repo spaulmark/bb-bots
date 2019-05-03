@@ -37,7 +37,7 @@ function backgroundColor(props: IPortraitProps) {
 
 export function houseguestToPortrait(
   houseguest: ProfileHouseguest,
-  key: any = 0
+  key?: any
 ): JSX.Element {
   return (
     <HouseguestPortrait
@@ -87,7 +87,7 @@ export const HouseguestPortrait = (props: IPortraitProps) => {
       {props.name}
       <br />
       {!!props.subtitle && (
-        <div className="portrait-history">{props.subtitle}</div>
+        <small className="portrait-history">{props.subtitle}</small>
       )}
     </div>
   );
