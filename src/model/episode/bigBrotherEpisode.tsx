@@ -8,6 +8,7 @@ import { Houseguest } from "../houseguest";
 import _ from "lodash";
 import { MutableGameState, nonEvictedHouseguests, getById } from "../gameState";
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
+import { getJurors } from "../season";
 
 export const BigBrotherEpisodeType: EpisodeType = {
   canPlayWith: (n: number) => {
@@ -181,7 +182,11 @@ function generateVetoCeremonyScene(
   povWinner: Houseguest
 ): [Scene, Houseguest[]] {
   let povTarget: Houseguest | null = null;
-  let descisionText = "I have decided... ";
+  let descisionText = "";
+  initialNominees[0] = getById(initialGameState, initialNominees[0].id);
+  initialNominees[1] = getById(initialGameState, initialNominees[1].id);
+  HoH = getById(initialGameState, HoH.id);
+
   if (
     povWinner.id == initialNominees[0].id ||
     povWinner.id == initialNominees[1].id
@@ -227,19 +232,20 @@ function generateVetoCeremonyScene(
     gameState: initialGameState,
     render: (
       <div>
-        <Portrait houseguest={povWinner} />
         This is the Veto Ceremony.
         <br />
         {`${initialNominees[0].name} and ${
           initialNominees[1].name
-        } have been nominated for eviction. But I have the power to veto one of these nominations.`}
-        <br />
+        } have been nominated for eviction.`}
         <Portraits houseguests={initialNominees} />
+        But I have the power to veto one of these nominations.
         <br />
-        <b>{descisionText} </b>
-        <br />
+        <b>
+          I have decided...
+          <Portrait houseguest={povWinner} />
+          {descisionText}
+        </b>
         {nameAReplacement}
-        <br />
         {replacementSpeech && <Portrait houseguest={HoH} />}
         <b>{replacementSpeech}</b>
         <Portraits houseguests={finalNominees} />
@@ -250,15 +256,25 @@ function generateVetoCeremonyScene(
   return [scene, finalNominees];
 }
 
+function evictHouseguest(gameState: MutableGameState, id: number) {
+  const houseguest = getById(gameState, id);
+  houseguest.isEvicted = true;
+  if (getJurors()) {
+    //
+  }
+}
+
 function generateEvictionScene(
   initialGameState: GameState,
   rng: BbRandomGenerator,
   HoH: Houseguest,
   nominees: Houseguest[]
 ): [GameState, Scene] {
-  // randomly evict someone lol
+  const newGameState = new MutableGameState(initialGameState);
+
   const evictee = nominees[rng.randomInt(0, 1)];
-  getById(initialGameState, evictee.id).isEvicted = true;
+  evictHouseguest(newGameState, evictee.id);
+
   const scene = {
     title: "Live Eviction",
     gameState: initialGameState,
@@ -268,8 +284,8 @@ function generateEvictionScene(
         <br />
         <Portraits
           houseguests={[
-            getById(initialGameState, nominees[0].id),
-            getById(initialGameState, nominees[1].id)
+            getById(newGameState, nominees[0].id),
+            getById(newGameState, nominees[1].id)
           ]}
         />
         <br />
@@ -278,7 +294,7 @@ function generateEvictionScene(
       </div>
     )
   };
-  return [initialGameState, scene];
+  return [newGameState, scene];
 }
 
 export class BigBrotherEpisode implements Episode {
