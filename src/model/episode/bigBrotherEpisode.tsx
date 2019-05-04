@@ -20,7 +20,6 @@ export const BigBrotherEpisodeType: EpisodeType = {
 // TODO: Refactoring ideas
 /**
  * Might also be nice to have a global rng object that resets with the cast in a behaviorsubject
- *
  */
 
 function generateHohCompScene(
@@ -81,7 +80,7 @@ function generateNomCeremonyScene(
         <Portrait houseguest={HoH} />
         <br />
         This is the nomination ceremony. It is my responsibility as the Head of
-        Household to nominate two people for eviction.
+        Household to nominate two houseguests for eviction.
         <br />
         <b>
           My first nominee is...
@@ -259,7 +258,6 @@ function generateEvictionScene(
 ): [GameState, Scene] {
   // randomly evict someone lol
   const evictee = nominees[rng.randomInt(0, 1)];
-  // evictee.isEvicted = true;
   getById(initialGameState, evictee.id).isEvicted = true;
   const scene = {
     title: "Live Eviction",
@@ -332,7 +330,6 @@ export class BigBrotherEpisode implements Episode {
       nominees[1]
     );
     this.scenes.push(vetoCompScene);
-    // and then the veto ceremony
     let vetoCeremonyScene;
 
     [vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
@@ -344,7 +341,6 @@ export class BigBrotherEpisode implements Episode {
     );
     this.scenes.push(vetoCeremonyScene);
 
-    // and then the live eviction.
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(
       currentGameState,

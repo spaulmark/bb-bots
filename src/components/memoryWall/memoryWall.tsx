@@ -25,7 +25,12 @@ function getPlayers(props: IMemoryWallProps): any {
   // TODO: Organizing and formatting so it looks better. Hard cap of 6 people per row.
   // Trying to even the rows and preventing rows of only one person.
   return (
-    <div className="columns is-gapless is-mobile is-multiline is-centered">
+    <div
+      style={{
+        margin: "auto",
+        maxWidth: 650
+      }}
+    >
       <Portraits houseguests={props.houseguests} centered={true} />
     </div>
   );
