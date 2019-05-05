@@ -3,12 +3,13 @@ import { Episode, GameState, randomPlayer } from "..";
 import { MemoryWall } from "../../components/memoryWall";
 import { NextEpisodeButton } from "../../components/buttons/nextEpisodeButton";
 import { EpisodeType, Scene } from "./episodes";
-import { BbRandomGenerator, rng } from "../../utils";
+import { rng } from "../../utils";
 import { Houseguest } from "../houseguest";
 import _ from "lodash";
 import { MutableGameState, getById, nonEvictedHouseguests } from "../gameState";
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
 import { getJurors, getFinalists } from "../season";
+import { castEvictionVote } from "../../utils/aiUtils";
 
 export const BigBrotherVanilla: EpisodeType = {
   canPlayWith: (n: number) => {
@@ -19,7 +20,7 @@ export const BigBrotherVanilla: EpisodeType = {
 
 // TODO: Refactoring ideas
 /**
- * Might also be nice to have a global rng object that resets with the cast in a behaviorsubject
+ * Might be best to start passing ids instead of houseguests for HoH/nominees/veto winner
  */
 
 function generateHohCompScene(
@@ -266,24 +267,66 @@ function generateEvictionScene(
 ): [GameState, Scene] {
   const newGameState = new MutableGameState(initialGameState);
 
-  const evictee = nominees[rng().randomInt(0, 1)];
+  const votes: Array<Houseguest[]> = [[], []];
+  nonEvictedHouseguests(newGameState).forEach(hg => {
+    if (
+      hg.id !== nominees[0].id &&
+      hg.id !== nominees[1].id &&
+      hg.id !== HoH.id
+    ) {
+      votes[castEvictionVote(hg, nominees)].push(hg);
+    }
+  });
+  const votesFor0 = votes[0].length;
+  const votesFor1 = votes[1].length;
+
+  let tieVote = votesFor0 === votesFor1;
+  if (tieVote) {
+    votes[castEvictionVote(HoH, nominees)].push(HoH);
+  }
+
+  const evictee = votesFor0 > votesFor1 ? nominees[0] : nominees[1];
   evictHouseguest(newGameState, evictee.id);
+
+  const moreVotes = votesFor0 > votesFor1 ? votesFor0 : votesFor1;
+  const lessVotes = votesFor0 < votesFor1 ? votesFor0 : votesFor1;
+
+  const isUnanimous = votesFor0 === 0 || votesFor1 === 0;
+  const voteCountText = isUnanimous
+    ? "By a unanimous vote..."
+    : `By a vote of ${moreVotes} to ${lessVotes}...`;
 
   const scene = {
     title: "Live Eviction",
     gameState: initialGameState,
     render: (
       <div>
-        By a random vote...
-        <br />
+        <p style={{ textAlign: "center" }}>
+          <b>{voteCountText} </b>
+        </p>
+        <div className="columns is-centered">
+          <div className="column box">
+            <Portraits houseguests={votes[0]} centered={true} />
+          </div>
+          <div className="column box">
+            <Portraits houseguests={votes[1]} centered={true} />
+          </div>
+        </div>
+
         <Portraits
           houseguests={[
             getById(newGameState, nominees[0].id),
             getById(newGameState, nominees[1].id)
           ]}
+          centered={true}
         />
-        <br />
-        {`${evictee.name}... you have been evicted from the Big Brother House.`}
+        <p style={{ textAlign: "center" }}>
+          <b>
+            {`${
+              evictee.name
+            }... you have been evicted from the Big Brother House.`}
+          </b>
+        </p>
         <NextEpisodeButton />
       </div>
     )

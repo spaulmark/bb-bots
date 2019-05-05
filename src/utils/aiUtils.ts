@@ -1,10 +1,10 @@
 import { Houseguest } from "../model";
+import { rng } from "./BbRandomGenerator";
 
 export function castEvictionVote(
   hero: Houseguest,
-  nom1: Houseguest,
-  nom2: Houseguest
-): Houseguest {
-  // Might need more paramaters later, but for now we're good.
-  throw new Error("ya done");
+  nominees: Houseguest[]
+): number {
+  // Cast a random vote and return the index of the eviction target.
+  return rng().randomInt(0, nominees.length - 1);
 }
