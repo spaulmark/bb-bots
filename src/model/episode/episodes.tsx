@@ -12,7 +12,6 @@ export interface Episode {
 export interface EpisodeType {
   readonly canPlayWith: (n: number) => boolean;
   readonly eliminates: number;
-  readonly title: string;
 }
 
 export class Scene {

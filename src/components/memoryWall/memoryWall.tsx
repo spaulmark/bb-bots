@@ -22,13 +22,11 @@ function getPlayers(props: IMemoryWallProps): any {
   if (!props.houseguests || props.houseguests.length === 0) {
     return null;
   }
-  // TODO: Organizing and formatting so it looks better. Hard cap of 6 people per row.
-  // Trying to even the rows and preventing rows of only one person.
   return (
     <div
       style={{
         margin: "auto",
-        maxWidth: 650
+        maxWidth: 700
       }}
     >
       <Portraits houseguests={props.houseguests} centered={true} />

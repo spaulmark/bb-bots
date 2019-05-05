@@ -3,19 +3,18 @@ import { Episode, GameState, randomPlayer } from "..";
 import { MemoryWall } from "../../components/memoryWall";
 import { NextEpisodeButton } from "../../components/buttons/nextEpisodeButton";
 import { EpisodeType, Scene } from "./episodes";
-import { BbRandomGenerator } from "../../utils";
+import { BbRandomGenerator, rng } from "../../utils";
 import { Houseguest } from "../houseguest";
 import _ from "lodash";
-import { MutableGameState, nonEvictedHouseguests, getById } from "../gameState";
+import { MutableGameState, getById, nonEvictedHouseguests } from "../gameState";
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
-import { getJurors } from "../season";
+import { getJurors, getFinalists } from "../season";
 
-export const BigBrotherEpisodeType: EpisodeType = {
+export const BigBrotherVanilla: EpisodeType = {
   canPlayWith: (n: number) => {
     return n > 1;
   },
-  eliminates: 1,
-  title: "Big Brother Episode"
+  eliminates: 1
 };
 
 // TODO: Refactoring ideas
@@ -24,8 +23,7 @@ export const BigBrotherEpisodeType: EpisodeType = {
  */
 
 function generateHohCompScene(
-  initialGameState: GameState,
-  rng: BbRandomGenerator
+  initialGameState: GameState
 ): [GameState, Scene, Houseguest] {
   const newGameState = new MutableGameState(initialGameState);
 
@@ -34,7 +32,6 @@ function generateHohCompScene(
     : [];
   const newHoH: Houseguest = randomPlayer(
     newGameState.houseguests,
-    rng,
     previousHoh
   );
   newGameState.previousHOH = newHoH;
@@ -63,13 +60,12 @@ function generateHohCompScene(
 
 function generateNomCeremonyScene(
   initialGameState: GameState,
-  rng: BbRandomGenerator,
   HoH: Houseguest
 ): [GameState, Scene, Houseguest[]] {
   const newGameState = new MutableGameState(initialGameState);
 
-  const nom1 = randomPlayer(newGameState.houseguests, rng, [HoH]);
-  const nom2 = randomPlayer(newGameState.houseguests, rng, [HoH, nom1]);
+  const nom1 = randomPlayer(newGameState.houseguests, [HoH]);
+  const nom2 = randomPlayer(newGameState.houseguests, [HoH, nom1]);
   nom1.nominations++;
   nom2.nominations++;
 
@@ -105,7 +101,6 @@ function generateNomCeremonyScene(
 
 function generateVetoCompScene(
   initialGameState: GameState,
-  rng: BbRandomGenerator,
   HoH: Houseguest,
   nom1: Houseguest,
   nom2: Houseguest
@@ -122,18 +117,18 @@ function generateVetoCompScene(
     povPlayers.push({ ...nom1 });
     povPlayers.push({ ...nom2 });
     while (povPlayers.length < choices.length) {
-      povPlayers.push({ ...randomPlayer(choices, rng, povPlayers) });
+      povPlayers.push({ ...randomPlayer(choices, povPlayers) });
     }
   } else {
     // TODO: houseguests choice picks
     povPlayers.push({ ...HoH });
     povPlayers.push({ ...nom1 });
     povPlayers.push({ ...nom2 });
-    povPlayers.push({ ...randomPlayer(choices, rng, povPlayers) });
-    povPlayers.push({ ...randomPlayer(choices, rng, povPlayers) });
-    povPlayers.push({ ...randomPlayer(choices, rng, povPlayers) });
+    povPlayers.push({ ...randomPlayer(choices, povPlayers) });
+    povPlayers.push({ ...randomPlayer(choices, povPlayers) });
+    povPlayers.push({ ...randomPlayer(choices, povPlayers) });
   }
-  let povWinner = randomPlayer(povPlayers, rng);
+  let povWinner = randomPlayer(povPlayers);
   povWinner = getById(newGameState, povWinner.id);
   povWinner.povWins++;
 
@@ -176,7 +171,6 @@ function generateVetoCompScene(
 
 function generateVetoCeremonyScene(
   initialGameState: GameState,
-  rng: BbRandomGenerator,
   HoH: Houseguest,
   initialNominees: Houseguest[],
   povWinner: Houseguest
@@ -194,7 +188,7 @@ function generateVetoCeremonyScene(
     povTarget = povWinner;
     descisionText += "...to use the power of veto on myself.";
   } else {
-    const save = rng.randomInt(0, 7);
+    const save = rng().randomInt(0, 7);
     if (save < 2 && nonEvictedHouseguests(initialGameState).length !== 4) {
       povTarget = initialNominees[save];
       descisionText += `...to use the power of veto on ${
@@ -214,7 +208,7 @@ function generateVetoCeremonyScene(
       HoH.name
     }, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
     const replacementNom = {
-      ...randomPlayer(initialGameState.houseguests, rng, [
+      ...randomPlayer(initialGameState.houseguests, [
         HoH,
         initialNominees[0],
         initialNominees[1],
@@ -259,20 +253,20 @@ function generateVetoCeremonyScene(
 function evictHouseguest(gameState: MutableGameState, id: number) {
   const houseguest = getById(gameState, id);
   houseguest.isEvicted = true;
-  if (getJurors()) {
-    //
+  if (gameState.remainingPlayers - getFinalists() <= getJurors()) {
+    houseguest.isJury = true;
   }
+  gameState.remainingPlayers--;
 }
 
 function generateEvictionScene(
   initialGameState: GameState,
-  rng: BbRandomGenerator,
   HoH: Houseguest,
   nominees: Houseguest[]
 ): [GameState, Scene] {
   const newGameState = new MutableGameState(initialGameState);
 
-  const evictee = nominees[rng.randomInt(0, 1)];
+  const evictee = nominees[rng().randomInt(0, 1)];
   evictHouseguest(newGameState, evictee.id);
 
   const scene = {
@@ -297,14 +291,14 @@ function generateEvictionScene(
   return [newGameState, scene];
 }
 
-export class BigBrotherEpisode implements Episode {
+export class BigBrotherVanillaEpisode implements Episode {
   readonly title: string;
   readonly scenes: Scene[] = [];
   readonly render: JSX.Element;
   readonly gameState: GameState;
-  readonly type = BigBrotherEpisodeType;
+  readonly type = BigBrotherVanilla;
 
-  public constructor(initialGameState: GameState, rng: BbRandomGenerator) {
+  public constructor(initialGameState: GameState) {
     this.title = `Week ${initialGameState.phase}`;
     this.render = (
       <div>
@@ -322,8 +316,7 @@ export class BigBrotherEpisode implements Episode {
     let hoh: Houseguest;
 
     [currentGameState, hohCompScene, hoh] = generateHohCompScene(
-      initialGameState,
-      rng
+      initialGameState
     );
     this.scenes.push(hohCompScene);
 
@@ -331,7 +324,6 @@ export class BigBrotherEpisode implements Episode {
     let nominees: Houseguest[];
     [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(
       currentGameState,
-      rng,
       hoh
     );
     this.scenes.push(nomCeremonyScene);
@@ -340,7 +332,6 @@ export class BigBrotherEpisode implements Episode {
     let povWinner: Houseguest;
     [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
       currentGameState,
-      rng,
       hoh,
       nominees[0],
       nominees[1]
@@ -350,7 +341,6 @@ export class BigBrotherEpisode implements Episode {
 
     [vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
       currentGameState,
-      rng,
       hoh,
       nominees,
       povWinner
@@ -360,7 +350,6 @@ export class BigBrotherEpisode implements Episode {
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(
       currentGameState,
-      rng,
       hoh,
       nominees
     );

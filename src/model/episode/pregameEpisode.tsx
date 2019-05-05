@@ -6,9 +6,8 @@ import { GameState } from "../gameState";
 const PregameEpisodeType: EpisodeType = {
   eliminates: 0,
   canPlayWith: (n: number) => {
-    return n > 0;
-  },
-  title: "Pregame"
+    return n > 2;
+  }
 };
 
 export class PregameEpisode implements Episode {

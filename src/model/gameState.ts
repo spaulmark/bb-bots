@@ -1,7 +1,7 @@
 import { Houseguest } from "./houseguest";
 import { PlayerProfile } from "./playerProfile";
 import _ from "lodash";
-import { newRelationshipMap, BbRandomGenerator } from "../utils";
+import { newRelationshipMap, BbRandomGenerator, rng } from "../utils";
 
 export function getById(gameState: GameState, id: number): Houseguest {
   const result = gameState.houseguests.find(hg => hg.id === id);
@@ -13,7 +13,6 @@ export function getById(gameState: GameState, id: number): Houseguest {
 
 export function randomPlayer(
   inclusions: Houseguest[],
-  rng: BbRandomGenerator,
   exclusions: Houseguest[] = []
 ): Houseguest {
   if (inclusions.length === 0) {
@@ -23,7 +22,7 @@ export function randomPlayer(
   const options = inclusions.filter(
     hg => !excludedIds.includes(hg.id) && !hg.isEvicted
   );
-  const choice = rng.randomInt(0, options.length - 1);
+  const choice = rng().randomInt(0, options.length - 1);
 
   return options[choice];
 }
@@ -48,7 +47,7 @@ export class GameState {
   // Current state of the game after a phase.
 
   readonly houseguests: Houseguest[] = [];
-
+  readonly remainingPlayers: number = 0;
   readonly phase: number = 1;
   readonly previousHOH?: Houseguest;
 
@@ -81,7 +80,7 @@ export class GameState {
 
 export class MutableGameState {
   public houseguests: Houseguest[] = [];
-
+  public remainingPlayers: number = 0;
   public phase: number = 1;
   public previousHOH?: Houseguest;
 

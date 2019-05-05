@@ -20,7 +20,7 @@ export function switchEpisodeRelative(n: number) {
 export class SidebarController {
   private view: Sidebar;
   private subscriptions: Subscription[] = [];
-  private season: Season = new Season(new GameState([]));
+  private season: Season = new Season();
   private scenes: Scene[] = [];
 
   public constructor(view: Sidebar) {
@@ -37,7 +37,7 @@ export class SidebarController {
     );
     this.subscriptions.push(
       cast$.subscribe({
-        next: newCast => (this.season = new Season(new GameState(newCast)))
+        next: newCast => (this.season = new Season())
       })
     );
   }
