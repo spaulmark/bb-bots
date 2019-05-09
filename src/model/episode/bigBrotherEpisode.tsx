@@ -363,16 +363,6 @@ export class BigBrotherVanillaEpisode implements Episode {
   readonly type = BigBrotherVanilla;
 
   public constructor(initialGameState: GameState) {
-    this.title = `Week ${initialGameState.phase}`;
-    this.render = (
-      <div>
-        {/* TODO: custom title here*/}
-        {`Week ${initialGameState.phase}`}
-        <MemoryWall houseguests={initialGameState.houseguests} /> <br />
-        <NextEpisodeButton />
-      </div>
-    );
-
     // TODO: if it's phase 1, run a first impressions algorithm.
 
     let currentGameState;
@@ -418,8 +408,16 @@ export class BigBrotherVanillaEpisode implements Episode {
       nominees
     );
     this.scenes.push(evictionScene);
-    // after all the logic has been processed, set the gamestate of the episode.
-    // also gamestate.phase++
+
+    this.title = `Week ${currentGameState.phase}`;
+    this.render = (
+      <div>
+        {/* TODO: custom title here*/}
+        {`Week ${currentGameState.phase}`}
+        <MemoryWall houseguests={initialGameState.houseguests} /> <br />
+        <NextEpisodeButton />
+      </div>
+    );
     this.gameState = new GameState(currentGameState);
   }
 }

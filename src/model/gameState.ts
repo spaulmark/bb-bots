@@ -51,7 +51,7 @@ export class GameState {
 
   readonly houseguests: Houseguest[] = [];
   readonly remainingPlayers: number = 0;
-  readonly phase: number = 1;
+  readonly phase: number = 0;
   readonly previousHOH?: Houseguest;
 
   public constructor(init: PlayerProfile[] | GameState) {
@@ -85,7 +85,7 @@ export class GameState {
 export class MutableGameState {
   public houseguests: Houseguest[] = [];
   public remainingPlayers: number = 0;
-  public phase: number = 1;
+  public phase: number = 0;
   public previousHOH?: Houseguest;
 
   public constructor(init: GameState | MutableGameState) {

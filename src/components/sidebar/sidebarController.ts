@@ -17,11 +17,17 @@ export function switchEpisodeRelative(n: number) {
   switchEpisode$.next(n);
 }
 
+interface IndexedScene {
+  scene: Scene;
+  index: number;
+}
+
 export class SidebarController {
   private view: Sidebar;
   private subscriptions: Subscription[] = [];
   private season: Season = new Season();
-  private scenes: Scene[] = [];
+  private scenes: IndexedScene[] = [];
+  private selectedEpisode: number = 0;
 
   public constructor(view: Sidebar) {
     this.view = view;
@@ -42,9 +48,14 @@ export class SidebarController {
     );
   }
 
-  public switchToScene(scene: number) {
-    mainContentStream$.next(this.scenes[scene].render);
-    this.view.setState({ selectedScene: scene });
+  public getSelectedEpisode() {
+    return this.selectedEpisode;
+  }
+
+  public switchToScene(id: number) {
+    mainContentStream$.next(this.scenes[id].scene.render);
+    this.selectedEpisode = this.scenes[id].index;
+    this.view.setState({ selectedScene: id });
   }
 
   private switchSceneRelative(delta: number) {
@@ -61,7 +72,6 @@ export class SidebarController {
       const lastEpisode = this.view.state.episodes[
         this.view.state.episodes.length - 1
       ];
-      const nextPhase = this.view.state.episodes.length;
       const currentGameState = lastEpisode.gameState;
       const newPlayerCount = nonEvictedHouseguests(lastEpisode.gameState)
         .length;
@@ -81,8 +91,13 @@ export class SidebarController {
       this.scenes = [];
     } else {
       const newState = { ...this.view.state };
-      this.scenes.push(episode);
-      this.scenes = this.scenes.concat(episode.scenes);
+      const latestIndex =
+        this.scenes.length === 0
+          ? -1
+          : this.scenes[this.scenes.length - 1].index;
+      const index = latestIndex + 1;
+      this.scenes.push({ scene: episode, index });
+      episode.scenes.forEach(scene => this.scenes.push({ scene, index }));
       newState.episodes.push(episode);
       this.view.setState(newState);
     }

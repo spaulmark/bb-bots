@@ -56,12 +56,14 @@ export class Sidebar extends React.Component<{}, SidebarState> {
       result.push(<br key={--breakKey} />);
       episode.scenes.forEach((scene: Scene) => {
         const id = ++episodeKey;
-        result.push(
-          <a key={id} onClick={() => this.controller.switchToScene(id)}>
-            {this.getHighlight(scene.title, id)}
-          </a>
-        );
-        result.push(<br key={--breakKey} />);
+        if (this.controller.getSelectedEpisode() === episode.gameState.phase) {
+          result.push(
+            <a key={id} onClick={() => this.controller.switchToScene(id)}>
+              {this.getHighlight(scene.title, id)}
+            </a>
+          );
+          result.push(<br key={--breakKey} />);
+        }
       });
     });
     return result;
