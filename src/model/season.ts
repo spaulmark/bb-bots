@@ -2,10 +2,25 @@ import { BigBrotherVanilla } from "./episode/bigBrotherEpisode";
 import { EpisodeFactory } from "./episode/episodeFactory";
 import { GameState } from "./gameState";
 import { EpisodeType, Episode } from ".";
+import { BigBrotherFinale } from "./episode/bigBrotherFinale";
+import { cast$ } from "../components/mainPage/mainPageController";
 
-export function getJurors() {
-  return 7;
+export function getJuryCount() {
+  return jurors;
 }
+
+let jurors = 7;
+const maxJurors = 7;
+const sub = cast$.subscribe({
+  next: newCast => {
+    let players = newCast.length;
+    if (players % 2 === 0) {
+      players--;
+    }
+    players -= 2;
+    jurors = Math.min(players, maxJurors);
+  }
+});
 
 export function getFinalists() {
   return 2;
@@ -30,8 +45,8 @@ export class Season {
   }
 
   public whichEpisodeType(players: number) {
-    if (players == 3) {
-      return BigBrotherVanilla; // TODO: big brother finale
+    if (players === 3) {
+      return BigBrotherFinale;
     }
     return BigBrotherVanilla;
   }

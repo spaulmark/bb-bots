@@ -8,7 +8,7 @@ import { Houseguest } from "../houseguest";
 import _ from "lodash";
 import { MutableGameState, getById, nonEvictedHouseguests } from "../gameState";
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
-import { getJurors, getFinalists } from "../season";
+import { getJuryCount, getFinalists } from "../season";
 import { castEvictionVote } from "../../utils/aiUtils";
 
 export const BigBrotherVanilla: EpisodeType = {
@@ -251,10 +251,10 @@ function generateVetoCeremonyScene(
   return [scene, finalNominees];
 }
 
-function evictHouseguest(gameState: MutableGameState, id: number) {
+export function evictHouseguest(gameState: MutableGameState, id: number) {
   const houseguest = getById(gameState, id);
   houseguest.isEvicted = true;
-  if (gameState.remainingPlayers - getFinalists() <= getJurors()) {
+  if (gameState.remainingPlayers - getFinalists() <= getJuryCount()) {
     houseguest.isJury = true;
   }
   gameState.remainingPlayers--;
@@ -281,15 +281,22 @@ function generateEvictionScene(
   const votesFor1 = votes[1].length;
 
   let tieVote = votesFor0 === votesFor1;
+  let tieBreaker: number = 0;
   if (tieVote) {
-    votes[castEvictionVote(HoH, nominees)].push(HoH);
+    tieBreaker = castEvictionVote(HoH, nominees);
   }
-
-  const evictee = votesFor0 > votesFor1 ? nominees[0] : nominees[1];
+  let evictee: Houseguest;
+  if (votesFor0 > votesFor1) {
+    evictee = nominees[0];
+  } else if (votesFor1 > votesFor0) {
+    evictee = nominees[1];
+  } else {
+    evictee = nominees[tieBreaker];
+  }
   evictHouseguest(newGameState, evictee.id);
 
   const moreVotes = votesFor0 > votesFor1 ? votesFor0 : votesFor1;
-  const lessVotes = votesFor0 < votesFor1 ? votesFor0 : votesFor1;
+  const lessVotes = moreVotes === votesFor1 ? votesFor0 : votesFor1;
 
   const isUnanimous = votesFor0 === 0 || votesFor1 === 0;
   const voteCountText = isUnanimous
@@ -312,6 +319,20 @@ function generateEvictionScene(
             <Portraits houseguests={votes[1]} centered={true} />
           </div>
         </div>
+        {tieVote && (
+          <div>
+            <p style={{ textAlign: "center" }}>
+              <b> We have a tie.</b> <br />
+              {`${
+                HoH.name
+              }, as current Head of Household, you must cast the sole vote to evict.`}
+            </p>
+            <Portraits houseguests={[HoH]} centered={true} />
+            <p style={{ textAlign: "center" }}>
+              <b>I vote to evict {`${evictee.name}.`}</b>
+            </p>
+          </div>
+        )}
 
         <Portraits
           houseguests={[

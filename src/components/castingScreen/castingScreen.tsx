@@ -104,7 +104,7 @@ export class CastingScreen extends React.Component<
           <div className="level-item">
             <button
               className="button is-primary"
-              disabled={this.state.players.length === 0}
+              disabled={this.state.players.length < 3}
               onClick={this.submit}
             >
               Submit

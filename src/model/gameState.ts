@@ -1,7 +1,7 @@
 import { Houseguest } from "./houseguest";
 import { PlayerProfile } from "./playerProfile";
 import _ from "lodash";
-import { newRelationshipMap, BbRandomGenerator, rng } from "../utils";
+import { newRelationshipMap, rng } from "../utils";
 
 export function getById(gameState: GameState, id: number): Houseguest {
   const result = gameState.houseguests.find(hg => hg.id === id);
@@ -30,6 +30,9 @@ export function randomPlayer(
 export function nonEvictedHouseguests(gameState: GameState) {
   return gameState.houseguests.filter(hg => !hg.isEvicted);
 }
+export function getJurors(gameState: GameState) {
+  return gameState.houseguests.filter(hg => hg.isJury);
+}
 
 export function calculatePopularity(gameState: GameState, targetId: number) {
   let sum = 0;
@@ -56,6 +59,7 @@ export class GameState {
       Object.assign(this, init);
     } else {
       const profiles = init as PlayerProfile[];
+      this.remainingPlayers = profiles.length;
       const blankRelationshipMap = newRelationshipMap(profiles.length);
       let id = 0;
       profiles.forEach(profile => {

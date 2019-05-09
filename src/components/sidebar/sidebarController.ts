@@ -1,5 +1,5 @@
 import { Subject, Subscription, BehaviorSubject } from "rxjs";
-import { Episode, Scene, GameState, nonEvictedHouseguests } from "../../model";
+import { Episode, Scene, nonEvictedHouseguests } from "../../model";
 import { Sidebar } from "./sidebar";
 import { Season } from "../../model/season";
 import { mainContentStream$ } from "../mainPage/mainContentArea";
@@ -65,7 +65,7 @@ export class SidebarController {
       const currentGameState = lastEpisode.gameState;
       const newPlayerCount = nonEvictedHouseguests(lastEpisode.gameState)
         .length;
-      const nextEpisodeType = this.season.whichEpisodeType(nextPhase);
+      const nextEpisodeType = this.season.whichEpisodeType(newPlayerCount);
       if (this.season.canEpisodeExist(newPlayerCount)) {
         newEpisode(
           this.season.renderEpisode(currentGameState, nextEpisodeType)
