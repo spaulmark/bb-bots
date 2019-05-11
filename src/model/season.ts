@@ -36,10 +36,6 @@ export class Season {
   // In the future, this would all be customizable,
   // and not just all big brother episodes by default.
 
-  public canEpisodeExist(players: number) {
-    return BigBrotherVanilla.canPlayWith(players);
-  }
-
   public renderEpisode(gameState: GameState, type: EpisodeType): Episode {
     return this.factory.nextEpisode(gameState, type);
   }

@@ -69,6 +69,7 @@ function finalHohCompScene(
       </div>
     )
   };
+  newGameState.phase++;
   return [new GameState(newGameState), scene, finalHoH];
 }
 

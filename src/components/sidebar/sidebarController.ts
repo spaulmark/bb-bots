@@ -13,7 +13,7 @@ export function newEpisode(episode: Episode | null) {
   episodes$.next(episode);
 }
 
-export function switchEpisodeRelative(n: number) {
+export function switchSceneRelative(n: number) {
   switchEpisode$.next(n);
 }
 
@@ -21,6 +21,9 @@ interface IndexedScene {
   scene: Scene;
   index: number;
 }
+
+const LEFT = 37;
+const RIGHT = 39;
 
 export class SidebarController {
   private view: Sidebar;
@@ -58,7 +61,7 @@ export class SidebarController {
     this.view.setState({ selectedScene: id });
   }
 
-  private switchSceneRelative(delta: number) {
+  private switchSceneRelative = (delta: number) => {
     const selectedScene = this.view.state.selectedScene;
     const renderedScenes = this.scenes.length;
     const targetScene = selectedScene + delta;
@@ -66,22 +69,30 @@ export class SidebarController {
     if (targetScene < 0) {
       return;
     }
+    const lastEpisode = this.view.state.episodes[
+      this.view.state.episodes.length - 1
+    ];
+
     if (targetScene < renderedScenes) {
       this.switchToScene(targetScene);
     } else if (targetScene === renderedScenes) {
-      const lastEpisode = this.view.state.episodes[
-        this.view.state.episodes.length - 1
-      ];
       const currentGameState = lastEpisode.gameState;
       const newPlayerCount = nonEvictedHouseguests(lastEpisode.gameState)
         .length;
       const nextEpisodeType = this.season.whichEpisodeType(newPlayerCount);
-      if (this.season.canEpisodeExist(newPlayerCount)) {
+      if (newPlayerCount > 2) {
         newEpisode(
           this.season.renderEpisode(currentGameState, nextEpisodeType)
         );
         this.switchSceneRelative(1);
       }
+    }
+  };
+  public handleKeyDown(event: any) {
+    if (event.keyCode === LEFT) {
+      switchSceneRelative(-1);
+    } else if (event.keyCode === RIGHT) {
+      switchSceneRelative(1);
     }
   }
 
@@ -91,6 +102,7 @@ export class SidebarController {
       this.scenes = [];
     } else {
       const newState = { ...this.view.state };
+      // starts at -1: prevent OBOE
       const latestIndex =
         this.scenes.length === 0
           ? -1

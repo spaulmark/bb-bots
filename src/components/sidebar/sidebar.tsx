@@ -2,7 +2,6 @@ import React from "react";
 import { Episode, Scene, GameState } from "../../model";
 import { SidebarController, newEpisode } from "./sidebarController";
 import { PregameEpisode } from "../../model/episode/pregameEpisode";
-
 interface SidebarState {
   episodes: Episode[];
   selectedScene: number;
@@ -15,6 +14,10 @@ export class Sidebar extends React.Component<{}, SidebarState> {
     this.controller = new SidebarController(this);
     this.state = { episodes: [], selectedScene: 0 };
     newEpisode(new PregameEpisode(new GameState([])));
+  }
+
+  public componentDidMount() {
+    document.addEventListener("keydown", this.controller.handleKeyDown);
   }
 
   public componentWillUnmount() {
