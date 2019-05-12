@@ -29,9 +29,9 @@ function backgroundColor(props: IPortraitProps) {
   return props.isEvicted
     ? undefined
     : rgbToHex(
-        maxPopularity.r + percent * (minPopularity.r - maxPopularity.r),
-        maxPopularity.g + percent * (minPopularity.g - maxPopularity.g),
-        maxPopularity.b + percent * (minPopularity.b - maxPopularity.b)
+        minPopularity.r + percent * (maxPopularity.r - minPopularity.r),
+        minPopularity.g + percent * (maxPopularity.g - minPopularity.g),
+        minPopularity.b + percent * (maxPopularity.b - minPopularity.b)
       );
 }
 
@@ -47,19 +47,27 @@ export function houseguestToPortrait(
       isEvicted={houseguest.isEvicted}
       key={key}
       popularity={houseguest.popularity}
-      subtitle={`${houseguest.hohWins ? `♔ ${houseguest.hohWins}` : ""}${
-        houseguest.povWins && houseguest.hohWins
-          ? `|🛇 ${houseguest.povWins}`
-          : houseguest.povWins
-          ? `🛇 ${houseguest.povWins}`
+      subtitle={`${
+        houseguest.popularity && !houseguest.isEvicted
+          ? Math.round(houseguest.popularity * 100) + "%\n"
           : ""
-      }${
-        (houseguest.hohWins || houseguest.povWins) && houseguest.nominations
-          ? "|"
-          : ""
-      }${houseguest.nominations ? `✘ ${houseguest.nominations}` : ""}`}
+      } ${compWins()}`}
     />
   );
+
+  function compWins(): string {
+    return `${houseguest.hohWins ? `♔ ${houseguest.hohWins}` : ""}${
+      houseguest.povWins && houseguest.hohWins
+        ? `|🛇 ${houseguest.povWins}`
+        : houseguest.povWins
+        ? `🛇 ${houseguest.povWins}`
+        : ""
+    }${
+      (houseguest.hohWins || houseguest.povWins) && houseguest.nominations
+        ? "|"
+        : ""
+    }${houseguest.nominations ? `✘ ${houseguest.nominations}` : ""}`;
+  }
 }
 
 export const HouseguestPortrait = (props: IPortraitProps) => {

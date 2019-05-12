@@ -6,6 +6,12 @@ import { hashcode } from "./hashcode";
 export class BbRandomGenerator {
   private rng: prand.RandomGenerator;
 
+  public randomFloat(): number {
+    let result: number;
+    [result, this.rng] = this.rng.next();
+    return result / 2147483647.0;
+  }
+
   public randomInt(a: number, b: number): number {
     let result: number;
     [result, this.rng] = prand.uniformIntDistribution(a, b, this.rng);

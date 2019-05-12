@@ -88,6 +88,7 @@ export class SidebarController {
       }
     }
   };
+
   public handleKeyDown(event: any) {
     if (event.keyCode === LEFT) {
       switchSceneRelative(-1);

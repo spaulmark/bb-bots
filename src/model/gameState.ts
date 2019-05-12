@@ -34,16 +34,35 @@ export function getJurors(gameState: GameState) {
   return gameState.houseguests.filter(hg => hg.isJury);
 }
 
+function extremeValues(x: number): number {
+  const xSquared = x * x;
+  if (x >= 0) {
+    return -xSquared + 2 * x;
+  } else {
+    return xSquared + 2 * x;
+  }
+}
+
 export function calculatePopularity(gameState: GameState, targetId: number) {
   let sum = 0;
   let count = 0;
-  gameState.houseguests.forEach(houseguest => {
+  nonEvictedHouseguests(gameState).forEach(houseguest => {
     if (houseguest.id !== targetId) {
       count++;
       sum += houseguest.relationships[targetId];
+      // const opinion = houseguest.relationships[targetId];
+      // if (opinion > 0.5) {
+      //   sum++;
+      // } else if (opinion > 0) {
+      //   sum += 0.5;
+      // } else if (opinion > -0.5) {
+      //   sum -= 0.5;
+      // } else {
+      //   sum--;
+      // }
     }
   });
-  return count === 0 ? 0 : sum / count;
+  return extremeValues(count === 0 ? 0 : sum / count);
 }
 
 export class GameState {
@@ -60,8 +79,7 @@ export class GameState {
     } else {
       const profiles = init as PlayerProfile[];
       this.remainingPlayers = profiles.length;
-      const blankRelationshipMap = newRelationshipMap(profiles.length);
-      let id = 0;
+      let id = -1;
       profiles.forEach(profile => {
         // set up a houseguest
         this.houseguests.push(
@@ -74,7 +92,7 @@ export class GameState {
             hohWins: 0,
             povWins: 0,
             popularity: 0,
-            relationships: _.cloneDeep(blankRelationshipMap)
+            relationships: newRelationshipMap(profiles.length, id)
           })
         );
       });

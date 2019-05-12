@@ -363,8 +363,6 @@ export class BigBrotherVanillaEpisode implements Episode {
   readonly type = BigBrotherVanilla;
 
   public constructor(initialGameState: GameState) {
-    // TODO: if it's phase 1, run a first impressions algorithm.
-
     let currentGameState;
     let hohCompScene;
     let hoh: Houseguest;
