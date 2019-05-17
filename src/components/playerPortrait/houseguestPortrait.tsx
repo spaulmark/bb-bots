@@ -1,5 +1,6 @@
 import React from "react";
 import { ProfileHouseguest } from "../memoryWall";
+import { roundTwoDigits } from "../../utils";
 
 function componentToHex(c: any) {
   var hex = Math.round(c).toString(16);
@@ -13,17 +14,18 @@ function rgbToHex(r: any, g: any, b: any) {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-export interface IPortraitProps {
+export interface PortraitProps {
   evictedImageURL: string;
   imageURL: string;
   name: string;
   isEvicted?: boolean;
+  isJury?: boolean;
   popularity?: number;
-  subtitle?: string;
+  subtitle?: string[];
   tags?: string[];
 }
 
-function backgroundColor(props: IPortraitProps) {
+function backgroundColor(props: PortraitProps) {
   const percent = props.popularity ? (props.popularity + 1) / 2 : 0.5;
 
   return props.isEvicted
@@ -39,19 +41,22 @@ export function houseguestToPortrait(
   houseguest: ProfileHouseguest,
   key?: any
 ): JSX.Element {
+  let subtitle = [];
+  if (houseguest.popularity && !houseguest.isEvicted) {
+    subtitle.push(roundTwoDigits(houseguest.popularity) + "%");
+  }
+  subtitle.push(`${compWins()}`);
+  console.log(houseguest.isJury);
   return (
     <HouseguestPortrait
       evictedImageURL={houseguest.evictedImageURL}
       imageURL={houseguest.imageURL}
       name={houseguest.name}
       isEvicted={houseguest.isEvicted}
+      isJury={houseguest.isJury}
       key={key}
       popularity={houseguest.popularity}
-      subtitle={`${
-        houseguest.popularity && !houseguest.isEvicted
-          ? Math.round(houseguest.popularity * 100) + "%\n"
-          : ""
-      } ${compWins()}`}
+      subtitle={subtitle}
     />
   );
 
@@ -70,21 +75,37 @@ export function houseguestToPortrait(
   }
 }
 
-export const HouseguestPortrait = (props: IPortraitProps) => {
+export const HouseguestPortrait = (props: PortraitProps) => {
   const evictedImageURL =
     props.evictedImageURL === "BW" ? props.imageURL : props.evictedImageURL;
 
   const imageSrc = props.isEvicted ? evictedImageURL : props.imageURL;
 
-  const imageClass =
+  let imageClass =
     props.isEvicted && props.evictedImageURL === "BW" ? "grayscale" : "";
 
+  imageClass = props.isJury ? "sepia" : imageClass;
+
+  const realSubtitle: any[] = [];
+  let uniqueKey = -1;
+  if (props.subtitle) {
+    props.subtitle.forEach(text => {
+      realSubtitle.push(text);
+      realSubtitle.push(<br key={`break-${uniqueKey++}`} />);
+    });
+  }
+  let className = "";
+  if (props.isJury) {
+    className = "jury";
+  } else if (props.isEvicted) {
+    className = "evicted";
+  }
   return (
     <div
       style={{
         backgroundColor: backgroundColor(props)
       }}
-      className={`memory-wall-portrait ${props.isEvicted ? "evicted" : ""}`}
+      className={`memory-wall-portrait ${className}`}
     >
       <img
         className={imageClass}
@@ -95,7 +116,7 @@ export const HouseguestPortrait = (props: IPortraitProps) => {
       {props.name}
       <br />
       {!!props.subtitle && (
-        <small className="portrait-history">{props.subtitle}</small>
+        <small className="portrait-history">{realSubtitle}</small>
       )}
     </div>
   );

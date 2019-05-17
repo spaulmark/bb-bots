@@ -8,7 +8,9 @@ export interface IMemoryWallProps {
 
 export interface ProfileHouseguest extends PlayerProfile {
   isEvicted?: boolean;
+  isJury?: boolean;
   popularity?: number;
+  deltaPopularity?: number;
   hohWins?: number;
   povWins?: number;
   nominations?: number;
@@ -26,10 +28,14 @@ function getPlayers(props: IMemoryWallProps): any {
     <div
       style={{
         margin: "auto",
-        maxWidth: 700
+        maxWidth: props.houseguests.length < 30 ? 700 : -1
       }}
     >
-      <Portraits houseguests={props.houseguests} centered={true} />
+      <Portraits
+        houseguests={props.houseguests}
+        centered={true}
+        detailed={true}
+      />
     </div>
   );
 }

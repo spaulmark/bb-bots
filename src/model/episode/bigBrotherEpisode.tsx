@@ -3,13 +3,21 @@ import { Episode, GameState, randomPlayer } from "..";
 import { MemoryWall } from "../../components/memoryWall";
 import { NextEpisodeButton } from "../../components/buttons/nextEpisodeButton";
 import { EpisodeType, Scene } from "./episodes";
-import { rng } from "../../utils";
 import { Houseguest } from "../houseguest";
-import _ from "lodash";
-import { MutableGameState, getById, nonEvictedHouseguests } from "../gameState";
+import _, { shuffle } from "lodash";
+import {
+  MutableGameState,
+  getById,
+  nonEvictedHouseguests,
+  exclude
+} from "../gameState";
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
 import { getJuryCount, getFinalists } from "../season";
-import { castEvictionVote } from "../../utils/aiUtils";
+import {
+  castEvictionVote,
+  nominatePlayer,
+  useGoldenVeto
+} from "../../utils/aiUtils";
 
 export const BigBrotherVanilla: EpisodeType = {
   canPlayWith: (n: number) => {
@@ -64,11 +72,20 @@ function generateNomCeremonyScene(
   HoH: Houseguest
 ): [GameState, Scene, Houseguest[]] {
   const newGameState = new MutableGameState(initialGameState);
+  const options = nonEvictedHouseguests(newGameState);
+  const nom1 = getById(
+    newGameState,
+    nominatePlayer(HoH, exclude(options, [HoH]), newGameState)
+  );
+  const nom2 = getById(
+    newGameState,
+    nominatePlayer(HoH, exclude(options, [HoH, nom1]), newGameState)
+  );
 
-  const nom1 = randomPlayer(newGameState.houseguests, [HoH]);
-  const nom2 = randomPlayer(newGameState.houseguests, [HoH, nom1]);
   nom1.nominations++;
   nom2.nominations++;
+
+  const noms = shuffle([nom1, nom2]);
 
   const scene = {
     title: "Nomination Ceremony",
@@ -83,13 +100,13 @@ function generateNomCeremonyScene(
         <b>
           My first nominee is...
           <br />
-          <Portrait houseguest={nom1} />
+          <Portrait houseguest={noms[0]} />
           <br />
           My second nominee is...
           <br />
-          <Portrait houseguest={nom2} />
-          {`I have nominated you, ${nom1.name} and you, ${
-            nom2.name
+          <Portrait houseguest={noms[1]} />
+          {`I have nominated you, ${noms[0].name} and you, ${
+            noms[1].name
           } for eviction.`}
           <br />
         </b>
@@ -182,22 +199,17 @@ function generateVetoCeremonyScene(
   initialNominees[1] = getById(initialGameState, initialNominees[1].id);
   HoH = getById(initialGameState, HoH.id);
 
-  if (
+  povTarget = useGoldenVeto(povWinner, initialNominees, initialGameState);
+
+  if (!povTarget) {
+    descisionText += "... not to use the power of veto.";
+  } else if (
     povWinner.id == initialNominees[0].id ||
     povWinner.id == initialNominees[1].id
   ) {
-    povTarget = povWinner;
     descisionText += "...to use the power of veto on myself.";
   } else {
-    const save = rng().randomInt(0, 7);
-    if (save < 2 && nonEvictedHouseguests(initialGameState).length !== 4) {
-      povTarget = initialNominees[save];
-      descisionText += `...to use the power of veto on ${
-        initialNominees[save].name
-      }.`;
-    } else {
-      descisionText += "... not to use the power of veto.";
-    }
+    descisionText += `...to use the power of veto on ${povTarget.name}.`;
   }
 
   let replacementSpeech = "";
@@ -209,12 +221,19 @@ function generateVetoCeremonyScene(
       HoH.name
     }, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
     const replacementNom = {
-      ...randomPlayer(initialGameState.houseguests, [
-        HoH,
-        initialNominees[0],
-        initialNominees[1],
-        povWinner
-      ])
+      ...getById(
+        initialGameState,
+        nominatePlayer(
+          HoH,
+          exclude(initialGameState.houseguests, [
+            HoH,
+            initialNominees[0],
+            initialNominees[1],
+            povWinner
+          ]),
+          initialGameState
+        )
+      )
     };
     replacementNom.nominations++;
     finalNominees.push(replacementNom);
@@ -266,7 +285,7 @@ function generateEvictionScene(
   nominees: Houseguest[]
 ): [GameState, Scene] {
   const newGameState = new MutableGameState(initialGameState);
-
+  nominees = shuffle(nominees);
   const votes: Array<Houseguest[]> = [[], []];
   nonEvictedHouseguests(newGameState).forEach(hg => {
     if (
@@ -274,7 +293,7 @@ function generateEvictionScene(
       hg.id !== nominees[1].id &&
       hg.id !== HoH.id
     ) {
-      votes[castEvictionVote(hg, nominees)].push(hg);
+      votes[castEvictionVote(hg, nominees, newGameState)].push(hg);
     }
   });
   const votesFor0 = votes[0].length;
@@ -283,7 +302,7 @@ function generateEvictionScene(
   let tieVote = votesFor0 === votesFor1;
   let tieBreaker: number = 0;
   if (tieVote) {
-    tieBreaker = castEvictionVote(HoH, nominees);
+    tieBreaker = castEvictionVote(HoH, nominees, newGameState);
   }
   let evictee: Houseguest;
   if (votesFor0 > votesFor1) {
@@ -295,13 +314,10 @@ function generateEvictionScene(
   }
   evictHouseguest(newGameState, evictee.id);
 
-  const moreVotes = votesFor0 > votesFor1 ? votesFor0 : votesFor1;
-  const lessVotes = moreVotes === votesFor1 ? votesFor0 : votesFor1;
-
   const isUnanimous = votesFor0 === 0 || votesFor1 === 0;
   const voteCountText = isUnanimous
     ? "By a unanimous vote..."
-    : `By a vote of ${moreVotes} to ${lessVotes}...`;
+    : `By a vote of ${votesFor0} to ${votesFor1}...`;
 
   const scene = {
     title: "Live Eviction",

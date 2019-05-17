@@ -12,7 +12,7 @@ import {
   getJurors
 } from "../gameState";
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
-import { castEvictionVote } from "../../utils/aiUtils";
+import { castEvictionVote, castJuryVote } from "../../utils/aiUtils";
 import { evictHouseguest } from "./bigBrotherEpisode";
 import { rng } from "../../utils";
 
@@ -81,7 +81,7 @@ function finalEvictionScene(
   const nominees = nonEvictedHouseguests(newGameState).filter(
     hg => hg.id !== HoH.id
   );
-  const vote = castEvictionVote(HoH, nominees);
+  const vote = castEvictionVote(HoH, nominees, newGameState);
   const evictee = nominees[vote];
   evictHouseguest(newGameState, evictee.id);
   const scene: Scene = {
@@ -114,8 +114,8 @@ function juryVoteScene(initialGameState: GameState): Scene {
   const jurors = getJurors(initialGameState);
   const finalists = nonEvictedHouseguests(initialGameState);
   let voteCount = [0, 0];
-  const votes = jurors.map(() => {
-    const result = rng().randomInt(0, 1);
+  const votes = jurors.map(juror => {
+    const result = castJuryVote(juror, finalists);
     voteCount[result]++;
     return result;
   });

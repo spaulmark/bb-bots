@@ -1,7 +1,7 @@
 import prand from "pure-rand";
 import { cast$ } from "../components/mainPage/mainPageController";
 import { BehaviorSubject } from "rxjs";
-import { hashcode } from "./hashcode";
+import { hashcode } from "./utilities";
 
 export class BbRandomGenerator {
   private rng: prand.RandomGenerator;

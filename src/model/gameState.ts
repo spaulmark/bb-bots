@@ -2,6 +2,7 @@ import { Houseguest } from "./houseguest";
 import { PlayerProfile } from "./playerProfile";
 import _ from "lodash";
 import { newRelationshipMap, rng } from "../utils";
+import { getJuryCount, getFinalists } from "./season";
 
 export function getById(gameState: GameState, id: number): Houseguest {
   const result = gameState.houseguests.find(hg => hg.id === id);
@@ -11,6 +12,11 @@ export function getById(gameState: GameState, id: number): Houseguest {
   return result;
 }
 
+export function exclude(inclusions: Houseguest[], exclusions: Houseguest[]) {
+  const excludedIds = exclusions.map(hg => hg.id);
+  return inclusions.filter(hg => !excludedIds.includes(hg.id) && !hg.isEvicted);
+}
+
 export function randomPlayer(
   inclusions: Houseguest[],
   exclusions: Houseguest[] = []
@@ -18,10 +24,7 @@ export function randomPlayer(
   if (inclusions.length === 0) {
     throw new Error("Tried to get a random player from a list of 0 players.");
   }
-  const excludedIds = exclusions.map(hg => hg.id);
-  const options = inclusions.filter(
-    hg => !excludedIds.includes(hg.id) && !hg.isEvicted
-  );
+  const options = exclude(inclusions, exclusions);
   const choice = rng().randomInt(0, options.length - 1);
 
   return options[choice];
@@ -34,6 +37,10 @@ export function getJurors(gameState: GameState) {
   return gameState.houseguests.filter(hg => hg.isJury);
 }
 
+export function inJury(gameState: GameState): Boolean {
+  return gameState.remainingPlayers - getFinalists() <= getJuryCount();
+}
+
 function extremeValues(x: number): number {
   const xSquared = x * x;
   if (x >= 0) {
@@ -43,23 +50,14 @@ function extremeValues(x: number): number {
   }
 }
 
-export function calculatePopularity(gameState: GameState, targetId: number) {
+export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
   let sum = 0;
   let count = 0;
-  nonEvictedHouseguests(gameState).forEach(houseguest => {
+  const targetId = hero.id;
+  house.forEach(houseguest => {
     if (houseguest.id !== targetId) {
       count++;
       sum += houseguest.relationships[targetId];
-      // const opinion = houseguest.relationships[targetId];
-      // if (opinion > 0.5) {
-      //   sum++;
-      // } else if (opinion > 0) {
-      //   sum += 0.5;
-      // } else if (opinion > -0.5) {
-      //   sum -= 0.5;
-      // } else {
-      //   sum--;
-      // }
     }
   });
   return extremeValues(count === 0 ? 0 : sum / count);
@@ -81,7 +79,6 @@ export class GameState {
       this.remainingPlayers = profiles.length;
       let id = -1;
       profiles.forEach(profile => {
-        // set up a houseguest
         this.houseguests.push(
           new Houseguest({
             ...profile,
@@ -92,6 +89,7 @@ export class GameState {
             hohWins: 0,
             povWins: 0,
             popularity: 0,
+            deltaPopularity: 0,
             relationships: newRelationshipMap(profiles.length, id)
           })
         );

@@ -11,7 +11,7 @@ import {
   BigBrotherVanillaEpisode
 } from "./bigBrotherEpisode";
 import { BigBrotherFinale, BigBrotherFinaleEpisode } from "./bigBrotherFinale";
-import { rng } from "../../utils";
+import { rng, roundTwoDigits } from "../../utils";
 
 function firstImpressions(houseguests: Houseguest[]) {
   for (let i = 0; i < houseguests.length; i++) {
@@ -29,7 +29,10 @@ function firstImpressions(houseguests: Houseguest[]) {
 function updatePopularity(gameState: GameState) {
   const houseguests = nonEvictedHouseguests(gameState);
   houseguests.forEach(hg => {
-    hg.popularity = calculatePopularity(gameState, hg.id);
+    const result = calculatePopularity(hg, nonEvictedHouseguests(gameState));
+    hg.deltaPopularity =
+      (roundTwoDigits(result) - roundTwoDigits(hg.popularity)) / 100;
+    hg.popularity = result;
   });
 }
 
@@ -39,8 +42,8 @@ export class EpisodeFactory {
     if (gameState.phase === 0) {
       firstImpressions(newState.houseguests);
     }
-    // calculate popularity
     updatePopularity(newState);
+
     const finalState = new GameState(newState);
     switch (episodeType) {
       case BigBrotherVanilla:

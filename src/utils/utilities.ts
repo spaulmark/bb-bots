@@ -12,3 +12,7 @@ export function hashcode(string: string): number {
   }
   return hash;
 }
+
+export function roundTwoDigits(number: number) {
+  return Math.round(number * 100);
+}

@@ -8,6 +8,10 @@
   filter: grayscale(100%);
 }
 
+.sepia {
+  filter: sepia(100%);
+}
+
 .portrait-history {
   font-weight: 100;
   font-size: small;
@@ -38,6 +42,13 @@
     font-weight: 100;
     color: grey;
     background-color: #111111;
+  }
+
+  &.jury {
+    font-weight: 100;
+    color: #c3ae88;
+    background-color: #5d5340;
+    filter: brightness(0.6);
   }
 }
 .x-button {
