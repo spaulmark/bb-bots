@@ -4,7 +4,8 @@ import {
   GameState,
   getJurors,
   inJury,
-  calculatePopularity
+  calculatePopularity,
+  exclude
 } from "../model";
 import { rng } from ".";
 import {
@@ -60,13 +61,20 @@ function lowestScore(
   return lowestIndex;
 }
 
-function juryEquity(hero: Houseguest, gameState: GameState): number {
+function juryEquity(
+  hero: Houseguest,
+  villain: Houseguest,
+  gameState: GameState
+): number {
   const jurors = getJurors(gameState);
   const juryWeight = jurors.length / getJuryCount();
   const houseWeight = (getJuryCount() - jurors.length) / getJuryCount();
   // TODO: linear weighting please - strength of relationship doesn't really matter on jury anymore, now does it?
-  const juryScore = calculatePopularity(hero, jurors);
-  const houseScore = hero.popularity;
+  const juryScore = calculatePopularity(villain, jurors);
+  const houseScore = calculatePopularity(
+    villain,
+    exclude(nonEvictedHouseguests(gameState), [hero])
+  );
   return juryScore * juryWeight + houseScore * houseWeight;
 }
 
@@ -75,12 +83,13 @@ function threatScore(
   villain: Houseguest,
   gameState: GameState
 ): number {
-  // return the index of the biggest threat to my game out of the options.
+  // A higher number represents a higher threat score.
+  // A negative number represents someone who is not a threat.
   const remaining = gameState.remainingPlayers - getFinalists();
   const juryThreatWeight = inJury(gameState)
     ? getJurors(gameState).length + 1 / finalJurySize()
     : 0;
-  const jEquity = juryEquity(villain, gameState);
+  const jEquity = juryEquity(hero, villain, gameState);
   // TODO: make it so popular people don't appreciate jury threat level as much until the end
   return (
     juryThreatWeight * jEquity +
@@ -120,8 +129,16 @@ export function useGoldenVeto(
   if (hero.id == nominees[0].id || hero.id == nominees[1].id) {
     povTarget = hero;
   } else {
-    const save = rng().randomInt(0, 7);
-    if (save < 2 && nonEvictedHouseguests(gameState).length !== 4) {
+    // incredibly basic veto logic - veto people that are not a threat to me.
+    // probably results in the veto almost always getting used, but can result
+    // in some fun situations where someone keeps saving an unpopular friend.
+    let save = -1;
+    const threat0 = threatScore(hero, nominees[0], gameState);
+    const threat1 = threatScore(hero, nominees[1], gameState);
+    if (threat0 < 0 || threat1 < 0) {
+      save = Math.min(threat0, threat1) === threat0 ? 0 : 1;
+    }
+    if (nonEvictedHouseguests(gameState).length !== 4 && save > -1) {
       povTarget = nominees[save];
     }
   }

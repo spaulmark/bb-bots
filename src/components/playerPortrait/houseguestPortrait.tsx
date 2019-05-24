@@ -46,7 +46,6 @@ export function houseguestToPortrait(
     subtitle.push(roundTwoDigits(houseguest.popularity) + "%");
   }
   subtitle.push(`${compWins()}`);
-  console.log(houseguest.isJury);
   return (
     <HouseguestPortrait
       evictedImageURL={houseguest.evictedImageURL}
