@@ -68,7 +68,7 @@ function juryEquity(
 ): number {
   const jurors = getJurors(gameState);
   const juryWeight = jurors.length / getJuryCount();
-  const houseWeight = (getJuryCount() - jurors.length) / getJuryCount();
+  const houseWeight = 1 - juryWeight;
   // TODO: linear weighting please - strength of relationship doesn't really matter on jury anymore, now does it?
   const juryScore = calculatePopularity(villain, jurors);
   const houseScore = calculatePopularity(
