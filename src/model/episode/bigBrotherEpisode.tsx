@@ -12,7 +12,7 @@ import {
   exclude
 } from "../gameState";
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
-import { getJuryCount, getFinalists } from "../season";
+import { finalJurySize, getFinalists } from "../season";
 import {
   castEvictionVote,
   nominatePlayer,
@@ -273,7 +273,7 @@ function generateVetoCeremonyScene(
 export function evictHouseguest(gameState: MutableGameState, id: number) {
   const houseguest = getById(gameState, id);
   houseguest.isEvicted = true;
-  if (gameState.remainingPlayers - getFinalists() <= getJuryCount()) {
+  if (gameState.remainingPlayers - getFinalists() <= finalJurySize()) {
     houseguest.isJury = true;
   }
   gameState.remainingPlayers--;

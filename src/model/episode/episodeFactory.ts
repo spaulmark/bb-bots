@@ -2,7 +2,8 @@ import {
   GameState,
   MutableGameState,
   calculatePopularity,
-  nonEvictedHouseguests
+  nonEvictedHouseguests,
+  getById
 } from "../gameState";
 import { Episode, Houseguest } from "..";
 import { EpisodeType } from "./episodes";
@@ -12,6 +13,8 @@ import {
 } from "./bigBrotherEpisode";
 import { BigBrotherFinale, BigBrotherFinaleEpisode } from "./bigBrotherFinale";
 import { rng, roundTwoDigits } from "../../utils";
+import { PriorityQueue } from "../../utils/heap";
+import { juryEquity } from "../../utils/aiUtils";
 
 function firstImpressions(houseguests: Houseguest[]) {
   for (let i = 0; i < houseguests.length; i++) {
@@ -28,12 +31,19 @@ function firstImpressions(houseguests: Houseguest[]) {
 
 function updatePopularity(gameState: GameState) {
   const houseguests = nonEvictedHouseguests(gameState);
+  const heap = new PriorityQueue((a, b) => a[1] > b[1]);
   houseguests.forEach(hg => {
     const result = calculatePopularity(hg, nonEvictedHouseguests(gameState));
     hg.deltaPopularity =
       (roundTwoDigits(result) - roundTwoDigits(hg.popularity)) / 100;
     hg.popularity = result;
+    heap.push([hg, juryEquity(hg, hg, gameState)]);
   });
+  const houseSize = heap.size();
+  while (heap.size() > 0) {
+    const currentHg: Houseguest = getById(gameState, heap.pop()[0].id);
+    currentHg.relativeEquity = (heap.size() + 1) / houseSize;
+  }
 }
 
 export class EpisodeFactory {

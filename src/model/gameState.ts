@@ -2,7 +2,7 @@ import { Houseguest } from "./houseguest";
 import { PlayerProfile } from "./playerProfile";
 import _ from "lodash";
 import { newRelationshipMap, rng } from "../utils";
-import { getJuryCount, getFinalists } from "./season";
+import { finalJurySize, getFinalists } from "./season";
 
 export function getById(gameState: GameState, id: number): Houseguest {
   const result = gameState.houseguests.find(hg => hg.id === id);
@@ -38,7 +38,7 @@ export function getJurors(gameState: GameState) {
 }
 
 export function inJury(gameState: GameState): Boolean {
-  return gameState.remainingPlayers - getFinalists() <= getJuryCount();
+  return gameState.remainingPlayers - getFinalists() <= finalJurySize();
 }
 
 function extremeValues(x: number): number {
@@ -89,6 +89,7 @@ export class GameState {
             hohWins: 0,
             povWins: 0,
             popularity: 0,
+            relativeEquity: 0,
             deltaPopularity: 0,
             relationships: newRelationshipMap(profiles.length, id)
           })

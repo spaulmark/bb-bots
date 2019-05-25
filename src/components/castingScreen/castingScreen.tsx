@@ -8,6 +8,7 @@ import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { newEpisode } from "../sidebar/sidebarController";
 import { PregameEpisode } from "../../model/episode/pregameEpisode";
+import { shuffle } from "lodash";
 
 interface CastingScreenState {
   players: PlayerProfile[];
@@ -88,6 +89,13 @@ export class CastingScreen extends React.Component<
     await newEpisode(new PregameEpisode(new GameState(this.state.players)));
   };
 
+  private random(amount: number) {
+    let players = this.state.players;
+    players = shuffle(players);
+    players = players.slice(0, amount);
+    this.setState({ players });
+  }
+
   public render() {
     return (
       <FileDrop onDrop={this.handleDrop}>
@@ -100,6 +108,11 @@ export class CastingScreen extends React.Component<
             >
               Delete all
             </button>
+          </div>
+          <div className="level-item">
+            <div className=" button is-primary" onClick={() => this.random(16)}>
+              Random 16
+            </div>
           </div>
           <div className="level-item">
             <button

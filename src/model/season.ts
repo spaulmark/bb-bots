@@ -5,7 +5,7 @@ import { EpisodeType, Episode } from ".";
 import { BigBrotherFinale } from "./episode/bigBrotherFinale";
 import { cast$ } from "../components/mainPage/mainPageController";
 
-export function getJuryCount() {
+export function finalJurySize() {
   return jurors;
 }
 

@@ -7,13 +7,7 @@ import {
   calculatePopularity,
   exclude
 } from "../model";
-import { rng } from ".";
-import {
-  getFinalists,
-  getJuryCount as finalJurySize,
-  getJuryCount
-} from "../model/season";
-import { threadId } from "worker_threads";
+import { finalJurySize } from "../model/season";
 
 const relationship = (hero: Houseguest, villain: Houseguest) =>
   hero.relationships[villain.id];
@@ -61,36 +55,44 @@ function lowestScore(
   return lowestIndex;
 }
 
-function juryEquity(
+export function juryEquity(
   hero: Houseguest,
   villain: Houseguest,
   gameState: GameState
 ): number {
   const jurors = getJurors(gameState);
-  const juryWeight = jurors.length / getJuryCount();
+  const juryWeight = jurors.length / finalJurySize();
   const houseWeight = 1 - juryWeight;
-  // TODO: linear weighting please - strength of relationship doesn't really matter on jury anymore, now does it?
   const juryScore = calculatePopularity(villain, jurors);
-  const houseScore = calculatePopularity(
-    villain,
-    exclude(nonEvictedHouseguests(gameState), [hero])
-  );
+  const houseScore =
+    hero.id !== villain.id
+      ? calculatePopularity(
+          villain,
+          exclude(nonEvictedHouseguests(gameState), [hero])
+        )
+      : villain.popularity;
   return juryScore * juryWeight + houseScore * houseWeight;
 }
 
+// A higher number represents a higher threat score.
+// A negative number represents someone who is not a threat.
 function threatScore(
   hero: Houseguest,
   villain: Houseguest,
   gameState: GameState
 ): number {
-  // A higher number represents a higher threat score.
-  // A negative number represents someone who is not a threat.
-  const remaining = gameState.remainingPlayers - getFinalists();
-  const juryThreatWeight = inJury(gameState)
-    ? getJurors(gameState).length + 1 / finalJurySize()
-    : 0;
+  let juryThreatWeight = 0;
+  if (inJury(gameState)) {
+    if (finalJurySize() === 1) {
+      juryThreatWeight = 1;
+    } else {
+      // fancy maths
+      const actualJurors = getJurors(gameState).length;
+      juryThreatWeight =
+        -(actualJurors / (finalJurySize() - 1)) * hero.relativeEquity + 1;
+    }
+  }
   const jEquity = juryEquity(hero, villain, gameState);
-  // TODO: make it so popular people don't appreciate jury threat level as much until the end
   return (
     juryThreatWeight * jEquity +
     (1 - juryThreatWeight) * -relationship(hero, villain)
