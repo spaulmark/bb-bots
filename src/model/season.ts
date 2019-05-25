@@ -10,15 +10,14 @@ export function finalJurySize() {
 }
 
 let jurors = 7;
-const maxJurors = 7;
 const sub = cast$.subscribe({
   next: newCast => {
     let players = newCast.length;
+    players = Math.round(players * 0.55);
     if (players % 2 === 0) {
       players--;
     }
-    players -= 2;
-    jurors = Math.min(players, maxJurors);
+    jurors = players;
   }
 });
 
