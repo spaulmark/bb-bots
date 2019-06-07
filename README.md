@@ -25,5 +25,6 @@ https://spaulmark.github.io/bb-bots/
 * [ ] Click a player portrait to view his/her relationships
 * [ ] Graph tab: view a sociogram of the current gamestate
 * [ ] Endgame stats screen & voting table
+* [ ] Editable player names
 * [ ] Actually making it look nice
 * [ ] Custom season builder, customize the twists in the game (Double Eviction, Double HoH, etc.)
