@@ -83,14 +83,13 @@ function threatScore(
 ): number {
   let juryThreatWeight = 0;
   if (inJury(gameState)) {
-    if (finalJurySize() === 1) {
-      juryThreatWeight = 1;
-    } else {
-      // fancy maths
-      const actualJurors = getJurors(gameState).length;
-      juryThreatWeight =
-        -(actualJurors / (finalJurySize() - 1)) * hero.relativeEquity + 1;
-    }
+    // TODO: hit list logic will automatically take shield logic into account,
+    // since the popular people won't have as big a jury hit list.
+    const actualJurors = getJurors(gameState).length;
+    const multiplier =
+      gameState.remainingPlayers === 3 ? 1 : hero.relativeEquity;
+    juryThreatWeight =
+      1 - ((finalJurySize() - actualJurors - 1) / finalJurySize()) * multiplier;
   }
   const jEquity = juryEquity(hero, villain, gameState);
   return (

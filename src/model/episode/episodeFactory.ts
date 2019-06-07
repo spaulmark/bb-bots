@@ -53,7 +53,6 @@ export class EpisodeFactory {
       firstImpressions(newState.houseguests);
     }
     updatePopularity(newState);
-
     const finalState = new GameState(newState);
     switch (episodeType) {
       case BigBrotherVanilla:
