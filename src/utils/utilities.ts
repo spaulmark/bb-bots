@@ -13,6 +13,21 @@ export function hashcode(string: string): number {
   return hash;
 }
 
-export function roundTwoDigits(number: number) {
+export function roundTwoDigits(number: number | undefined) {
+  if (!number) {
+    return 0;
+  }
   return Math.round(number * 100);
+}
+
+export function extremeValues(x: number | undefined): number {
+  if (!x) {
+    return 0;
+  }
+  const xSquared = x * x;
+  if (x >= 0) {
+    return -xSquared + 2 * x;
+  } else {
+    return xSquared + 2 * x;
+  }
 }

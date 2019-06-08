@@ -14,7 +14,6 @@ import {
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
 import { castEvictionVote, castJuryVote } from "../../utils/aiUtils";
 import { evictHouseguest } from "./bigBrotherEpisode";
-import { rng } from "../../utils";
 
 export const BigBrotherFinale: EpisodeType = {
   canPlayWith: (n: number) => n === 3,
@@ -186,7 +185,6 @@ export class BigBrotherFinaleEpisode implements Episode {
     voteScene = juryVoteScene(currentGameState);
     this.scenes.push(voteScene);
 
-    // declare the winner! And don't add a next episode button.
     this.gameState = currentGameState;
   }
 }

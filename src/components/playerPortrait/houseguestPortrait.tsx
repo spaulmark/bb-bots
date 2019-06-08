@@ -1,122 +1,106 @@
 import React from "react";
-import { ProfileHouseguest } from "../memoryWall";
-import { roundTwoDigits } from "../../utils";
+import {
+  PortraitProps,
+  PortraitState,
+  backgroundColor
+} from "./houseguestPortraitController";
+import { Subscription } from "rxjs";
+import {
+  selectedPlayer$,
+  SelectedPlayerData,
+  selectPlayer
+} from "./selectedPortrait";
+import { isNullOrUndefined } from "util";
 
-function componentToHex(c: any) {
-  var hex = Math.round(c).toString(16);
-  return hex.length == 1 ? "0" + hex : hex;
-}
+export class HouseguestPortrait extends React.Component<
+  PortraitProps,
+  PortraitState
+> {
+  private sub: Subscription | null = null;
 
-const maxPopularity = { r: 137, g: 252, b: 137 };
-const minPopularity = { r: 252, g: 137, b: 137 };
-
-function rgbToHex(r: any, g: any, b: any) {
-  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-export interface PortraitProps {
-  evictedImageURL: string;
-  imageURL: string;
-  name: string;
-  isEvicted?: boolean;
-  isJury?: boolean;
-  popularity?: number;
-  subtitle?: string[];
-  tags?: string[];
-}
-
-function backgroundColor(props: PortraitProps) {
-  const percent = props.popularity ? (props.popularity + 1) / 2 : 0.5;
-
-  return props.isEvicted
-    ? undefined
-    : rgbToHex(
-        minPopularity.r + percent * (maxPopularity.r - minPopularity.r),
-        minPopularity.g + percent * (maxPopularity.g - minPopularity.g),
-        minPopularity.b + percent * (maxPopularity.b - minPopularity.b)
-      );
-}
-
-export function houseguestToPortrait(
-  houseguest: ProfileHouseguest,
-  key?: any
-): JSX.Element {
-  let subtitle = [];
-  if (houseguest.popularity && !houseguest.isEvicted) {
-    subtitle.push(roundTwoDigits(houseguest.popularity) + "%");
+  public constructor(props: PortraitProps) {
+    super(props);
+    this.state = { popularity: this.props.popularity };
   }
-  subtitle.push(`${compWins()}`);
-  return (
-    <HouseguestPortrait
-      evictedImageURL={houseguest.evictedImageURL}
-      imageURL={houseguest.imageURL}
-      name={houseguest.name}
-      isEvicted={houseguest.isEvicted}
-      isJury={houseguest.isJury}
-      key={key}
-      popularity={houseguest.popularity}
-      subtitle={subtitle}
-    />
-  );
 
-  function compWins(): string {
-    return `${houseguest.hohWins ? `♔ ${houseguest.hohWins}` : ""}${
-      houseguest.povWins && houseguest.hohWins
-        ? `|🛇 ${houseguest.povWins}`
-        : houseguest.povWins
-        ? `🛇 ${houseguest.povWins}`
-        : ""
-    }${
-      (houseguest.hohWins || houseguest.povWins) && houseguest.nominations
-        ? "|"
-        : ""
-    }${houseguest.nominations ? `✘ ${houseguest.nominations}` : ""}`;
-  }
-}
-
-export const HouseguestPortrait = (props: PortraitProps) => {
-  const evictedImageURL =
-    props.evictedImageURL === "BW" ? props.imageURL : props.evictedImageURL;
-
-  const imageSrc = props.isEvicted ? evictedImageURL : props.imageURL;
-
-  let imageClass =
-    props.isEvicted && props.evictedImageURL === "BW" ? "grayscale" : "";
-
-  imageClass = props.isJury ? "sepia" : imageClass;
-
-  const realSubtitle: any[] = [];
-  let uniqueKey = -1;
-  if (props.subtitle) {
-    props.subtitle.forEach(text => {
-      realSubtitle.push(text);
-      realSubtitle.push(<br key={`break-${uniqueKey++}`} />);
+  public componentDidMount() {
+    if (isNullOrUndefined(this.props.id)) {
+      return;
+    }
+    this.sub = selectedPlayer$.subscribe({
+      next: (data: SelectedPlayerData | null) => {
+        if (!data) {
+          this.setState({ popularity: this.props.popularity });
+        } else {
+          data = data as SelectedPlayerData;
+          if (data.id !== this.props.id) {
+            this.setState({ popularity: data.relationships[this.props.id!] });
+          } else {
+            this.setState({ popularity: 2 });
+          }
+        }
+      }
     });
   }
-  let className = "";
-  if (props.isJury) {
-    className = "jury";
-  } else if (props.isEvicted) {
-    className = "evicted";
+
+  public componentWillUnmount() {
+    if (this.sub) {
+      this.sub.unsubscribe();
+      this.sub = null;
+    }
   }
-  return (
-    <div
-      style={{
-        backgroundColor: backgroundColor(props)
-      }}
-      className={`memory-wall-portrait ${className}`}
-    >
-      <img
-        className={imageClass}
-        src={imageSrc}
-        style={{ width: 100, height: 100 }}
-      />
-      <br />
-      {props.name}
-      <br />
-      {!!props.subtitle && (
-        <small className="portrait-history">{realSubtitle}</small>
-      )}
-    </div>
-  );
-};
+
+  private onClick(): void {
+    if (isNullOrUndefined(this.props.id) || !this.props.relationships) {
+      return;
+    }
+    const data = { id: this.props.id, relationships: this.props.relationships };
+    selectPlayer(data);
+  }
+
+  public render() {
+    const props = this.props;
+    const evictedImageURL =
+      props.evictedImageURL === "BW" ? props.imageURL : props.evictedImageURL;
+    const imageSrc = props.isEvicted ? evictedImageURL : props.imageURL;
+    const imageClass = getImageClass(props);
+    let subtitle: any[] = [];
+    if (props.generateSubtitle) {
+      subtitle = props.generateSubtitle(this.props, this.state);
+    }
+    let className = "";
+    if (props.isJury) {
+      className = "jury";
+    } else if (props.isEvicted) {
+      className = "evicted";
+    }
+    return (
+      <div
+        onClick={() => this.onClick()}
+        style={{
+          backgroundColor: backgroundColor(props, this.state.popularity)
+        }}
+        className={`memory-wall-portrait ${className}`}
+      >
+        <img
+          className={imageClass}
+          src={imageSrc}
+          style={{ width: 100, height: 100 }}
+        />
+        <br />
+        {props.name}
+        <br />
+        {!!props.generateSubtitle && (
+          <small className="portrait-history">{subtitle}</small>
+        )}
+      </div>
+    );
+  }
+}
+
+function getImageClass(props: PortraitProps) {
+  let imageClass =
+    props.isEvicted && props.evictedImageURL === "BW" ? "grayscale" : "";
+  imageClass = props.isJury ? "sepia" : imageClass;
+  return imageClass;
+}

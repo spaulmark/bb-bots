@@ -2,11 +2,14 @@ import React from "react";
 import "./memoryWall.scss";
 import { PlayerProfile } from "../../model";
 import { Portraits } from "../playerPortrait/portraits";
+import { RelationshipMap } from "../../utils";
 export interface IMemoryWallProps {
   readonly houseguests: ProfileHouseguest[];
 }
 
 export interface ProfileHouseguest extends PlayerProfile {
+  id?: number;
+  relationships?: RelationshipMap;
   isEvicted?: boolean;
   isJury?: boolean;
   popularity?: number;

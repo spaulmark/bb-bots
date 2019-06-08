@@ -41,15 +41,6 @@ export function inJury(gameState: GameState): Boolean {
   return gameState.remainingPlayers - getFinalists() <= finalJurySize();
 }
 
-function extremeValues(x: number): number {
-  const xSquared = x * x;
-  if (x >= 0) {
-    return -xSquared + 2 * x;
-  } else {
-    return xSquared + 2 * x;
-  }
-}
-
 export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
   let sum = 0;
   let count = 0;
@@ -60,7 +51,7 @@ export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
       sum += houseguest.relationships[targetId];
     }
   });
-  return extremeValues(count === 0 ? 0 : sum / count);
+  return count === 0 ? 0 : sum / count;
 }
 
 export class GameState {
