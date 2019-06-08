@@ -23,7 +23,7 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 
 ## Features ##
 * [ ] Cast X random players button on setup screen
-* [ ] Click a player portrait to view his/her relationships
+* [x] Click a player to view his/her relationships
 * [ ] Graph tab: view a sociogram of the current gamestate
 * [ ] Endgame stats screen & voting table
 * [ ] Editable player names
