@@ -14,10 +14,10 @@ import {
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
 import { finalJurySize, getFinalists } from "../season";
 import {
-  castEvictionVote,
   nominatePlayer,
-  useGoldenVeto
-} from "../../utils/aiUtils";
+  useGoldenVeto,
+  castEvictionVote
+} from "../../utils/ai/aiApi";
 
 export const BigBrotherVanilla: EpisodeType = {
   canPlayWith: (n: number) => {

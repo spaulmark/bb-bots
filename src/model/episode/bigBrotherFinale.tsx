@@ -12,8 +12,8 @@ import {
   getJurors
 } from "../gameState";
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
-import { castEvictionVote, castJuryVote } from "../../utils/aiUtils";
 import { evictHouseguest } from "./bigBrotherEpisode";
+import { castEvictionVote, castJuryVote } from "../../utils/ai/aiApi";
 
 export const BigBrotherFinale: EpisodeType = {
   canPlayWith: (n: number) => n === 3,

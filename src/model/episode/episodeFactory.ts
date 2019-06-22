@@ -14,7 +14,7 @@ import {
 import { BigBrotherFinale, BigBrotherFinaleEpisode } from "./bigBrotherFinale";
 import { rng, roundTwoDigits } from "../../utils";
 import { PriorityQueue } from "../../utils/heap";
-import { juryEquity } from "../../utils/aiUtils";
+import { juryEquity } from "../../utils/ai/aiUtils";
 
 function firstImpressions(houseguests: Houseguest[]) {
   for (let i = 0; i < houseguests.length; i++) {
