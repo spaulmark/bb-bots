@@ -1,5 +1,14 @@
-import { Houseguest, GameState, nonEvictedHouseguests } from "../../model";
+import {
+  Houseguest,
+  GameState,
+  nonEvictedHouseguests,
+  inJury
+} from "../../model";
 import { threatScore, highestScore, favouriteIndex } from "./aiUtils";
+import {
+  classifyRelationship,
+  RelationshipType as Relationship
+} from "./classifyRelationship";
 
 export function castEvictionVote(
   hero: Houseguest,
@@ -7,9 +16,40 @@ export function castEvictionVote(
   gameState: GameState
 ): number {
   // Return the index of the eviction target.
+  const nom0 = nominees[0];
+  const nom1 = nominees[1];
+  const r0 = classifyRelationship(
+    hero.popularity,
+    nom0.popularity,
+    hero.relationships[nom0.id]
+  );
+  const r1 = classifyRelationship(
+    hero.popularity,
+    nom1.popularity,
+    hero.relationships[nom1.id]
+  );
+  // TODO: better jury logic
+  if (inJury(gameState)) {
+    const callback = (hero: Houseguest, villain: Houseguest) =>
+      threatScore(hero, villain, gameState);
+    return highestScore(hero, nominees, callback);
+  }
+
+  if (r0 === Relationship.Enemy && r1 === Relationship.Enemy) {
+    return nom0.popularity > nom1.popularity ? 0 : 1;
+  } else if (
+    (r0 === Relationship.Enemy && r1 !== Relationship.Enemy) ||
+    (r0 !== Relationship.Friend && r1 === Relationship.Friend)
+  ) {
+    return 0;
+  } else if (
+    (r1 === Relationship.Enemy && r0 !== Relationship.Enemy) ||
+    (r1 !== Relationship.Friend && r0 === Relationship.Friend)
+  ) {
+    return 1;
+  }
   const callback = (hero: Houseguest, villain: Houseguest) =>
     threatScore(hero, villain, gameState);
-
   return highestScore(hero, nominees, callback);
 }
 
