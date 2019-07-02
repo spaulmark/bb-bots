@@ -4,6 +4,7 @@ import _ from "lodash";
 import { newRelationshipMap, rng } from "../utils";
 import { finalJurySize, getFinalists } from "./season";
 
+// TODO: might want to make houseguests a dictionary. {id: houseguest}
 export function getById(gameState: GameState, id: number): Houseguest {
   const result = gameState.houseguests.find(hg => hg.id === id);
   if (!result) {
@@ -80,9 +81,9 @@ export class GameState {
             hohWins: 0,
             povWins: 0,
             popularity: 0,
-            relativeEquity: 0,
             deltaPopularity: 0,
-            relationships: newRelationshipMap(profiles.length, id)
+            relationships: newRelationshipMap(profiles.length, id),
+            superiors: new Set<number>()
           })
         );
       });

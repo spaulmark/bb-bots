@@ -18,6 +18,12 @@ export class BbRandomGenerator {
     return result;
   }
 
+  public flipCoin(): boolean {
+    let result: number;
+    [result, this.rng] = this.rng.next();
+    return result % 2 === 0;
+  }
+
   public seed(seed: number) {
     this.rng = prand.xorshift128plus(seed);
   }

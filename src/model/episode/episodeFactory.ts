@@ -3,7 +3,8 @@ import {
   MutableGameState,
   calculatePopularity,
   nonEvictedHouseguests,
-  getById
+  inJury,
+  getJurors
 } from "../gameState";
 import { Episode, Houseguest } from "..";
 import { EpisodeType } from "./episodes";
@@ -13,8 +14,7 @@ import {
 } from "./bigBrotherEpisode";
 import { BigBrotherFinale, BigBrotherFinaleEpisode } from "./bigBrotherFinale";
 import { rng, roundTwoDigits } from "../../utils";
-import { PriorityQueue } from "../../utils/heap";
-import { juryEquity } from "../../utils/ai/aiUtils";
+import { doesHeroWinTheFinale as heroWinsTheFinale } from "../../utils/ai/aiUtils";
 
 function firstImpressions(houseguests: Houseguest[]) {
   for (let i = 0; i < houseguests.length; i++) {
@@ -29,21 +29,28 @@ function firstImpressions(houseguests: Houseguest[]) {
   }
 }
 
+function generatePowerRankings(houseguests: Houseguest[]) {
+  for (let i = 0; i < houseguests.length; i++) {
+    const hero = houseguests[i];
+    for (let j = i + 1; j < houseguests.length; j++) {
+      const villain = houseguests[j];
+      if (heroWinsTheFinale({ hero, villain }, houseguests)) {
+        villain.superiors.add(hero.id);
+      } else {
+        hero.superiors.add(villain.id);
+      }
+    }
+  }
+}
+
 function updatePopularity(gameState: GameState) {
   const houseguests = nonEvictedHouseguests(gameState);
-  const heap = new PriorityQueue((a, b) => a[1] > b[1]);
   houseguests.forEach(hg => {
     const result = calculatePopularity(hg, nonEvictedHouseguests(gameState));
     hg.deltaPopularity =
       (roundTwoDigits(result) - roundTwoDigits(hg.popularity)) / 100;
     hg.popularity = result;
-    heap.push([hg, juryEquity(hg, hg, gameState)]);
   });
-  const houseSize = heap.size();
-  while (heap.size() > 0) {
-    const currentHg: Houseguest = getById(gameState, heap.pop()[0].id);
-    currentHg.relativeEquity = (heap.size() + 1) / houseSize;
-  }
 }
 
 export class EpisodeFactory {
@@ -51,6 +58,10 @@ export class EpisodeFactory {
     let newState = new MutableGameState(gameState);
     if (gameState.phase === 0) {
       firstImpressions(newState.houseguests);
+    }
+    // If jury starts this episode, populate superior/inferior data.
+    if (inJury(gameState) && getJurors(gameState).length === 0) {
+      generatePowerRankings(nonEvictedHouseguests(newState));
     }
     updatePopularity(newState);
     const finalState = new GameState(newState);
