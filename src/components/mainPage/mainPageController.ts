@@ -5,17 +5,17 @@ import { BehaviorSubject } from "rxjs";
 export const cast$ = new BehaviorSubject<PlayerProfile[]>([]);
 
 export function updateCast(newCast: PlayerProfile[]) {
-  cast$.next(newCast);
+    cast$.next(newCast);
 }
 
 export function getCast(): PlayerProfile[] {
-  return cast$.value;
+    return cast$.value;
 }
 
 export class MainPageController {
-  private view: MainPage = new MainPage({ controller: this });
+    private view: MainPage = new MainPage({ controller: this });
 
-  public inject(page: MainPage) {
-    this.view = page;
-  }
+    public inject(page: MainPage) {
+        this.view = page;
+    }
 }

@@ -6,28 +6,28 @@ import { MainContentArea } from "./mainContentArea";
 import { MainPageController } from "./mainPageController";
 
 interface MainPageProps {
-  controller: MainPageController;
+    controller: MainPageController;
 }
 
 export class MainPage extends React.Component<MainPageProps, any> {
-  public constructor(props: MainPageProps) {
-    super(props);
-    props.controller.inject(this);
-  }
+    public constructor(props: MainPageProps) {
+        super(props);
+        props.controller.inject(this);
+    }
 
-  public render() {
-    return (
-      <div className="main-page">
-        <Topbar />
-        <div className="columns">
-          <div className="column is-narrow">
-            <Sidebar />
-          </div>
-          <div className="column">
-            <MainContentArea />
-          </div>
-        </div>
-      </div>
-    );
-  }
+    public render() {
+        return (
+            <div className="main-page">
+                <Topbar />
+                <div className="columns">
+                    <div className="column is-narrow">
+                        <Sidebar />
+                    </div>
+                    <div className="column">
+                        <MainContentArea />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 }

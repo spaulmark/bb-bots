@@ -5,70 +5,70 @@
 @import "../../../node_modules/bulma/sass/elements/button.sass";
 
 .grayscale {
-  filter: grayscale(100%);
+    filter: grayscale(100%);
 }
 
 .sepia {
-  filter: sepia(100%);
+    filter: sepia(100%);
 }
 
 .portrait-history {
-  font-weight: 100;
-  font-size: small;
+    font-weight: 100;
+    font-size: small;
 }
 
 .edit-portrait {
-  padding: 5px;
-  margin: 5px;
-  border: 1px solid grey;
-  color: black;
-  border-radius: 5px;
-  font-weight: 600;
-  max-width: 7rem;
-  word-wrap: break-word;
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid grey;
+    color: black;
+    border-radius: 5px;
+    font-weight: 600;
+    max-width: 7rem;
+    word-wrap: break-word;
 }
 
 .memory-wall-portrait {
-  margin: 5px;
-  border: 1px solid grey;
-  color: black;
-  border-radius: 5px;
-  text-align: center;
-  font-weight: 600;
-  max-width: 7rem;
-  word-wrap: break-word;
+    margin: 5px;
+    border: 1px solid grey;
+    color: black;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 600;
+    max-width: 7rem;
+    word-wrap: break-word;
 
-  &.evicted {
-    font-weight: 100;
-    color: grey;
-    background-color: #111111;
-  }
+    &.evicted {
+        font-weight: 100;
+        color: grey;
+        background-color: #111111;
+    }
 
-  &.jury {
-    font-weight: 100;
-    color: #c3ae88;
-    background-color: #5d5340;
-    filter: brightness(0.6);
-  }
+    &.jury {
+        font-weight: 100;
+        color: #c3ae88;
+        background-color: #5d5340;
+        filter: brightness(0.6);
+    }
 }
 .x-button {
-  color: #df4040;
+    color: #df4040;
 }
 
 .x-button:hover {
-  color: red;
-  background-color: #ffe1ea;
+    color: red;
+    background-color: #ffe1ea;
 }
 
 .x-button:active {
-  color: #ff7133;
-  background-color: #ffd8c7;
+    color: #ff7133;
+    background-color: #ffd8c7;
 }
 .noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

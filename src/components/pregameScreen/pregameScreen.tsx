@@ -5,23 +5,23 @@ import { NextEpisodeButton } from "../buttons/nextEpisodeButton";
 import { EditCastLink } from "../topbar/topBar";
 
 interface PregameScreenProps {
-  cast: PlayerProfile[];
+    cast: PlayerProfile[];
 }
 
 export function PregameScreen(props: PregameScreenProps): JSX.Element {
-  if (props.cast.length === 0) {
+    if (props.cast.length === 0) {
+        return (
+            <div>
+                Cast is empty. <EditCastLink />
+            </div>
+        );
+    }
     return (
-      <div>
-        Cast is empty. <EditCastLink />
-      </div>
+        <div>
+            Welcome to Big Brother!
+            <MemoryWall houseguests={props.cast} />
+            <NextEpisodeButton />
+        </div>
     );
-  }
-  return (
-    <div>
-      Welcome to Big Brother!
-      <MemoryWall houseguests={props.cast} />
-      <NextEpisodeButton />
-    </div>
-  );
-  // TODO: Custom season title.
+    // TODO: Custom season title.
 }

@@ -4,13 +4,7 @@ import { GameState } from "..";
 import { MemoryWall } from "../../components/memoryWall";
 import { NextEpisodeButton } from "../../components/buttons/nextEpisodeButton";
 import { Houseguest } from "../houseguest";
-import {
-    nonEvictedHouseguests,
-    MutableGameState,
-    randomPlayer,
-    getById,
-    getJurors
-} from "../gameState";
+import { nonEvictedHouseguests, MutableGameState, randomPlayer, getById, getJurors } from "../gameState";
 import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
 import { evictHouseguest } from "./bigBrotherEpisode";
 import { castEvictionVote, castJuryVote } from "../../utils/ai/aiApi";
@@ -49,15 +43,11 @@ function finalHohCompScene(initialGameState: GameState): [GameState, Scene, Hous
                     <b>{`${skillWinner.name} has won the skill competition!`}</b>
                 </p>
                 <hr />
-                <p>{`${enduranceWinner.name} and ${
-                    skillWinner.name
-                } compete in the quiz competition.`}</p>
+                <p>{`${enduranceWinner.name} and ${skillWinner.name} compete in the quiz competition.`}</p>
                 <Portraits houseguests={[enduranceWinner, skillWinner]} />
                 <Portrait houseguest={finalHoH} />
                 <p>
-                    <b>{`Congratulations ${
-                        finalHoH.name
-                    }, you are the final Head of Household!`}</b>
+                    <b>{`Congratulations ${finalHoH.name}, you are the final Head of Household!`}</b>
                 </p>
                 <NextEpisodeButton />
             </div>
@@ -79,17 +69,15 @@ function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [Game
         render: (
             <div>
                 <div style={{ textAlign: "center" }}>
-                    {`As the final HoH of the season, ${
-                        HoH.name
-                    }, you may now cast the sole vote to evict.`}
+                    {`As the final HoH of the season, ${HoH.name}, you may now cast the sole vote to evict.`}
                     <Portrait houseguest={HoH} centered={true} />
                     <b>
                         <p>{`I vote to evict ${evictee.name}.`}</p>
                     </b>
                     <Portraits houseguests={nominees} centered={true} />
                     <p>
-                        It's official... {evictee.name}, you will be the final person leaving the
-                        Big Brother House.
+                        It's official... {evictee.name}, you will be the final person leaving the Big Brother
+                        House.
                     </p>
                 </div>
                 <NextEpisodeButton />
