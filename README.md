@@ -29,3 +29,9 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 * [ ] Editable player names
 * [ ] Actually making it look nice
 * [ ] Custom season builder, customize the twists in the game (Double Eviction, Double HoH, etc.)
+
+## Running Locally ## 
+```
+npm install
+npm start
+```
