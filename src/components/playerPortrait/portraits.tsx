@@ -2,9 +2,14 @@ import { ProfileHouseguest } from "../memoryWall";
 import React from "react";
 import { houseguestToPortrait, memoryWallPortrait } from "./houseguestToPortrait";
 
+let key = -1;
+
 export function Portrait(props: { houseguest: ProfileHouseguest; centered?: boolean }): JSX.Element {
     return (
-        <div className={`columns is-gapless is-mobile is-multiline ${props.centered && "is-centered"}`}>
+        <div
+            key={key++}
+            className={`columns is-gapless is-mobile is-multiline ${props.centered && "is-centered"}`}
+        >
             {houseguestToPortrait(props.houseguest)}
         </div>
     );
@@ -15,7 +20,6 @@ export function Portraits(props: {
     centered?: boolean;
     detailed?: boolean;
 }): JSX.Element {
-    let key = 0;
     const rows: JSX.Element[] = [];
     if (!props.houseguests || props.houseguests.length === 0) {
         return <div />;
