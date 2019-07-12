@@ -55,7 +55,7 @@ export class EpisodeFactory {
         if (gameState.phase === 0) {
             firstImpressions(newState.houseguests);
         }
-        // If jury starts this episode, populate superior/inferior data.
+        // If jury starts this episode, populate superior/inferior data. In the future, every jury ep. (dynamic rels)
         if (inJury(gameState) && getJurors(gameState).length === 0) {
             generatePowerRankings(nonEvictedHouseguests(newState));
         }

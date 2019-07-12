@@ -1,7 +1,6 @@
 import React from "react";
-import { PortraitProps, PortraitState } from "./houseguestPortraitController";
 import { roundTwoDigits } from "../../utils";
-import { ProfileHouseguest } from "../memoryWall";
+import { ProfileHouseguest, PortraitProps, PortraitState } from "../memoryWall";
 
 function _generateSubtitle(houseguest: PortraitProps, state: PortraitState, detailed: boolean): any[] {
     let key = 0;
@@ -9,7 +8,7 @@ function _generateSubtitle(houseguest: PortraitProps, state: PortraitState, deta
     if (popularity && (popularity > 1 || popularity < -1)) {
         popularity = houseguest.popularity;
     }
-    const subtitle: any[] = [];
+    let subtitle: any[] = [];
     if (popularity && !houseguest.isEvicted) {
         let popularitySubtitle = `${roundTwoDigits(popularity)}%`;
         const deltaPop = getDeltaPopularity(houseguest, popularity);
@@ -19,8 +18,16 @@ function _generateSubtitle(houseguest: PortraitProps, state: PortraitState, deta
         }
         subtitle.push(<div key={key++}>{popularitySubtitle}</div>);
     }
-    subtitle.push(<div key={key++}>{`${compWins(houseguest)}`}</div>);
-    if (!`${compWins(houseguest)}`) subtitle.push(<br key={key++} />);
+    if (compWins(houseguest)) {
+        subtitle.push(<div key={key++}>{`${compWins(houseguest)}`}</div>);
+    } else {
+        subtitle.push(<br key={key++} style={{ lineHeight: 1 }} />);
+    }
+    if (!houseguest.isEvicted && state.titles.length !== 0) {
+        subtitle = subtitle.concat(state.titles.map(txt => <div key={key++}>{txt}</div>));
+    } else {
+        subtitle.push(<br key={key++} style={{ lineHeight: 1 }} />);
+    }
     return subtitle;
 }
 

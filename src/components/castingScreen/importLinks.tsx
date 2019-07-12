@@ -32,8 +32,7 @@ export class ImportLinks extends React.Component<ImportLinksProps, any> {
             if (name) {
                 profiles.push({
                     name,
-                    imageURL: line,
-                    evictedImageURL: "BW"
+                    imageURL: line
                 });
             }
         });

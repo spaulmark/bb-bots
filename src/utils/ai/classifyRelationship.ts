@@ -5,6 +5,8 @@ export enum RelationshipType {
     Enemy = "ENEMY"
 }
 
+export const RelationshipTypeToSymbol = { FRIEND: "♥", ENEMY: "💔", PAWN: "PAWN", QUEEN: "QUEEN" };
+
 export function classifyRelationship(
     heroPopularity: number,
     villainPopularity: number,

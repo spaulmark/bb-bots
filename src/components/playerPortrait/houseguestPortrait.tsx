@@ -1,15 +1,41 @@
 import React from "react";
-import { PortraitProps, PortraitState, backgroundColor } from "./houseguestPortraitController";
+import { backgroundColor } from "./houseguestPortraitController";
 import { Subscription } from "rxjs";
 import { selectedPlayer$, SelectedPlayerData, selectPlayer } from "./selectedPortrait";
 import { isNullOrUndefined } from "util";
+import { RelationshipMap } from "../../utils";
+import {
+    classifyRelationship,
+    RelationshipTypeToSymbol,
+    RelationshipType
+} from "../../utils/ai/classifyRelationship";
+import _ from "lodash";
 
+export interface PortraitProps {
+    imageURL: string;
+    name: string;
+    id?: number;
+    relationships?: RelationshipMap;
+    isEvicted?: boolean;
+    isJury?: boolean;
+    popularity?: number;
+    deltaPopularity?: number;
+    generateSubtitle?: (props: PortraitProps, state: PortraitState) => string[];
+    tags?: string[];
+    superiors?: Set<number>;
+}
+
+export interface PortraitState {
+    popularity?: number;
+    titles: string[];
+}
 export class HouseguestPortrait extends React.Component<PortraitProps, PortraitState> {
     private sub: Subscription | null = null;
+    private readonly defaultState = { popularity: this.props.popularity, titles: [] };
 
     public constructor(props: PortraitProps) {
         super(props);
-        this.state = { popularity: this.props.popularity };
+        this.state = this.defaultState;
     }
 
     public componentDidMount() {
@@ -19,17 +45,34 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         this.sub = selectedPlayer$.subscribe({
             next: (data: SelectedPlayerData | null) => {
                 if (!data) {
-                    this.setState({ popularity: this.props.popularity });
+                    this.setState(this.defaultState);
                 } else {
                     data = data as SelectedPlayerData;
                     if (data.id !== this.props.id) {
                         this.setState({ popularity: data.relationships[this.props.id!] });
+                        const titles = this.generateTitles(data);
+                        this.setState({ titles });
                     } else {
-                        this.setState({ popularity: 2 });
+                        this.setState({ popularity: 2, titles: [] });
                     }
                 }
             }
         });
+    }
+
+    private generateTitles(data: SelectedPlayerData): string[] {
+        const titles: string[] = [];
+        titles.push(
+            RelationshipTypeToSymbol[
+                classifyRelationship(
+                    this.props.popularity || 0,
+                    data.popularity,
+                    this.props.relationships![data.id]
+                )
+            ]
+        );
+        const id = this.props.id || -1;
+        return titles;
     }
 
     public componentWillUnmount() {
@@ -43,14 +86,18 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         if (isNullOrUndefined(this.props.id) || !this.props.relationships) {
             return;
         }
-        const data = { id: this.props.id, relationships: this.props.relationships };
+        const data = {
+            id: this.props.id,
+            relationships: this.props.relationships,
+            isEvicted: !!this.props.isEvicted,
+            popularity: this.props.popularity || 0,
+            superiors: this.props.superiors
+        };
         selectPlayer(data);
     }
 
     public render() {
         const props = this.props;
-        const evictedImageURL = props.evictedImageURL === "BW" ? props.imageURL : props.evictedImageURL;
-        const imageSrc = props.isEvicted ? evictedImageURL : props.imageURL;
         const imageClass = getImageClass(props);
         let subtitle: any[] = [];
         if (props.generateSubtitle) {
@@ -70,7 +117,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
                 }}
                 className={`memory-wall-portrait ${className}`}
             >
-                <img className={imageClass} src={imageSrc} style={{ width: 100, height: 100 }} />
+                <img className={imageClass} src={props.imageURL} style={{ width: 100, height: 100 }} />
                 <br />
                 {props.name}
                 <br />
@@ -81,7 +128,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
 }
 
 function getImageClass(props: PortraitProps) {
-    let imageClass = props.isEvicted && props.evictedImageURL === "BW" ? "grayscale" : "";
+    let imageClass = props.isEvicted ? "grayscale" : "";
     imageClass = props.isJury ? "sepia" : imageClass;
     return imageClass;
 }

@@ -6,7 +6,10 @@ export const selectedPlayer$ = new BehaviorSubject<SelectedPlayerData | null>(nu
 
 export interface SelectedPlayerData {
     id: number;
+    popularity: number;
     relationships: RelationshipMap;
+    isEvicted: boolean;
+    superiors?: Set<number>;
 }
 
 export function getSelectedPlayer() {

@@ -1,25 +1,9 @@
-import { extremeValues, RelationshipMap } from "../../utils";
+import { extremeValues } from "../../utils";
+import { PortraitProps } from "../memoryWall";
 
 const maxPopularity = { r: 137, g: 252, b: 137 };
 const minPopularity = { r: 252, g: 137, b: 137 };
 const selectedColor = { r: 51, g: 255, b: 249 };
-export interface PortraitProps {
-    evictedImageURL: string;
-    imageURL: string;
-    name: string;
-    id?: number;
-    relationships?: RelationshipMap;
-    isEvicted?: boolean;
-    isJury?: boolean;
-    popularity?: number;
-    deltaPopularity?: number;
-    generateSubtitle?: (props: PortraitProps, state: PortraitState) => string[];
-    tags?: string[];
-}
-
-export interface PortraitState {
-    popularity?: number;
-}
 
 function componentToHex(c: any) {
     var hex = Math.round(c).toString(16);

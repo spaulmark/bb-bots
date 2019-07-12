@@ -31,8 +31,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
             const newState = { ...this.state };
             newState.players[i] = new PlayerProfile({
                 imageURL: newState.players[i].imageURL,
-                name: newName,
-                evictedImageURL: newState.players[i].evictedImageURL
+                name: newName
             });
             this.setState(newState);
         };
@@ -48,11 +47,9 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
 
     private getFiles() {
         const players = this.state.players;
-
         if (!players) {
             return;
         }
-
         const rows: JSX.Element[] = [];
         let i = 0;
         players.forEach(player =>
@@ -66,7 +63,6 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                 />
             )
         );
-
         return <div className="columns is-gapless is-mobile is-multiline is-centered">{rows}</div>;
     }
 
@@ -113,31 +109,34 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                         </button>
                     </div>
                 </div>
-                ~ Drop images ~{this.getFiles()}
+                ~ Drop images ~<input type="file" multiple onChange={this.handleUpload} />
+                {this.getFiles()}
             </FileDrop>
         );
     }
 
+    private handleUpload = (event: any) => {
+        this.handleFiles(event.target.files);
+    };
+
     private handleDrop = (files: FileList | null, event: React.DragEvent) => {
+        if (!files) return;
+        this.handleFiles(files);
+    };
+
+    private handleFiles(files: FileList) {
         const newState = { ...this.state };
-
-        if (!files) {
-            return;
-        }
-
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-
             if (file.type.match(/image\/*/)) {
                 newState.players.push(
                     new PlayerProfile({
                         name: file.name.substr(0, file.name.lastIndexOf(".")) || file.name,
-                        imageURL: URL.createObjectURL(file),
-                        evictedImageURL: "BW"
+                        imageURL: URL.createObjectURL(file)
                     })
                 );
             }
         }
         this.setState(newState);
-    };
+    }
 }
