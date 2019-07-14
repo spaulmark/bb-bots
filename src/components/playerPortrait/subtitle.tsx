@@ -3,7 +3,6 @@ import { roundTwoDigits } from "../../utils";
 import { ProfileHouseguest, PortraitProps, PortraitState } from "../memoryWall";
 
 function _generateSubtitle(houseguest: PortraitProps, state: PortraitState, detailed: boolean): any[] {
-    // TODO: titles aren't done at all. We need the (<3 6 | </3 7) subtitle to be made still.
     let key = 0;
     let popularity = state.popularity;
     if (popularity && (popularity > 1 || popularity < -1)) {

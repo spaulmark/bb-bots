@@ -66,7 +66,6 @@ export function hitList(hero: Houseguest, options: Houseguest[], gameState: Game
     // jury logic is not affected by someone who is dead center in power rankings
     if (inJury(gameState) && hero.superiors.size * 2 !== gameState.remainingPlayers - 1) {
         // TODO: logic to take into account that i never want to eliminate the last guy i can actually beat
-        // TODO: this is also just massively not working: no HoHs are obeying this hit list logic TM
         if (hero.superiors.size * 2 < gameState.remainingPlayers - 1) {
             result = options.filter(hg => !hero.superiors.has(hg.id));
         } else {
