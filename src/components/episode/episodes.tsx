@@ -1,5 +1,5 @@
 import React from "react";
-import { GameState } from "../gameState";
+import { GameState } from "../../model/gameState";
 
 export interface Episode {
     readonly scenes: Scene[];

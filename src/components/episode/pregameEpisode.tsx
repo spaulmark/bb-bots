@@ -1,7 +1,7 @@
 import React from "react";
 import { Episode, EpisodeType } from "./episodes";
-import { PregameScreen } from "../../components/pregameScreen/pregameScreen";
-import { GameState } from "../gameState";
+import { PregameScreen } from "../pregameScreen/pregameScreen";
+import { GameState } from "../../model/gameState";
 
 const PregameEpisodeType: EpisodeType = {
     eliminates: 0,

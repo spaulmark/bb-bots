@@ -1,11 +1,17 @@
 import React from "react";
 import { EpisodeType, Episode, Scene } from "./episodes";
-import { GameState } from "..";
-import { MemoryWall } from "../../components/memoryWall";
-import { NextEpisodeButton } from "../../components/buttons/nextEpisodeButton";
-import { Houseguest } from "../houseguest";
-import { nonEvictedHouseguests, MutableGameState, randomPlayer, getById, getJurors } from "../gameState";
-import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
+import { GameState } from "../../model";
+import { MemoryWall } from "../memoryWall";
+import { NextEpisodeButton } from "../buttons/nextEpisodeButton";
+import { Houseguest } from "../../model/houseguest";
+import {
+    nonEvictedHouseguests,
+    MutableGameState,
+    randomPlayer,
+    getById,
+    getJurors
+} from "../../model/gameState";
+import { Portraits, Portrait } from "../playerPortrait/portraits";
 import { evictHouseguest } from "./bigBrotherEpisode";
 import { castEvictionVote, castJuryVote } from "../../utils/ai/aiApi";
 

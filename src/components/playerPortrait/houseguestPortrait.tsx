@@ -1,15 +1,9 @@
 import React from "react";
-import { backgroundColor } from "./houseguestPortraitController";
-import { Subscription } from "rxjs";
-import { selectedPlayer$, SelectedPlayerData, selectPlayer } from "./selectedPortrait";
+import { selectPlayer } from "./selectedPortrait";
 import { isNullOrUndefined } from "util";
 import { RelationshipMap } from "../../utils";
-import {
-    classifyRelationship,
-    RelationshipTypeToSymbol,
-    RelationshipType as Relationship
-} from "../../utils/ai/classifyRelationship";
 import _ from "lodash";
+import { HouseguestPortraitController } from "./houseguestPortraitController";
 
 export interface PortraitProps {
     imageURL: string;
@@ -28,74 +22,25 @@ export interface PortraitProps {
 
 export interface PortraitState {
     popularity?: number;
-    titles: string[];
 }
 export class HouseguestPortrait extends React.Component<PortraitProps, PortraitState> {
-    private sub: Subscription | null = null;
-    private readonly defaultState = { popularity: this.props.popularity, titles: [] };
+    private controller: HouseguestPortraitController;
 
     public constructor(props: PortraitProps) {
         super(props);
-        this.state = this.defaultState;
+        this.controller = new HouseguestPortraitController(this);
+        this.state = this.controller.defaultState;
     }
 
     public componentDidMount() {
         if (isNullOrUndefined(this.props.id)) {
             return;
         }
-        this.sub = selectedPlayer$.subscribe({
-            next: (data: SelectedPlayerData | null) => {
-                if (!data) {
-                    this.setState(this.defaultState);
-                } else {
-                    data = data as SelectedPlayerData;
-                    if (data.id !== this.props.id) {
-                        this.setState({ popularity: data.relationships[this.props.id!] });
-                        const titles = this.generateTitles(data);
-                        this.setState({ titles });
-                    } else {
-                        const titles = this.friendEnemyCountTitle();
-                        this.setState({ popularity: 2, titles });
-                    }
-                }
-            }
-        });
-    }
-
-    private friendEnemyCountTitle(): string[] {
-        const titles: string[] = [];
-        const count = this.props.getFriendEnemyCount
-            ? this.props.getFriendEnemyCount()
-            : { friends: 0, enemies: 0 };
-        titles.push(
-            `${count.friends} ${RelationshipTypeToSymbol[Relationship.Friend]} | ${count.enemies} ${
-                RelationshipTypeToSymbol[Relationship.Enemy]
-            }`
-        );
-        return titles;
-    }
-
-    private generateTitles(villain: SelectedPlayerData): string[] {
-        const hero = this.props;
-        const titles: string[] = [];
-        titles.push(
-            RelationshipTypeToSymbol[
-                classifyRelationship(
-                    hero.popularity || 0,
-                    villain.popularity,
-                    hero.relationships![villain.id]
-                )
-            ]
-        );
-        const id = hero.id || -1;
-        return titles;
+        this.controller.subscribe();
     }
 
     public componentWillUnmount() {
-        if (this.sub) {
-            this.sub.unsubscribe();
-            this.sub = null;
-        }
+        this.controller.unsubscribe();
     }
 
     private onClick(): void {
@@ -129,7 +74,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
             <div
                 onClick={() => this.onClick()}
                 style={{
-                    backgroundColor: backgroundColor(props, this.state.popularity)
+                    backgroundColor: this.controller.backgroundColor(props, this.state.popularity)
                 }}
                 className={`memory-wall-portrait ${className}`}
             >

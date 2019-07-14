@@ -1,13 +1,13 @@
 import React from "react";
-import { Episode, GameState, randomPlayer } from "..";
-import { MemoryWall } from "../../components/memoryWall";
-import { NextEpisodeButton } from "../../components/buttons/nextEpisodeButton";
+import { Episode, GameState, randomPlayer } from "../../model";
+import { MemoryWall } from "../memoryWall";
+import { NextEpisodeButton } from "../buttons/nextEpisodeButton";
 import { EpisodeType, Scene } from "./episodes";
-import { Houseguest } from "../houseguest";
+import { Houseguest } from "../../model/houseguest";
 import _, { shuffle } from "lodash";
-import { MutableGameState, getById, nonEvictedHouseguests, exclude, inJury } from "../gameState";
-import { Portraits, Portrait } from "../../components/playerPortrait/portraits";
-import { finalJurySize, getFinalists } from "../season";
+import { MutableGameState, getById, nonEvictedHouseguests, exclude, inJury } from "../../model/gameState";
+import { Portraits, Portrait } from "../playerPortrait/portraits";
+import { finalJurySize, getFinalists } from "../../model/season";
 import { nominatePlayer, useGoldenVeto, castEvictionVote } from "../../utils/ai/aiApi";
 
 export const BigBrotherVanilla: EpisodeType = {

@@ -5,8 +5,8 @@ import {
     nonEvictedHouseguests,
     inJury,
     getJurors
-} from "../gameState";
-import { Episode, Houseguest } from "..";
+} from "../../model/gameState";
+import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
 import { BigBrotherVanilla, BigBrotherVanillaEpisode } from "./bigBrotherEpisode";
 import { BigBrotherFinale, BigBrotherFinaleEpisode } from "./bigBrotherFinale";

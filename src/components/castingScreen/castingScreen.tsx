@@ -7,7 +7,7 @@ import { updateCast } from "../mainPage/mainPageController";
 import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { newEpisode } from "../sidebar/sidebarController";
-import { PregameEpisode } from "../../model/episode/pregameEpisode";
+import { PregameEpisode } from "../episode/pregameEpisode";
 import { shuffle } from "lodash";
 import { RandomButton } from "./randomXButton";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";

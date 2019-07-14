@@ -1,8 +1,8 @@
-import { BigBrotherVanilla } from "./episode/bigBrotherEpisode";
-import { EpisodeFactory } from "./episode/episodeFactory";
+import { BigBrotherVanilla } from "../components/episode/bigBrotherEpisode";
+import { EpisodeFactory } from "../components/episode/episodeFactory";
 import { GameState } from "./gameState";
 import { EpisodeType, Episode } from ".";
-import { BigBrotherFinale } from "./episode/bigBrotherFinale";
+import { BigBrotherFinale } from "../components/episode/bigBrotherFinale";
 import { cast$ } from "../components/mainPage/mainPageController";
 
 export function finalJurySize() {
