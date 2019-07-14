@@ -2,8 +2,8 @@ import { Houseguest, GameState, nonEvictedHouseguests, inJury } from "../../mode
 import { favouriteIndex, relationship, lowestScore, hitList } from "./aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
 
+// Return the index of the eviction target.
 export function castEvictionVote(hero: Houseguest, nominees: Houseguest[], gameState: GameState): number {
-    // Return the index of the eviction target.
     const nom0 = nominees[0];
     const nom1 = nominees[1];
     const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
@@ -11,8 +11,10 @@ export function castEvictionVote(hero: Houseguest, nominees: Houseguest[], gameS
     // TODO: better jury logic
     if (inJury(gameState)) {
         const targets = hitList(hero, nominees, gameState);
-        if (targets.size === 2) {
-            // TODO: logic logic logic
+        // TODO: better jury logic, take into account friends and everything. after power rankings view
+        if (targets.size === 1) {
+            // literally why is this so hard
+            return targets.values().next().value;
         }
         return lowestScore(hero, nominees, relationship);
     }
@@ -33,6 +35,7 @@ export function castEvictionVote(hero: Houseguest, nominees: Houseguest[], gameS
 }
 
 export function nominatePlayer(hero: Houseguest, options: Houseguest[], gameState: GameState): number {
+    // TODO: target and pawn based nominations, different pre and post jury. requires refactoring (nominate N players)
     const hitlist = hitList(hero, options, gameState);
     let trueOptions = options.filter(hg => hitlist.has(hg.id));
     if (trueOptions.length === 0) {
@@ -50,20 +53,41 @@ export function useGoldenVeto(
     if (hero.id == nominees[0].id || hero.id == nominees[1].id) {
         povTarget = hero;
     } else {
-        // incredibly basic veto logic - veto people that are not a threat to me.
-        // probably results in the veto almost always getting used, but can result
-        // in some fun situations where someone keeps saving an unpopular friend.
-        let save = -1;
-        const threat0 = -relationship(hero, nominees[0]);
-        const threat1 = -relationship(hero, nominees[1]);
-        if (threat0 < 0 || threat1 < 0) {
-            save = Math.min(threat0, threat1) === threat0 ? 0 : 1;
+        if (inJury(gameState)) {
+            // TODO: jury logic goes right here once we're ready
+            povTarget = useGoldenVetoPreJury(hero, nominees);
+        } else {
+            povTarget = useGoldenVetoPreJury(hero, nominees);
         }
-        if (nonEvictedHouseguests(gameState).length !== 4 && save > -1) {
-            povTarget = nominees[save];
+        if (nonEvictedHouseguests(gameState).length === 4) {
+            povTarget = null;
         }
     }
-    return povTarget;
+    return povTarget || null;
+}
+
+function useGoldenVetoPreJury(hero: Houseguest, nominees: Houseguest[]) {
+    let save = -1;
+    const rel0 = classifyRelationship(
+        hero.popularity,
+        nominees[0].popularity,
+        hero.relationshipWith(nominees[0])
+    );
+    const rel1 = classifyRelationship(
+        hero.popularity,
+        nominees[1].popularity,
+        hero.relationshipWith(nominees[1])
+    );
+    // basic logic that only saves friends. Doesn't take into account jury stuff.
+    if (rel0 === Relationship.Friend && rel1 !== Relationship.Friend) {
+        save = 0;
+    } else if (rel1 === Relationship.Friend && rel0 !== Relationship.Friend) {
+        save = 1;
+    } else if (rel0 === Relationship.Friend && rel1 === Relationship.Friend) {
+        save = Math.max(nominees[0].popularity, nominees[1].popularity) === nominees[0].popularity ? 0 : 1;
+    }
+
+    return nominees[save];
 }
 
 export function castJuryVote(juror: Houseguest, finalists: Houseguest[]): number {

@@ -48,7 +48,7 @@ export default function generateGraph(gameState: GameState): Graph {
                 }
             }
         });
-        // nodes[player.id] = friendCount; for pivot later on
+        // nodes[player.id] = friendCount; TODO: for pivot later on, thats why friendcount is there unused
         nodes.push(player.id);
     });
     return { nodes, neighbors: (v: number) => edges.data[v] || new Set([]) };

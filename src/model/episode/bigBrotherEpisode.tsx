@@ -100,7 +100,7 @@ function generateVetoCompScene(
 
     // pick players
     const choices = nonEvictedHouseguests(newGameState);
-    let povPlayers: Houseguest[] = [];
+    let povPlayers: any[] = [];
     const everyoneWillPlay = choices.length <= 6;
 
     if (everyoneWillPlay) {
@@ -184,7 +184,7 @@ function generateVetoCeremonyScene(
 
     let replacementSpeech = "";
     let nameAReplacement = "";
-    let finalNominees = initialNominees;
+    let finalNominees: any[] = initialNominees;
     if (povTarget) {
         finalNominees = initialNominees.filter(hg => hg.id != povTarget!.id);
         nameAReplacement += ` ${

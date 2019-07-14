@@ -1,6 +1,11 @@
 import { PlayerProfile } from "./playerProfile";
 import { RelationshipMap } from "../utils";
 
+interface HouseguestInit extends PlayerProfile {
+    id: number;
+    relationships: RelationshipMap;
+}
+
 export class Houseguest extends PlayerProfile {
     public isEvicted: boolean = false;
     public isJury: boolean = false;
@@ -17,7 +22,11 @@ export class Houseguest extends PlayerProfile {
     readonly relationships: RelationshipMap = {};
     readonly superiors: Set<number> = new Set<number>();
 
-    constructor(init: Houseguest) {
+    public relationshipWith(villain: Houseguest): number {
+        return this.relationships[villain.id];
+    }
+
+    constructor(init: HouseguestInit) {
         super(init);
         Object.assign(this, init);
     }

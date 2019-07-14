@@ -71,16 +71,10 @@ export class GameState {
                 this.houseguests.push(
                     new Houseguest({
                         ...profile,
-                        isEvicted: false,
-                        isJury: false,
                         id: ++id,
-                        nominations: 0,
-                        hohWins: 0,
-                        povWins: 0,
-                        popularity: 0,
-                        deltaPopularity: 0,
-                        relationships: newRelationshipMap(profiles.length, id),
-                        superiors: new Set<number>()
+                        // popularity: 0,
+                        // deltaPopularity: 0,
+                        relationships: newRelationshipMap(profiles.length, id)
                     })
                 );
             });
