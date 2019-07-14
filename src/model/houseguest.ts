@@ -26,6 +26,10 @@ export class Houseguest extends PlayerProfile {
         return this.relationships[villain.id];
     }
 
+    public getFriendEnemyCount: () => { friends: number; enemies: number } = () => {
+        throw new Error(`Failed to get friend / enemy count for houseguest ${this.id} (${this.name})`);
+    };
+
     constructor(init: HouseguestInit) {
         super(init);
         Object.assign(this, init);

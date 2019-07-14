@@ -17,6 +17,7 @@ export interface ProfileHouseguest extends PlayerProfile {
     hohWins?: number;
     povWins?: number;
     nominations?: number;
+    getFriendEnemyCount?: () => { friends: number; enemies: number };
 }
 
 export function MemoryWall(props: IMemoryWallProps): JSX.Element {

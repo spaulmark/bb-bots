@@ -12,6 +12,7 @@ import { BigBrotherVanilla, BigBrotherVanillaEpisode } from "./bigBrotherEpisode
 import { BigBrotherFinale, BigBrotherFinaleEpisode } from "./bigBrotherFinale";
 import { rng, roundTwoDigits } from "../../utils";
 import { doesHeroWinTheFinale as heroWinsTheFinale } from "../../utils/ai/aiUtils";
+import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
 
 function firstImpressions(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
@@ -49,6 +50,31 @@ function updatePopularity(gameState: GameState) {
     });
 }
 
+function updateFriendCounts(gameState: GameState) {
+    const houseguests = nonEvictedHouseguests(gameState);
+    houseguests.forEach(hero => {
+        hero.getFriendEnemyCount = () => {
+            let friends = 0;
+            let enemies = 0;
+            houseguests.forEach(villain => {
+                const rel = classifyRelationship(
+                    hero.popularity,
+                    villain.popularity,
+                    hero.relationshipWith(villain)
+                );
+                if (hero.id === villain.id) {
+                    return;
+                } else if (rel === Relationship.Friend) {
+                    friends++;
+                } else if (rel === Relationship.Enemy) {
+                    enemies++;
+                }
+            });
+            return { friends, enemies };
+        };
+    });
+}
+
 export class EpisodeFactory {
     public nextEpisode(gameState: GameState, episodeType: EpisodeType): Episode {
         let newState = new MutableGameState(gameState);
@@ -60,6 +86,7 @@ export class EpisodeFactory {
             generatePowerRankings(nonEvictedHouseguests(newState));
         }
         updatePopularity(newState);
+        updateFriendCounts(newState);
         const finalState = new GameState(newState);
         switch (episodeType) {
             case BigBrotherVanilla:

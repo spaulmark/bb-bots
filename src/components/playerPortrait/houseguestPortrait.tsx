@@ -7,7 +7,7 @@ import { RelationshipMap } from "../../utils";
 import {
     classifyRelationship,
     RelationshipTypeToSymbol,
-    RelationshipType
+    RelationshipType as Relationship
 } from "../../utils/ai/classifyRelationship";
 import _ from "lodash";
 
@@ -23,6 +23,7 @@ export interface PortraitProps {
     generateSubtitle?: (props: PortraitProps, state: PortraitState) => string[];
     tags?: string[];
     superiors?: Set<number>;
+    getFriendEnemyCount?: () => { friends: number; enemies: number };
 }
 
 export interface PortraitState {
@@ -53,25 +54,40 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
                         const titles = this.generateTitles(data);
                         this.setState({ titles });
                     } else {
-                        this.setState({ popularity: 2, titles: [] });
+                        const titles = this.friendEnemyCountTitle();
+                        this.setState({ popularity: 2, titles });
                     }
                 }
             }
         });
     }
 
-    private generateTitles(data: SelectedPlayerData): string[] {
+    private friendEnemyCountTitle(): string[] {
+        const titles: string[] = [];
+        const count = this.props.getFriendEnemyCount
+            ? this.props.getFriendEnemyCount()
+            : { friends: 0, enemies: 0 };
+        titles.push(
+            `${count.friends} ${RelationshipTypeToSymbol[Relationship.Friend]} | ${count.enemies} ${
+                RelationshipTypeToSymbol[Relationship.Enemy]
+            }`
+        );
+        return titles;
+    }
+
+    private generateTitles(villain: SelectedPlayerData): string[] {
+        const hero = this.props;
         const titles: string[] = [];
         titles.push(
             RelationshipTypeToSymbol[
                 classifyRelationship(
-                    this.props.popularity || 0,
-                    data.popularity,
-                    this.props.relationships![data.id]
+                    hero.popularity || 0,
+                    villain.popularity,
+                    hero.relationships![villain.id]
                 )
             ]
         );
-        const id = this.props.id || -1;
+        const id = hero.id || -1;
         return titles;
     }
 
