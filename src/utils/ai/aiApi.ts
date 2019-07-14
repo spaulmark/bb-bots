@@ -13,8 +13,7 @@ export function castEvictionVote(hero: Houseguest, nominees: Houseguest[], gameS
         const targets = hitList(hero, nominees, gameState);
         // TODO: better jury logic, take into account friends and everything. after power rankings view
         if (targets.size === 1) {
-            // literally why is this so hard
-            return targets.values().next().value;
+            return targets.values().next().value === nom0.id ? 0 : 1;
         }
         return lowestScore(hero, nominees, relationship);
     }
