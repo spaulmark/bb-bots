@@ -1,6 +1,8 @@
 import { MainPage } from "./mainPage";
 import { PlayerProfile } from "../../model";
-import { cast$ } from "../../subjects/subjects";
+import { BehaviorSubject } from "rxjs";
+
+export const cast$ = new BehaviorSubject<PlayerProfile[]>([]);
 
 export function updateCast(newCast: PlayerProfile[]) {
     cast$.next(newCast);

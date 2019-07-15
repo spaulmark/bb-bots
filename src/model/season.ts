@@ -3,7 +3,7 @@ import { EpisodeFactory } from "../components/episode/episodeFactory";
 import { GameState } from "./gameState";
 import { EpisodeType, Episode } from ".";
 import { BigBrotherFinale } from "../components/episode/bigBrotherFinale";
-import { cast$ } from "../subjects/subjects";
+import { cast$ } from "../components/mainPage/mainPageController";
 
 export function finalJurySize() {
     return jurors;

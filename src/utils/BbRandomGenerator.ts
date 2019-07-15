@@ -1,7 +1,7 @@
 import prand from "pure-rand";
+import { cast$ } from "../components/mainPage/mainPageController";
 import { BehaviorSubject } from "rxjs";
 import { hashcode } from "./utilities";
-import { cast$ } from "../subjects/subjects";
 
 export class BbRandomGenerator {
     private rng: prand.RandomGenerator;
@@ -34,15 +34,15 @@ export class BbRandomGenerator {
 }
 
 export function rng() {
-    return _rng;
+    return rng$.value;
 }
 
-let _rng = new BbRandomGenerator(0);
+const rng$ = new BehaviorSubject(new BbRandomGenerator(0));
 
 const castSub = cast$.subscribe({
     next: cast => {
         let castNames = "";
         cast.forEach(houseguest => (castNames += houseguest.name));
-        _rng = new BbRandomGenerator(hashcode(castNames));
+        rng$.next(new BbRandomGenerator(hashcode(castNames)));
     }
 });

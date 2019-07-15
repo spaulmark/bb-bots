@@ -380,6 +380,7 @@ export class BigBrotherVanillaEpisode implements Episode {
         this.render = (
             <div>
                 {/* TODO: custom title here*/}
+                {`Week ${currentGameState.phase}`}
                 <MemoryWall houseguests={initialGameState.houseguests} /> <br />
                 <NextEpisodeButton />
             </div>
