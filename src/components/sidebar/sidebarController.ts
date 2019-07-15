@@ -1,13 +1,8 @@
-import { Subject, Subscription, BehaviorSubject } from "rxjs";
+import { Subscription } from "rxjs";
 import { Episode, Scene, nonEvictedHouseguests } from "../../model";
 import { Sidebar } from "./sidebar";
 import { Season } from "../../model/season";
-import { mainContentStream$ } from "../mainPage/mainContentArea";
-import { cast$ } from "../mainPage/mainPageController";
-
-// Null resets the season
-const episodes$ = new BehaviorSubject<Episode | null>(null);
-const switchEpisode$ = new Subject<number>();
+import { pushToMainContentStream, cast$, episodes$, switchEpisode$ } from "../../subjects/subjects";
 
 export function newEpisode(episode: Episode | null) {
     episodes$.next(episode);
@@ -56,7 +51,7 @@ export class SidebarController {
     }
 
     public switchToScene(id: number) {
-        mainContentStream$.next(this.scenes[id].scene.render);
+        pushToMainContentStream(this.scenes[id].scene.render);
         this.selectedEpisode = this.scenes[id].index;
         this.view.setState({ selectedScene: id });
     }

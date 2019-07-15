@@ -1,15 +1,15 @@
 import React from "react";
-import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import "./topBar.scss";
 import { getCast } from "../mainPage/mainPageController";
+import { pushToMainContentStream } from "../../subjects/subjects";
 
 export function EditCastLink(): JSX.Element {
     return (
         <div
             className="topbar-link"
             onClick={() => {
-                mainContentStream$.next(<CastingScreen cast={getCast()} />);
+                pushToMainContentStream(<CastingScreen cast={getCast()} />);
             }}
         >
             Edit Cast
@@ -22,7 +22,7 @@ export function EditSeasonLink(): JSX.Element {
         <div
             className="topbar-link"
             onClick={() => {
-                mainContentStream$.next(<CastingScreen cast={getCast()} />); // TODO: Proper edit season linking
+                pushToMainContentStream(<CastingScreen cast={getCast()} />); // TODO: Proper edit season linking
             }}
         >
             Edit Season

@@ -1,12 +1,13 @@
 import React from "react";
 import { roundTwoDigits } from "../../utils";
 import { ProfileHouseguest, PortraitProps, PortraitState } from "../memoryWall";
-import { getSelectedPlayer, SelectedPlayerData } from "./selectedPortrait";
 import {
     RelationshipTypeToSymbol,
     RelationshipType as Relationship,
     classifyRelationship
 } from "../../utils/ai/classifyRelationship";
+import { getSelectedPlayer } from "../../subjects/subjects";
+import { SelectedPlayerData } from "./selectedPortrait";
 
 function _generateSubtitle(hero: PortraitProps, state: PortraitState, detailed: boolean): any[] {
     let key = 0;

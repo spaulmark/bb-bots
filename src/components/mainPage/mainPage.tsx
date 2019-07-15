@@ -2,7 +2,7 @@ import "./mainPage.scss";
 import React from "react";
 import { Sidebar } from "../sidebar/sidebar";
 import { Topbar } from "../topbar/topBar";
-import { MainContentArea } from "./mainContentArea";
+import { MainContentArea } from "../mainContentArea/mainContentArea";
 import { MainPageController } from "./mainPageController";
 
 interface MainPageProps {

@@ -4,13 +4,12 @@ import { PlayerProfile, GameState } from "../../model";
 import { SetupPortrait } from "../playerPortrait/setupPortrait";
 import { ImportLinks } from "./importLinks";
 import { updateCast } from "../mainPage/mainPageController";
-import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { newEpisode } from "../sidebar/sidebarController";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { shuffle } from "lodash";
 import { RandomButton } from "./randomXButton";
-import { selectPlayer } from "../playerPortrait/selectedPortrait";
+import { pushToMainContentStream, selectPlayer } from "../../subjects/subjects";
 
 interface CastingScreenState {
     players: PlayerProfile[];
@@ -75,7 +74,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
 
     private submit = async () => {
         updateCast(this.state.players);
-        mainContentStream$.next(<PregameScreen cast={this.state.players} />);
+        pushToMainContentStream(<PregameScreen cast={this.state.players} />);
         selectPlayer(null);
         await newEpisode(null);
         await newEpisode(new PregameEpisode(new GameState(this.state.players)));

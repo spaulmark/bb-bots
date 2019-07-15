@@ -1,9 +1,9 @@
 import React from "react";
-import { selectPlayer } from "./selectedPortrait";
 import { isNullOrUndefined } from "util";
 import { RelationshipMap } from "../../utils";
 import _ from "lodash";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
+import { selectPlayer } from "../../subjects/subjects";
 
 export interface PortraitProps {
     imageURL: string;
