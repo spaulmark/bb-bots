@@ -1,6 +1,7 @@
-import { ProfileHouseguest } from "../memoryWall";
 import React from "react";
+import { ProfileHouseguest } from "../memoryWall";
 import { houseguestToPortrait, memoryWallPortrait } from "./houseguestToPortrait";
+import { Tooltip } from "../tooltip/tooltip";
 
 let key = -1;
 
@@ -25,13 +26,17 @@ export function Portraits(props: {
         return <div />;
     }
     props.houseguests.forEach((houseguest: ProfileHouseguest) => {
+        let result;
         if (props.detailed) {
-            rows.push(memoryWallPortrait(houseguest, key++));
+            result = memoryWallPortrait(houseguest, key++);
         } else {
-            rows.push(houseguestToPortrait(houseguest, key++));
+            result = houseguestToPortrait(houseguest, key++);
         }
+        if (houseguest.tooltip) {
+            result = <Tooltip text={houseguest.tooltip}>{result}</Tooltip>;
+        }
+        rows.push(result);
     });
-
     return (
         <div className={`columns is-gapless is-mobile is-multiline ${props.centered && "is-centered"}`}>
             {rows}

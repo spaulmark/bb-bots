@@ -1,36 +1,104 @@
 import { Houseguest, GameState, nonEvictedHouseguests, inJury } from "../../model";
-import { favouriteIndex, relationship, lowestScore, hitList } from "./aiUtils";
+import { favouriteIndex, relationship, lowestScore, hitList, heroShouldTargetSuperiors } from "./aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
 
+interface VoteWithLogic {
+    vote: number;
+    reason: string;
+}
+
 // Return the index of the eviction target.
-export function castEvictionVote(hero: Houseguest, nominees: Houseguest[], gameState: GameState): number {
+export function castEvictionVote(
+    hero: Houseguest,
+    nominees: Houseguest[],
+    gameState: GameState
+): VoteWithLogic {
+    if (inJury(gameState)) {
+        return cutthroatVoteJury(hero, nominees, gameState);
+    } else {
+        return cutthroatVote(hero, nominees);
+    }
+}
+
+function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): VoteWithLogic {
+    const nom0 = nominees[0];
+    const nom1 = nominees[1];
+    const zeroIsInferior = hero.superiors.has(nom0.id);
+    const oneIsInferior = hero.superiors.has(nom1.id);
+
+    // if there is no sup/inf difference, no point in doing special logic for it
+    if (zeroIsInferior === oneIsInferior) {
+        return cutthroatVote(hero, nominees);
+    }
+    // TODO: logic kind of just goes out the window at jury to be honest fam
+    if (gameState.remainingPlayers - hero.superiors.size - 1 === 1 && (zeroIsInferior || oneIsInferior)) {
+        const nonVote = zeroIsInferior ? 0 : 1;
+        return {
+            vote: zeroIsInferior ? 1 : 0,
+            reason: `I can't evict ${nominees[nonVote].name}, because they are the last person I can beat.`
+        };
+    }
+    const target = heroShouldTargetSuperiors(hero, gameState) === oneIsInferior ? 0 : 1;
+    const nonTarget = target ? 0 : 1;
+    const excuse = heroShouldTargetSuperiors(hero, gameState)
+        ? `I can't beat ${nominees[target].name} in the end.`
+        : `I need to keep ${nominees[nonTarget].name} around as a shield.`;
+    const targetIsFriend =
+        classifyRelationship(
+            hero.popularity,
+            nominees[target].popularity,
+            hero.relationships[nominees[target].id]
+        ) === Relationship.Friend;
+    const nonTargetIsNonFriend =
+        classifyRelationship(
+            hero.popularity,
+            nominees[nonTarget].popularity,
+            hero.relationships[nominees[nonTarget].id]
+        ) !== Relationship.Friend;
+    const nonTargetIsFriend = !nonTargetIsNonFriend;
+    const targetIsNonFriend = !targetIsFriend;
+    // the only reason to not evict your target is if he is your only friend on the block
+    if (targetIsFriend && nonTargetIsNonFriend) {
+        return { vote: nonTarget, reason: `${nominees[nonTarget].name} is my enemy.` };
+    } else if (targetIsFriend && nonTargetIsFriend) {
+        return { vote: target, reason: `Both noms are my friends, but ${excuse}` };
+    } else if (targetIsNonFriend && nonTargetIsNonFriend) {
+        return { vote: target, reason: `Neither of these nominees are my friends, but ${excuse}` };
+    } else {
+        return { vote: target, reason: `${excuse}` };
+    }
+}
+
+// TODO: only works for 2 nominees
+function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): VoteWithLogic {
     const nom0 = nominees[0];
     const nom1 = nominees[1];
     const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
     const r1 = classifyRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
-    // TODO: better jury logic
-    if (inJury(gameState)) {
-        const targets = hitList(hero, nominees, gameState);
-        // TODO: better jury logic, take into account friends and everything. after power rankings view
-        if (targets.size === 1) {
-            return targets.values().next().value === nom0.id ? 0 : 1;
-        }
-        return lowestScore(hero, nominees, relationship);
-    }
     if (r0 === Relationship.Enemy && r1 === Relationship.Enemy) {
-        return nom0.popularity > nom1.popularity ? 0 : 1;
+        return {
+            vote: nom0.popularity > nom1.popularity ? 0 : 1,
+            reason: "Both noms are my enemies, so I voted for the more popular one."
+        };
     } else if (
         (r0 === Relationship.Enemy && r1 !== Relationship.Enemy) ||
-        (r0 !== Relationship.Friend && r1 === Relationship.Friend)
+        (r1 === Relationship.Enemy && r0 !== Relationship.Enemy)
     ) {
-        return 0;
+        const vote = r0 === Relationship.Enemy ? 0 : 1;
+        return { vote, reason: `${nominees[vote].name} is my enemy.` };
     } else if (
-        (r1 === Relationship.Enemy && r0 !== Relationship.Enemy) ||
+        (r0 !== Relationship.Friend && r1 === Relationship.Friend) ||
         (r1 !== Relationship.Friend && r0 === Relationship.Friend)
     ) {
-        return 1;
+        const vote = r0 !== Relationship.Friend ? 0 : 1;
+        const nonVote = vote === 0 ? 1 : 0;
+        return { vote, reason: `${nominees[nonVote].name} is my friend.` };
     }
-    return lowestScore(hero, nominees, relationship);
+    const vote = lowestScore(hero, nominees, relationship);
+    return {
+        vote,
+        reason: `Both noms are my friends. but I like ${nominees[vote === 0 ? 1 : 0].name} more.`
+    };
 }
 
 export function nominatePlayer(hero: Houseguest, options: Houseguest[], gameState: GameState): number {

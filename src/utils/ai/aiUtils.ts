@@ -61,10 +61,14 @@ export function doesHeroWinTheFinale(
     return heroVotes > villainVotes;
 }
 
+export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState): boolean {
+    return hero.superiors.size * 2 !== gameState.remainingPlayers - 1;
+}
+
 export function hitList(hero: Houseguest, options: Houseguest[], gameState: GameState): Set<number> {
     let result = options;
     // jury logic is not affected by someone who is dead center in power rankings
-    if (inJury(gameState) && hero.superiors.size * 2 !== gameState.remainingPlayers - 1) {
+    if (inJury(gameState) && heroShouldTargetSuperiors(hero, gameState)) {
         // TODO: logic to take into account that i never want to eliminate the last guy i can actually beat
         if (hero.superiors.size * 2 < gameState.remainingPlayers - 1) {
             result = options.filter(hg => !hero.superiors.has(hg.id));

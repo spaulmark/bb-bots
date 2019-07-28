@@ -17,6 +17,7 @@ export interface ProfileHouseguest extends PlayerProfile {
     hohWins?: number;
     povWins?: number;
     nominations?: number;
+    tooltip?: string;
     getFriendEnemyCount?: () => { friends: number; enemies: number };
 }
 
@@ -32,7 +33,7 @@ function getPlayers(props: IMemoryWallProps): any {
         <div
             style={{
                 margin: "auto",
-                maxWidth: props.houseguests.length < 30 ? 700 : -1
+                maxWidth: props.houseguests.length < 26 ? 700 : -1
             }}
         >
             <Portraits houseguests={props.houseguests} centered={true} detailed={true} />

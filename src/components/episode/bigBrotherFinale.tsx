@@ -66,8 +66,7 @@ function finalHohCompScene(initialGameState: GameState): [GameState, Scene, Hous
 function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
     const nominees = nonEvictedHouseguests(newGameState).filter(hg => hg.id !== HoH.id);
-    const vote = castEvictionVote(HoH, nominees, newGameState);
-    const evictee = nominees[vote];
+    const evictee = nominees[castEvictionVote(HoH, nominees, newGameState).vote];
     evictHouseguest(newGameState, evictee.id);
     const scene: Scene = {
         title: "Final Eviction",

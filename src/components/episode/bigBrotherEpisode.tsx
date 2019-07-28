@@ -1,6 +1,6 @@
 import React from "react";
 import { Episode, GameState, randomPlayer } from "../../model";
-import { MemoryWall } from "../memoryWall";
+import { MemoryWall, ProfileHouseguest } from "../memoryWall";
 import { NextEpisodeButton } from "../buttons/nextEpisodeButton";
 import { EpisodeType, Scene } from "./episodes";
 import { Houseguest } from "../../model/houseguest";
@@ -261,10 +261,13 @@ function generateEvictionScene(
 ): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
     nominees = shuffle(nominees);
-    const votes: Array<Houseguest[]> = [[], []];
+    const votes: Array<ProfileHouseguest[]> = [[], []];
     nonEvictedHouseguests(newGameState).forEach(hg => {
         if (hg.id !== nominees[0].id && hg.id !== nominees[1].id && hg.id !== HoH.id) {
-            votes[castEvictionVote(hg, nominees, newGameState)].push(hg);
+            const logic = castEvictionVote(hg, nominees, newGameState);
+            const result: ProfileHouseguest = { ...hg };
+            result.tooltip = logic.reason;
+            votes[logic.vote].push(result);
         }
     });
     const votesFor0 = votes[0].length;
@@ -273,7 +276,7 @@ function generateEvictionScene(
     let tieVote = votesFor0 === votesFor1;
     let tieBreaker: number = 0;
     if (tieVote) {
-        tieBreaker = castEvictionVote(HoH, nominees, newGameState);
+        tieBreaker = castEvictionVote(HoH, nominees, newGameState).vote;
     }
     let evictee: Houseguest;
     if (votesFor0 > votesFor1) {
