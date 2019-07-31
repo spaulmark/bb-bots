@@ -274,9 +274,9 @@ function generateEvictionScene(
     const votesFor1 = votes[1].length;
 
     let tieVote = votesFor0 === votesFor1;
-    let tieBreaker: number = 0;
+    let tieBreaker = { vote: 0, reason: "Error you should not be seeing this" };
     if (tieVote) {
-        tieBreaker = castEvictionVote(HoH, nominees, newGameState).vote;
+        tieBreaker = castEvictionVote(HoH, nominees, newGameState);
     }
     let evictee: Houseguest;
     if (votesFor0 > votesFor1) {
@@ -284,7 +284,7 @@ function generateEvictionScene(
     } else if (votesFor1 > votesFor0) {
         evictee = nominees[1];
     } else {
-        evictee = nominees[tieBreaker];
+        evictee = nominees[tieBreaker.vote];
     }
     evictHouseguest(newGameState, evictee.id);
 
@@ -293,6 +293,8 @@ function generateEvictionScene(
         ? "By a unanimous vote..."
         : `By a vote of ${votesFor0} to ${votesFor1}...`;
 
+    const displayHoH: ProfileHouseguest = { ...HoH };
+    displayHoH.tooltip = tieBreaker.reason;
     const scene = {
         title: "Live Eviction",
         gameState: initialGameState,
@@ -317,7 +319,7 @@ function generateEvictionScene(
                                 HoH.name
                             }, as current Head of Household, you must cast the sole vote to evict.`}
                         </p>
-                        <Portraits houseguests={[HoH]} centered={true} />
+                        <Portraits houseguests={[displayHoH]} centered={true} />
                         <p style={{ textAlign: "center" }}>
                             <b>I vote to evict {`${evictee.name}.`}</b>
                         </p>

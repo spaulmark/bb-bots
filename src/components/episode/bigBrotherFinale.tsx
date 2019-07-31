@@ -1,7 +1,7 @@
 import React from "react";
 import { EpisodeType, Episode, Scene } from "./episodes";
 import { GameState } from "../../model";
-import { MemoryWall } from "../memoryWall";
+import { MemoryWall, ProfileHouseguest } from "../memoryWall";
 import { NextEpisodeButton } from "../buttons/nextEpisodeButton";
 import { Houseguest } from "../../model/houseguest";
 import {
@@ -66,7 +66,10 @@ function finalHohCompScene(initialGameState: GameState): [GameState, Scene, Hous
 function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
     const nominees = nonEvictedHouseguests(newGameState).filter(hg => hg.id !== HoH.id);
-    const evictee = nominees[castEvictionVote(HoH, nominees, newGameState).vote];
+    const { vote, reason } = castEvictionVote(HoH, nominees, newGameState);
+    const evictee = nominees[vote];
+    const hoh: ProfileHouseguest = { ...HoH };
+    hoh.tooltip = reason;
     evictHouseguest(newGameState, evictee.id);
     const scene: Scene = {
         title: "Final Eviction",
@@ -75,7 +78,7 @@ function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [Game
             <div>
                 <div style={{ textAlign: "center" }}>
                     {`As the final HoH of the season, ${HoH.name}, you may now cast the sole vote to evict.`}
-                    <Portrait houseguest={HoH} centered={true} />
+                    <Portrait houseguest={hoh} centered={true} />
                     <b>
                         <p>{`I vote to evict ${evictee.name}.`}</p>
                     </b>

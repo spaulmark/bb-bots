@@ -23,14 +23,13 @@ export function castEvictionVote(
 function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): VoteWithLogic {
     const nom0 = nominees[0];
     const nom1 = nominees[1];
-    const zeroIsInferior = hero.superiors.has(nom0.id);
-    const oneIsInferior = hero.superiors.has(nom1.id);
-
+    const zeroIsInferior = !hero.superiors.has(nom0.id);
+    const oneIsInferior = !hero.superiors.has(nom1.id);
     // if there is no sup/inf difference, no point in doing special logic for it
     if (zeroIsInferior === oneIsInferior) {
         return cutthroatVote(hero, nominees);
     }
-    // TODO: logic kind of just goes out the window at jury to be honest fam
+    // Don't evict the last person in the game you can beat
     if (gameState.remainingPlayers - hero.superiors.size - 1 === 1 && (zeroIsInferior || oneIsInferior)) {
         const nonVote = zeroIsInferior ? 0 : 1;
         return {
@@ -63,7 +62,7 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
     } else if (targetIsFriend && nonTargetIsFriend) {
         return { vote: target, reason: `Both noms are my friends, but ${excuse}` };
     } else if (targetIsNonFriend && nonTargetIsNonFriend) {
-        return { vote: target, reason: `Neither of these nominees are my friends, but ${excuse}` };
+        return { vote: target, reason: `Neither of the noms are my friends, but ${excuse}` };
     } else {
         return { vote: target, reason: `${excuse}` };
     }

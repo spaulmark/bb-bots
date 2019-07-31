@@ -6,7 +6,7 @@ import { Tooltip } from "../tooltip/tooltip";
 let key = -1;
 
 export function Portrait(props: { houseguest: ProfileHouseguest; centered?: boolean }): JSX.Element {
-    return (
+    const result = (
         <div
             key={key++}
             className={`columns is-gapless is-mobile is-multiline ${props.centered && "is-centered"}`}
@@ -14,6 +14,10 @@ export function Portrait(props: { houseguest: ProfileHouseguest; centered?: bool
             {houseguestToPortrait(props.houseguest)}
         </div>
     );
+    if (props.houseguest.tooltip) {
+        return <Tooltip text={props.houseguest.tooltip}>{result}</Tooltip>;
+    }
+    return result;
 }
 
 export function Portraits(props: {
