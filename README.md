@@ -13,9 +13,9 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 # TODO #
 ## Logic ##
 * [x] Basic game logic
-* [x] Hit list logic, players think in terms of a hit list
 * [ ] Target & pawn based nominations
-* [ ] Replace jury equity with "people I can't beat in the finals"
+* [ ] Better veto logic
+* [x] Replace jury equity with "people I can't beat in the finals"
 * [ ] Semi-realistic first impressions algorithm
 * [ ] Dynamic relationships
 * [ ] Complex game logic: Players react to events
@@ -24,7 +24,8 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 ## Features ##
 * [x] Cast X random players button on setup screen
 * [x] Click a player to view his/her relationships
-* [ ] Some meaningful way to view cliques
+* [ ] Power rankings view
+* [ ] Cliques view
 * [ ] Endgame stats screen & voting table
 * [ ] Editable player names
 * [ ] Actually making it look nice
