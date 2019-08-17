@@ -1,7 +1,7 @@
 import React from "react";
 import { PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
-import { NextEpisodeButton } from "../buttons/nextEpisodeButton";
+import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import { EditCastLink } from "../topbar/topBar";
 
 interface PregameScreenProps {
@@ -23,5 +23,4 @@ export function PregameScreen(props: PregameScreenProps): JSX.Element {
             <NextEpisodeButton />
         </div>
     );
-    // TODO: Custom season title.
 }

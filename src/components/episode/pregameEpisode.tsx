@@ -10,15 +10,22 @@ const PregameEpisodeType: EpisodeType = {
     }
 };
 
-export class PregameEpisode implements Episode {
+export class PregameEpisode extends Episode {
     readonly title = "Pregame";
     readonly scenes = [];
-    readonly render: JSX.Element;
+    readonly content: JSX.Element;
     readonly gameState: GameState;
     readonly type = PregameEpisodeType;
 
     public constructor(gameState: GameState) {
+        super({
+            title: "Pregame",
+            scenes: [],
+            content: <PregameScreen cast={gameState.houseguests} />,
+            gameState,
+            type: PregameEpisodeType
+        });
         this.gameState = gameState;
-        this.render = <PregameScreen cast={gameState.houseguests} />;
+        this.content = <PregameScreen cast={gameState.houseguests} />;
     }
 }

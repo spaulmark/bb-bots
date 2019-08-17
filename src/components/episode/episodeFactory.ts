@@ -8,8 +8,8 @@ import {
 } from "../../model/gameState";
 import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
-import { BigBrotherVanilla, BigBrotherVanillaEpisode } from "./bigBrotherEpisode";
-import { BigBrotherFinale, BigBrotherFinaleEpisode } from "./bigBrotherFinale";
+import { BigBrotherVanilla, generateBbVanilla } from "./bigBrotherEpisode";
+import { BigBrotherFinale, generateBbFinaleInit } from "./bigBrotherFinale";
 import { rng, roundTwoDigits } from "../../utils";
 import { doesHeroWinTheFinale as heroWinsTheFinale } from "../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
@@ -90,9 +90,9 @@ export class EpisodeFactory {
         const finalState = new GameState(newState);
         switch (episodeType) {
             case BigBrotherVanilla:
-                return new BigBrotherVanillaEpisode(finalState);
+                return generateBbVanilla(finalState);
             case BigBrotherFinale:
-                return new BigBrotherFinaleEpisode(finalState);
+                return generateBbFinaleInit(finalState);
             default:
                 throw new Error("Unsupported Episode Type");
         }

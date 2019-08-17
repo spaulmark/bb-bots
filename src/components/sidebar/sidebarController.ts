@@ -1,9 +1,10 @@
 import { Subject, Subscription, BehaviorSubject } from "rxjs";
-import { Episode, Scene, nonEvictedHouseguests } from "../../model";
 import { Sidebar } from "./sidebar";
 import { Season } from "../../model/season";
 import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { cast$ } from "../mainPage/mainPageController";
+import { Episode, nonEvictedHouseguests } from "../../model";
+import { Scene } from "../episode/scene";
 
 // Null resets the season
 const episodes$ = new BehaviorSubject<Episode | null>(null);
@@ -41,12 +42,14 @@ export class SidebarController {
         );
         this.subscriptions.push(
             switchEpisode$.subscribe({
-                next: (value: number) => this.switchSceneRelative(value)
+                next: (value: number) => {
+                    this.switchSceneRelative(value);
+                }
             })
         );
         this.subscriptions.push(
             cast$.subscribe({
-                next: newCast => (this.season = new Season())
+                next: () => (this.season = new Season())
             })
         );
     }
@@ -65,15 +68,15 @@ export class SidebarController {
         const selectedScene = this.view.state.selectedScene;
         const renderedScenes = this.scenes.length;
         const targetScene = selectedScene + delta;
-
         if (targetScene < 0) {
             return;
         }
         const lastEpisode = this.view.state.episodes[this.view.state.episodes.length - 1];
-
         if (targetScene < renderedScenes) {
+            // Go back to an earlier scene
             this.switchToScene(targetScene);
         } else if (targetScene === renderedScenes) {
+            // Generate a new scene
             const currentGameState = lastEpisode.gameState;
             const newPlayerCount = nonEvictedHouseguests(lastEpisode.gameState).length;
             const nextEpisodeType = this.season.whichEpisodeType(newPlayerCount);
