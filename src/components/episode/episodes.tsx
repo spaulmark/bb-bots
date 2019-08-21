@@ -1,6 +1,7 @@
 import React from "react";
 import { GameState } from "../../model/gameState";
 import { Scene } from "./scene";
+import { ViewsBar } from "../viewsBar/viewBar";
 
 export interface InitEpisode {
     scenes: Scene[];
@@ -19,7 +20,7 @@ export class Episode {
     get render(): JSX.Element {
         return (
             <div>
-                <div key="viewsbar">Hey Dude</div>
+                <ViewsBar />
                 {this.content}
             </div>
         );
