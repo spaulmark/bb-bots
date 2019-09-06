@@ -15,7 +15,7 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 * [x] Basic game logic
 * [ ] Target & pawn based nominations
 * [ ] Better veto logic
-* [x] Replace jury equity with "people I can't beat in the finals"
+* [x] Players take into account who they can beat in the end
 * [ ] Semi-realistic first impressions algorithm
 * [ ] Dynamic relationships
 * [ ] Complex game logic: Players react to events
