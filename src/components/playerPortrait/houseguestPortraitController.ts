@@ -1,6 +1,6 @@
 import { PortraitProps, HouseguestPortrait, PortraitState } from "../memoryWall";
 import { Subscription } from "rxjs";
-import { selectedPlayer$ } from "../../subjects/subjects";
+import { selectedPlayer$, displayMode$ } from "../../subjects/subjects";
 import { SelectedPlayerData } from "./selectedPortrait";
 import { popularityMode } from "../../model/portraitDisplayMode";
 
@@ -24,6 +24,11 @@ export class HouseguestPortraitController {
                 next: this.refreshData
             })
         );
+        subs.push(
+            displayMode$.subscribe({
+                next: displayMode => this.view.setState({ displayMode })
+            })
+        );
         this.subs = subs;
     }
 
@@ -32,15 +37,16 @@ export class HouseguestPortraitController {
     }
 
     private refreshData = (data: SelectedPlayerData | null) => {
+        // TODO: this will need to be updated for power rankings
         if (!data) {
             this.view.setState(this.defaultState);
         } else {
-            data = data as SelectedPlayerData;
             if (data.id !== this.view.props.id) {
                 this.view.setState({
                     popularity: data.relationships[this.view.props.id!]
                 });
             } else {
+                // TODO: instead to "selected = true and selected = false?"
                 this.view.setState({ popularity: 2 });
             }
         }

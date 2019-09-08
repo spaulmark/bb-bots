@@ -33,9 +33,9 @@ function _generateSubtitle(hero: PortraitProps, state: PortraitState, detailed: 
         subtitle.push(<br key={key++} style={{ lineHeight: 1 }} />);
     }
     // friendship count / titles
-    if (!hero.isEvicted && getSelectedPlayer() !== null) {
-        const data = getSelectedPlayer() as SelectedPlayerData;
-        if (data.id !== hero.id) {
+    if (!hero.isEvicted) {
+        const data = getSelectedPlayer() as SelectedPlayerData | null;
+        if (data && data.id !== hero.id) {
             const titles = friendOrEnemyTitle(hero, data);
             subtitle = subtitle.concat(titles.map(txt => <div key={key++}>{txt}</div>));
         } else {

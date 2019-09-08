@@ -12,6 +12,7 @@ export interface PortraitDisplayMode {
 
 const popularityMinColor = new Rgb(252, 137, 137);
 const popularityMaxColor = new Rgb(137, 252, 137);
+
 export const popularityMode: PortraitDisplayMode = {
     minColor: popularityMinColor,
     maxColor: popularityMaxColor,
@@ -23,5 +24,16 @@ export const popularityMode: PortraitDisplayMode = {
         const extremePopularity = extremeValues(popularity);
         const percent = (extremePopularity + 1) / 2;
         return interpolateColor(popularityMinColor, popularityMaxColor, percent);
+    }
+};
+
+const powerMaxColor = new Rgb(255, 170, 0);
+const powerMinColor = new Rgb(255, 111, 255);
+export const powerMode: PortraitDisplayMode = {
+    minColor: powerMinColor,
+    maxColor: powerMaxColor,
+    backgroundColor: (state: PortraitState) => {
+        console.log(state);
+        return "#000000";
     }
 };

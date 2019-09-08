@@ -16,7 +16,6 @@ export interface PortraitProps {
     popularity?: number;
     deltaPopularity?: number;
     generateSubtitle?: (props: PortraitProps, state: PortraitState) => string[];
-    tags?: string[];
     superiors?: Set<number>;
     getFriendEnemyCount?: () => { friends: number; enemies: number };
 }

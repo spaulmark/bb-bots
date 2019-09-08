@@ -3,6 +3,7 @@ import { PregameScreen } from "../components/pregameScreen/pregameScreen";
 import { Episode, PlayerProfile } from "../model";
 import { SelectedPlayerData } from "../components/playerPortrait/selectedPortrait";
 import React from "react";
+import { PortraitDisplayMode, popularityMode } from "../model/portraitDisplayMode";
 
 // What is currently being displayed.
 export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
@@ -29,3 +30,6 @@ export const selectedPlayer$ = new BehaviorSubject<SelectedPlayerData | null>(nu
 export function getSelectedPlayer() {
     return selectedPlayer$.value;
 }
+
+// The display mode selected by the viewsbar.
+export const displayMode$ = new BehaviorSubject<PortraitDisplayMode>(popularityMode);
