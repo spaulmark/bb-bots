@@ -4,6 +4,7 @@ import { isNullOrUndefined } from "util";
 import { RelationshipMap } from "../../utils";
 import _ from "lodash";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
+import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
 
 export interface PortraitProps {
     imageURL: string;
@@ -22,6 +23,7 @@ export interface PortraitProps {
 
 export interface PortraitState {
     popularity?: number;
+    displayMode: PortraitDisplayMode;
 }
 export class HouseguestPortrait extends React.Component<PortraitProps, PortraitState> {
     private controller: HouseguestPortraitController;
@@ -74,7 +76,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
             <div
                 onClick={() => this.onClick()}
                 style={{
-                    backgroundColor: this.controller.backgroundColor(props, this.state.popularity)
+                    backgroundColor: this.controller.backgroundColor(props)
                 }}
                 className={`memory-wall-portrait ${className}`}
             >

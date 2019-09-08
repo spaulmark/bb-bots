@@ -17,7 +17,7 @@ export class Rgb {
     }
 }
 
-export function interpolate(min: Rgb, max: Rgb, percent: number): string {
+export function interpolateColor(min: Rgb, max: Rgb, percent: number): string {
     return new Rgb(
         min.r + percent * (max.r - min.r),
         min.g + percent * (max.g - min.g),
