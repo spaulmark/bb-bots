@@ -10,6 +10,9 @@ export class Rgb {
     public toHex() {
         return "#" + componentToHex(this.r) + componentToHex(this.g) + componentToHex(this.b);
     }
+    public toRgba(): string {
+        return `rgba(${this.r}, ${this.g}, ${this.b}, 1)`;
+    }
     constructor(r: number, g: number, b: number) {
         this.r = r;
         this.g = g;
