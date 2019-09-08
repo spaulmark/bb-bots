@@ -2,6 +2,7 @@ import { BehaviorSubject, Subject } from "rxjs";
 import { PregameScreen } from "../components/pregameScreen/pregameScreen";
 import { Episode, PlayerProfile } from "../model";
 import { SelectedPlayerData } from "../components/playerPortrait/selectedPortrait";
+import React from "react";
 
 export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
 
