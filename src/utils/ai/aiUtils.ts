@@ -62,8 +62,14 @@ export function doesHeroWinTheFinale(
 }
 
 export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState): boolean {
-    return hero.superiors.size * 2 !== gameState.remainingPlayers - 1;
+    const superiors = hero.superiors.size;
+    const inferiors = gameState.remainingPlayers - 1 - hero.superiors.size;
+    // Target the larger group. If they are equal, target superiors.
+    return superiors >= inferiors;
 }
+
+// TODO: this function can just honestly die. it's only used in nomination logic (which sucks anyways)
+// when I do the new logic, I think people who are dead center should target their superiors. works in F5.
 
 export function hitList(hero: Houseguest, options: Houseguest[], gameState: GameState): Set<number> {
     let result = options;
