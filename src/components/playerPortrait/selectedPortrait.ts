@@ -1,8 +1,6 @@
-import { BehaviorSubject } from "rxjs";
 import { Houseguest } from "../../model";
 import { RelationshipMap } from "../../utils";
-
-export const selectedPlayer$ = new BehaviorSubject<SelectedPlayerData | null>(null);
+import { getSelectedPlayer, selectedPlayer$ } from "../../subjects/subjects";
 
 export interface SelectedPlayerData {
     id: number;
@@ -10,10 +8,6 @@ export interface SelectedPlayerData {
     relationships: RelationshipMap; // this is bad and i dont know HOW TO FIX IT
     isEvicted: boolean;
     superiors?: Set<number>;
-}
-
-export function getSelectedPlayer() {
-    return selectedPlayer$.value;
 }
 
 export function selectPlayer(player: SelectedPlayerData | null) {

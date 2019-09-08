@@ -1,5 +1,5 @@
-import { switchSceneRelative } from "../sidebar/sidebarController";
 import React from "react";
+import { switchSceneRelative } from "../../subjects/subjects";
 
 export function NextEpisodeButton(): JSX.Element {
     return (

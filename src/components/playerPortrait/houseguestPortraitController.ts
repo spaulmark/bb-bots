@@ -1,7 +1,8 @@
 import { extremeValues } from "../../utils";
 import { PortraitProps, HouseguestPortrait, PortraitState } from "../memoryWall";
 import { Subscription } from "rxjs";
-import { selectedPlayer$, SelectedPlayerData } from "./selectedPortrait";
+import { selectedPlayer$ } from "../../subjects/subjects";
+import { SelectedPlayerData } from "./selectedPortrait";
 
 const maxPopularity = { r: 137, g: 252, b: 137 };
 const minPopularity = { r: 252, g: 137, b: 137 };

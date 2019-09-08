@@ -1,8 +1,9 @@
 import React from "react";
-import { SidebarController, newEpisode } from "./sidebarController";
+import { SidebarController } from "./sidebarController";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { Episode, GameState } from "../../model";
 import { Scene } from "../episode/scene";
+import { newEpisode } from "../../subjects/subjects";
 interface SidebarState {
     episodes: Episode[];
     selectedScene: number;

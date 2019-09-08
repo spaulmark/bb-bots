@@ -3,14 +3,12 @@ import FileDrop from "react-file-drop";
 import { PlayerProfile, GameState } from "../../model";
 import { SetupPortrait } from "../playerPortrait/setupPortrait";
 import { ImportLinks } from "./importLinks";
-import { updateCast } from "../mainPage/mainPageController";
-import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
-import { newEpisode } from "../sidebar/sidebarController";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { shuffle } from "lodash";
 import { RandomButton } from "./randomXButton";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
+import { mainContentStream$, newEpisode, updateCast } from "../../subjects/subjects";
 
 interface CastingScreenState {
     players: PlayerProfile[];

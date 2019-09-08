@@ -1,8 +1,5 @@
 import React from "react";
-import { BehaviorSubject } from "rxjs";
-import { PregameScreen } from "../pregameScreen/pregameScreen";
-
-export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
+import { mainContentStream$ } from "../../subjects/subjects";
 
 export class MainContentArea extends React.Component<{}, { content: any }> {
     // a simple class that displays whatever it gets fed through the main content stream.

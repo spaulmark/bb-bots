@@ -1,8 +1,7 @@
 import React from "react";
-import { mainContentStream$ } from "../mainPage/mainContentArea";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import "./topBar.scss";
-import { getCast } from "../mainPage/mainPageController";
+import { mainContentStream$, getCast } from "../../subjects/subjects";
 
 export function EditCastLink(): JSX.Element {
     return (

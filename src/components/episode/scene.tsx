@@ -1,5 +1,6 @@
 import React from "react";
 import { GameState } from "../../model/gameState";
+import { ViewsBar } from "../viewsBar/viewBar";
 interface InitScene {
     readonly title: string;
     readonly gameState: GameState;
@@ -14,7 +15,7 @@ export class Scene {
         Object.assign(this, init);
         this.render = (
             <div>
-                Hey dude
+                <ViewsBar />
                 {this.content}
             </div>
         );
