@@ -18,7 +18,7 @@ export class ViewBarTag extends React.Component<ViewBarTagProps, { selected: boo
 
     public constructor(props: ViewBarTagProps) {
         super(props);
-        this.state = { selected: false };
+        this.state = { selected: props.mode === displayMode$.value };
     }
 
     public componentDidMount() {

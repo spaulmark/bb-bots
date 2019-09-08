@@ -21,7 +21,7 @@ export function EditSeasonLink(): JSX.Element {
         <div
             className="topbar-link"
             onClick={() => {
-                mainContentStream$.next(<CastingScreen cast={getCast()} />); // TODO: Proper edit season linking
+                mainContentStream$.next(<CastingScreen cast={getCast()} />);
             }}
         >
             Edit Season
