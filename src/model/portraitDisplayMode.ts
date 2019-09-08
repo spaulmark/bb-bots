@@ -2,8 +2,6 @@ import { Rgb, interpolateColor } from "./color";
 import { PortraitState } from "../components/memoryWall";
 import { extremeValues } from "../utils";
 
-const selectedColor = new Rgb(51, 255, 249);
-
 export interface PortraitDisplayMode {
     minColor: Rgb;
     maxColor: Rgb;
@@ -18,22 +16,22 @@ export const popularityMode: PortraitDisplayMode = {
     maxColor: popularityMaxColor,
     backgroundColor: (state: PortraitState) => {
         const popularity = state.popularity;
-        if (popularity && (popularity > 1 || popularity < -1)) {
-            return selectedColor.toHex();
-        }
+
         const extremePopularity = extremeValues(popularity);
         const percent = (extremePopularity + 1) / 2;
         return interpolateColor(popularityMinColor, popularityMaxColor, percent);
     }
 };
 
-const powerMaxColor = new Rgb(255, 170, 0);
-const powerMinColor = new Rgb(255, 111, 255);
+const powerMaxColor = new Rgb(255, 204, 94);
+const powerMinColor = new Rgb(192, 181, 255);
 export const powerMode: PortraitDisplayMode = {
     minColor: powerMinColor,
     maxColor: powerMaxColor,
     backgroundColor: (state: PortraitState) => {
-        console.log(state);
-        return "#000000";
+        const powerRanking = state.powerRanking;
+        if (powerRanking === undefined) return "";
+
+        return interpolateColor(powerMinColor, powerMaxColor, powerRanking);
     }
 };

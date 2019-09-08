@@ -20,6 +20,9 @@ export class Houseguest extends PlayerProfile {
     public popularity: number = 0;
     public deltaPopularity: number = 0;
     readonly relationships: RelationshipMap = {};
+
+    // power rankings range from 0 to 1
+    public powerRanking: number = 0;
     readonly superiors: Set<number> = new Set<number>();
 
     public relationshipWith(villain: Houseguest): number {

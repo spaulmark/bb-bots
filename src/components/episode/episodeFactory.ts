@@ -27,7 +27,7 @@ function firstImpressions(houseguests: Houseguest[]) {
     }
 }
 
-function generatePowerRankings(houseguests: Houseguest[]) {
+function populateSuperiors(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
         const hero = houseguests[i];
         for (let j = i + 1; j < houseguests.length; j++) {
@@ -39,6 +39,10 @@ function generatePowerRankings(houseguests: Houseguest[]) {
             }
         }
     }
+}
+
+function updatePowerRankings(houseguests: Houseguest[]) {
+    houseguests.forEach(hg => (hg.powerRanking = 1 - hg.superiors.size / (houseguests.length - 1)));
 }
 
 function updatePopularity(gameState: GameState) {
@@ -83,7 +87,10 @@ export class EpisodeFactory {
         }
         // If jury starts this episode, populate superior/inferior data. In the future, every jury ep. (dynamic rels)
         if (inJury(gameState) && getJurors(gameState).length === 0) {
-            generatePowerRankings(nonEvictedHouseguests(newState));
+            populateSuperiors(nonEvictedHouseguests(newState));
+        }
+        if (inJury(gameState)) {
+            updatePowerRankings(newState.houseguests);
         }
         updatePopularity(newState);
         updateFriendCounts(newState);

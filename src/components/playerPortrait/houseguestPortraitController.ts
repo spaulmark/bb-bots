@@ -1,19 +1,31 @@
 import { PortraitProps, HouseguestPortrait, PortraitState } from "../memoryWall";
 import { Subscription } from "rxjs";
-import { selectedPlayer$, displayMode$ } from "../../subjects/subjects";
+import { selectedPlayer$, displayMode$, getSelectedPlayer } from "../../subjects/subjects";
 import { SelectedPlayerData } from "./selectedPortrait";
-import { popularityMode } from "../../model/portraitDisplayMode";
+import { Rgb } from "../../model/color";
+
+const selectedColor = new Rgb(51, 255, 249);
 
 export class HouseguestPortraitController {
     private subs: Subscription[] = [];
     private view: HouseguestPortrait;
-    public readonly defaultState: PortraitState;
     constructor(view: HouseguestPortrait) {
         this.view = view;
-        this.defaultState = { popularity: this.view.props.popularity, displayMode: popularityMode };
+    }
+
+    get defaultState() {
+        return {
+            popularity: this.view.props.popularity,
+            displayMode: displayMode$.value,
+            powerRanking: this.view.props.powerRanking
+        };
     }
 
     public backgroundColor(props: PortraitProps): undefined | string {
+        const selectedPlayer = getSelectedPlayer();
+        if (selectedPlayer !== null && selectedPlayer.id === props.id) {
+            return selectedColor.toHex();
+        }
         return props.isEvicted ? undefined : this.view.state.displayMode.backgroundColor(this.view.state);
     }
 
@@ -36,18 +48,24 @@ export class HouseguestPortraitController {
         this.subs.forEach(sub => sub.unsubscribe());
     }
 
+    private comparePowerRankings(data: SelectedPlayerData): number {
+        // 0 is blue. 1 is orange
+        if (!data.superiors) return 0;
+        return data.superiors.has(this.view.props.id || -1) ? 1 : 0;
+    }
+
     private refreshData = (data: SelectedPlayerData | null) => {
-        // TODO: this will need to be updated for power rankings
         if (!data) {
             this.view.setState(this.defaultState);
         } else {
             if (data.id !== this.view.props.id) {
                 this.view.setState({
-                    popularity: data.relationships[this.view.props.id!]
+                    popularity: data.relationships[this.view.props.id!],
+                    powerRanking: this.comparePowerRankings(data)
                 });
             } else {
                 // TODO: instead to "selected = true and selected = false?"
-                this.view.setState({ popularity: 2 });
+                this.view.setState({ popularity: 2, powerRanking: 2 });
             }
         }
     };

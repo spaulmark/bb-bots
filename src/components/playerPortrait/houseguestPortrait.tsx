@@ -14,6 +14,7 @@ export interface PortraitProps {
     isEvicted?: boolean;
     isJury?: boolean;
     popularity?: number;
+    powerRanking?: number;
     deltaPopularity?: number;
     generateSubtitle?: (props: PortraitProps, state: PortraitState) => string[];
     superiors?: Set<number>;
@@ -22,6 +23,7 @@ export interface PortraitProps {
 
 export interface PortraitState {
     popularity?: number;
+    powerRanking?: number;
     displayMode: PortraitDisplayMode;
 }
 export class HouseguestPortrait extends React.Component<PortraitProps, PortraitState> {
