@@ -90,7 +90,7 @@ export class EpisodeFactory {
             populateSuperiors(nonEvictedHouseguests(newState));
         }
         if (inJury(gameState)) {
-            updatePowerRankings(newState.houseguests);
+            updatePowerRankings(nonEvictedHouseguests(newState));
         }
         updatePopularity(newState);
         updateFriendCounts(newState);
