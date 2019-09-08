@@ -12,7 +12,7 @@
         "@types/react-tooltip": "^3.9.3",
         "@types/rx": "^4.1.1",
         "bulma": "^0.7.4",
-        "lodash": "^4.17.11",
+        "lodash": "^4.17.13",
         "node-sass": "^4.11.0",
         "pure-rand": "^1.6.2",
         "react": "^16.8.3",
