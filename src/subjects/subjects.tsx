@@ -9,7 +9,7 @@ import { PortraitDisplayMode, popularityMode } from "../model/portraitDisplayMod
 export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
 // Push episodes to this subject to add them to the sidebar. Null resets everything.
 export const episodes$ = new BehaviorSubject<Episode | null>(null);
-// Switches episodes.
+// Forcibly switches to an episode. Used when adding a new episode.
 export const switchEpisode$ = new Subject<number>();
 export function newEpisode(episode: Episode | null) {
     episodes$.next(episode);
