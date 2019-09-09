@@ -13,6 +13,7 @@ import { BigBrotherFinale, generateBbFinaleInit } from "./bigBrotherFinale";
 import { rng, roundTwoDigits } from "../../utils";
 import { doesHeroWinTheFinale as heroWinsTheFinale } from "../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
+import { PowerRanking } from "../../model/powerRanking";
 
 function firstImpressions(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
@@ -42,7 +43,12 @@ function populateSuperiors(houseguests: Houseguest[]) {
 }
 
 function updatePowerRankings(houseguests: Houseguest[]) {
-    houseguests.forEach(hg => (hg.powerRanking = 1 - hg.superiors.size / (houseguests.length - 1)));
+    houseguests.forEach(hg => {
+        hg.powerRanking = new PowerRanking(
+            houseguests.length - 1 - hg.superiors.size,
+            houseguests.length - 1
+        );
+    });
 }
 
 function updatePopularity(gameState: GameState) {

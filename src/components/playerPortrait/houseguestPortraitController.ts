@@ -3,6 +3,7 @@ import { Subscription } from "rxjs";
 import { selectedPlayer$, displayMode$, getSelectedPlayer } from "../../subjects/subjects";
 import { SelectedPlayerData } from "./selectedPortrait";
 import { Rgb } from "../../model/color";
+import { PowerRanking } from "../../model/powerRanking";
 
 const selectedColor = new Rgb(51, 255, 249);
 
@@ -48,10 +49,11 @@ export class HouseguestPortraitController {
         this.subs.forEach(sub => sub.unsubscribe());
     }
 
-    private comparePowerRankings(data: SelectedPlayerData): number {
+    private comparePowerRankings(data: SelectedPlayerData): PowerRanking {
         // 0 is blue. 1 is orange
-        if (!data.superiors) return 0;
-        return data.superiors.has(this.view.props.id || -1) ? 1 : 0;
+        if (!data.superiors) return new PowerRanking(0, 1);
+        const id = this.view.props.id === undefined ? -1 : this.view.props.id;
+        return data.superiors.has(id) ? new PowerRanking(1, 1) : new PowerRanking(0, 1);
     }
 
     private refreshData = (data: SelectedPlayerData | null) => {
@@ -64,8 +66,7 @@ export class HouseguestPortraitController {
                     powerRanking: this.comparePowerRankings(data)
                 });
             } else {
-                // TODO: instead to "selected = true and selected = false?"
-                this.view.setState({ popularity: 2, powerRanking: 2 });
+                this.view.setState({ popularity: 2, powerRanking: new PowerRanking(2, 1) });
             }
         }
     };

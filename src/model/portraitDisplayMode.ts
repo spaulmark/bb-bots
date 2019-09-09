@@ -1,11 +1,13 @@
 import { Rgb, interpolateColor } from "./color";
-import { PortraitState } from "../components/memoryWall";
+import { PortraitState, PortraitProps } from "../components/memoryWall";
 import { extremeValues } from "../utils";
+import { generatePopularitySubtitle, generatePowerSubtitle } from "../components/playerPortrait/subtitle";
 
 export interface PortraitDisplayMode {
     minColor: Rgb;
     maxColor: Rgb;
     backgroundColor: (state: PortraitState) => string;
+    generateSubtitle: (props: PortraitProps, state: PortraitState, detailed?: boolean) => any[];
 }
 
 const popularityMinColor = new Rgb(252, 137, 137);
@@ -20,7 +22,8 @@ export const popularityMode: PortraitDisplayMode = {
         const extremePopularity = extremeValues(popularity);
         const percent = (extremePopularity + 1) / 2;
         return interpolateColor(popularityMinColor, popularityMaxColor, percent);
-    }
+    },
+    generateSubtitle: generatePopularitySubtitle
 };
 
 const powerMaxColor = new Rgb(255, 204, 94);
@@ -32,6 +35,7 @@ export const powerMode: PortraitDisplayMode = {
         const powerRanking = state.powerRanking;
         if (powerRanking === undefined) return "";
 
-        return interpolateColor(powerMinColor, powerMaxColor, powerRanking);
-    }
+        return interpolateColor(powerMinColor, powerMaxColor, powerRanking.toFloat);
+    },
+    generateSubtitle: generatePowerSubtitle
 };

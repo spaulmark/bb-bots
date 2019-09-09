@@ -5,6 +5,7 @@ import { RelationshipMap } from "../../utils";
 import _ from "lodash";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
+import { PowerRanking } from "../../model/powerRanking";
 
 export interface PortraitProps {
     imageURL: string;
@@ -14,16 +15,16 @@ export interface PortraitProps {
     isEvicted?: boolean;
     isJury?: boolean;
     popularity?: number;
-    powerRanking?: number;
+    powerRanking?: PowerRanking;
     deltaPopularity?: number;
-    generateSubtitle?: (props: PortraitProps, state: PortraitState) => string[];
+    detailed?: boolean;
     superiors?: Set<number>;
     getFriendEnemyCount?: () => { friends: number; enemies: number };
 }
 
 export interface PortraitState {
     popularity?: number;
-    powerRanking?: number;
+    powerRanking?: PowerRanking;
     displayMode: PortraitDisplayMode;
 }
 export class HouseguestPortrait extends React.Component<PortraitProps, PortraitState> {
@@ -64,9 +65,8 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         const props = this.props;
         const imageClass = getImageClass(props);
         let subtitle: any[] = [];
-        if (props.generateSubtitle) {
-            subtitle = props.generateSubtitle(this.props, this.state);
-        }
+        subtitle = this.state.displayMode.generateSubtitle(this.props, this.state, !!props.detailed);
+
         let className = "";
         if (props.isJury) {
             className = "jury";
@@ -85,7 +85,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
                 <br />
                 {props.name}
                 <br />
-                {!!props.generateSubtitle && <small className="portrait-history">{subtitle}</small>}
+                {<small className="portrait-history">{subtitle}</small>}
             </div>
         );
     }

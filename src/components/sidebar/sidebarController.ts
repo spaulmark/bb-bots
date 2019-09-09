@@ -13,7 +13,6 @@ import {
     getSelectedPlayer,
     selectedPlayer$
 } from "../../subjects/subjects";
-import { selectPlayer } from "../playerPortrait/selectedPortrait";
 
 interface IndexedScene {
     scene: Scene;
