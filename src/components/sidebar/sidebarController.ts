@@ -1,7 +1,7 @@
 import { Subscription } from "rxjs";
 import { Sidebar } from "./sidebar";
 import { Season } from "../../model/season";
-import { Episode, nonEvictedHouseguests } from "../../model";
+import { Episode, nonEvictedHouseguests, getById } from "../../model";
 import { Scene } from "../episode/scene";
 import {
     mainContentStream$,
@@ -9,7 +9,9 @@ import {
     switchEpisode$,
     newEpisode,
     switchSceneRelative,
-    cast$
+    cast$,
+    getSelectedPlayer,
+    selectedPlayer$
 } from "../../subjects/subjects";
 
 interface IndexedScene {
@@ -52,10 +54,15 @@ export class SidebarController {
         return this.selectedEpisode;
     }
 
-    public switchToScene(id: number) {
+    public async switchToScene(id: number) {
         mainContentStream$.next(this.scenes[id].scene.render);
         this.selectedEpisode = this.scenes[id].index;
-        this.view.setState({ selectedScene: id });
+        await this.view.setState({ selectedScene: id });
+        if (getSelectedPlayer() !== null) {
+            selectedPlayer$.next(
+                getById(this.scenes[this.view.state.selectedScene].scene.gameState, getSelectedPlayer()!.id)
+            );
+        }
     }
 
     private switchSceneRelative = (delta: number) => {
@@ -70,7 +77,7 @@ export class SidebarController {
             // Go back to an earlier scene
             this.switchToScene(targetScene);
         } else if (targetScene === renderedScenes) {
-            // Generate a new scene
+            // Generate a new scene, then jump to it
             const currentGameState = lastEpisode.gameState;
             const newPlayerCount = nonEvictedHouseguests(lastEpisode.gameState).length;
             const nextEpisodeType = this.season.whichEpisodeType(newPlayerCount);

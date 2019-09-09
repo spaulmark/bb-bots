@@ -19,7 +19,7 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
         this.state = { name: props.name };
     }
 
-    public componentWillReceiveProps(props: SetupPortraitProps) {
+    public UNSAFE_componentWillReceiveProps(props: SetupPortraitProps) {
         this.setState({ name: props.name });
     }
 

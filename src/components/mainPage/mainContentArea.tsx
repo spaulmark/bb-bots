@@ -11,7 +11,7 @@ export class MainContentArea extends React.Component<{}, { content: any }> {
         this.state = { content: null };
     }
 
-    public componentWillMount() {
+    public componentDidMount() {
         this.contentStream = mainContentStream$.subscribe(content => {
             this.setState({ content });
         });

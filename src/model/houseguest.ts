@@ -1,5 +1,6 @@
 import { PlayerProfile } from "./playerProfile";
 import { RelationshipMap } from "../utils";
+import { PowerRanking } from "./powerRanking";
 
 interface HouseguestInit extends PlayerProfile {
     id: number;
@@ -20,6 +21,9 @@ export class Houseguest extends PlayerProfile {
     public popularity: number = 0;
     public deltaPopularity: number = 0;
     readonly relationships: RelationshipMap = {};
+
+    // power rankings range from 0 to 1
+    public powerRanking: PowerRanking = new PowerRanking(0, 1);
     readonly superiors: Set<number> = new Set<number>();
 
     public relationshipWith(villain: Houseguest): number {

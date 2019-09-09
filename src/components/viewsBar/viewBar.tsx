@@ -1,22 +1,14 @@
 import React from "react";
-import { PortraitDisplayMode, popularityMode, powerMode } from "../../model/portraitDisplayMode";
-import { displayMode$ } from "../../subjects/subjects";
-
-function setDisplayMode(p: PortraitDisplayMode) {
-    displayMode$.next(p);
-}
+import { popularityMode, powerMode } from "../../model/portraitDisplayMode";
+import { ViewBarTag } from "./viewBarTag";
 
 export class ViewsBar extends React.Component {
-    render() {
+    public render() {
         return (
             <div className="level box is-mobile" key="viewsbar">
-                <span className="level-item tag" onClick={() => setDisplayMode(popularityMode)}>
-                    Popularity View
-                </span>
-                <span className="level-item tag" onClick={() => setDisplayMode(powerMode)}>
-                    Power Rankings
-                </span>
-                <span className="level-item tag">Cliques</span>
+                <ViewBarTag mode={popularityMode} text={"Relationships"}></ViewBarTag>
+                <ViewBarTag mode={powerMode} text={"Power Rankings"}></ViewBarTag>
+                <ViewBarTag mode={powerMode} disabled={true} text={"Cliques [Coming Soon™]"}></ViewBarTag>
             </div>
         );
     }
