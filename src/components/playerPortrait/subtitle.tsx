@@ -14,10 +14,6 @@ export function generatePowerSubtitle(
     state: PortraitState,
     _: boolean | undefined
 ): any[] {
-    if (state.powerRanking && state.powerRanking.beats === 0 && state.powerRanking.outOf === 1) {
-        return generatePopularitySubtitle(hero, state, _);
-    }
-
     let key = 0;
     let subtitle: any[] = [];
     key = addPopularityLine(state, hero, !!_, subtitle, key);

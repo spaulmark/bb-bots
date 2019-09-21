@@ -34,9 +34,6 @@ export const powerMode: PortraitDisplayMode = {
     backgroundColor: (state: PortraitState) => {
         const powerRanking = state.powerRanking;
         if (powerRanking === undefined) return "";
-        if (powerRanking.beats === 0 && powerRanking.outOf === 1) {
-            return popularityMode.backgroundColor(state);
-        }
 
         return interpolateColor(powerMinColor, powerMaxColor, powerRanking.toFloat);
     },
