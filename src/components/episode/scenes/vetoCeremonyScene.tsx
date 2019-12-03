@@ -16,9 +16,8 @@ export function generateVetoCeremonyScene(
     initialNominees[0] = getById(initialGameState, initialNominees[0].id);
     initialNominees[1] = getById(initialGameState, initialNominees[1].id);
     HoH = getById(initialGameState, HoH.id);
-
-    povTarget = useGoldenVeto(povWinner, initialNominees, initialGameState);
-
+    const vetoChoice = useGoldenVeto(povWinner, initialNominees, initialGameState);
+    povTarget = vetoChoice.decision;
     if (!povTarget) {
         descisionText += "... not to use the power of veto.";
     } else if (povWinner.id == initialNominees[0].id || povWinner.id == initialNominees[1].id) {
@@ -26,7 +25,6 @@ export function generateVetoCeremonyScene(
     } else {
         descisionText += `...to use the power of veto on ${povTarget.name}.`;
     }
-
     let replacementSpeech = "";
     let nameAReplacement = "";
     let finalNominees: any[] = initialNominees;
@@ -54,7 +52,6 @@ export function generateVetoCeremonyScene(
         getById(initialGameState, replacementNom.id).nominations++;
         replacementSpeech = `My replacement nominee is ${replacementNom.name}.`;
     }
-
     const scene = new Scene({
         title: "Veto Ceremony",
         gameState: initialGameState,
@@ -67,8 +64,8 @@ export function generateVetoCeremonyScene(
                 But I have the power to veto one of these nominations.
                 <br />
                 <b>
-                    I have decided...
-                    <Portrait houseguest={povWinner} />
+                    I have decided... <br />
+                    <Portrait houseguest={{ ...povWinner, tooltip: vetoChoice.reason }} />
                     {descisionText}
                 </b>
                 {nameAReplacement}
