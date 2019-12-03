@@ -10,7 +10,7 @@ import React from "react";
 export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
     const nominees = nonEvictedHouseguests(newGameState).filter(hg => hg.id !== HoH.id);
-    const { vote, reason } = castEvictionVote(HoH, nominees, newGameState);
+    const { decision: vote, reason } = castEvictionVote(HoH, nominees, newGameState);
     const evictee = nominees[vote];
     const hoh: ProfileHouseguest = { ...HoH };
     hoh.tooltip = reason;

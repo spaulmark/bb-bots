@@ -7,11 +7,11 @@ import {
     getById
 } from "../../../model";
 import { Scene } from "../scene";
-import { nominatePlayer } from "../../../utils/ai/aiApi";
 import { shuffle } from "lodash";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
+import { nominateNPlayers } from "../../../utils/ai/aiApi";
 
 export function generateNomCeremonyScene(
     initialGameState: GameState,
@@ -19,8 +19,11 @@ export function generateNomCeremonyScene(
 ): [GameState, Scene, Houseguest[]] {
     const newGameState = new MutableGameState(initialGameState);
     const options = exclude(nonEvictedHouseguests(newGameState), [HoH]);
-    const nom1 = getById(newGameState, nominatePlayer(HoH, options, newGameState));
-    const nom2 = getById(newGameState, nominatePlayer(HoH, exclude(options, [nom1]), newGameState));
+    const nom1 = getById(newGameState, nominateNPlayers(HoH, options, newGameState, 2)[0].decision);
+    const nom2 = getById(
+        newGameState,
+        nominateNPlayers(HoH, exclude(options, [nom1]), newGameState, 2)[1].decision
+    );
     nom1.nominations++;
     nom2.nominations++;
     const noms = shuffle([nom1, nom2]);

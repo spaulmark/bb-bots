@@ -21,14 +21,14 @@ export function generateEvictionScene(
             const logic = castEvictionVote(hg, nominees, newGameState);
             const result: ProfileHouseguest = { ...hg };
             result.tooltip = logic.reason;
-            votes[logic.vote].push(result);
+            votes[logic.decision].push(result);
         }
     });
     const votesFor0 = votes[0].length;
     const votesFor1 = votes[1].length;
 
     let tieVote = votesFor0 === votesFor1;
-    let tieBreaker = { vote: 0, reason: "Error you should not be seeing this" };
+    let tieBreaker = { decision: 0, reason: "Error you should not be seeing this" };
     if (tieVote) {
         tieBreaker = castEvictionVote(HoH, nominees, newGameState);
     }
@@ -38,7 +38,7 @@ export function generateEvictionScene(
     } else if (votesFor1 > votesFor0) {
         evictee = nominees[1];
     } else {
-        evictee = nominees[tieBreaker.vote];
+        evictee = nominees[tieBreaker.decision];
     }
     evictHouseguest(newGameState, evictee.id);
 
@@ -69,9 +69,7 @@ export function generateEvictionScene(
                     <div>
                         <p style={{ textAlign: "center" }}>
                             <b> We have a tie.</b> <br />
-                            {`${
-                                HoH.name
-                            }, as current Head of Household, you must cast the sole vote to evict.`}
+                            {`${HoH.name}, as current Head of Household, you must cast the sole vote to evict.`}
                         </p>
                         <Portraits houseguests={[displayHoH]} centered={true} />
                         <p style={{ textAlign: "center" }}>

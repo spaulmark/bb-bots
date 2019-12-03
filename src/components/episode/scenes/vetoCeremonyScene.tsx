@@ -1,6 +1,6 @@
 import { GameState, Houseguest, getById, exclude } from "../../../model";
 import { Scene } from "../scene";
-import { useGoldenVeto, nominatePlayer } from "../../../utils/ai/aiApi";
+import { useGoldenVeto, nominateNPlayers } from "../../../utils/ai/aiApi";
 import { Portraits, Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
@@ -32,13 +32,11 @@ export function generateVetoCeremonyScene(
     let finalNominees: any[] = initialNominees;
     if (povTarget) {
         finalNominees = initialNominees.filter(hg => hg.id != povTarget!.id);
-        nameAReplacement += ` ${
-            HoH.name
-        }, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
+        nameAReplacement += ` ${HoH.name}, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
         const replacementNom = {
             ...getById(
                 initialGameState,
-                nominatePlayer(
+                nominateNPlayers(
                     HoH,
                     exclude(initialGameState.houseguests, [
                         HoH,
@@ -46,8 +44,9 @@ export function generateVetoCeremonyScene(
                         initialNominees[1],
                         povWinner
                     ]),
-                    initialGameState
-                )
+                    initialGameState,
+                    1
+                )[0].decision
             )
         };
         replacementNom.nominations++;
@@ -63,9 +62,7 @@ export function generateVetoCeremonyScene(
             <div>
                 This is the Veto Ceremony.
                 <br />
-                {`${initialNominees[0].name} and ${
-                    initialNominees[1].name
-                } have been nominated for eviction.`}
+                {`${initialNominees[0].name} and ${initialNominees[1].name} have been nominated for eviction.`}
                 <Portraits houseguests={initialNominees} />
                 But I have the power to veto one of these nominations.
                 <br />
