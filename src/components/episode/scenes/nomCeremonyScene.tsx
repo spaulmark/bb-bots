@@ -12,6 +12,8 @@ import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { nominateNPlayers } from "../../../utils/ai/aiApi";
+import { Centered } from "../../layout/centered";
+import { DividerBox } from "../../layout/box";
 
 export function generateNomCeremonyScene(
     initialGameState: GameState,
@@ -32,22 +34,23 @@ export function generateNomCeremonyScene(
         gameState: newGameState,
         content: (
             <div>
-                <Portrait houseguest={HoH} />
+                <Portrait centered={true} houseguest={HoH} />
+                <Centered>
+                    This is the nomination ceremony. It is my responsibility as the Head of Household to
+                    nominate two houseguests for eviction.
+                </Centered>
+                <div className="columns is-marginless is-centered">
+                    <DividerBox className="column">
+                        <Centered> My first nominee is...</Centered>
+                        <Portrait centered={true} houseguest={noms[0]} />
+                    </DividerBox>
+                    <DividerBox className="column">
+                        <Centered>My second nominee is...</Centered>
+                        <Portrait centered={true} houseguest={noms[1]} />
+                    </DividerBox>
+                </div>
+                <b>{`I have nominated you, ${noms[0].name} and you, ${noms[1].name} for eviction.`}</b>
                 <br />
-                This is the nomination ceremony. It is my responsibility as the Head of Household to nominate
-                two houseguests for eviction.
-                <br />
-                <b>
-                    My first nominee is...
-                    <br />
-                    <Portrait houseguest={noms[0]} />
-                    <br />
-                    My second nominee is...
-                    <br />
-                    <Portrait houseguest={noms[1]} />
-                    {`I have nominated you, ${noms[0].name} and you, ${noms[1].name} for eviction.`}
-                    <br />
-                </b>
                 <NextEpisodeButton />
             </div>
         )

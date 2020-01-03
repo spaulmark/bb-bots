@@ -131,7 +131,6 @@ export function nominateNPlayers(
     return result;
 }
 
-// TODO: change this to return a a choice with logic
 export function useGoldenVeto(
     hero: Houseguest,
     nominees: Houseguest[],
@@ -181,7 +180,7 @@ function useGoldenVetoPostJury(
             reason = `I have to save ${nominee.name}, because they are the last person I can beat.`;
         }
         // must be a friend and a non-target
-        // TODO: some people have the entire game as targets. they shouldn't be affected.
+        // TODO: some people have the entire game as targets. they shouldn't be affected. --------------------------
         if (relationship === Relationship.Friend && nomineeIsSuperior !== shouldTargetSuperiors) {
             const excuse = heroShouldTargetSuperiors(hero, gameState)
                 ? `I can beat them in the end.`

@@ -3,6 +3,7 @@ import { Scene } from "../scene";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
+import { Centered, CenteredBold } from "../../layout/centered";
 
 export function generateHohCompScene(initialGameState: GameState): [GameState, Scene, Houseguest] {
     const newGameState = new MutableGameState(initialGameState);
@@ -18,12 +19,12 @@ export function generateHohCompScene(initialGameState: GameState): [GameState, S
         gameState: initialGameState,
         content: (
             <div>
-                {previousHoh.length > 0 &&
-                    `Houseguests, it's time to find a new Head of Household. As outgoing HoH, ${
-                        previousHoh[0].name
-                    } will not compete. `}
-                <Portrait houseguest={newHoH} />
-                {newHoH.name} has won Head of Household!
+                <Centered>
+                    {previousHoh.length > 0 &&
+                        `Houseguests, it's time to find a new Head of Household. As outgoing HoH, ${previousHoh[0].name} will not compete. `}
+                </Centered>
+                <Portrait centered={true} houseguest={newHoH} />
+                <CenteredBold>{newHoH.name} has won Head of Household!</CenteredBold>
                 <br />
                 <NextEpisodeButton />
             </div>

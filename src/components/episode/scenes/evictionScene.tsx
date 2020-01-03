@@ -7,6 +7,8 @@ import { evictHouseguest } from "../bigBrotherEpisode";
 import { Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
+import { CenteredBold } from "../../layout/centered";
+import { DividerBox } from "../../layout/box";
 
 export function generateEvictionScene(
     initialGameState: GameState,
@@ -54,16 +56,14 @@ export function generateEvictionScene(
         gameState: initialGameState,
         content: (
             <div>
-                <p style={{ textAlign: "center" }}>
-                    <b>{voteCountText} </b>
-                </p>
+                <CenteredBold>{voteCountText}</CenteredBold>
                 <div className="columns is-centered">
-                    <div className="column box">
+                    <DividerBox className="column">
                         <Portraits houseguests={votes[0]} centered={true} />
-                    </div>
-                    <div className="column box">
+                    </DividerBox>
+                    <DividerBox className="column">
                         <Portraits houseguests={votes[1]} centered={true} />
-                    </div>
+                    </DividerBox>
                 </div>
                 {tieVote && (
                     <div>
