@@ -6,6 +6,7 @@ import { evictHouseguest } from "../bigBrotherEpisode";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
+import { CenteredBold, Centered } from "../../layout/centered";
 
 export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
@@ -23,14 +24,12 @@ export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest)
                 <div style={{ textAlign: "center" }}>
                     {`As the final HoH of the season, ${HoH.name}, you may now cast the sole vote to evict.`}
                     <Portrait houseguest={hoh} centered={true} />
-                    <b>
-                        <p>{`I vote to evict ${evictee.name}.`}</p>
-                    </b>
+                    <CenteredBold>{`I vote to evict ${evictee.name}.`}</CenteredBold>
                     <Portraits houseguests={nominees} centered={true} />
-                    <p>
+                    <Centered>
                         It's official... {evictee.name}, you will be the final person leaving the Big Brother
                         House.
-                    </p>
+                    </Centered>
                 </div>
                 <NextEpisodeButton />
             </div>

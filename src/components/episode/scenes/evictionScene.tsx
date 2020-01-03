@@ -7,7 +7,7 @@ import { evictHouseguest } from "../bigBrotherEpisode";
 import { Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
-import { CenteredBold } from "../../layout/centered";
+import { CenteredBold, Centered } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 
 export function generateEvictionScene(
@@ -67,17 +67,12 @@ export function generateEvictionScene(
                 </div>
                 {tieVote && (
                     <div>
-                        <p style={{ textAlign: "center" }}>
-                            <b> We have a tie.</b> <br />
-                            {`${HoH.name}, as current Head of Household, you must cast the sole vote to evict.`}
-                        </p>
+                        <CenteredBold> We have a tie.</CenteredBold>
+                        <Centered>{`${HoH.name}, as current Head of Household, you must cast the sole vote to evict.`}</Centered>
                         <Portraits houseguests={[displayHoH]} centered={true} />
-                        <p style={{ textAlign: "center" }}>
-                            <b>I vote to evict {`${evictee.name}.`}</b>
-                        </p>
+                        <CenteredBold>I vote to evict {`${evictee.name}.`}</CenteredBold>
                     </div>
                 )}
-
                 <Portraits
                     houseguests={[
                         getById(newGameState, nominees[0].id),
@@ -85,9 +80,7 @@ export function generateEvictionScene(
                     ]}
                     centered={true}
                 />
-                <p style={{ textAlign: "center" }}>
-                    <b>{`${evictee.name}... you have been evicted from the Big Brother House.`}</b>
-                </p>
+                <CenteredBold>{`${evictee.name}... you have been evicted from the Big Brother House.`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
         )
