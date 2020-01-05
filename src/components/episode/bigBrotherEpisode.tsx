@@ -27,7 +27,7 @@ export const BigBrotherVanilla: EpisodeType = {
     eliminates: 1
 };
 
-// TODO: Refactoring ideas
+// Refactoring ideas
 /**
  * Might be best to start passing ids instead of houseguests for HoH/nominees/veto winner
  */
@@ -81,7 +81,6 @@ export function generateBbVanilla(initialGameState: GameState): BigBrotherVanill
     const title = `Week ${currentGameState.phase}`;
     const content = (
         <div>
-            {/* TODO: custom title here*/}
             {`Week ${currentGameState.phase}`}
             <MemoryWall houseguests={initialGameState.houseguests} /> <br />
             <NextEpisodeButton />

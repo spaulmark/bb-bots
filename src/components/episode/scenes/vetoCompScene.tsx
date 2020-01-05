@@ -10,6 +10,7 @@ import { Scene } from "../scene";
 import { Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
+import { Centered, CenteredBold } from "../../layout/centered";
 
 export function generateVetoCompScene(
     initialGameState: GameState,
@@ -47,9 +48,7 @@ export function generateVetoCompScene(
     if (everyoneWillPlay) {
         introText = "Everyone left in the house will compete in this challenge.";
     } else {
-        introText = `${HoH.name}, as Head of Household, and ${nom1.name} and ${
-            nom2.name
-        } as nominees, will compete, as well as 3 others chosen by random draw.`;
+        introText = `${HoH.name}, as Head of Household, and ${nom1.name} and ${nom2.name} as nominees, will compete, as well as 3 others chosen by random draw.`;
     }
     const extras = [povPlayers[3]];
     povPlayers[4] && extras.push(povPlayers[4]);
@@ -59,17 +58,13 @@ export function generateVetoCompScene(
         gameState: initialGameState,
         content: (
             <div>
-                It's time to pick players for the veto competition.
-                <br />
-                <Portraits houseguests={[HoH, nom1, nom2]} />
-                <br />
-                {introText}
-                <br />
-                <Portraits houseguests={extras} />
-                ...
-                <Portraits houseguests={[povWinner]} />
-                {`${povWinner.name} has won the Golden Power of Veto!`}
-                <br />
+                <Centered>It's time to pick players for the veto competition.</Centered>
+                <Portraits centered={true} houseguests={[HoH, nom1, nom2]} />
+                <Centered>{introText}</Centered>
+                <Portraits centered={true} houseguests={extras} />
+                <Centered>...</Centered>
+                <Portraits centered={true} houseguests={[povWinner]} />
+                <CenteredBold>{`${povWinner.name} has won the Golden Power of Veto!`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
         )
