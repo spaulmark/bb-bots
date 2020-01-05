@@ -28,7 +28,11 @@ export class Tooltip extends React.Component<TooltipProps, ToolTipState> {
 
     public render() {
         return (
-            <Popover isOpen={this.state.visible} content={<Text>{this.props.text}</Text>}>
+            <Popover
+                position={["top", "bottom"]}
+                isOpen={this.state.visible}
+                content={<Text>{this.props.text}</Text>}
+            >
                 <div
                     onMouseEnter={() => this.setState({ visible: true })}
                     onMouseLeave={() => this.setState({ visible: false })}
