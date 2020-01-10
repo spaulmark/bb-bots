@@ -1,9 +1,11 @@
 import { GameState, Houseguest, getById, exclude } from "../../../model";
 import { Scene } from "../scene";
 import { useGoldenVeto, nominateNPlayers } from "../../../utils/ai/aiApi";
-import { Portraits, Portrait } from "../../playerPortrait/portraits";
+import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
+import { Centered, CenteredBold } from "../../layout/centered";
+import { DividerBox } from "../../layout/box";
 
 export function generateVetoCeremonyScene(
     initialGameState: GameState,
@@ -27,9 +29,8 @@ export function generateVetoCeremonyScene(
     }
     let replacementSpeech = "";
     let nameAReplacement = "";
-    let finalNominees: any[] = initialNominees;
+    let finalNominees: any[] = [...initialNominees];
     if (povTarget) {
-        finalNominees = initialNominees.filter(hg => hg.id != povTarget!.id);
         nameAReplacement += ` ${HoH.name}, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
         const replacementNom = {
             ...getById(
@@ -47,8 +48,9 @@ export function generateVetoCeremonyScene(
                 )[0].decision
             )
         };
+        const replacementIndex = initialNominees.findIndex(hg => hg.id === vetoChoice.decision!.id);
+        finalNominees[replacementIndex] = replacementNom;
         replacementNom.nominations++;
-        finalNominees.push(replacementNom);
         getById(initialGameState, replacementNom.id).nominations++;
         replacementSpeech = `My replacement nominee is ${replacementNom.name}.`;
     }
@@ -57,21 +59,35 @@ export function generateVetoCeremonyScene(
         gameState: initialGameState,
         content: (
             <div>
-                This is the Veto Ceremony.
-                <br />
-                {`${initialNominees[0].name} and ${initialNominees[1].name} have been nominated for eviction.`}
-                <Portraits houseguests={initialNominees} />
-                But I have the power to veto one of these nominations.
-                <br />
-                <b>
+                <Centered>This is the Veto Ceremony.</Centered>
+                <Centered>
+                    {`${initialNominees[0].name} and ${initialNominees[1].name} have been nominated for eviction, 
+                    but I have the power to veto one of these nominations.`}
+                </Centered>
+                <div className="columns is-marginless is-centered">
+                    <DividerBox className="column">
+                        <Portrait centered={true} houseguest={initialNominees[0]} />
+                    </DividerBox>
+                    <DividerBox className="column">
+                        <Portrait centered={true} houseguest={initialNominees[1]} />
+                    </DividerBox>
+                </div>
+                <CenteredBold>
                     I have decided... <br />
-                    <Portrait houseguest={{ ...povWinner, tooltip: vetoChoice.reason }} />
+                    <Portrait centered={true} houseguest={{ ...povWinner, tooltip: vetoChoice.reason }} />
                     {descisionText}
-                </b>
-                {nameAReplacement}
-                {replacementSpeech && <Portrait houseguest={HoH} />}
-                <b>{replacementSpeech}</b>
-                <Portraits houseguests={finalNominees} />
+                </CenteredBold>
+                <Centered>{nameAReplacement}</Centered>
+                {replacementSpeech && <Portrait centered={true} houseguest={HoH} />}
+                <CenteredBold>{replacementSpeech}</CenteredBold>
+                <div className="columns is-marginless is-centered">
+                    <DividerBox className="column">
+                        <Portrait centered={true} houseguest={finalNominees[0]} />
+                    </DividerBox>
+                    <DividerBox className="column">
+                        <Portrait centered={true} houseguest={finalNominees[1]} />
+                    </DividerBox>
+                </div>
                 <NextEpisodeButton />
             </div>
         )
