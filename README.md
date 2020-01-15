@@ -11,15 +11,6 @@ It's hard to follow the logic behind some of the decisions that the characters m
 BB-bots seeks to fix these issues by having setup be as simple as dragging and dropping images or copy-pasting links (with optional names), making a UI that is focused on delivering information in an easy to read way, and revamping the logic used for players to make game descisions.
 
 # TODO #
-## Logic ##
-* [x] Basic game logic
-* [ ] Target & pawn based nominations
-* [ ] Better veto logic
-* [x] Players take into account who they can beat in the end
-* [ ] Semi-realistic first impressions algorithm
-* [ ] Dynamic relationships
-* [ ] Complex game logic: Players react to events
-* [ ] Complex game logic: Gossip and influences
 
 ## Features ##
 * [x] Cast X random players button on setup screen
@@ -30,6 +21,18 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 * [ ] Editable player names
 * [ ] Actually making it look nice
 * [ ] Custom season builder, customize the twists in the game (Double Eviction, Double HoH, etc.)
+
+## Logic ## (aka: the stuff that I could tweak until the end of time and still not be happy with)
+* [x] Basic game logic
+* [ ] Target & pawn based nominations
+* [ ] Better veto logic
+* [x] Players take into account who they can beat in the end
+* [ ] Semi-realistic first impressions algorithm
+* [ ] Dynamic relationships
+* [ ] Complex game logic: Players react to events
+* [ ] Complex game logic: Gossip and influences
+
+
 
 ## Running Locally ## 
 ```
