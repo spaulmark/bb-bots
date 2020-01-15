@@ -5,17 +5,27 @@ import { Tooltip } from "../tooltip/tooltip";
 
 let key = -1;
 
-export function Portrait(props: { houseguest: ProfileHouseguest; centered?: boolean }): JSX.Element {
-    const result = (
+function PortraitWrapper(props: { centered?: boolean; children: any }): JSX.Element {
+    return (
         <div
             key={key++}
-            className={`columns is-gapless is-mobile is-multiline ${props.centered && "is-centered"}`}
+            className={`columns is-gapless is-mobile is-multiline ${props.centered ? "is-centered" : ""}`}
         >
-            {houseguestToPortrait(props.houseguest)}
+            {props.children}
         </div>
     );
+}
+
+export function Portrait(props: { houseguest: ProfileHouseguest; centered?: boolean }): JSX.Element {
+    const result = (
+        <PortraitWrapper centered={props.centered}>{houseguestToPortrait(props.houseguest)}</PortraitWrapper>
+    );
     if (props.houseguest.tooltip) {
-        return <Tooltip text={props.houseguest.tooltip}>{result}</Tooltip>;
+        return (
+            <PortraitWrapper centered={props.centered}>
+                <Tooltip text={props.houseguest.tooltip}>{houseguestToPortrait(props.houseguest)}</Tooltip>
+            </PortraitWrapper>
+        );
     }
     return result;
 }

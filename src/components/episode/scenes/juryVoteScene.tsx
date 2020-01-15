@@ -15,7 +15,6 @@ export function juryVoteScene(initialGameState: GameState): Scene {
     });
     const voteBlocks = [];
 
-    // TODO: the formatting on this episode sucks...
     for (let i = 0; i < votes.length; i++) {
         voteBlocks.push(
             <div className="columns" key={`jury-vote${i}`}>

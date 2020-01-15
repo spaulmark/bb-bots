@@ -7,6 +7,8 @@ import { evictHouseguest } from "../bigBrotherEpisode";
 import { Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
+import { CenteredBold, Centered } from "../../layout/centered";
+import { DividerBox } from "../../layout/box";
 
 export function generateEvictionScene(
     initialGameState: GameState,
@@ -21,14 +23,14 @@ export function generateEvictionScene(
             const logic = castEvictionVote(hg, nominees, newGameState);
             const result: ProfileHouseguest = { ...hg };
             result.tooltip = logic.reason;
-            votes[logic.vote].push(result);
+            votes[logic.decision].push(result);
         }
     });
     const votesFor0 = votes[0].length;
     const votesFor1 = votes[1].length;
 
     let tieVote = votesFor0 === votesFor1;
-    let tieBreaker = { vote: 0, reason: "Error you should not be seeing this" };
+    let tieBreaker = { decision: 0, reason: "Error you should not be seeing this" };
     if (tieVote) {
         tieBreaker = castEvictionVote(HoH, nominees, newGameState);
     }
@@ -38,7 +40,7 @@ export function generateEvictionScene(
     } else if (votesFor1 > votesFor0) {
         evictee = nominees[1];
     } else {
-        evictee = nominees[tieBreaker.vote];
+        evictee = nominees[tieBreaker.decision];
     }
     evictHouseguest(newGameState, evictee.id);
 
@@ -54,32 +56,23 @@ export function generateEvictionScene(
         gameState: initialGameState,
         content: (
             <div>
-                <p style={{ textAlign: "center" }}>
-                    <b>{voteCountText} </b>
-                </p>
+                <CenteredBold>{voteCountText}</CenteredBold>
                 <div className="columns is-centered">
-                    <div className="column box">
+                    <DividerBox className="column">
                         <Portraits houseguests={votes[0]} centered={true} />
-                    </div>
-                    <div className="column box">
+                    </DividerBox>
+                    <DividerBox className="column">
                         <Portraits houseguests={votes[1]} centered={true} />
-                    </div>
+                    </DividerBox>
                 </div>
                 {tieVote && (
                     <div>
-                        <p style={{ textAlign: "center" }}>
-                            <b> We have a tie.</b> <br />
-                            {`${
-                                HoH.name
-                            }, as current Head of Household, you must cast the sole vote to evict.`}
-                        </p>
+                        <CenteredBold> We have a tie.</CenteredBold>
+                        <Centered>{`${HoH.name}, as current Head of Household, you must cast the sole vote to evict.`}</Centered>
                         <Portraits houseguests={[displayHoH]} centered={true} />
-                        <p style={{ textAlign: "center" }}>
-                            <b>I vote to evict {`${evictee.name}.`}</b>
-                        </p>
+                        <CenteredBold>I vote to evict {`${evictee.name}.`}</CenteredBold>
                     </div>
                 )}
-
                 <Portraits
                     houseguests={[
                         getById(newGameState, nominees[0].id),
@@ -87,9 +80,7 @@ export function generateEvictionScene(
                     ]}
                     centered={true}
                 />
-                <p style={{ textAlign: "center" }}>
-                    <b>{`${evictee.name}... you have been evicted from the Big Brother House.`}</b>
-                </p>
+                <CenteredBold>{`${evictee.name}... you have been evicted from the Big Brother House.`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
         )

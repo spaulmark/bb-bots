@@ -3,7 +3,7 @@ import { Houseguest, inJury, GameState } from "../../model";
 export const relationship = (hero: Houseguest, villain: Houseguest) => hero.relationships[villain.id];
 
 export function favouriteIndex(hero: Houseguest, options: Houseguest[]) {
-    // Return the index of the houseguest that hero has the worst relationship with.
+    // Return the index of the houseguest that hero has the best relationship with.
     return highestScore(hero, options, relationship);
 }
 
@@ -75,7 +75,6 @@ export function hitList(hero: Houseguest, options: Houseguest[], gameState: Game
     let result = options;
     // jury logic is not affected by someone who is dead center in power rankings
     if (inJury(gameState) && heroShouldTargetSuperiors(hero, gameState)) {
-        // TODO: logic to take into account that i never want to eliminate the last guy i can actually beat
         if (hero.superiors.size * 2 < gameState.remainingPlayers - 1) {
             result = options.filter(hg => !hero.superiors.has(hg.id));
         } else {

@@ -17,7 +17,6 @@ export function generateBbFinaleInit(initialGameState: GameState): BigBrotherFin
     const title = "Finale";
     const content = (
         <div>
-            {/* TODO: custom title here*/}
             Finale Night
             <MemoryWall houseguests={initialGameState.houseguests} /> <br />
             <NextEpisodeButton />

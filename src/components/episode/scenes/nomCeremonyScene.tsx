@@ -7,11 +7,13 @@ import {
     getById
 } from "../../../model";
 import { Scene } from "../scene";
-import { nominatePlayer } from "../../../utils/ai/aiApi";
 import { shuffle } from "lodash";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
+import { nominateNPlayers } from "../../../utils/ai/aiApi";
+import { Centered, CenteredBold } from "../../layout/centered";
+import { DividerBox } from "../../layout/box";
 
 export function generateNomCeremonyScene(
     initialGameState: GameState,
@@ -19,8 +21,11 @@ export function generateNomCeremonyScene(
 ): [GameState, Scene, Houseguest[]] {
     const newGameState = new MutableGameState(initialGameState);
     const options = exclude(nonEvictedHouseguests(newGameState), [HoH]);
-    const nom1 = getById(newGameState, nominatePlayer(HoH, options, newGameState));
-    const nom2 = getById(newGameState, nominatePlayer(HoH, exclude(options, [nom1]), newGameState));
+    const nom1 = getById(newGameState, nominateNPlayers(HoH, options, newGameState, 2)[0].decision);
+    const nom2 = getById(
+        newGameState,
+        nominateNPlayers(HoH, exclude(options, [nom1]), newGameState, 2)[1].decision
+    );
     nom1.nominations++;
     nom2.nominations++;
     const noms = shuffle([nom1, nom2]);
@@ -29,22 +34,23 @@ export function generateNomCeremonyScene(
         gameState: newGameState,
         content: (
             <div>
-                <Portrait houseguest={HoH} />
+                <Centered>
+                    This is the nomination ceremony. It is my responsibility as the Head of Household to
+                    nominate two houseguests for eviction.
+                </Centered>
+                <Portrait centered={true} houseguest={HoH} />
+                <div className="columns is-marginless is-centered">
+                    <DividerBox className="column">
+                        <Centered> My first nominee is...</Centered>
+                        <Portrait centered={true} houseguest={noms[0]} />
+                    </DividerBox>
+                    <DividerBox className="column">
+                        <Centered>My second nominee is...</Centered>
+                        <Portrait centered={true} houseguest={noms[1]} />
+                    </DividerBox>
+                </div>
+                <CenteredBold>{`I have nominated you, ${noms[0].name} and you, ${noms[1].name} for eviction.`}</CenteredBold>
                 <br />
-                This is the nomination ceremony. It is my responsibility as the Head of Household to nominate
-                two houseguests for eviction.
-                <br />
-                <b>
-                    My first nominee is...
-                    <br />
-                    <Portrait houseguest={noms[0]} />
-                    <br />
-                    My second nominee is...
-                    <br />
-                    <Portrait houseguest={noms[1]} />
-                    {`I have nominated you, ${noms[0].name} and you, ${noms[1].name} for eviction.`}
-                    <br />
-                </b>
                 <NextEpisodeButton />
             </div>
         )
