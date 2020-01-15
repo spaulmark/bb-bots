@@ -29,6 +29,8 @@ export function generatePowerSubtitle(
                 <div key={key++}>{`WINS ${state.powerRanking.beats}/${state.powerRanking.outOf}`}</div>
             );
         }
+    } else {
+        subtitle.push(<br key={key++} style={{ lineHeight: 1 }} />);
     }
     return subtitle;
 }
