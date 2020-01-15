@@ -22,7 +22,8 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 * [ ] Actually making it look nice
 * [ ] Custom season builder, customize the twists in the game (Double Eviction, Double HoH, etc.)
 
-## Logic ## (aka: the stuff that I could tweak until the end of time and still not be happy with)
+## Logic ## 
+### (aka: the stuff that I could tweak until the end of time and still not be happy with) ###
 * [x] Basic game logic
 * [ ] Target & pawn based nominations
 * [ ] Better veto logic
