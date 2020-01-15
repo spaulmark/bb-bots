@@ -141,7 +141,8 @@ export function useGoldenVeto(
         result = { decision: hero, reason: "I am going to save myself." };
     } else {
         if (inJury(gameState)) {
-            result = useGoldenVetoPostJury(hero, nominees, gameState);
+            // Note that I am currently not using the post-jury veto logic, primarily because it sucks at the moment
+            result = useGoldenVetoPreJury(hero, nominees);
         } else {
             result = useGoldenVetoPreJury(hero, nominees);
         }
