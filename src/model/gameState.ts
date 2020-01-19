@@ -3,6 +3,7 @@ import { PlayerProfile } from "./playerProfile";
 import _ from "lodash";
 import { newRelationshipMap, rng } from "../utils";
 import { finalJurySize, getFinalists } from "./season";
+import { EpisodeLog } from "./logging/episodelog";
 
 // TODO: might want to make houseguests a dictionary. {id: houseguest}
 export function getById(gameState: GameState, id: number): Houseguest {
@@ -59,6 +60,7 @@ export class GameState {
     readonly remainingPlayers: number = 0;
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest;
+    readonly log: EpisodeLog[] = [];
 
     public constructor(init: PlayerProfile[] | GameState) {
         if (!(init instanceof Array)) {
@@ -85,6 +87,7 @@ export class MutableGameState {
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest;
+    readonly log: EpisodeLog[] = [];
 
     public constructor(init: GameState | MutableGameState) {
         const copy = _.cloneDeep(init);
