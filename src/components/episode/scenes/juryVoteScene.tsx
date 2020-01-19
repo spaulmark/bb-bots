@@ -12,7 +12,6 @@ export function juryVoteScene(initialGameState: GameState): Scene {
     const jurors = getJurors(initialGameState);
     const finalists = nonEvictedHouseguests(initialGameState);
     const votes: Array<ProfileHouseguest[]> = [[], []];
-
     jurors.forEach(juror => {
         const decision = castJuryVote(juror, finalists);
         const result: ProfileHouseguest = { ...juror };
@@ -26,7 +25,6 @@ export function juryVoteScene(initialGameState: GameState): Scene {
         : `By a vote of ${votesFor0} to ${votesFor1}...`;
 
     const winner = votesFor0 > votesFor1 ? finalists[0] : finalists[1];
-
     const scene = new Scene({
         title: "Jury Votes",
         gameState: initialGameState,

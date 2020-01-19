@@ -10,6 +10,7 @@ import { Scene } from "../scene";
 import { Portraits, Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
+import { Centered, CenteredBold } from "../../layout/centered";
 
 export function finalHohCompScene(initialGameState: GameState): [GameState, Scene, Houseguest] {
     const newGameState = new MutableGameState(initialGameState);
@@ -24,28 +25,20 @@ export function finalHohCompScene(initialGameState: GameState): [GameState, Scen
         gameState: newGameState,
         content: (
             <div>
-                <p>The final 3 houseguests compete in the endurance competition.</p>
-                <Portraits houseguests={final3} />
-                <Portrait houseguest={enduranceWinner} />
-                <p>
-                    <b>{`${enduranceWinner.name} has won the endurance competition!`}</b>
-                </p>
+                <Centered>The final 3 houseguests compete in the endurance competition.</Centered>
+                <Portraits houseguests={final3} centered={true} />
+                <Portrait houseguest={enduranceWinner} centered={true} />
+                <CenteredBold>{`${enduranceWinner.name} has won the endurance competition!`}</CenteredBold>
                 <hr />
-                <p>{`${enduranceLosers[0].name} and ${
-                    enduranceLosers[1].name
-                } compete in the skill competition.`}</p>
-                <Portraits houseguests={enduranceLosers} />
-                <Portrait houseguest={skillWinner} />
-                <p>
-                    <b>{`${skillWinner.name} has won the skill competition!`}</b>
-                </p>
+                <Centered>{`${enduranceLosers[0].name} and ${enduranceLosers[1].name} compete in the skill competition.`}</Centered>
+                <Portraits houseguests={enduranceLosers} centered={true} />
+                <Portrait houseguest={skillWinner} centered={true} />
+                <CenteredBold>{`${skillWinner.name} has won the skill competition!`}</CenteredBold>
                 <hr />
-                <p>{`${enduranceWinner.name} and ${skillWinner.name} compete in the quiz competition.`}</p>
-                <Portraits houseguests={[enduranceWinner, skillWinner]} />
-                <Portrait houseguest={finalHoH} />
-                <p>
-                    <b>{`Congratulations ${finalHoH.name}, you are the final Head of Household!`}</b>
-                </p>
+                <Centered>{`${enduranceWinner.name} and ${skillWinner.name} compete in the quiz competition.`}</Centered>
+                <Portraits houseguests={[enduranceWinner, skillWinner]} centered={true} />
+                <Portrait houseguest={finalHoH} centered={true} />
+                <CenteredBold>{`Congratulations ${finalHoH.name}, you are the final Head of Household!`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
         )
