@@ -81,7 +81,7 @@ export class SidebarController {
             const currentGameState = lastEpisode.gameState;
             const newPlayerCount = nonEvictedHouseguests(lastEpisode.gameState).length;
             const nextEpisodeType = this.season.whichEpisodeType(newPlayerCount);
-            if (newPlayerCount > 2) {
+            if (newPlayerCount > 0) {
                 newEpisode(this.season.renderEpisode(currentGameState, nextEpisodeType));
                 this.switchSceneRelative(1);
             }

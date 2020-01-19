@@ -9,11 +9,12 @@ import {
 import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
 import { BigBrotherVanilla, generateBbVanilla } from "./bigBrotherEpisode";
-import { BigBrotherFinale, generateBbFinaleInit } from "./bigBrotherFinale";
+import { BigBrotherFinale, generateBbFinale } from "./bigBrotherFinale";
 import { rng, roundTwoDigits } from "../../utils";
 import { doesHeroWinTheFinale as heroWinsTheFinale } from "../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
 import { PowerRanking } from "../../model/powerRanking";
+import { GameOver, generateGameOver } from "./gameOver";
 
 function firstImpressions(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
@@ -105,7 +106,9 @@ export class EpisodeFactory {
             case BigBrotherVanilla:
                 return generateBbVanilla(finalState);
             case BigBrotherFinale:
-                return generateBbFinaleInit(finalState);
+                return generateBbFinale(finalState);
+            case GameOver:
+                return generateGameOver(finalState);
             default:
                 throw new Error("Unsupported Episode Type");
         }

@@ -72,8 +72,6 @@ export class GameState {
                     new Houseguest({
                         ...profile,
                         id: ++id,
-                        // popularity: 0,
-                        // deltaPopularity: 0,
                         relationships: newRelationshipMap(profiles.length, id)
                     })
                 );

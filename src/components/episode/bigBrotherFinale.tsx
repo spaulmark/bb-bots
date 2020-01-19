@@ -13,7 +13,7 @@ export const BigBrotherFinale: EpisodeType = {
     eliminates: 2
 };
 
-export function generateBbFinaleInit(initialGameState: GameState): BigBrotherFinaleEpisode {
+export function generateBbFinale(initialGameState: GameState): BigBrotherFinaleEpisode {
     const title = "Finale";
     const content = (
         <div>

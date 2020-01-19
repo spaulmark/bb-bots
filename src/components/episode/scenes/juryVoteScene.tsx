@@ -1,4 +1,4 @@
-import { GameState, getJurors, nonEvictedHouseguests } from "../../../model";
+import { GameState, getJurors, nonEvictedHouseguests, MutableGameState } from "../../../model";
 import { Scene } from "../scene";
 import { castJuryVote } from "../../../utils/ai/aiApi";
 import { Portraits } from "../../playerPortrait/portraits";
@@ -7,10 +7,12 @@ import { ProfileHouseguest } from "../../memoryWall";
 import { CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
+import { evictHouseguest } from "../bigBrotherEpisode";
 
 export function juryVoteScene(initialGameState: GameState): Scene {
-    const jurors = getJurors(initialGameState);
-    const finalists = nonEvictedHouseguests(initialGameState);
+    const newGameState = new MutableGameState(initialGameState);
+    const jurors = getJurors(newGameState);
+    const finalists = nonEvictedHouseguests(newGameState);
     const votes: Array<ProfileHouseguest[]> = [[], []];
     jurors.forEach(juror => {
         const decision = castJuryVote(juror, finalists);
@@ -27,7 +29,7 @@ export function juryVoteScene(initialGameState: GameState): Scene {
     const winner = votesFor0 > votesFor1 ? finalists[0] : finalists[1];
     const scene = new Scene({
         title: "Jury Votes",
-        gameState: initialGameState,
+        gameState: newGameState,
         content: (
             <div>
                 <CenteredBold>{voteCountText}</CenteredBold>

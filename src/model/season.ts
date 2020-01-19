@@ -4,6 +4,7 @@ import { GameState } from "./gameState";
 import { EpisodeType, Episode } from ".";
 import { BigBrotherFinale } from "../components/episode/bigBrotherFinale";
 import { cast$ } from "../subjects/subjects";
+import { GameOver } from "../components/episode/gameOver";
 
 export function finalJurySize() {
     return jurors;
@@ -42,6 +43,9 @@ export class Season {
     public whichEpisodeType(players: number) {
         if (players === 3) {
             return BigBrotherFinale;
+        }
+        if (players === 2) {
+            return GameOver;
         }
         return BigBrotherVanilla;
     }
