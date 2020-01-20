@@ -11,7 +11,8 @@ export function generateHohCompScene(initialGameState: GameState): [GameState, S
     const previousHoh = initialGameState.previousHOH ? [initialGameState.previousHOH] : [];
     const newHoH: Houseguest = randomPlayer(newGameState.houseguests, previousHoh);
     newGameState.previousHOH = newHoH;
-    newGameState.phase++;
+    newGameState.log[newGameState.phase].HoH = newHoH.id;
+
     newHoH.hohWins += 1;
 
     const scene = new Scene({

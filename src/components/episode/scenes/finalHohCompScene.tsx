@@ -19,6 +19,7 @@ export function finalHohCompScene(initialGameState: GameState): [GameState, Scen
     const enduranceLosers = final3.filter(hg => hg.id !== enduranceWinner.id);
     const skillWinner = randomPlayer(final3, [enduranceWinner]);
     const finalHoH = getById(newGameState, randomPlayer([enduranceWinner, skillWinner]).id);
+    newGameState.currentLog.HoH = finalHoH.id;
     finalHoH.hohWins++;
     const scene: Scene = new Scene({
         title: "Final HoH Competition",
@@ -43,6 +44,5 @@ export function finalHohCompScene(initialGameState: GameState): [GameState, Scen
             </div>
         )
     });
-    newGameState.phase++;
     return [new GameState(newGameState), scene, finalHoH];
 }

@@ -12,9 +12,10 @@ export const GameOver: EpisodeType = {
 export function generateGameOver(gameState: GameState): GameOverEpisode {
     const title = "Game Over";
     const scenes: Scene[] = [];
+    // content goes here
+    const content = <div>{gameState.log.toString()}</div>;
 
     // content goes here
-    const content = <div>Todo</div>;
 
     // this line goes at the end after we generate the content
     gameState.houseguests.forEach(hg => {

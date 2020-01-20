@@ -61,6 +61,9 @@ export class GameState {
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest;
     readonly log: EpisodeLog[] = [];
+    get currentLog() {
+        return this.log[this.phase];
+    }
 
     public constructor(init: PlayerProfile[] | GameState) {
         if (!(init instanceof Array)) {
@@ -87,7 +90,10 @@ export class MutableGameState {
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest;
-    readonly log: EpisodeLog[] = [];
+    public log: EpisodeLog[] = [];
+    get currentLog() {
+        return this.log[this.phase];
+    }
 
     public constructor(init: GameState | MutableGameState) {
         const copy = _.cloneDeep(init);

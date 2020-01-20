@@ -15,6 +15,7 @@ import { doesHeroWinTheFinale as heroWinsTheFinale } from "../../utils/ai/aiUtil
 import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
 import { PowerRanking } from "../../model/powerRanking";
 import { GameOver, generateGameOver } from "./gameOver";
+import { EpisodeLog } from "../../model/logging/episodelog";
 
 function firstImpressions(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
@@ -91,6 +92,10 @@ export class EpisodeFactory {
         let newState = new MutableGameState(gameState);
         if (gameState.phase === 0) {
             firstImpressions(newState.houseguests);
+        }
+        newState.phase++;
+        if (nonEvictedHouseguests(gameState).length > 2) {
+            newState.log[newState.phase] = new EpisodeLog();
         }
         // If jury starts this episode, populate superior/inferior data. In the future, every jury ep. (dynamic rels)
         if (inJury(gameState) && getJurors(gameState).length === 0) {
