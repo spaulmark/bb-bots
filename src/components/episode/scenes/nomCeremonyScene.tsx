@@ -28,6 +28,7 @@ export function generateNomCeremonyScene(
     );
     nom1.nominations++;
     nom2.nominations++;
+    newGameState.currentLog.nominationsPreVeto = [nom1.id, nom2.id];
     const noms = shuffle([nom1, nom2]);
     const scene = new Scene({
         title: "Nomination Ceremony",
