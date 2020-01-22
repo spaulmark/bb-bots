@@ -1,35 +1,35 @@
 import React from "react";
+import { GameState, getById } from "../gameState";
 
 export interface VoteType {
-    text: string;
-    render: () => JSX.Element;
+    id: number;
+    render: (state: GameState) => JSX.Element;
 }
 
 export class NormalVote implements VoteType {
-    text: string;
-    render = () => <td>{this.text}</td>;
-    constructor(text: string) {
-        this.text = text;
+    id: number;
+    render = (state: GameState) => <td>{getById(state, this.id).name}</td>;
+    constructor(id: number) {
+        this.id = id;
     }
 }
 
 export class NomineeVote implements VoteType {
-    text: string;
-    render = () => (
+    id: number = -1;
+    render = (state: GameState) => (
         <td style={{ backgroundColor: "#959FFD" }}>
-            <i>{this.text}</i>
+            <i>Nominated</i>
         </td>
     );
-    constructor() {
-        this.text = "Nominated";
-    }
 }
+
+// TODO: this not worko
 export class HoHVote implements VoteType {
-    text: string = "This value is unused";
+    id: number = -1;
     renderedText: JSX.Element;
-    render = () => <td style={{ backgroundColor: "#CCFFCC" }}>{this.renderedText}</td>;
-    constructor(text?: string) {
-        this.renderedText = text ? <p>text</p> : <i>Head of Household</i>;
+    render = (state: GameState) => <td style={{ backgroundColor: "#CCFFCC" }}>{this.renderedText}</td>;
+    constructor(id?: number) {
+        this.renderedText = id ? <p>text</p> : <i>Head of Household</i>;
     }
 }
 

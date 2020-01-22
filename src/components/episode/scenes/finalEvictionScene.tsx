@@ -7,6 +7,7 @@ import { Portrait, Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { CenteredBold, Centered } from "../../layout/centered";
+import { HoHVote } from "../../../model/logging/voteType";
 
 export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
@@ -14,6 +15,7 @@ export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest)
     newGameState.currentLog.nominationsPostVeto = nominees.map(hg => hg.id);
     const { decision: vote, reason } = castEvictionVote(HoH, nominees, newGameState);
     const evictee = nominees[vote];
+    newGameState.currentLog.votes[HoH.id] = new HoHVote(evictee.id);
     const hoh: ProfileHouseguest = { ...HoH };
     hoh.tooltip = reason;
     evictHouseguest(newGameState, evictee.id);
