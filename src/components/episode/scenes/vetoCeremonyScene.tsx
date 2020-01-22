@@ -12,7 +12,7 @@ export function generateVetoCeremonyScene(
     HoH: Houseguest,
     initialNominees: Houseguest[],
     povWinner: Houseguest
-): [Scene, Houseguest[]] {
+): [GameState, Scene, Houseguest[]] {
     let povTarget: Houseguest | null = null;
     let descisionText = "";
     initialNominees[0] = getById(initialGameState, initialNominees[0].id);
@@ -92,5 +92,6 @@ export function generateVetoCeremonyScene(
             </div>
         )
     });
-    return [scene, finalNominees];
+    initialGameState.currentLog.nominationsPostVeto = [finalNominees[0].id, finalNominees[1].id];
+    return [initialGameState, scene, finalNominees];
 }

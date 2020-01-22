@@ -11,6 +11,7 @@ import { CenteredBold, Centered } from "../../layout/centered";
 export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
     const nominees = nonEvictedHouseguests(newGameState).filter(hg => hg.id !== HoH.id);
+    newGameState.currentLog.nominationsPostVeto = nominees.map(hg => hg.id);
     const { decision: vote, reason } = castEvictionVote(HoH, nominees, newGameState);
     const evictee = nominees[vote];
     const hoh: ProfileHouseguest = { ...HoH };

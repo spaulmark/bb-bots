@@ -51,7 +51,6 @@ export function generateBbVanilla(initialGameState: GameState): BigBrotherVanill
     let hohCompScene;
     let hoh: Houseguest;
     const scenes = [];
-
     [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGameState);
     scenes.push(hohCompScene);
 
@@ -71,7 +70,12 @@ export function generateBbVanilla(initialGameState: GameState): BigBrotherVanill
     scenes.push(vetoCompScene);
     let vetoCeremonyScene;
 
-    [vetoCeremonyScene, nominees] = generateVetoCeremonyScene(currentGameState, hoh, nominees, povWinner);
+    [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
+        currentGameState,
+        hoh,
+        nominees,
+        povWinner
+    );
     scenes.push(vetoCeremonyScene);
 
     let evictionScene;
