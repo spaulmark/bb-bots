@@ -43,7 +43,6 @@ export function generateEvictionScene(
         evictee = nominees[tieBreaker.decision];
     }
     evictHouseguest(newGameState, evictee.id);
-
     const isUnanimous = votesFor0 === 0 || votesFor1 === 0;
     const voteCountText = isUnanimous
         ? "By a unanimous vote..."

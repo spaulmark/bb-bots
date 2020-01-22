@@ -3,12 +3,12 @@ import { GameState, getById } from "../gameState";
 
 export interface VoteType {
     id: number;
-    render: (state: GameState) => JSX.Element;
+    color: string;
 }
 
 export class NormalVote implements VoteType {
     id: number;
-    render = (state: GameState) => <td>{getById(state, this.id).name}</td>;
+    color = "";
     constructor(id: number) {
         this.id = id;
     }
@@ -16,20 +16,17 @@ export class NormalVote implements VoteType {
 
 export class NomineeVote implements VoteType {
     id: number = -1;
-    render = (state: GameState) => (
-        <td style={{ backgroundColor: "#959FFD" }}>
-            <i>Nominated</i>
-        </td>
-    );
+    color = "#959FFD";
+    constructor(id: number) {
+        this.id = id;
+    }
 }
 
-// TODO: this not worko
 export class HoHVote implements VoteType {
-    id: number = -1;
-    renderedText: JSX.Element;
-    render = (state: GameState) => <td style={{ backgroundColor: "#CCFFCC" }}>{this.renderedText}</td>;
+    id: number;
+    color: string = "#CCFFCC";
     constructor(id?: number) {
-        this.renderedText = id ? <p>text</p> : <i>Head of Household</i>;
+        this.id = id ? id : -1;
     }
 }
 

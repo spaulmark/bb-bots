@@ -34,6 +34,7 @@ export const BigBrotherVanilla: EpisodeType = {
 
 export function evictHouseguest(gameState: MutableGameState, id: number) {
     const evictee = getById(gameState, id);
+    if (gameState.currentLog) gameState.currentLog.evicted = evictee.id;
     evictee.isEvicted = true;
     if (gameState.remainingPlayers - getFinalists() <= finalJurySize()) {
         evictee.isJury = true;
