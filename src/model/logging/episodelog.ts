@@ -7,4 +7,5 @@ export class EpisodeLog {
     public nominationsPostVeto: number[] = [];
     public evicted: number = -1;
     public votes: { [id: string]: VoteType } = {};
+    public votesInMajority: number = -1;
 }

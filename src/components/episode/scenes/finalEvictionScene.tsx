@@ -16,6 +16,7 @@ export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest)
     const { decision: vote, reason } = castEvictionVote(HoH, nominees, newGameState);
     const evictee = nominees[vote];
     newGameState.currentLog.votes[HoH.id] = new HoHVote(evictee.id);
+    newGameState.currentLog.votesInMajority = 1;
     const hoh: ProfileHouseguest = { ...HoH };
     hoh.tooltip = reason;
     evictHouseguest(newGameState, evictee.id);
