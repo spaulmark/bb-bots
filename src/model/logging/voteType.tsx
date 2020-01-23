@@ -1,5 +1,8 @@
 import React from "react";
 import { GameState, getById } from "../gameState";
+import { CenteredItallic, Centered } from "../../components/layout/centered";
+
+// TODO: VOTE TYPES NEED KEYS
 
 export interface VoteType {
     id: number;
@@ -8,7 +11,11 @@ export interface VoteType {
 
 export class NormalVote implements VoteType {
     id: number;
-    render = (state: GameState) => <td>{getById(state, this.id).name}</td>;
+    render = (state: GameState) => (
+        <td>
+            <Centered>{getById(state, this.id).name}</Centered>
+        </td>
+    );
     constructor(id: number) {
         this.id = id;
     }
@@ -19,7 +26,7 @@ export class NomineeVote implements VoteType {
     evicted: boolean;
     render = (state: GameState) => (
         <td style={{ backgroundColor: "#959FFD" }}>
-            <i>Nominated</i>
+            <CenteredItallic>Nominated</CenteredItallic>
         </td>
     );
     constructor(evicted: boolean) {
@@ -32,7 +39,9 @@ export class HoHVote implements VoteType {
     render = (state: GameState) => {
         return (
             <td style={{ backgroundColor: "#CCFFCC" }}>
-                <i>{this.id == -1 ? "Head of Household" : getById(state, this.id).name}</i>
+                <CenteredItallic>
+                    {this.id == -1 ? "Head of Household" : getById(state, this.id).name}
+                </CenteredItallic>
             </td>
         );
     };

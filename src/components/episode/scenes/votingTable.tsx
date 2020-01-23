@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { EpisodeLog } from "../../../model/logging/episodelog";
 import { CenteredBold, Centered, CenteredItallic } from "../../layout/centered";
 import { GameState } from "../../../model";
+import { VoteType } from "../../../model/logging/voteType";
 
 const Gray = styled.td`
     background-color: #eaecf0;
@@ -14,13 +15,13 @@ const White = styled.td`
 // TODO: add a pseudo fullscreen thing for viewing the voting table
 export function generateVotingTable(gameState: GameState): JSX.Element {
     const masterLog: EpisodeLog[] = gameState.log;
-    const houseguestCells: JSX.Element[] = [];
+    const houseguestCells: JSX.Element[][] = [];
     gameState.houseguests.forEach((hg, i) => {
-        houseguestCells[hg.id] = (
-            <Gray key={i}>
+        houseguestCells[hg.id] = [
+            <Gray key={`hg-name---${i}`}>
                 <CenteredBold>{hg.name}</CenteredBold>
             </Gray>
-        );
+        ];
     });
 
     const evictionOrder: number[] = [];
@@ -38,17 +39,21 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
         evictionOrder.push(log.evicted);
         if (log.runnerUp) evictionOrder.push(log.runnerUp);
         if (log.winner) evictionOrder.push(log.winner);
+        // add each of the votes to the houseguest cells
+        for (const [key, value] of Object.entries(log.votes)) {
+            // typescript for .. in loops kinda suck so i need to do a sketchy type conversion
+            const id: number = (key as unknown) as number;
+            const vote: VoteType = value;
+            houseguestCells[id].push(vote.render(gameState));
+        }
     });
     const topRow = <tr>{topRowCells}</tr>;
     const preVetoRow = <tr>{preVetoCells}</tr>;
     const vetoRow = <tr>{vetoCells}</tr>;
     const postVetoRow = <tr>{postVetoCells}</tr>;
     const houseguestRows: JSX.Element[] = [];
-    // houseguestCells.map((cell, i) => <tr key={i}>{cell}</tr>);
-
     evictionOrder.reverse().forEach(id => {
-        // add the houseguest with that id to the thing
-        houseguestRows.push(<tr key={id}>{houseguestCells[id]}</tr>);
+        houseguestRows.push(<tr key={`hgrow--${id}`}>{houseguestCells[id]}</tr>);
     });
 
     return (
