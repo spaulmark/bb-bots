@@ -3,6 +3,7 @@ import { Episode, InitEpisode, EpisodeType } from "./episodes";
 import { Scene } from "./scene";
 import { GameState } from "../../model";
 import { evictHouseguest } from "./bigBrotherEpisode";
+import { generateVotingTable } from "./scenes/votingTable";
 
 export const GameOver: EpisodeType = {
     canPlayWith: (n: number) => n === 1,
@@ -12,12 +13,7 @@ export const GameOver: EpisodeType = {
 export function generateGameOver(gameState: GameState): GameOverEpisode {
     const title = "Game Over";
     const scenes: Scene[] = [];
-    // content goes here
-    const content = <div>{gameState.log.toString()}</div>;
-
-    // content goes here
-
-    // this line goes at the end after we generate the content
+    const content = generateVotingTable(gameState);
     gameState.houseguests.forEach(hg => {
         evictHouseguest(gameState, hg.id);
     });

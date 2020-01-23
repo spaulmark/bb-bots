@@ -12,7 +12,7 @@ import { HoHVote } from "../../../model/logging/voteType";
 export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
     const nominees = nonEvictedHouseguests(newGameState).filter(hg => hg.id !== HoH.id);
-    newGameState.currentLog.nominationsPostVeto = nominees.map(hg => hg.id);
+    newGameState.currentLog.nominationsPostVeto = nominees.map(hg => hg.name);
     const { decision: vote, reason } = castEvictionVote(HoH, nominees, newGameState);
     const evictee = nominees[vote];
     newGameState.currentLog.votes[HoH.id] = new HoHVote(evictee.id);

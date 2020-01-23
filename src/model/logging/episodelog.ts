@@ -1,10 +1,9 @@
 import { VoteType } from "./voteType";
 
 export class EpisodeLog {
-    public HoH: number = -1;
-    public nominationsPreVeto: number[] = [];
-    public vetoWinner: number = -1;
-    public nominationsPostVeto: number[] = [];
+    public nominationsPreVeto: string[] = [];
+    public vetoWinner?: string;
+    public nominationsPostVeto: string[] = [];
     public evicted: number = -1;
     public votes: { [id: string]: VoteType } = {};
     public votesInMajority: number = -1;

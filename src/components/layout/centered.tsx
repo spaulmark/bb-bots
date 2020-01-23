@@ -11,3 +11,11 @@ export function CenteredBold(props: any): JSX.Element {
         </Centered>
     );
 }
+
+export function CenteredItallic(props: any): JSX.Element {
+    return (
+        <Centered>
+            <i>{props.children} </i>
+        </Centered>
+    );
+}

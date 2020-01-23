@@ -92,6 +92,6 @@ export function generateVetoCeremonyScene(
             </div>
         )
     });
-    initialGameState.currentLog.nominationsPostVeto = [finalNominees[0].id, finalNominees[1].id];
+    initialGameState.currentLog.nominationsPostVeto = [finalNominees[0].name, finalNominees[1].name];
     return [initialGameState, scene, finalNominees];
 }

@@ -44,7 +44,7 @@ export function generateVetoCompScene(
     let povWinner = randomPlayer(povPlayers);
     povWinner = getById(newGameState, povWinner.id);
     povWinner.povWins++;
-    newGameState.currentLog.vetoWinner = povWinner.id;
+    newGameState.currentLog.vetoWinner = povWinner.name;
     let introText: string;
     if (everyoneWillPlay) {
         introText = "Everyone left in the house will compete in this challenge.";

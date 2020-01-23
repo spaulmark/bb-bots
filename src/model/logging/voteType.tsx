@@ -26,19 +26,11 @@ export class NomineeVote implements VoteType {
 export class HoHVote implements VoteType {
     id: number;
     render = (state: GameState) => {
-        if (this.id == -1) {
-            return (
-                <td style={{ backgroundColor: "#CCFFCC" }}>
-                    <i>Head of Household</i>
-                </td>
-            );
-        } else {
-            return (
-                <td style={{ backgroundColor: "#CCFFCC" }}>
-                    <i>{getById(state, this.id).name}</i>
-                </td>
-            );
-        }
+        return (
+            <td style={{ backgroundColor: "#CCFFCC" }}>
+                <i>{this.id == -1 ? "Head of Household" : getById(state, this.id).name}</i>
+            </td>
+        );
     };
     constructor(id?: number) {
         this.id = id === undefined ? -1 : id;
