@@ -7,9 +7,8 @@ import { ProfileHouseguest } from "../../memoryWall";
 import { CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
-import { evictHouseguest } from "../bigBrotherEpisode";
 
-export function juryVoteScene(initialGameState: GameState): Scene {
+export function juryVoteScene(initialGameState: GameState): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
     const jurors = getJurors(newGameState);
     const finalists = nonEvictedHouseguests(newGameState);
@@ -27,6 +26,9 @@ export function juryVoteScene(initialGameState: GameState): Scene {
         : `By a vote of ${votesFor0} to ${votesFor1}...`;
 
     const winner = votesFor0 > votesFor1 ? finalists[0] : finalists[1];
+    const runnerUp = votesFor0 < votesFor1 ? finalists[0] : finalists[1];
+    newGameState.currentLog.winner = winner.id;
+    newGameState.currentLog.runnerUp = runnerUp.id;
     const scene = new Scene({
         title: "Jury Votes",
         gameState: newGameState,
@@ -47,5 +49,5 @@ export function juryVoteScene(initialGameState: GameState): Scene {
             </div>
         )
     });
-    return scene;
+    return [newGameState, scene];
 }

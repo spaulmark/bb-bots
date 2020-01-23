@@ -16,11 +16,15 @@ export class NormalVote implements VoteType {
 
 export class NomineeVote implements VoteType {
     id: number = -1;
+    evicted: boolean;
     render = (state: GameState) => (
         <td style={{ backgroundColor: "#959FFD" }}>
             <i>Nominated</i>
         </td>
     );
+    constructor(evicted: boolean) {
+        this.evicted = evicted;
+    }
 }
 
 export class HoHVote implements VoteType {
@@ -37,10 +41,24 @@ export class HoHVote implements VoteType {
     }
 }
 
+export class EvictedVote implements VoteType {
+    id: number;
+    render = (state: GameState) => {
+        return (
+            <td style={{ backgroundColor: "#FA8072" }}>
+                Evicted
+                <br />
+                <small>Week {this.id}</small>
+            </td>
+        );
+    };
+    constructor(week: number) {
+        this.id = week;
+    }
+}
+
 // Winner: #73FB76
 
 // Runner-up: #D1E8EF
-
-// Evicted: #FA8072
 
 // Border: #D9D9D9

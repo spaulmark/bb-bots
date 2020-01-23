@@ -30,10 +30,6 @@ export function generateEvictionScene(
     });
     const votesFor0 = votes[0].length;
     const votesFor1 = votes[1].length;
-
-    newGameState.currentLog.votes[nominees[0].id] = new NomineeVote();
-    newGameState.currentLog.votes[nominees[1].id] = new NomineeVote();
-
     let tieVote = votesFor0 === votesFor1;
     let tieBreaker = { decision: 0, reason: "Error you should not be seeing this" };
     if (tieVote) {
@@ -51,6 +47,9 @@ export function generateEvictionScene(
         evictee = nominees[tieBreaker.decision];
         newGameState.currentLog.votesInMajority = votesFor1 + 1;
     }
+    newGameState.currentLog.votes[nominees[0].id] = new NomineeVote(evictee.id === nominees[0].id);
+    newGameState.currentLog.votes[nominees[1].id] = new NomineeVote(evictee.id !== nominees[0].id);
+
     evictHouseguest(newGameState, evictee.id);
     const isUnanimous = votesFor0 === 0 || votesFor1 === 0;
     const voteCountText = isUnanimous

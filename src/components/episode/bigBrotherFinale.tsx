@@ -31,8 +31,8 @@ export function generateBbFinale(initialGameState: GameState): BigBrotherFinaleE
     let finalEviction;
     [currentGameState, finalEviction] = finalEvictionScene(currentGameState, finalHoH);
     scenes.push(finalEviction);
-    scenes.push(juryVoteScene(currentGameState));
-    const gameState = currentGameState;
+    const [gameState, juryScene] = juryVoteScene(currentGameState);
+    scenes.push(juryScene);
     return new BigBrotherFinaleEpisode({ gameState, content, title, scenes, type: BigBrotherFinale });
 }
 

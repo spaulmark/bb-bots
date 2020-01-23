@@ -14,36 +14,43 @@ const White = styled.td`
 // TODO: add a pseudo fullscreen thing for viewing the voting table
 export function generateVotingTable(gameState: GameState): JSX.Element {
     const masterLog: EpisodeLog[] = gameState.log;
-    const houseguestRows: JSX.Element[] = [];
-
+    const houseguestCells: JSX.Element[] = [];
     gameState.houseguests.forEach((hg, i) => {
-        // make a row for them
-        houseguestRows[hg.id] = (
+        houseguestCells[hg.id] = (
             <Gray key={i}>
                 <CenteredBold>{hg.name}</CenteredBold>
             </Gray>
         );
     });
 
+    const evictionOrder: number[] = [];
     const topRowCells: JSX.Element[] = [];
     const preVetoCells: JSX.Element[] = [];
     const vetoCells: JSX.Element[] = [];
     const postVetoCells: JSX.Element[] = [];
+
     masterLog.forEach((log, i) => {
         generateTopRow(log, i, topRowCells, masterLog.length - 1);
         generatePreVetoRow(log, i, preVetoCells);
         generateVetoRow(log, i, vetoCells);
         generatePostVetoRow(log, i, postVetoCells);
-        // ok so basically we're going to have a list of lists
-        // houseguestRows = [0: [vote, vote, X], 1: [vote, X], ... ]
-        // then we're going to find all the guys who got evicted and put their last thing as EVICTED
-        // the guy who got evicted on finale night is special because his nominated thing needs to be replaced with EVICTED
-        // maybe a good idea to do this in the final eviction episode.
+        if (!log) return;
+        evictionOrder.push(log.evicted);
+        if (log.runnerUp) evictionOrder.push(log.runnerUp);
+        if (log.winner) evictionOrder.push(log.winner);
     });
     const topRow = <tr>{topRowCells}</tr>;
     const preVetoRow = <tr>{preVetoCells}</tr>;
     const vetoRow = <tr>{vetoCells}</tr>;
     const postVetoRow = <tr>{postVetoCells}</tr>;
+    const houseguestRows: JSX.Element[] = [];
+    // houseguestCells.map((cell, i) => <tr key={i}>{cell}</tr>);
+
+    evictionOrder.reverse().forEach(id => {
+        // add the houseguest with that id to the thing
+        houseguestRows.push(<tr key={id}>{houseguestCells[id]}</tr>);
+    });
+
     return (
         <div>
             <table>
@@ -52,7 +59,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                     {preVetoRow}
                     {vetoRow}
                     {postVetoRow}
-                    {/* Houseguest rows go here. They need to be wrapped by key'd <tr> tags */}
+                    {houseguestRows}
                 </tbody>
             </table>
         </div>
