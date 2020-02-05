@@ -36,12 +36,25 @@ export class NomineeVote implements VoteType {
 
 export class HoHVote implements VoteType {
     id: number;
+
+    get hohText(): JSX.Element {
+        return (
+            <CenteredItallic>
+                Head of
+                <br />
+                Household
+            </CenteredItallic>
+        );
+    }
+
+    private hohVote(state: GameState): JSX.Element {
+        return <CenteredItallic>{getById(state, this.id).name}</CenteredItallic>;
+    }
+
     render = (state: GameState) => {
         return (
             <td style={{ backgroundColor: "#CCFFCC" }}>
-                <CenteredItallic>
-                    {this.id == -1 ? "Head of Household" : getById(state, this.id).name}
-                </CenteredItallic>
+                {this.id == -1 ? this.hohText : this.hohVote(state)}
             </td>
         );
     };
@@ -50,21 +63,21 @@ export class HoHVote implements VoteType {
     }
 }
 
-export class EvictedVote implements VoteType {
-    id: number;
-    render = (state: GameState) => {
-        return (
-            <td style={{ backgroundColor: "#FA8072" }}>
-                Evicted
-                <br />
-                <small>Week {this.id}</small>
-            </td>
-        );
-    };
-    constructor(week: number) {
-        this.id = week;
-    }
-}
+// export class EvictedVote implements VoteType {
+//     id: number;
+//     render = (state: GameState) => {
+//         return (
+//             <td style={{ backgroundColor: "#FA8072" }}>
+//                 Evicted
+//                 <br />
+//                 <small>Week {this.id}</small>
+//             </td>
+//         );
+//     };
+//     constructor(week: number) {
+//         this.id = week;
+//     }
+// }
 
 // Winner: #73FB76
 

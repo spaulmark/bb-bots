@@ -12,7 +12,15 @@ const Gray = styled.td`
 const White = styled.td`
     background-color: #f8f9fa;
 `;
+
+const Evicted = styled.td`
+    background-color: #fa8072;
+`;
+
 // TODO: add a pseudo fullscreen thing for viewing the voting table
+
+// FIXME: a bug exists where if the runner-up wins final HoH, then his HoH
+// doesn't get displayed on the voting table.
 export function generateVotingTable(gameState: GameState): JSX.Element {
     const masterLog: EpisodeLog[] = gameState.log;
     const houseguestCells: JSX.Element[][] = [];
@@ -29,7 +37,6 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const preVetoCells: JSX.Element[] = [];
     const vetoCells: JSX.Element[] = [];
     const postVetoCells: JSX.Element[] = [];
-
     masterLog.forEach((log, i) => {
         generateTopRow(log, i, topRowCells, masterLog.length - 1);
         generatePreVetoRow(log, i, preVetoCells);
@@ -52,8 +59,22 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const vetoRow = <tr>{vetoCells}</tr>;
     const postVetoRow = <tr>{postVetoCells}</tr>;
     const houseguestRows: JSX.Element[] = [];
-    evictionOrder.reverse().forEach(id => {
+    let evictionColSpan = -1;
+    const weeks = evictionOrder.length;
+    evictionOrder.reverse().forEach((id, i) => {
+        // TODO: the person who doesn't win final HoH but gets brought to F2
+        // needs to have a nominated tag put in their place.
+        if (evictionColSpan > 0)
+            houseguestCells[id].push(
+                <Evicted colSpan={evictionColSpan}>
+                    <CenteredItallic>Evicted</CenteredItallic>
+                    <CenteredItallic>
+                        <small>(Week {weeks - i})</small>
+                    </CenteredItallic>
+                </Evicted>
+            );
         houseguestRows.push(<tr key={`hgrow--${id}`}>{houseguestCells[id]}</tr>);
+        evictionColSpan++;
     });
 
     return (
