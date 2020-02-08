@@ -9,11 +9,13 @@ export interface VoteType {
     render: (state: GameState) => JSX.Element;
 }
 
+// TODO: the margins used on the p is causing serious problems. we must remedy this.
+
 export class NormalVote implements VoteType {
     id: number;
     render = (state: GameState) => (
         <td>
-            <Centered>{getById(state, this.id).name}</Centered>
+            <Centered noMargin={true}>{getById(state, this.id).name}</Centered>
         </td>
     );
     constructor(id: number) {
@@ -26,7 +28,7 @@ export class NomineeVote implements VoteType {
     evicted: boolean;
     render = (state: GameState) => (
         <td style={{ backgroundColor: "#959FFD" }}>
-            <CenteredItallic>Nominated</CenteredItallic>
+            <CenteredItallic noMargin={true}>Nominated</CenteredItallic>
         </td>
     );
     constructor(evicted: boolean) {
@@ -39,7 +41,7 @@ export class HoHVote implements VoteType {
 
     get hohText(): JSX.Element {
         return (
-            <CenteredItallic>
+            <CenteredItallic noMargin={true}>
                 Head of
                 <br />
                 Household
@@ -48,7 +50,7 @@ export class HoHVote implements VoteType {
     }
 
     private hohVote(state: GameState): JSX.Element {
-        return <CenteredItallic>{getById(state, this.id).name}</CenteredItallic>;
+        return <CenteredItallic noMargin={true}>{getById(state, this.id).name}</CenteredItallic>;
     }
 
     render = (state: GameState) => {
@@ -62,22 +64,6 @@ export class HoHVote implements VoteType {
         this.id = id === undefined ? -1 : id;
     }
 }
-
-// export class EvictedVote implements VoteType {
-//     id: number;
-//     render = (state: GameState) => {
-//         return (
-//             <td style={{ backgroundColor: "#FA8072" }}>
-//                 Evicted
-//                 <br />
-//                 <small>Week {this.id}</small>
-//             </td>
-//         );
-//     };
-//     constructor(week: number) {
-//         this.id = week;
-//     }
-// }
 
 // Winner: #73FB76
 
