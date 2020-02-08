@@ -3,7 +3,11 @@ import { GameState, getById } from "../gameState";
 import { CenteredItallic, Centered } from "../../components/layout/centered";
 import { EndgameTableCell } from "../../components/episode/scenes/votingTable";
 
-// TODO: VOTE TYPES NEED KEYS
+let voteKey = 0;
+
+function getKey(): string {
+    return `${voteKey++}-- vote key`;
+}
 
 export interface VoteType {
     id: number;
@@ -15,7 +19,7 @@ export interface VoteType {
 export class NormalVote implements VoteType {
     id: number;
     render = (state: GameState) => (
-        <EndgameTableCell>
+        <EndgameTableCell key={getKey()}>
             <Centered noMargin={true}>{getById(state, this.id).name}</Centered>
         </EndgameTableCell>
     );
@@ -28,7 +32,7 @@ export class NomineeVote implements VoteType {
     id: number = -1;
     evicted: boolean;
     render = (state: GameState) => (
-        <EndgameTableCell style={{ backgroundColor: "#959FFD" }}>
+        <EndgameTableCell key={getKey()} style={{ backgroundColor: "#959FFD" }}>
             <CenteredItallic noMargin={true}>Nominated</CenteredItallic>
         </EndgameTableCell>
     );
@@ -56,7 +60,7 @@ export class HoHVote implements VoteType {
 
     render = (state: GameState) => {
         return (
-            <EndgameTableCell style={{ backgroundColor: "#CCFFCC" }}>
+            <EndgameTableCell key={getKey()} style={{ backgroundColor: "#CCFFCC" }}>
                 {this.id == -1 ? this.hohText : this.hohVote(state)}
             </EndgameTableCell>
         );

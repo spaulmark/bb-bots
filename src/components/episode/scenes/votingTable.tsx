@@ -96,7 +96,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
         // needs to have a nominated tag put in their place.
         if (evictionColSpan > 0)
             houseguestCells[id].push(
-                <Evicted colSpan={evictionColSpan}>
+                <Evicted colSpan={evictionColSpan} key={`evicted-week-${weeks - i}`}>
                     <CenteredItallic noMargin={true}>Evicted</CenteredItallic>
                     <CenteredItallic noMargin={true}>
                         <small>(Week {weeks - i})</small>
@@ -158,7 +158,7 @@ function generateEvictedRow(
 function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={i}>
+            <Gray key={`postVeto--${i}`}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
@@ -169,7 +169,7 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
         return;
     }
     cells.push(
-        <White key={i}>
+        <White key={`postVeto--${i}`}>
             <Centered noMargin={true}>
                 {log.nominationsPostVeto[0]}
                 <br /> {log.nominationsPostVeto[1]}
@@ -181,7 +181,7 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
 function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={i}>
+            <Gray key={`veto--${i}`}>
                 <CenteredBold noMargin={true}>Veto Winner</CenteredBold>
             </Gray>
         );
@@ -190,7 +190,7 @@ function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Elem
     if (log.vetoWinner === undefined) return;
 
     cells.push(
-        <White key={i}>
+        <White key={`veto--${i}`}>
             <Centered noMargin={true}>{log.vetoWinner}</Centered>
         </White>
     );
@@ -199,7 +199,7 @@ function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Elem
 function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={i}>
+            <Gray key={`preveto--${i}`}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
@@ -211,14 +211,14 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
     }
     if (log.nominationsPreVeto.length === 0) {
         cells.push(
-            <White key={i} rowSpan={2}>
+            <White key={`preveto--${i}`} rowSpan={2}>
                 <CenteredItallic noMargin={true}>(none)</CenteredItallic>
             </White>
         );
         return;
     }
     cells.push(
-        <White key={i}>
+        <White key={`preveto--${i}`}>
             <Centered noMargin={true}>
                 {log.nominationsPreVeto[0]}
                 <br /> {log.nominationsPreVeto[1]}
@@ -229,19 +229,19 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
 
 function generateTopRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[], max: number) {
     if (!log) {
-        cells.push(<Gray key={i} />);
+        cells.push(<Gray key={`toprow--${i}`} />);
         return;
     }
     if (i === max) {
         cells.push(
-            <Gray key={i}>
+            <Gray key={`toprow--${i}`}>
                 <CenteredBold noMargin={true}>Finale</CenteredBold>
             </Gray>
         );
         return;
     }
     cells.push(
-        <Gray key={i}>
+        <Gray key={`toprow--${i}`}>
             <CenteredBold noMargin={true}>Week {i}</CenteredBold>
         </Gray>
     );
