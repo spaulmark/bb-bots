@@ -74,9 +74,9 @@ export function generateVetoCeremonyScene(
                 </div>
                 <CenteredBold>
                     I have decided... <br />
-                    <Portrait centered={true} houseguest={{ ...povWinner, tooltip: vetoChoice.reason }} />
-                    {descisionText}
                 </CenteredBold>
+                <Portrait centered={true} houseguest={{ ...povWinner, tooltip: vetoChoice.reason }} />
+                <CenteredBold noMargin={true}>{descisionText}</CenteredBold>
                 <Centered>{nameAReplacement}</Centered>
                 {replacementSpeech && <Portrait centered={true} houseguest={HoH} />}
                 <CenteredBold>{replacementSpeech}</CenteredBold>
