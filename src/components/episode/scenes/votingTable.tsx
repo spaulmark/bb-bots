@@ -109,8 +109,8 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
 
     return (
         <div>
-            Yo this table is WIP and kinda goes off the side of the screen but trust me it will be cool once i
-            finish it
+            Yo this table is WIP and kinda goes off the side of the screen but trust me it will be extremely
+            cool once i finish it
             <EndgameTable>
                 <tbody>
                     {topRow}
