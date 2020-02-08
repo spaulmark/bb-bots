@@ -30,9 +30,11 @@ export function generateEvictionScene(
     });
     const votesFor0 = votes[0].length;
     const votesFor1 = votes[1].length;
+    newGameState.currentLog.outOf = votesFor0 + votesFor1;
     let tieVote = votesFor0 === votesFor1;
     let tieBreaker = { decision: 0, reason: "Error you should not be seeing this" };
     if (tieVote) {
+        newGameState.currentLog.outOf++;
         tieBreaker = castEvictionVote(HoH, nominees, newGameState);
         newGameState.currentLog.votes[HoH.id] = new HoHVote(nominees[tieBreaker.decision].id);
     }

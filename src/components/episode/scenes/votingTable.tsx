@@ -2,8 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import { EpisodeLog } from "../../../model/logging/episodelog";
 import { CenteredBold, Centered, CenteredItallic } from "../../layout/centered";
-import { GameState } from "../../../model";
+import { GameState, getById } from "../../../model";
 import { VoteType } from "../../../model/logging/voteType";
+import { max } from "../../../utils";
 
 export const EndgameTableCell = styled.td`
     padding: 0.2em 0.4em;
@@ -27,10 +28,21 @@ const Evicted = styled(EndgameTableCell)`
     background-color: #fa8072;
 `;
 
+const BlackRow = styled.tr`
+    height: 0.4em;
+    background-color: #000000;
+`;
+
 // TODO: add a pseudo fullscreen thing for viewing the voting table
+
+// FIXME: when someone makes it through the whole game without getting a "Head of Household" cell or an "Evicted (week X)" cell
+// then thier row is too skinny.
 
 // FIXME: a bug exists where if the runner-up wins final HoH, then his HoH
 // doesn't get displayed on the voting table.
+
+// Also he just straight up doesn't appear on the voting table, which is cool.
+
 export function generateVotingTable(gameState: GameState): JSX.Element {
     const masterLog: EpisodeLog[] = gameState.log;
     const houseguestCells: JSX.Element[][] = [];
@@ -47,11 +59,13 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const preVetoCells: JSX.Element[] = [];
     const vetoCells: JSX.Element[] = [];
     const postVetoCells: JSX.Element[] = [];
+    const evictedCells: JSX.Element[] = [];
     masterLog.forEach((log, i) => {
         generateTopRow(log, i, topRowCells, masterLog.length - 1);
         generatePreVetoRow(log, i, preVetoCells);
         generateVetoRow(log, i, vetoCells);
         generatePostVetoRow(log, i, postVetoCells);
+        generateEvictedRow(log, i, evictedCells, gameState);
         if (!log) return;
         evictionOrder.push(log.evicted);
         if (log.runnerUp) evictionOrder.push(log.runnerUp);
@@ -68,7 +82,13 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const preVetoRow = <tr>{preVetoCells}</tr>;
     const vetoRow = <tr>{vetoCells}</tr>;
     const postVetoRow = <tr>{postVetoCells}</tr>;
+    const blackRow = (
+        <BlackRow>
+            <td colSpan={gameState.houseguests.length} />
+        </BlackRow>
+    );
     const houseguestRows: JSX.Element[] = [];
+    const evictedRow = <tr>{evictedCells}</tr>;
     let evictionColSpan = -1;
     const weeks = evictionOrder.length;
     evictionOrder.reverse().forEach((id, i) => {
@@ -97,10 +117,41 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                     {preVetoRow}
                     {vetoRow}
                     {postVetoRow}
+                    {blackRow}
                     {houseguestRows}
+                    {blackRow}
+                    {evictedRow}
                 </tbody>
             </EndgameTable>
         </div>
+    );
+}
+
+function generateEvictedRow(
+    log: EpisodeLog | undefined,
+    i: number,
+    cells: JSX.Element[],
+    gameState: GameState
+) {
+    if (!log) {
+        cells.push(
+            <Gray key={i}>
+                <CenteredBold noMargin={true}>Evicted</CenteredBold>
+            </Gray>
+        );
+        return;
+    }
+    cells.push(
+        <Evicted key={i}>
+            <Centered noMargin={true}>
+                <b>{getById(gameState, log.evicted).name}</b>
+                <br />
+                <small>
+                    {log.votesInMajority} of {log.outOf} votes <br />
+                    to evict
+                </small>
+            </Centered>
+        </Evicted>
     );
 }
 

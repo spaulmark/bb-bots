@@ -9,4 +9,5 @@ export class EpisodeLog {
     public evicted: number = -1;
     public votes: { [id: string]: VoteType } = {};
     public votesInMajority: number = -1;
+    public outOf: number = -1;
 }
