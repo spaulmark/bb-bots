@@ -1,4 +1,3 @@
-import React from "react";
 import { Episode, InitEpisode, EpisodeType } from "./episodes";
 import { Scene } from "./scene";
 import { GameState } from "../../model";

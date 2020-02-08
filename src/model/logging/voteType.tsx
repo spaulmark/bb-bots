@@ -1,6 +1,7 @@
 import React from "react";
 import { GameState, getById } from "../gameState";
 import { CenteredItallic, Centered } from "../../components/layout/centered";
+import { EndgameTableCell } from "../../components/episode/scenes/votingTable";
 
 // TODO: VOTE TYPES NEED KEYS
 
@@ -14,9 +15,9 @@ export interface VoteType {
 export class NormalVote implements VoteType {
     id: number;
     render = (state: GameState) => (
-        <td>
+        <EndgameTableCell>
             <Centered noMargin={true}>{getById(state, this.id).name}</Centered>
-        </td>
+        </EndgameTableCell>
     );
     constructor(id: number) {
         this.id = id;
@@ -27,9 +28,9 @@ export class NomineeVote implements VoteType {
     id: number = -1;
     evicted: boolean;
     render = (state: GameState) => (
-        <td style={{ backgroundColor: "#959FFD" }}>
+        <EndgameTableCell style={{ backgroundColor: "#959FFD" }}>
             <CenteredItallic noMargin={true}>Nominated</CenteredItallic>
-        </td>
+        </EndgameTableCell>
     );
     constructor(evicted: boolean) {
         this.evicted = evicted;
@@ -55,9 +56,9 @@ export class HoHVote implements VoteType {
 
     render = (state: GameState) => {
         return (
-            <td style={{ backgroundColor: "#CCFFCC" }}>
+            <EndgameTableCell style={{ backgroundColor: "#CCFFCC" }}>
                 {this.id == -1 ? this.hohText : this.hohVote(state)}
-            </td>
+            </EndgameTableCell>
         );
     };
     constructor(id?: number) {

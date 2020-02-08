@@ -12,7 +12,7 @@ export function Centered(props: TextProps): JSX.Element {
 
 export function CenteredBold(props: TextProps): JSX.Element {
     return (
-        <Centered>
+        <Centered noMargin={props.noMargin}>
             <b>{props.children} </b>
         </Centered>
     );
@@ -20,7 +20,7 @@ export function CenteredBold(props: TextProps): JSX.Element {
 
 export function CenteredItallic(props: TextProps): JSX.Element {
     return (
-        <Centered>
+        <Centered noMargin={props.noMargin}>
             <i>{props.children} </i>
         </Centered>
     );

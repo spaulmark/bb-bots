@@ -5,15 +5,25 @@ import { CenteredBold, Centered, CenteredItallic } from "../../layout/centered";
 import { GameState } from "../../../model";
 import { VoteType } from "../../../model/logging/voteType";
 
-const Gray = styled.td`
+export const EndgameTableCell = styled.td`
+    padding: 0.2em 0.4em;
+    border: 1px solid #a2a9b1;
+`;
+
+const EndgameTable = styled.table`
+    border: 1px solid #a2a9b1;
+    border-collapse: collapse;
+`;
+
+const Gray = styled(EndgameTableCell)`
     background-color: #eaecf0;
 `;
 
-const White = styled.td`
+const White = styled(EndgameTableCell)`
     background-color: #f8f9fa;
 `;
 
-const Evicted = styled.td`
+const Evicted = styled(EndgameTableCell)`
     background-color: #fa8072;
 `;
 
@@ -81,7 +91,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
         <div>
             Yo this table is WIP and kinda goes off the side of the screen but trust me it will be cool once i
             finish it
-            <table>
+            <EndgameTable>
                 <tbody>
                     {topRow}
                     {preVetoRow}
@@ -89,7 +99,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                     {postVetoRow}
                     {houseguestRows}
                 </tbody>
-            </table>
+            </EndgameTable>
         </div>
     );
 }
