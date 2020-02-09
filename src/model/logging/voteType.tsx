@@ -14,8 +14,6 @@ export interface VoteType {
     render: (state: GameState) => JSX.Element;
 }
 
-// TODO: the margins used on the p is causing serious problems. we must remedy this.
-
 export class NormalVote implements VoteType {
     id: number;
     render = (state: GameState) => (
@@ -69,9 +67,3 @@ export class HoHVote implements VoteType {
         this.id = id === undefined ? -1 : id;
     }
 }
-
-// Winner: #73FB76
-
-// Runner-up: #D1E8EF
-
-// Border: #D9D9D9

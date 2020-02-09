@@ -4,7 +4,6 @@ import { EpisodeLog } from "../../../model/logging/episodelog";
 import { CenteredBold, Centered, CenteredItallic } from "../../layout/centered";
 import { GameState, getById } from "../../../model";
 import { VoteType } from "../../../model/logging/voteType";
-import { max } from "../../../utils";
 
 export const EndgameTableCell = styled.td`
     padding: 0.2em 0.4em;
@@ -26,6 +25,14 @@ const White = styled(EndgameTableCell)`
 
 const Evicted = styled(EndgameTableCell)`
     background-color: #fa8072;
+`;
+
+const Winner = styled(EndgameTableCell)`
+    background-color: #73fb76;
+`;
+
+const RunnerUp = styled(EndgameTableCell)`
+    background-color: #d1e8ef;
 `;
 
 const BlackRow = styled.tr`
@@ -53,7 +60,6 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             </Gray>
         ];
     });
-
     const evictionOrder: number[] = [];
     const topRowCells: JSX.Element[] = [];
     const preVetoCells: JSX.Element[] = [];
@@ -68,8 +74,8 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
         generateEvictedRow(log, i, evictedCells, gameState);
         if (!log) return;
         evictionOrder.push(log.evicted);
-        if (log.runnerUp) evictionOrder.push(log.runnerUp);
-        if (log.winner) evictionOrder.push(log.winner);
+        if (log.runnerUp !== undefined) evictionOrder.push(log.runnerUp);
+        if (log.winner !== undefined) evictionOrder.push(log.winner);
         // add each of the votes to the houseguest cells
         for (const [key, value] of Object.entries(log.votes)) {
             // typescript for .. in loops kinda suck so i need to do a sketchy type conversion
@@ -78,6 +84,13 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             houseguestCells[id].push(vote.render(gameState));
         }
     });
+    // then generate the finale row
+    preVetoCells.push(
+        <White key={`preveto--finale`} rowSpan={3}>
+            <CenteredItallic noMargin={true}>(none)</CenteredItallic>
+        </White>
+    );
+
     const topRow = <tr>{topRowCells}</tr>;
     const preVetoRow = <tr>{preVetoCells}</tr>;
     const vetoRow = <tr>{vetoCells}</tr>;
@@ -92,17 +105,17 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     let evictionColSpan = -1;
     const weeks = evictionOrder.length;
     evictionOrder.reverse().forEach((id, i) => {
-        // TODO: the person who doesn't win final HoH but gets brought to F2
-        // needs to have a nominated tag put in their place.
-        if (evictionColSpan > 0)
+        if (evictionColSpan > 0) {
+            const weekText = i === 2 ? "(Finale)" : `(Week ${weeks - i})`;
             houseguestCells[id].push(
                 <Evicted colSpan={evictionColSpan} key={`evicted-week-${weeks - i}`}>
                     <CenteredItallic noMargin={true}>Evicted</CenteredItallic>
                     <CenteredItallic noMargin={true}>
-                        <small>(Week {weeks - i})</small>
+                        <small>{weekText}</small>
                     </CenteredItallic>
                 </Evicted>
             );
+        }
         houseguestRows.push(<tr key={`hgrow--${id}`}>{houseguestCells[id]}</tr>);
         evictionColSpan++;
     });
@@ -240,7 +253,7 @@ function generateTopRow(log: EpisodeLog | undefined, i: number, cells: JSX.Eleme
     }
     if (i === max) {
         cells.push(
-            <Gray key={`toprow--${i}`}>
+            <Gray key={`toprow--${i}`} colSpan={2}>
                 <CenteredBold noMargin={true}>Finale</CenteredBold>
             </Gray>
         );
