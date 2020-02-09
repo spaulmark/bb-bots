@@ -16,13 +16,15 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 * [x] Cast X random players button on setup screen
 * [x] Click a player to view his/her relationships
 * [x] Power rankings view
-* [ ] Endgame stats screen & voting table
+* [ ] Endgame stats screen & voting table <--- current focus
 * [ ] Add pre-set casts for a quick play option
 * [ ] Editable player names
 * [ ] Add a help page and walkthrough for new users
 * [ ] Improve/tweak the color scheme and icons (if nessecary)
-* [ ] Custom season builder, customize the twists in the game (Double Eviction, Double HoH, etc.)
 * [ ] Cliques view
+
+## Lower Priority Features ##
+* [ ] Custom season builder, customize the twists in the game (Double Eviction, Double HoH, etc.)
 
 ## Logic ## 
 ### (aka: the stuff that I could tweak until the end of time and still not be happy with) ###
