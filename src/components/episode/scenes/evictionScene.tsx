@@ -19,6 +19,7 @@ export function generateEvictionScene(
     const newGameState = new MutableGameState(initialGameState);
     nominees = shuffle(nominees);
     const votes: Array<ProfileHouseguest[]> = [[], []];
+    let lastVoter: Houseguest;
     nonEvictedHouseguests(newGameState).forEach(hg => {
         if (hg.id !== nominees[0].id && hg.id !== nominees[1].id && hg.id !== HoH.id) {
             const logic = castEvictionVote(hg, nominees, newGameState);
@@ -26,11 +27,15 @@ export function generateEvictionScene(
             result.tooltip = logic.reason;
             newGameState.currentLog.votes[hg.id] = new NormalVote(nominees[logic.decision].id);
             votes[logic.decision].push(result);
+            lastVoter = hg;
         }
     });
     const votesFor0 = votes[0].length;
     const votesFor1 = votes[1].length;
     newGameState.currentLog.outOf = votesFor0 + votesFor1;
+    if (votesFor0 + votesFor1 === 1) {
+        newGameState.currentLog.soleVoter = lastVoter!!.name;
+    }
     let tieVote = votesFor0 === votesFor1;
     let tieBreaker = { decision: 0, reason: "Error you should not be seeing this" };
     if (tieVote) {

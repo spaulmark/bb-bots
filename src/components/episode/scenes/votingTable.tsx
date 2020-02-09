@@ -141,13 +141,19 @@ function generateEvictedRow(
         );
         return;
     }
+
+    const voteTextLine1 =
+        log.soleVoter !== undefined
+            ? `${log.soleVoter}'s choice`
+            : `${log.votesInMajority} of ${log.outOf} votes`;
+
     cells.push(
         <Evicted key={i}>
             <Centered noMargin={true}>
                 <b>{getById(gameState, log.evicted).name}</b>
                 <br />
                 <small>
-                    {log.votesInMajority} of {log.outOf} votes <br />
+                    {voteTextLine1} <br />
                     to evict
                 </small>
             </Centered>

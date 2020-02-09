@@ -10,4 +10,5 @@ export class EpisodeLog {
     public votes: { [id: string]: VoteType } = {};
     public votesInMajority: number = -1;
     public outOf: number = -1;
+    public soleVoter?: string;
 }
