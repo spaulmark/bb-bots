@@ -40,16 +40,6 @@ const BlackRow = styled.tr`
     background-color: #000000;
 `;
 
-// TODO: add a pseudo fullscreen thing for viewing the voting table
-
-// FIXME: when someone makes it through the whole game without getting a "Head of Household" cell or an "Evicted (week X)" cell
-// then thier row is too skinny.
-
-// FIXME: a bug exists where if the runner-up wins final HoH, then his HoH
-// doesn't get displayed on the voting table.
-
-// Also he just straight up doesn't appear on the voting table, which is cool.
-
 export function generateVotingTable(gameState: GameState): JSX.Element {
     const masterLog: EpisodeLog[] = gameState.log;
     const houseguestCells: JSX.Element[][] = [];
@@ -122,8 +112,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
 
     return (
         <div>
-            Yo this table is WIP and kinda goes off the side of the screen but trust me it will be extremely
-            cool once i finish it
+            TODO: -- the jury row needs to work --- the table goes off the side of the screen
             <EndgameTable>
                 <tbody>
                     {topRow}
