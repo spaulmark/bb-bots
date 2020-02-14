@@ -1,4 +1,4 @@
-import { GameState, getJurors, nonEvictedHouseguests, MutableGameState } from "../../../model";
+import { GameState, getJurors, nonEvictedHouseguests, MutableGameState, Houseguest } from "../../../model";
 import { Scene } from "../scene";
 import { castJuryVote } from "../../../utils/ai/aiApi";
 import { Portraits } from "../../playerPortrait/portraits";
@@ -7,16 +7,18 @@ import { ProfileHouseguest } from "../../memoryWall";
 import { CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
+import { NormalVote } from "../../../model/logging/voteType";
 
 export function juryVoteScene(initialGameState: GameState): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
-    const jurors = getJurors(newGameState);
+    const jurors: Houseguest[] = getJurors(newGameState);
     const finalists = nonEvictedHouseguests(newGameState);
     const votes: Array<ProfileHouseguest[]> = [[], []];
     jurors.forEach(juror => {
         const decision = castJuryVote(juror, finalists);
         const result: ProfileHouseguest = { ...juror };
         votes[decision].push(result);
+        newGameState.currentLog.votes[juror.id] = new NormalVote(finalists[decision].id);
     });
     const votesFor0 = votes[0].length;
     const votesFor1 = votes[1].length;

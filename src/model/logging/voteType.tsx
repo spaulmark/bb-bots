@@ -1,7 +1,7 @@
 import React from "react";
 import { GameState, getById } from "../gameState";
 import { CenteredItallic, Centered } from "../../components/layout/centered";
-import { EndgameTableCell } from "../../components/episode/scenes/votingTable";
+import { EndgameTableCell, WinnerCell, RunnerUpCell } from "../../components/episode/scenes/votingTable";
 
 let voteKey = 0;
 
@@ -24,6 +24,24 @@ export class NormalVote implements VoteType {
     constructor(id: number) {
         this.id = id;
     }
+}
+
+export class WinnerVote implements VoteType {
+    id: number = 1; // unused
+    render = (state: GameState) => (
+        <WinnerCell>
+            <Centered noMargin={true}>Winner</Centered>
+        </WinnerCell>
+    );
+}
+
+export class RunnerUpVote implements VoteType {
+    id: number = 1; // unused
+    render = (state: GameState) => (
+        <RunnerUpCell>
+            <Centered noMargin={true}>Finalist</Centered>
+        </RunnerUpCell>
+    );
 }
 
 export class NomineeVote implements VoteType {

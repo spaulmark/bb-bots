@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { EpisodeLog } from "../../../model/logging/episodelog";
 import { CenteredBold, Centered, CenteredItallic } from "../../layout/centered";
 import { GameState, getById } from "../../../model";
-import { VoteType } from "../../../model/logging/voteType";
+import { VoteType, WinnerVote, RunnerUpVote } from "../../../model/logging/voteType";
 
 export const EndgameTableCell = styled.td`
     padding: 0.2em 0.4em;
@@ -27,11 +27,11 @@ const Evicted = styled(EndgameTableCell)`
     background-color: #fa8072;
 `;
 
-const Winner = styled(EndgameTableCell)`
+export const WinnerCell = styled(EndgameTableCell)`
     background-color: #73fb76;
 `;
 
-const RunnerUp = styled(EndgameTableCell)`
+export const RunnerUpCell = styled(EndgameTableCell)`
     background-color: #d1e8ef;
 `;
 
@@ -73,6 +73,10 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             const vote: VoteType = value;
             houseguestCells[id].push(vote.render(gameState));
         }
+        if (log.winner !== undefined) {
+            houseguestCells[log.winner].push(new WinnerVote().render(gameState));
+            houseguestCells[log.runnerUp!!].push(new RunnerUpVote().render(gameState));
+        }
     });
     // then generate the finale row
     preVetoCells.push(
@@ -97,14 +101,25 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     evictionOrder.reverse().forEach((id, i) => {
         if (evictionColSpan > 0) {
             const weekText = i === 2 ? "(Finale)" : `(Week ${weeks - i})`;
-            houseguestCells[id].push(
-                <Evicted colSpan={evictionColSpan} key={`evicted-week-${weeks - i}`}>
+            const isJury = getById(gameState, id).isJury;
+            const colSpan = isJury ? evictionColSpan - 1 : evictionColSpan;
+            const evicted = (
+                <Evicted colSpan={colSpan} key={`evicted-week-${weeks - i}`}>
                     <CenteredItallic noMargin={true}>Evicted</CenteredItallic>
                     <CenteredItallic noMargin={true}>
                         <small>{weekText}</small>
                     </CenteredItallic>
                 </Evicted>
             );
+            // TODO: if jury: make houseguest cells come before the new thing
+            if (!isJury) {
+                houseguestCells[id].push(evicted); // not jury, they dead
+            } else {
+                const tempList = houseguestCells[id].slice(0, -1);
+                tempList.push(evicted);
+                tempList.push(houseguestCells[id][houseguestCells[id].length - 1]);
+                houseguestCells[id] = tempList;
+            }
         }
         houseguestRows.push(<tr key={`hgrow--${id}`}>{houseguestCells[id]}</tr>);
         evictionColSpan++;

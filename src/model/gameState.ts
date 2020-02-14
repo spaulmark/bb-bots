@@ -32,7 +32,7 @@ export function randomPlayer(inclusions: Houseguest[], exclusions: Houseguest[] 
 export function nonEvictedHouseguests(gameState: GameState) {
     return gameState.houseguests.filter(hg => !hg.isEvicted);
 }
-export function getJurors(gameState: GameState) {
+export function getJurors(gameState: GameState): Houseguest[] {
     return gameState.houseguests.filter(hg => hg.isJury);
 }
 
