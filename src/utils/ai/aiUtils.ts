@@ -65,6 +65,7 @@ export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState
     const totalPlayers = gameState.remainingPlayers;
     const superiors = hero.superiors.size;
     // const inferiors = totalPlayers - 1 - hero.superiors.size;
+
     // Old logic: Target the larger group. If they are equal, target superiors.
     // return superiors >= inferiors;
 

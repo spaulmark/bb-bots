@@ -95,8 +95,6 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             );
         }
     });
-    // TODO: add the runner up to the evicted row
-    // then add a new row that is just the winner
     preVetoCells.push(
         <White key={`preveto--finale`} rowSpan={3}>
             <CenteredItallic noMargin={true}>(none)</CenteredItallic>
@@ -129,7 +127,6 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                     </CenteredItallic>
                 </Evicted>
             );
-            // TODO: if jury: make houseguest cells come before the new thing
             if (!isJury) {
                 houseguestCells[id].push(evicted); // not jury, they dead
             } else {

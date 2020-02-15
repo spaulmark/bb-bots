@@ -27,6 +27,7 @@ export class MainContentArea extends React.Component<{}, { content: any }> {
         this.contentStream.unsubscribe();
     }
 
+    // TODO: get rid of CSS and find a fix where the overflow keeps getting hidden.
     public render() {
         return <div className="box">{this.state.content}</div>;
     }
