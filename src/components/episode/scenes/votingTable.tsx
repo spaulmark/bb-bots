@@ -56,6 +56,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const vetoCells: JSX.Element[] = [];
     const postVetoCells: JSX.Element[] = [];
     const evictedCells: JSX.Element[] = [];
+    const winnerCells: JSX.Element[] = [];
     masterLog.forEach((log, i) => {
         generateTopRow(log, i, topRowCells, masterLog.length - 1);
         generatePreVetoRow(log, i, preVetoCells);
@@ -73,18 +74,35 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             const vote: VoteType = value;
             houseguestCells[id].push(vote.render(gameState));
         }
-        if (log.winner !== undefined) {
+        if (log.winner !== undefined && log.runnerUp !== undefined) {
             houseguestCells[log.winner].push(new WinnerVote().render(gameState));
-            houseguestCells[log.runnerUp!!].push(new RunnerUpVote().render(gameState));
+            houseguestCells[log.runnerUp].push(new RunnerUpVote().render(gameState));
+            evictedCells.push(
+                <RunnerUpCell>
+                    <CenteredBold noMargin={true}>{getById(gameState, log.runnerUp).name}</CenteredBold>
+                    <Centered noMargin={true}>
+                        <small>Finalist</small>
+                    </Centered>
+                </RunnerUpCell>
+            );
+            winnerCells.push(
+                <WinnerCell>
+                    <CenteredBold noMargin={true}>{getById(gameState, log.winner).name}</CenteredBold>
+                    <Centered noMargin={true}>
+                        <small>Winner</small>
+                    </Centered>
+                </WinnerCell>
+            );
         }
     });
-    // then generate the finale row
+    // TODO: add the runner up to the evicted row
+    // then add a new row that is just the winner
     preVetoCells.push(
         <White key={`preveto--finale`} rowSpan={3}>
             <CenteredItallic noMargin={true}>(none)</CenteredItallic>
         </White>
     );
-
+    const winnerRow = <tr>{winnerCells}</tr>;
     const topRow = <tr>{topRowCells}</tr>;
     const preVetoRow = <tr>{preVetoCells}</tr>;
     const vetoRow = <tr>{vetoCells}</tr>;
@@ -127,7 +145,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
 
     return (
         <div>
-            TODO: -- the jury row needs to work --- the table goes off the side of the screen
+            TODO: -- the table goes off the side of the screen
             <EndgameTable>
                 <tbody>
                     {topRow}
@@ -138,6 +156,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                     {houseguestRows}
                     {blackRow}
                     {evictedRow}
+                    {winnerRow}
                 </tbody>
             </EndgameTable>
         </div>
@@ -152,7 +171,7 @@ function generateEvictedRow(
 ) {
     if (!log) {
         cells.push(
-            <Gray key={i}>
+            <Gray key={i} rowSpan={2}>
                 <CenteredBold noMargin={true}>Evicted</CenteredBold>
             </Gray>
         );
@@ -165,7 +184,7 @@ function generateEvictedRow(
             : `${log.votesInMajority} of ${log.outOf} votes`;
 
     cells.push(
-        <Evicted key={i}>
+        <Evicted key={i} rowSpan={2}>
             <Centered noMargin={true}>
                 <b>{getById(gameState, log.evicted).name}</b>
                 <br />
