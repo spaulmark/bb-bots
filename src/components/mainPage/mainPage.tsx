@@ -1,13 +1,20 @@
-import "./mainPage.scss";
+import "./bulma.scss";
 import React from "react";
 import { Sidebar } from "../sidebar/sidebar";
 import { Topbar } from "../topbar/topBar";
 import { MainContentArea } from "./mainContentArea";
 import { MainPageController } from "./mainPageController";
+import styled from "styled-components";
 
 interface MainPageProps {
     controller: MainPageController;
 }
+
+const MainPageWrapper = styled.div`
+    margin: auto;
+    max-width: 1380px;
+    overflow: hidden;
+`;
 
 export class MainPage extends React.Component<MainPageProps, any> {
     public constructor(props: MainPageProps) {
@@ -17,7 +24,7 @@ export class MainPage extends React.Component<MainPageProps, any> {
 
     public render() {
         return (
-            <div className="main-page">
+            <MainPageWrapper>
                 <Topbar />
                 <div className="columns">
                     <div className="column is-narrow">
@@ -27,7 +34,7 @@ export class MainPage extends React.Component<MainPageProps, any> {
                         <MainContentArea />
                     </div>
                 </div>
-            </div>
+            </MainPageWrapper>
         );
     }
 }

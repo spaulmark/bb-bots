@@ -1,31 +1,34 @@
 import React from "react";
 import { CastingScreen } from "../castingScreen/castingScreen";
-import "./topBar.scss";
 import { mainContentStream$, getCast } from "../../subjects/subjects";
+import styled from "styled-components";
+
+const TopbarLink = styled.div`
+    color: blue;
+    cursor: pointer;
+`;
 
 export function EditCastLink(): JSX.Element {
     return (
-        <div
-            className="topbar-link"
+        <TopbarLink
             onClick={() => {
                 mainContentStream$.next(<CastingScreen cast={getCast()} />);
             }}
         >
             Edit Cast
-        </div>
+        </TopbarLink>
     );
 }
 
 export function EditSeasonLink(): JSX.Element {
     return (
-        <div
-            className="topbar-link"
+        <TopbarLink
             onClick={() => {
                 mainContentStream$.next(<CastingScreen cast={getCast()} />);
             }}
         >
             Edit Season
-        </div>
+        </TopbarLink>
     );
 }
 
