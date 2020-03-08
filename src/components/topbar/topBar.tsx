@@ -32,9 +32,10 @@ export function EditSeasonLink(): JSX.Element {
     );
 }
 
-export function Topbar(): JSX.Element {
+export function Topbar(props: { style?: any }): JSX.Element {
+    const style = { ...props.style, ...{ marginTop: 30 } };
     return (
-        <div className="level box is-mobile" style={{ marginTop: 30 }}>
+        <div className="level box is-mobile" style={style}>
             <div className="level-item">
                 <EditCastLink />
             </div>

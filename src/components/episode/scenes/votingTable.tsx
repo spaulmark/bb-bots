@@ -4,9 +4,10 @@ import { EpisodeLog } from "../../../model/logging/episodelog";
 import { CenteredBold, Centered, CenteredItallic } from "../../layout/centered";
 import { GameState, getById } from "../../../model";
 import { VoteType, WinnerVote, RunnerUpVote } from "../../../model/logging/voteType";
+import { FullscreenButton } from "../../mainPage/fullscreenButton";
 
 export const EndgameTableCell = styled.td`
-    padding: 0.2em 0.4em;
+    padding: 0.1em 0.4em;
     border: 1px solid #a2a9b1;
 `;
 
@@ -81,7 +82,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                 <RunnerUpCell>
                     <CenteredBold noMargin={true}>{getById(gameState, log.runnerUp).name}</CenteredBold>
                     <Centered noMargin={true}>
-                        <small>Finalist</small>
+                        <small>Finalist</small> {/** TODO: put "X votes" here instead. */}
                     </Centered>
                 </RunnerUpCell>
             );
@@ -142,7 +143,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
 
     return (
         <div>
-            TODO: -- the table goes off the side of the screen
+            <FullscreenButton />
             <EndgameTable>
                 <tbody>
                     {topRow}

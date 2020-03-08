@@ -4,37 +4,47 @@ import { Sidebar } from "../sidebar/sidebar";
 import { Topbar } from "../topbar/topBar";
 import { MainContentArea } from "./mainContentArea";
 import { MainPageController } from "./mainPageController";
-import styled from "styled-components";
 
 interface MainPageProps {
     controller: MainPageController;
 }
 
-const MainPageWrapper = styled.div`
-    margin: auto;
-    max-width: 1380px;
-    overflow: hidden;
-`;
+interface MainPageState {
+    fullscreen: boolean;
+}
 
-export class MainPage extends React.Component<MainPageProps, any> {
+export class MainPage extends React.Component<MainPageProps, MainPageState> {
     public constructor(props: MainPageProps) {
         super(props);
+        this.state = { fullscreen: false };
         props.controller.inject(this);
+    }
+    public componentDidMount() {
+        this.props.controller.subscribe();
+    }
+    public componentWillUnmount() {
+        this.props.controller.unsubscribe();
     }
 
     public render() {
+        const fullscreen = this.state.fullscreen;
+        const hideOnFullscreen = { display: fullscreen ? "none" : "" };
+        const wrapperStyle = fullscreen
+            ? { margin: "auto" }
+            : { margin: "auto", maxWidth: 1380, overflow: "hidden" };
         return (
-            <MainPageWrapper>
-                <Topbar />
+            <div style={wrapperStyle}>
+                <Topbar style={hideOnFullscreen} />
                 <div className="columns">
-                    <div className="column is-narrow">
+                    <div className="column is-narrow" style={hideOnFullscreen}>
                         <Sidebar />
                     </div>
+
                     <div className="column" style={{ overflowX: "hidden" }}>
                         <MainContentArea />
                     </div>
                 </div>
-            </MainPageWrapper>
+            </div>
         );
     }
 }
