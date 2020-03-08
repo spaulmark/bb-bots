@@ -17,6 +17,7 @@ export class Episode {
     readonly content: JSX.Element;
     readonly gameState: GameState;
     readonly type: EpisodeType;
+    readonly arrowsEnabled: boolean = true;
     get render(): JSX.Element {
         return (
             <div>
@@ -38,4 +39,5 @@ export class Episode {
 export interface EpisodeType {
     readonly canPlayWith: (n: number) => boolean;
     readonly eliminates: number;
+    readonly arrowsEnabled: boolean;
 }

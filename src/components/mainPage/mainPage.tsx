@@ -30,7 +30,7 @@ export class MainPage extends React.Component<MainPageProps, any> {
                     <div className="column is-narrow">
                         <Sidebar />
                     </div>
-                    <div className="column">
+                    <div className="column" style={{ overflowX: "hidden" }}>
                         <MainContentArea />
                     </div>
                 </div>

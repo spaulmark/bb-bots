@@ -6,7 +6,7 @@ import React from "react";
 import { PortraitDisplayMode, popularityMode } from "../model/portraitDisplayMode";
 
 // What is currently being displayed.
-export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
+export const mainContentStream$ = new BehaviorSubject((<PregameScreen cast={[]} />));
 // Push episodes to this subject to add them to the sidebar. Null resets everything.
 export const episodes$ = new BehaviorSubject<Episode | null>(null);
 // Forcibly switches to an episode. Used when adding a new episode.

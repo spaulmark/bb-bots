@@ -22,12 +22,8 @@ export interface ProfileHouseguest extends PlayerProfile {
 }
 
 export function MemoryWall(props: IMemoryWallProps): JSX.Element {
-    return <div className="memory-wall">{getPlayers(props)}</div>;
-}
-
-function getPlayers(props: IMemoryWallProps): any {
     if (!props.houseguests || props.houseguests.length === 0) {
-        return null;
+        return <div />;
     }
     return (
         <div

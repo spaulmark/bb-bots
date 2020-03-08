@@ -24,7 +24,8 @@ export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
         return n > 1;
     },
-    eliminates: 1
+    eliminates: 1,
+    arrowsEnabled: true
 };
 
 // Refactoring ideas

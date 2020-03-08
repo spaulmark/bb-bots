@@ -88,7 +88,15 @@ export class SidebarController {
         }
     };
 
-    public handleKeyDown(event: any) {
+    get handleKeyDown(): (e: any) => void {
+        return this._handleKeyDown.bind(this);
+    }
+
+    private _handleKeyDown(event: any) {
+        const state = this.view.state;
+        if (!state.episodes[this.selectedEpisode].type.arrowsEnabled) {
+            return;
+        }
         if (event.keyCode === LEFT) {
             switchSceneRelative(-1);
         } else if (event.keyCode === RIGHT) {

@@ -1,5 +1,10 @@
+import styled from "styled-components";
 import React from "react";
 import { mainContentStream$ } from "../../subjects/subjects";
+
+const MainContentAreaWrapper = styled.div`
+    overflow-x: auto;
+`;
 
 export class MainContentArea extends React.Component<{}, { content: any }> {
     // a simple class that displays whatever it gets fed through the main content stream.
@@ -27,8 +32,7 @@ export class MainContentArea extends React.Component<{}, { content: any }> {
         this.contentStream.unsubscribe();
     }
 
-    // TODO: get rid of CSS and find a fix where the overflow keeps getting hidden.
     public render() {
-        return <div className="box">{this.state.content}</div>;
+        return <MainContentAreaWrapper className="box">{this.state.content}</MainContentAreaWrapper>;
     }
 }

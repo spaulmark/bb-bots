@@ -10,7 +10,8 @@ import { juryVoteScene } from "./scenes/juryVoteScene";
 
 export const BigBrotherFinale: EpisodeType = {
     canPlayWith: (n: number) => n === 3,
-    eliminates: 2
+    eliminates: 2,
+    arrowsEnabled: true
 };
 
 export function generateBbFinale(initialGameState: GameState): BigBrotherFinaleEpisode {
