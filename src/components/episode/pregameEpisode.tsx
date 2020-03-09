@@ -8,7 +8,8 @@ const PregameEpisodeType: EpisodeType = {
     canPlayWith: (n: number) => {
         return n > 2;
     },
-    arrowsEnabled: true
+    arrowsEnabled: true,
+    hasViewsbar: false
 };
 
 export class PregameEpisode extends Episode {

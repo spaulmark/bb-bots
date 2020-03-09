@@ -19,9 +19,10 @@ export class Episode {
     readonly type: EpisodeType;
     readonly arrowsEnabled: boolean = true;
     get render(): JSX.Element {
+        const viewsBar = this.type.hasViewsbar ? <ViewsBar /> : null;
         return (
             <div>
-                <ViewsBar />
+                {viewsBar}
                 {this.content}
             </div>
         );
@@ -40,4 +41,5 @@ export interface EpisodeType {
     readonly canPlayWith: (n: number) => boolean;
     readonly eliminates: number;
     readonly arrowsEnabled: boolean;
+    readonly hasViewsbar: boolean;
 }

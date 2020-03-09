@@ -7,7 +7,8 @@ import { generateVotingTable } from "./scenes/votingTable";
 export const GameOver: EpisodeType = {
     canPlayWith: (n: number) => n === 1,
     eliminates: 1,
-    arrowsEnabled: false
+    arrowsEnabled: false,
+    hasViewsbar: false
 };
 
 export function generateGameOver(gameState: GameState): GameOverEpisode {

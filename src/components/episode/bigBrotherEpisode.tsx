@@ -25,7 +25,8 @@ export const BigBrotherVanilla: EpisodeType = {
         return n > 1;
     },
     eliminates: 1,
-    arrowsEnabled: true
+    arrowsEnabled: true,
+    hasViewsbar: true
 };
 
 // Refactoring ideas

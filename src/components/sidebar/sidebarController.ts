@@ -94,7 +94,11 @@ export class SidebarController {
 
     private _handleKeyDown(event: any) {
         const state = this.view.state;
-        if (!state.episodes[this.selectedEpisode].type.arrowsEnabled) {
+
+        if (
+            state.episodes[this.selectedEpisode] === undefined ||
+            !state.episodes[this.selectedEpisode].type.arrowsEnabled
+        ) {
             return;
         }
         if (event.keyCode === LEFT) {
