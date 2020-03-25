@@ -3,6 +3,7 @@ import { PlayerProfile } from "./playerProfile";
 import _ from "lodash";
 import { newRelationshipMap, rng } from "../utils";
 import { finalJurySize, getFinalists } from "./season";
+import { EpisodeLog } from "./logging/episodelog";
 
 // TODO: might want to make houseguests a dictionary. {id: houseguest}
 export function getById(gameState: GameState, id: number): Houseguest {
@@ -31,7 +32,7 @@ export function randomPlayer(inclusions: Houseguest[], exclusions: Houseguest[] 
 export function nonEvictedHouseguests(gameState: GameState) {
     return gameState.houseguests.filter(hg => !hg.isEvicted);
 }
-export function getJurors(gameState: GameState) {
+export function getJurors(gameState: GameState): Houseguest[] {
     return gameState.houseguests.filter(hg => hg.isJury);
 }
 
@@ -59,6 +60,10 @@ export class GameState {
     readonly remainingPlayers: number = 0;
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest;
+    readonly log: EpisodeLog[] = [];
+    get currentLog() {
+        return this.log[this.phase];
+    }
 
     public constructor(init: PlayerProfile[] | GameState) {
         if (!(init instanceof Array)) {
@@ -72,8 +77,6 @@ export class GameState {
                     new Houseguest({
                         ...profile,
                         id: ++id,
-                        // popularity: 0,
-                        // deltaPopularity: 0,
                         relationships: newRelationshipMap(profiles.length, id)
                     })
                 );
@@ -87,6 +90,10 @@ export class MutableGameState {
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest;
+    public log: EpisodeLog[] = [];
+    get currentLog() {
+        return this.log[this.phase];
+    }
 
     public constructor(init: GameState | MutableGameState) {
         const copy = _.cloneDeep(init);

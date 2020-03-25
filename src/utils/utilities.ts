@@ -20,6 +20,10 @@ export function roundTwoDigits(number: number | undefined) {
     return Math.round(number * 100);
 }
 
+export function max(a: number, b: number) {
+    return a > b ? a : b;
+}
+
 export function extremeValues(x: number | undefined): number {
     if (!x) {
         return 0;

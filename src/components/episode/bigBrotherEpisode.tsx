@@ -24,7 +24,9 @@ export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
         return n > 1;
     },
-    eliminates: 1
+    eliminates: 1,
+    arrowsEnabled: true,
+    hasViewsbar: true
 };
 
 // Refactoring ideas
@@ -34,6 +36,7 @@ export const BigBrotherVanilla: EpisodeType = {
 
 export function evictHouseguest(gameState: MutableGameState, id: number) {
     const evictee = getById(gameState, id);
+    if (gameState.currentLog) gameState.currentLog.evicted = evictee.id;
     evictee.isEvicted = true;
     if (gameState.remainingPlayers - getFinalists() <= finalJurySize()) {
         evictee.isJury = true;
@@ -51,7 +54,6 @@ export function generateBbVanilla(initialGameState: GameState): BigBrotherVanill
     let hohCompScene;
     let hoh: Houseguest;
     const scenes = [];
-
     [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGameState);
     scenes.push(hohCompScene);
 
@@ -71,7 +73,12 @@ export function generateBbVanilla(initialGameState: GameState): BigBrotherVanill
     scenes.push(vetoCompScene);
     let vetoCeremonyScene;
 
-    [vetoCeremonyScene, nominees] = generateVetoCeremonyScene(currentGameState, hoh, nominees, povWinner);
+    [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
+        currentGameState,
+        hoh,
+        nominees,
+        povWinner
+    );
     scenes.push(vetoCeremonyScene);
 
     let evictionScene;

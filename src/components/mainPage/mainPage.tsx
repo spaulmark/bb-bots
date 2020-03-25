@@ -1,4 +1,4 @@
-import "./mainPage.scss";
+import "./bulma.scss";
 import React from "react";
 import { Sidebar } from "../sidebar/sidebar";
 import { Topbar } from "../topbar/topBar";
@@ -9,21 +9,38 @@ interface MainPageProps {
     controller: MainPageController;
 }
 
-export class MainPage extends React.Component<MainPageProps, any> {
+interface MainPageState {
+    fullscreen: boolean;
+}
+
+export class MainPage extends React.Component<MainPageProps, MainPageState> {
     public constructor(props: MainPageProps) {
         super(props);
+        this.state = { fullscreen: false };
         props.controller.inject(this);
+    }
+    public componentDidMount() {
+        this.props.controller.subscribe();
+    }
+    public componentWillUnmount() {
+        this.props.controller.unsubscribe();
     }
 
     public render() {
+        const fullscreen = this.state.fullscreen;
+        const hideOnFullscreen = { display: fullscreen ? "none" : "" };
+        const wrapperStyle = fullscreen
+            ? { margin: "auto" }
+            : { margin: "auto", maxWidth: 1380, overflow: "hidden" };
         return (
-            <div className="main-page">
-                <Topbar />
+            <div style={wrapperStyle}>
+                <Topbar style={hideOnFullscreen} />
                 <div className="columns">
-                    <div className="column is-narrow">
+                    <div className="column is-narrow" style={hideOnFullscreen}>
                         <Sidebar />
                     </div>
-                    <div className="column">
+
+                    <div className="column" style={{ overflowX: "hidden" }}>
                         <MainContentArea />
                     </div>
                 </div>

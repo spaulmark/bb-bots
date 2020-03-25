@@ -7,12 +7,20 @@ import { Portrait, Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { CenteredBold, Centered } from "../../layout/centered";
+import { HoHVote, NomineeVote } from "../../../model/logging/voteType";
 
 export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
     const nominees = nonEvictedHouseguests(newGameState).filter(hg => hg.id !== HoH.id);
+    newGameState.currentLog.nominationsPostVeto = nominees.map(hg => hg.name);
     const { decision: vote, reason } = castEvictionVote(HoH, nominees, newGameState);
     const evictee = nominees[vote];
+    const survivor = nominees[vote == 1 ? 0 : 1];
+    newGameState.currentLog.soleVoter = HoH.name;
+    newGameState.currentLog.votes[survivor.id] = new NomineeVote(false);
+    newGameState.currentLog.votes[HoH.id] = new HoHVote(evictee.id);
+    newGameState.currentLog.votesInMajority = 1;
+    newGameState.currentLog.outOf = 1;
     const hoh: ProfileHouseguest = { ...HoH };
     hoh.tooltip = reason;
     evictHouseguest(newGameState, evictee.id);

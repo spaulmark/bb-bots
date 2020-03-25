@@ -12,7 +12,7 @@ export function generateVetoCeremonyScene(
     HoH: Houseguest,
     initialNominees: Houseguest[],
     povWinner: Houseguest
-): [Scene, Houseguest[]] {
+): [GameState, Scene, Houseguest[]] {
     let povTarget: Houseguest | null = null;
     let descisionText = "";
     initialNominees[0] = getById(initialGameState, initialNominees[0].id);
@@ -74,9 +74,9 @@ export function generateVetoCeremonyScene(
                 </div>
                 <CenteredBold>
                     I have decided... <br />
-                    <Portrait centered={true} houseguest={{ ...povWinner, tooltip: vetoChoice.reason }} />
-                    {descisionText}
                 </CenteredBold>
+                <Portrait centered={true} houseguest={{ ...povWinner, tooltip: vetoChoice.reason }} />
+                <CenteredBold noMargin={true}>{descisionText}</CenteredBold>
                 <Centered>{nameAReplacement}</Centered>
                 {replacementSpeech && <Portrait centered={true} houseguest={HoH} />}
                 <CenteredBold>{replacementSpeech}</CenteredBold>
@@ -92,5 +92,6 @@ export function generateVetoCeremonyScene(
             </div>
         )
     });
-    return [scene, finalNominees];
+    initialGameState.currentLog.nominationsPostVeto = [finalNominees[0].name, finalNominees[1].name];
+    return [initialGameState, scene, finalNominees];
 }

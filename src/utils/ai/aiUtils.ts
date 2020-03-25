@@ -62,10 +62,15 @@ export function doesHeroWinTheFinale(
 }
 
 export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState): boolean {
+    const totalPlayers = gameState.remainingPlayers;
     const superiors = hero.superiors.size;
-    const inferiors = gameState.remainingPlayers - 1 - hero.superiors.size;
-    // Target the larger group. If they are equal, target superiors.
-    return superiors >= inferiors;
+    // const inferiors = totalPlayers - 1 - hero.superiors.size;
+
+    // Old logic: Target the larger group. If they are equal, target superiors.
+    // return superiors >= inferiors;
+
+    // New logic: Target superiors unless you are in the top 25% of the playerlist.
+    return superiors / totalPlayers >= 0.25;
 }
 
 // TODO: this function can just honestly die. it's only used in nomination logic (which sucks anyways)

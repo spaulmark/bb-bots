@@ -4,6 +4,7 @@ import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
+import { HoHVote } from "../../../model/logging/voteType";
 
 export function generateHohCompScene(initialGameState: GameState): [GameState, Scene, Houseguest] {
     const newGameState = new MutableGameState(initialGameState);
@@ -11,7 +12,8 @@ export function generateHohCompScene(initialGameState: GameState): [GameState, S
     const previousHoh = initialGameState.previousHOH ? [initialGameState.previousHOH] : [];
     const newHoH: Houseguest = randomPlayer(newGameState.houseguests, previousHoh);
     newGameState.previousHOH = newHoH;
-    newGameState.phase++;
+    newGameState.currentLog.votes[newHoH.id] = new HoHVote();
+
     newHoH.hohWins += 1;
 
     const scene = new Scene({

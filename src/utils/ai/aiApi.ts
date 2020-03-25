@@ -206,7 +206,6 @@ function useGoldenVetoPostJury(
     }
 }
 
-// TODO: only save your top 25% of friends. but if you have very few friends, save all your friends.
 function useGoldenVetoPreJury(hero: Houseguest, nominees: Houseguest[]): HouseguestWithLogic {
     let save = -1;
     let reason = "Neither of these nominees are my friends.";
@@ -234,6 +233,7 @@ function useGoldenVetoPreJury(hero: Houseguest, nominees: Houseguest[]): Housegu
     return { decision: nominees[save], reason };
 }
 
+// Returns the index of the finalist with the highest relationship with juror
 export function castJuryVote(juror: Houseguest, finalists: Houseguest[]): number {
     return favouriteIndex(juror, finalists);
 }

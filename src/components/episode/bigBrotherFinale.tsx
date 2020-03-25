@@ -10,10 +10,12 @@ import { juryVoteScene } from "./scenes/juryVoteScene";
 
 export const BigBrotherFinale: EpisodeType = {
     canPlayWith: (n: number) => n === 3,
-    eliminates: 2
+    eliminates: 2,
+    arrowsEnabled: true,
+    hasViewsbar: true
 };
 
-export function generateBbFinaleInit(initialGameState: GameState): BigBrotherFinaleEpisode {
+export function generateBbFinale(initialGameState: GameState): BigBrotherFinaleEpisode {
     const title = "Finale";
     const content = (
         <div>
@@ -31,8 +33,8 @@ export function generateBbFinaleInit(initialGameState: GameState): BigBrotherFin
     let finalEviction;
     [currentGameState, finalEviction] = finalEvictionScene(currentGameState, finalHoH);
     scenes.push(finalEviction);
-    scenes.push(juryVoteScene(currentGameState));
-    const gameState = currentGameState;
+    const [gameState, juryScene] = juryVoteScene(currentGameState);
+    scenes.push(juryScene);
     return new BigBrotherFinaleEpisode({ gameState, content, title, scenes, type: BigBrotherFinale });
 }
 
