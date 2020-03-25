@@ -16,8 +16,8 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 * [x] Cast X random players button on setup screen
 * [x] Click a player to view his/her relationships
 * [x] Power rankings view
-* [ ] Endgame stats screen & voting table <--- current focus
-* [ ] Add pre-set casts for a quick play option
+* [x] Endgame stats screen & voting table 
+* [ ] Add pre-set casts for a quick play option <--- current focus
 * [ ] Editable player names
 * [ ] Add a help page and walkthrough for new users
 * [ ] Improve/tweak the color scheme and icons (if nessecary)
