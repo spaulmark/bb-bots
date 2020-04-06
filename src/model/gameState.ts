@@ -5,13 +5,8 @@ import { newRelationshipMap, rng } from "../utils";
 import { finalJurySize, getFinalists } from "./season";
 import { EpisodeLog } from "./logging/episodelog";
 
-// TODO: might want to make houseguests a dictionary. {id: houseguest}
 export function getById(gameState: GameState, id: number): Houseguest {
-    const result = gameState.houseguests.find(hg => hg.id === id);
-    if (!result) {
-        throw new Error(`Failed to find houseguest with id ${id}`);
-    }
-    return result;
+    return gameState.houseguestCache[id];
 }
 
 export function exclude(inclusions: Houseguest[], exclusions: Houseguest[]) {
@@ -56,6 +51,7 @@ export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
 export class GameState {
     // Current state of the game after a phase.
 
+    readonly houseguestCache: { [id: number]: Houseguest } = {};
     readonly houseguests: Houseguest[] = [];
     readonly remainingPlayers: number = 0;
     readonly phase: number = 0;
@@ -71,15 +67,14 @@ export class GameState {
         } else {
             const profiles = init as PlayerProfile[];
             this.remainingPlayers = profiles.length;
-            let id = -1;
-            profiles.forEach(profile => {
-                this.houseguests.push(
-                    new Houseguest({
-                        ...profile,
-                        id: ++id,
-                        relationships: newRelationshipMap(profiles.length, id)
-                    })
-                );
+            profiles.forEach((profile, i) => {
+                const hg: Houseguest = new Houseguest({
+                    ...profile,
+                    id: i,
+                    relationships: newRelationshipMap(profiles.length, i)
+                });
+                this.houseguestCache[i] = hg;
+                this.houseguests.push(hg);
             });
         }
     }
@@ -87,6 +82,7 @@ export class GameState {
 
 export class MutableGameState {
     public houseguests: Houseguest[] = [];
+    public houseguestCache: { [id: number]: Houseguest } = {};
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest;
