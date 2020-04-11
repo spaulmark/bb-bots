@@ -5,6 +5,7 @@ import { CenteredBold, Centered, CenteredItallic } from "../../layout/centered";
 import { GameState, getById } from "../../../model";
 import { VoteType, WinnerVote, RunnerUpVote } from "../../../model/logging/voteType";
 import { FullscreenButton } from "../../mainPage/fullscreenButton";
+import { ColorTheme } from "../../../theme/theme";
 
 export const EndgameTableCell = styled.td`
     padding: 0.1em 0.4em;
@@ -12,28 +13,37 @@ export const EndgameTableCell = styled.td`
 `;
 
 const EndgameTable = styled.table`
-    border: 1px solid #a2a9b1;
+    border: 1px solid
+        ${({ theme }: { theme: ColorTheme }) => (theme.name === "light" ? "#a2a9b1" : "#53575b")};
     border-collapse: collapse;
 `;
 
 const Gray = styled(EndgameTableCell)`
-    background-color: #eaecf0;
+    background-color: ${({ theme }: { theme: ColorTheme }) => theme.grayCell};
 `;
 
 const White = styled(EndgameTableCell)`
-    background-color: #f8f9fa;
+    background-color: ${({ theme }: { theme: ColorTheme }) => theme.lightGrayCell};
 `;
 
 const Evicted = styled(EndgameTableCell)`
-    background-color: #fa8072;
+    background-color: ${({ theme }: { theme: ColorTheme }) => theme.evictedCell};
 `;
 
 export const WinnerCell = styled(EndgameTableCell)`
-    background-color: #73fb76;
+    background-color: ${({ theme }: { theme: ColorTheme }) => theme.winnerCell};
 `;
 
 export const RunnerUpCell = styled(EndgameTableCell)`
-    background-color: #d1e8ef;
+    background-color: ${({ theme }: { theme: ColorTheme }) => theme.runnerUpCell};
+`;
+
+export const NomineeCell = styled(EndgameTableCell)`
+    background-color: ${({ theme }: { theme: ColorTheme }) => theme.nomineeCell};
+`;
+
+export const HohCell = styled(EndgameTableCell)`
+    background-color: ${({ theme }: { theme: ColorTheme }) => theme.hohCell};
 `;
 
 const BlackRow = styled.tr`
@@ -48,7 +58,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
         houseguestCells[hg.id] = [
             <Gray key={`hg-name---${i}`}>
                 <CenteredBold noMargin={true}>{hg.name}</CenteredBold>
-            </Gray>
+            </Gray>,
         ];
     });
     const evictionOrder: number[] = [];

@@ -6,6 +6,12 @@ import _ from "lodash";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
 import { PowerRanking } from "../../model/powerRanking";
+import styled from "styled-components";
+
+const Subtitle = styled.small`
+    font-weight: 100;
+    font-size: small;
+`;
 
 export interface PortraitProps {
     imageURL: string;
@@ -56,7 +62,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
             relationships: this.props.relationships,
             isEvicted: !!this.props.isEvicted,
             popularity: this.props.popularity || 0,
-            superiors: this.props.superiors
+            superiors: this.props.superiors,
         };
         selectPlayer(data);
     }
@@ -77,7 +83,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
             <div
                 onClick={() => this.onClick()}
                 style={{
-                    backgroundColor: this.controller.backgroundColor(props)
+                    backgroundColor: this.controller.backgroundColor(props),
                 }}
                 className={`memory-wall-portrait ${className}`}
             >
@@ -85,7 +91,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
                 <br />
                 {props.name}
                 <br />
-                {<small className="portrait-history">{subtitle}</small>}
+                {<Subtitle>{subtitle}</Subtitle>}
             </div>
         );
     }

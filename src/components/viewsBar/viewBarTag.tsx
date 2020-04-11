@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
 import { displayMode$ } from "../../subjects/subjects";
 import { Subscription } from "rxjs";
@@ -23,11 +23,11 @@ export class ViewBarTag extends React.Component<ViewBarTagProps, { selected: boo
 
     public componentDidMount() {
         this.sub = displayMode$.subscribe({
-            next: mode => {
+            next: (mode) => {
                 if (mode !== this.props.mode) {
                     this.setState({ selected: false });
                 }
-            }
+            },
         });
     }
 
@@ -62,6 +62,6 @@ function getStyle(props: ViewBarTagProps) {
         ? {}
         : {
               background: `linear-gradient(90deg, ${props.mode.minColor.toRgba()} 0%, ${props.mode.maxColor.toRgba()} 100%)`,
-              cursor: "pointer"
+              cursor: "pointer",
           };
 }

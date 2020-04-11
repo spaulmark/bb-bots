@@ -11,8 +11,8 @@ import { HoHVote, NomineeVote } from "../../../model/logging/voteType";
 
 export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
-    const nominees = nonEvictedHouseguests(newGameState).filter(hg => hg.id !== HoH.id);
-    newGameState.currentLog.nominationsPostVeto = nominees.map(hg => hg.name);
+    const nominees = nonEvictedHouseguests(newGameState).filter((hg) => hg.id !== HoH.id);
+    newGameState.currentLog.nominationsPostVeto = nominees.map((hg) => hg.name);
     const { decision: vote, reason } = castEvictionVote(HoH, nominees, newGameState);
     const evictee = nominees[vote];
     const survivor = nominees[vote == 1 ? 0 : 1];
@@ -29,7 +29,7 @@ export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest)
         gameState: newGameState,
         content: (
             <div>
-                <div style={{ textAlign: "center" }}>
+                <Centered>
                     {`As the final HoH of the season, ${HoH.name}, you may now cast the sole vote to evict.`}
                     <Portrait houseguest={hoh} centered={true} />
                     <CenteredBold>{`I vote to evict ${evictee.name}.`}</CenteredBold>
@@ -38,10 +38,10 @@ export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest)
                         It's official... {evictee.name}, you will be the final person leaving the Big Brother
                         House.
                     </Centered>
-                </div>
+                </Centered>
                 <NextEpisodeButton />
             </div>
-        )
+        ),
     });
     return [new GameState(newGameState), scene];
 }

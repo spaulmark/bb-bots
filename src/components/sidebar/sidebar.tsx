@@ -4,6 +4,8 @@ import { PregameEpisode } from "../episode/pregameEpisode";
 import { Episode, GameState } from "../../model";
 import { Scene } from "../episode/scene";
 import { newEpisode } from "../../subjects/subjects";
+import { Box } from "../layout/box";
+import { HasText } from "../layout/text";
 interface SidebarState {
     episodes: Episode[];
     selectedScene: number;
@@ -28,9 +30,9 @@ export class Sidebar extends React.Component<{}, SidebarState> {
 
     public render() {
         return (
-            <div className="box" style={{ minWidth: 140 }}>
-                {this.getEpisodes()}
-            </div>
+            <Box style={{ minWidth: 180 }}>
+                <HasText>{this.getEpisodes()}</HasText>
+            </Box>
         );
     }
 

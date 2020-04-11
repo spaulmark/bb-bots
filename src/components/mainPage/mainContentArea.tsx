@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import React from "react";
 import { mainContentStream$ } from "../../subjects/subjects";
+import { Box } from "../layout/box";
 
-const MainContentAreaWrapper = styled.div`
+const MainContentAreaWrapper = styled(Box)`
     overflow-x: auto;
 `;
 
@@ -17,7 +18,7 @@ export class MainContentArea extends React.Component<{}, { content: any }> {
     }
 
     public componentDidMount() {
-        this.contentStream = mainContentStream$.subscribe(content => {
+        this.contentStream = mainContentStream$.subscribe((content) => {
             this.setState({ content });
         });
     }
@@ -33,6 +34,6 @@ export class MainContentArea extends React.Component<{}, { content: any }> {
     }
 
     public render() {
-        return <MainContentAreaWrapper className="box">{this.state.content}</MainContentAreaWrapper>;
+        return <MainContentAreaWrapper>{this.state.content}</MainContentAreaWrapper>;
     }
 }

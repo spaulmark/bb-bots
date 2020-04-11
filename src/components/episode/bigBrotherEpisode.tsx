@@ -7,7 +7,7 @@ import {
     Houseguest,
     EpisodeType,
     Episode,
-    InitEpisode
+    InitEpisode,
 } from "../../model";
 import { getFinalists, finalJurySize } from "../../model/season";
 import { generateHohCompScene } from "./scenes/hohCompScene";
@@ -19,6 +19,7 @@ import { MemoryWall } from "../memoryWall";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Scene } from "./scene";
+import { HasText } from "../layout/text";
 
 export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
@@ -26,7 +27,7 @@ export const BigBrotherVanilla: EpisodeType = {
     },
     eliminates: 1,
     arrowsEnabled: true,
-    hasViewsbar: true
+    hasViewsbar: true,
 };
 
 // Refactoring ideas
@@ -42,7 +43,7 @@ export function evictHouseguest(gameState: MutableGameState, id: number) {
         evictee.isJury = true;
     }
     if (inJury(gameState)) {
-        nonEvictedHouseguests(gameState).forEach(hg => {
+        nonEvictedHouseguests(gameState).forEach((hg) => {
             hg.superiors.delete(evictee.id);
         });
     }
@@ -87,11 +88,11 @@ export function generateBbVanilla(initialGameState: GameState): BigBrotherVanill
 
     const title = `Week ${currentGameState.phase}`;
     const content = (
-        <div>
+        <HasText>
             {`Week ${currentGameState.phase}`}
             <MemoryWall houseguests={initialGameState.houseguests} /> <br />
             <NextEpisodeButton />
-        </div>
+        </HasText>
     );
     const gameState = new GameState(currentGameState);
     return new BigBrotherVanillaEpisode({ title, scenes, content, gameState, type: BigBrotherVanilla });

@@ -7,22 +7,23 @@ import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import { finalHohCompScene } from "./scenes/finalHohCompScene";
 import { finalEvictionScene } from "./scenes/finalEvictionScene";
 import { juryVoteScene } from "./scenes/juryVoteScene";
+import { HasText } from "../layout/text";
 
 export const BigBrotherFinale: EpisodeType = {
     canPlayWith: (n: number) => n === 3,
     eliminates: 2,
     arrowsEnabled: true,
-    hasViewsbar: true
+    hasViewsbar: true,
 };
 
 export function generateBbFinale(initialGameState: GameState): BigBrotherFinaleEpisode {
     const title = "Finale";
     const content = (
-        <div>
+        <HasText>
             Finale Night
             <MemoryWall houseguests={initialGameState.houseguests} /> <br />
             <NextEpisodeButton />
-        </div>
+        </HasText>
     );
     let currentGameState;
     let hohCompScene;

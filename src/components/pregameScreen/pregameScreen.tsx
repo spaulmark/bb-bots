@@ -3,6 +3,7 @@ import { PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import { EditCastLink } from "../topbar/topBar";
+import { HasText } from "../layout/text";
 
 interface PregameScreenProps {
     cast: PlayerProfile[];
@@ -11,16 +12,16 @@ interface PregameScreenProps {
 export function PregameScreen(props: PregameScreenProps): JSX.Element {
     if (props.cast.length === 0) {
         return (
-            <div>
+            <HasText>
                 Cast is empty. <EditCastLink />
-            </div>
+            </HasText>
         );
     }
     return (
-        <div>
+        <HasText>
             Welcome to Big Brother!
             <MemoryWall houseguests={props.cast} />
             <NextEpisodeButton />
-        </div>
+        </HasText>
     );
 }
