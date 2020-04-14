@@ -9,12 +9,11 @@ import { ColorTheme } from "../../../theme/theme";
 
 export const EndgameTableCell = styled.td`
     padding: 0.1em 0.4em;
-    border: 1px solid #a2a9b1;
+    border: 1px solid ${({ theme }: { theme: ColorTheme }) => theme.tableCellBorder};
 `;
 
 const EndgameTable = styled.table`
-    border: 1px solid
-        ${({ theme }: { theme: ColorTheme }) => (theme.name === "light" ? "#a2a9b1" : "#53575b")};
+    border: 1px solid ${({ theme }: { theme: ColorTheme }) => theme.tableCellBorder};
     border-collapse: collapse;
 `;
 

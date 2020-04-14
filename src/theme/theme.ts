@@ -16,6 +16,7 @@ export interface ColorTheme {
     nomineeCell: string;
     hohCell: string;
     portraitBorder: string;
+    tableCellBorder: string;
 }
 
 export const lightTheme: ColorTheme = {
@@ -36,6 +37,7 @@ export const lightTheme: ColorTheme = {
     nomineeCell: "#959ffd",
     hohCell: "#CCFFCC",
     portraitBorder: "gray",
+    tableCellBorder: "#a2a9b1",
 };
 
 export const darkTheme: ColorTheme = {
@@ -56,4 +58,5 @@ export const darkTheme: ColorTheme = {
     winnerCell: "#00ac04",
     hohCell: "#3f783f",
     portraitBorder: "#484848",
+    tableCellBorder: "#53575b",
 };
