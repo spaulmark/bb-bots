@@ -1,5 +1,4 @@
 import React from "react";
-import "./memoryWall.scss";
 import { PlayerProfile } from "../../model";
 import { Portraits } from "../playerPortrait/portraits";
 import { RelationshipMap } from "../../utils";
@@ -29,7 +28,7 @@ export function MemoryWall(props: IMemoryWallProps): JSX.Element {
         <div
             style={{
                 margin: "auto",
-                maxWidth: props.houseguests.length < 26 ? 700 : -1
+                maxWidth: props.houseguests.length < 26 ? 700 : -1,
             }}
         >
             <Portraits houseguests={props.houseguests} centered={true} detailed={true} />

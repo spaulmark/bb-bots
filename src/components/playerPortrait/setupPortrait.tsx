@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { ColorTheme } from "../../theme/theme";
 
 interface SetupPortraitProps {
     name: string;
@@ -16,6 +17,17 @@ const EditPortrait = styled.div`
     padding: 5px;
     margin: 5px;
     border: 1px solid grey;
+    color: black;
+    border-radius: 5px;
+    font-weight: 600;
+    max-width: 7rem;
+    word-wrap: break-word;
+`;
+
+const Input = styled.input`
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid ${({ theme }: { theme: ColorTheme }) => theme.portraitBorder};
     color: black;
     border-radius: 5px;
     font-weight: 600;
@@ -66,13 +78,7 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
                     </XButton>
                     <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
                     <br />
-                    <input
-                        className="memory-wall-portrait"
-                        contentEditable={true}
-                        onChange={() => this.props.onChange}
-                        spellCheck={false}
-                        value={this.state.name}
-                    />
+                    <Input onChange={() => this.props.onChange} spellCheck={false} value={this.state.name} />
                 </div>
             </EditPortrait>
         );
