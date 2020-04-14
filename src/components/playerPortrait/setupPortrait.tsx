@@ -1,4 +1,6 @@
 import React from "react";
+import styled from "styled-components";
+import { ColorTheme } from "../../theme/theme";
 
 interface SetupPortraitProps {
     name: string;
@@ -10,6 +12,50 @@ interface SetupPortraitProps {
 interface SetupPortraitState {
     name: string;
 }
+
+const EditPortrait = styled.div`
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid grey;
+    color: black;
+    border-radius: 5px;
+    font-weight: 600;
+    max-width: 7rem;
+    word-wrap: break-word;
+`;
+
+const Input = styled.input`
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid ${({ theme }: { theme: ColorTheme }) => theme.portraitBorder};
+    color: black;
+    border-radius: 5px;
+    font-weight: 600;
+    max-width: 7rem;
+    word-wrap: break-word;
+`;
+
+const Noselect = styled.div`
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+`;
+
+const XButton = styled(Noselect)`
+    color: #df4040;
+
+    :active {
+        color: #ff7133;
+        background-color: #ffd8c7;
+    }
+    :hover {
+        color: red;
+        background-color: #ffe1ea;
+    }
+`;
 
 export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPortraitState> {
     // TODO: When you click on the text, you can edit the text.
@@ -25,22 +71,16 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
 
     public render() {
         return (
-            <div className={`edit-portrait`}>
+            <EditPortrait>
                 <div style={{ textAlign: "center" }}>
-                    <div className="x-button noselect" onDoubleClick={() => this.props.onDelete()}>
+                    <XButton className="x-button" onDoubleClick={() => this.props.onDelete()}>
                         ✘
-                    </div>
+                    </XButton>
                     <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
                     <br />
-                    <input
-                        className="memory-wall-portrait"
-                        contentEditable={true}
-                        onChange={() => this.props.onChange}
-                        spellCheck={false}
-                        value={this.state.name}
-                    />
+                    <Input onChange={() => this.props.onChange} spellCheck={false} value={this.state.name} />
                 </div>
-            </div>
+            </EditPortrait>
         );
     }
 }

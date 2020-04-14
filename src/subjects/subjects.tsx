@@ -4,9 +4,10 @@ import { Episode, PlayerProfile } from "../model";
 import { SelectedPlayerData } from "../components/playerPortrait/selectedPortrait";
 import React from "react";
 import { PortraitDisplayMode, popularityMode } from "../model/portraitDisplayMode";
+import { ColorTheme, lightTheme } from "../theme/theme";
 
 // What is currently being displayed.
-export const mainContentStream$ = new BehaviorSubject((<PregameScreen cast={[]} />));
+export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
 // Push episodes to this subject to add them to the sidebar. Null resets everything.
 export const episodes$ = new BehaviorSubject<Episode | null>(null);
 // Forcibly switches to an episode. Used when adding a new episode.
@@ -36,3 +37,5 @@ export const displayMode$ = new BehaviorSubject<PortraitDisplayMode>(popularityM
 
 // If the screen is fullscreen or not.
 export const isFullscreen$ = new BehaviorSubject<boolean>(false);
+
+export const theme$ = new Subject<ColorTheme>();

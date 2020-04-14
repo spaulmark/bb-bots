@@ -6,6 +6,52 @@ import _ from "lodash";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
 import { PowerRanking } from "../../model/powerRanking";
+import styled from "styled-components";
+import { ColorTheme } from "../../theme/theme";
+
+const Subtitle = styled.small`
+    font-weight: 100;
+    font-size: small;
+`;
+
+const MemoryWallPortrait = styled.div`
+    margin: 5px;
+    border: 1px solid ${({ theme }: { theme: ColorTheme }) => theme.portraitBorder};
+    color: black;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 600;
+    max-width: 7rem;
+    word-wrap: break-word;
+`;
+
+const Evicted = styled(MemoryWallPortrait)`
+    font-weight: 100;
+    color: grey;
+    background-color: #111111;
+`;
+
+const Jury = styled(MemoryWallPortrait)`
+    font-weight: 100;
+    color: #c3ae88;
+    background-color: #5d5340;
+    filter: brightness(0.6);
+`;
+
+const Normal = styled.img`
+    width: 100%;
+    width: -moz-available; /* For Mozzila */
+    width: -webkit-fill-available; /* For Chrome */
+    width: stretch; /* Unprefixed */
+`;
+
+const Grayscale = styled(Normal)`
+    filter: grayscale(100%);
+`;
+
+const Sepia = styled(Normal)`
+    filter: sepia(100%);
+`;
 
 export interface PortraitProps {
     imageURL: string;
@@ -56,43 +102,42 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
             relationships: this.props.relationships,
             isEvicted: !!this.props.isEvicted,
             popularity: this.props.popularity || 0,
-            superiors: this.props.superiors
+            superiors: this.props.superiors,
         };
         selectPlayer(data);
     }
 
     public render() {
         const props = this.props;
-        const imageClass = getImageClass(props);
+        const Img = getImageClass(props);
         let subtitle: any[] = [];
         subtitle = this.state.displayMode.generateSubtitle(this.props, this.state, !!props.detailed);
 
-        let className = "";
+        let Portrait = MemoryWallPortrait;
         if (props.isJury) {
-            className = "jury";
+            Portrait = Jury;
         } else if (props.isEvicted) {
-            className = "evicted";
+            Portrait = Evicted;
         }
         return (
-            <div
+            <Portrait
                 onClick={() => this.onClick()}
                 style={{
-                    backgroundColor: this.controller.backgroundColor(props)
+                    backgroundColor: this.controller.backgroundColor(props),
                 }}
-                className={`memory-wall-portrait ${className}`}
             >
-                <img className={imageClass} src={props.imageURL} style={{ width: 100, height: 100 }} />
+                <Img src={props.imageURL} style={{ height: 100, width: "-moz-available" }} />
                 <br />
                 {props.name}
                 <br />
-                {<small className="portrait-history">{subtitle}</small>}
-            </div>
+                {<Subtitle>{subtitle}</Subtitle>}
+            </Portrait>
         );
     }
 }
 
 function getImageClass(props: PortraitProps) {
-    let imageClass = props.isEvicted ? "grayscale" : "";
-    imageClass = props.isJury ? "sepia" : imageClass;
+    let imageClass = props.isEvicted ? Grayscale : Normal;
+    imageClass = props.isJury ? Sepia : imageClass;
     return imageClass;
 }

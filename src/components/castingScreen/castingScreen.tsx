@@ -9,6 +9,8 @@ import { shuffle } from "lodash";
 import { RandomButton } from "./randomXButton";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { mainContentStream$, newEpisode, updateCast } from "../../subjects/subjects";
+import { HasText, Input } from "../layout/text";
+import { Centered } from "../layout/centered";
 
 interface CastingScreenState {
     players: PlayerProfile[];
@@ -30,7 +32,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
             const newState = { ...this.state };
             newState.players[i] = new PlayerProfile({
                 imageURL: newState.players[i].imageURL,
-                name: newName
+                name: newName,
             });
             this.setState(newState);
         };
@@ -51,7 +53,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         }
         const rows: JSX.Element[] = [];
         let i = 0;
-        players.forEach(player =>
+        players.forEach((player) =>
             rows.push(
                 <SetupPortrait
                     name={player.name}
@@ -67,7 +69,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
 
     private appendProfiles = (profiles: PlayerProfile[]) => {
         const newState = { ...this.state };
-        profiles.forEach(profile => newState.players.push(profile));
+        profiles.forEach((profile) => newState.players.push(profile));
         this.setState(newState);
     };
 
@@ -89,7 +91,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
     public render() {
         return (
             <FileDrop onDrop={this.handleDrop}>
-                <div className="level">
+                <HasText className="level">
                     <ImportLinks onSubmit={this.appendProfiles} />
                     <div className="level-item">
                         <button className="button is-danger" onClick={() => this.setState({ players: [] })}>
@@ -108,8 +110,9 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                             Submit
                         </button>
                     </div>
-                </div>
-                ~ Drop images ~<input type="file" multiple onChange={this.handleUpload} />
+                </HasText>
+                <Input type="file" multiple onChange={this.handleUpload} />
+                {this.state.players.length === 0 && <Centered>~ Drop images ~</Centered>}
                 {this.getFiles()}
             </FileDrop>
         );
@@ -132,7 +135,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                 newState.players.push(
                     new PlayerProfile({
                         name: file.name.substr(0, file.name.lastIndexOf(".")) || file.name,
-                        imageURL: URL.createObjectURL(file)
+                        imageURL: URL.createObjectURL(file),
                     })
                 );
             }

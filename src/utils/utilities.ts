@@ -1,7 +1,5 @@
-// spits out the next episode given a gamestate, in addition to the new gamestate.
-// allows for re-use, because you can give it the initial gamestate, and then just keep asking for the next season.
 export function hashcode(string: string): number {
-    var hash = 0,
+    let hash = 0,
         i,
         chr;
     if (string.length === 0) return hash;
