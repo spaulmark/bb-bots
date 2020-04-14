@@ -38,13 +38,18 @@ const Jury = styled(MemoryWallPortrait)`
     filter: brightness(0.6);
 `;
 
-const Normal = styled.img``;
+const Normal = styled.img`
+    width: 100%;
+    width: -moz-available; /* For Mozzila */
+    width: -webkit-fill-available; /* For Chrome */
+    width: stretch; /* Unprefixed */
+`;
 
-const Grayscale = styled.img`
+const Grayscale = styled(Normal)`
     filter: grayscale(100%);
 `;
 
-const Sepia = styled.img`
+const Sepia = styled(Normal)`
     filter: sepia(100%);
 `;
 
@@ -121,7 +126,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
                     backgroundColor: this.controller.backgroundColor(props),
                 }}
             >
-                <Img src={props.imageURL} style={{ width: 100, height: 100 }} />
+                <Img src={props.imageURL} style={{ height: 100, width: "-moz-available" }} />
                 <br />
                 {props.name}
                 <br />
