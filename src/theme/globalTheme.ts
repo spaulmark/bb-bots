@@ -7,9 +7,6 @@ export const GlobalStyles = createGlobalStyle`
   *::before {
     box-sizing: border-box;
   }
-  div {
-    transition: all 0.25s linear;
-  }
 
   body {
     background: ${({ theme }: { theme: ColorTheme }) => theme.bg};

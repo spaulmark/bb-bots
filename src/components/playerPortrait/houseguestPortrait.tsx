@@ -23,6 +23,10 @@ const MemoryWallPortrait = styled.div`
     font-weight: 600;
     max-width: 7rem;
     word-wrap: break-word;
+    -webkit-transition-property: none;
+    -moz-transition-property: none;
+    -o-transition-property: none;
+    transition-property: none;
 `;
 
 const Evicted = styled(MemoryWallPortrait)`
