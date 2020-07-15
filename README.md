@@ -10,7 +10,11 @@ It's hard to follow the logic behind some of the decisions that the characters m
 
 BB-bots seeks to fix these issues by having setup be as simple as dragging and dropping images or copy-pasting links (with optional names), making a UI that is focused on delivering information in an easy to read way, and revamping the logic used for players to make game descisions.
 
+
+
+
 # TODO #
+### (I'm not actually focusing on this project)
 
 ## Features ##
 * [x] Cast X random players button on setup screen
