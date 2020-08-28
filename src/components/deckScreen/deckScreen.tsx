@@ -2,6 +2,12 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import { HasText } from "../layout/text";
 import { shuffle, ceil } from "lodash";
+import { PlayerProfile, GameState } from "../../model";
+import { updateCast, mainContentStream$, newEpisode } from "../../subjects/subjects";
+import { PregameScreen } from "../pregameScreen/pregameScreen";
+import { selectPlayer } from "../playerPortrait/selectedPortrait";
+import { PregameEpisode } from "../episode/pregameEpisode";
+import { CastingScreen } from "../castingScreen/castingScreen";
 
 interface DeckScreenProps {}
 
@@ -12,6 +18,24 @@ interface DeckScreenState {
 }
 
 const decksPerPage = 26;
+const baseUrl = "https://spaulmark.github.io/img/";
+
+// TODO: make a cache for the randomly selected images for each deck
+
+async function selectCast(folder: string) {
+    const links = await (await fetch(`${baseUrl}${folder}/dir.json`)).json();
+    const imageLinks = links["files"].map((file: string) => {
+        return { name: file, url: `${baseUrl}${folder}/${file}` };
+    });
+    const playerProfiles = imageLinks.map((image: { name: string; url: string }) => {
+        return new PlayerProfile({
+            name: image.name.substr(0, image.name.lastIndexOf(".")) || image.name,
+            imageURL: image.url,
+        });
+    });
+    mainContentStream$.next(<CastingScreen cast={playerProfiles} />);
+    // TODO: make a loading thing appear here
+}
 
 function CommentList(props: { data: string[]; i: number }): JSX.Element {
     let commentNodes: JSX.Element[] = [];
@@ -20,11 +44,15 @@ function CommentList(props: { data: string[]; i: number }): JSX.Element {
     const min = i * decksPerPage;
     for (let j = min; j < min + decksPerPage; j++) {
         const deck = data[j];
-        commentNodes.push(<HasText key={deck}>{deck}</HasText>);
+        commentNodes.push(
+            <HasText key={deck} onClick={() => selectCast(deck)}>
+                {deck}
+            </HasText>
+        );
     }
 
     return (
-        <div id="project-comments" className="commentList">
+        <div id="project-comments" className="commentList" style={{ display: "flex" }}>
             <ul>{commentNodes}</ul>
         </div>
     );
@@ -37,7 +65,6 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
     }
     async componentDidMount() {
         const data = await (await fetch("https://spaulmark.github.io/img/dir.json")).json();
-        console.log(data);
         this.setState({ decks: shuffle(data.decks), loading: false });
     }
 

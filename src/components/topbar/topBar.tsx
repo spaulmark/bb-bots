@@ -19,7 +19,7 @@ export function AdvancedEditLink(): JSX.Element {
                 mainContentStream$.next(<CastingScreen cast={getCast()} />);
             }}
         >
-            Advanced Edit
+            Edit / Upload Cast
         </TopbarLink>
     );
 }
