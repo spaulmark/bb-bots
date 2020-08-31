@@ -12,7 +12,9 @@ import {
     cast$,
     getSelectedPlayer,
     selectedPlayer$,
+    displayMode$,
 } from "../../subjects/subjects";
+import { popularityMode } from "../../model/portraitDisplayMode";
 
 interface IndexedScene {
     scene: Scene;
@@ -48,6 +50,7 @@ export class SidebarController {
                 next: () => {
                     this.season = new Season();
                     this.selectedEpisode = 0;
+                    displayMode$.next(popularityMode);
                 },
             })
         );
