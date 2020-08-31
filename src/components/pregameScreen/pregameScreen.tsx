@@ -22,6 +22,9 @@ export function PregameScreen(props: PregameScreenProps): JSX.Element {
             Welcome to Big Brother!
             <MemoryWall houseguests={props.cast} />
             <NextEpisodeButton />
+            <p>
+                <b> {"You can use the <- and -> arrow keys to move forwards and backwards."}</b>
+            </p>
         </HasText>
     );
 }
