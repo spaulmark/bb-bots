@@ -2,12 +2,10 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import { HasText } from "../layout/text";
 import { shuffle, ceil } from "lodash";
-import { PlayerProfile, GameState } from "../../model";
-import { updateCast, mainContentStream$, newEpisode } from "../../subjects/subjects";
-import { PregameScreen } from "../pregameScreen/pregameScreen";
-import { selectPlayer } from "../playerPortrait/selectedPortrait";
-import { PregameEpisode } from "../episode/pregameEpisode";
+import { PlayerProfile } from "../../model";
+import { mainContentStream$ } from "../../subjects/subjects";
 import { CastingScreen } from "../castingScreen/castingScreen";
+import _ from "lodash";
 
 interface DeckScreenProps {}
 
@@ -20,7 +18,22 @@ interface DeckScreenState {
 const decksPerPage = 26;
 const baseUrl = "https://spaulmark.github.io/img/";
 
-// TODO: make a cache for the randomly selected images for each deck
+const imageCache: { [id: string]: string } = {};
+
+// TODO: add a search bar, add a sort alphebetically function.
+
+// TODO: make it so when it loads the decks,
+// as they appear on the page it loads a random image from them, and caches that image,
+// and also loads their size, and caches the size.
+// Also mousing over that image displays a tooltip.
+
+async function randomImageFromFolder(folder: string) {
+    if (imageCache[folder]) return imageCache[folder];
+    const links = await (await fetch(`${baseUrl}${folder}/dir.json`)).json();
+    const image = _.sample(links["files"]);
+    imageCache[folder] = image;
+    return image;
+}
 
 async function selectCast(folder: string) {
     const links = await (await fetch(`${baseUrl}${folder}/dir.json`)).json();
@@ -34,7 +47,7 @@ async function selectCast(folder: string) {
         });
     });
     mainContentStream$.next(<CastingScreen cast={playerProfiles} />);
-    // TODO: make a loading thing appear here
+    // TODO: make a loading circle appear here while it's getting the images
 }
 
 function CommentList(props: { data: string[]; i: number }): JSX.Element {
@@ -45,15 +58,20 @@ function CommentList(props: { data: string[]; i: number }): JSX.Element {
     for (let j = min; j < min + decksPerPage; j++) {
         const deck = data[j];
         commentNodes.push(
-            <HasText key={deck} onClick={() => selectCast(deck)}>
+            <HasText key={`${deck}__${i}__${j}`} onClick={() => selectCast(deck)}>
                 {deck}
             </HasText>
         );
     }
 
     return (
-        <div id="project-comments" className="commentList" style={{ display: "flex" }}>
-            <ul>{commentNodes}</ul>
+        <div
+            id="project-comments"
+            className="commentList"
+            key={"__commentList__"}
+            style={{ display: "flex" }}
+        >
+            <ul key={"__ul__"}>{commentNodes}</ul>
         </div>
     );
 }
@@ -76,8 +94,9 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
         if (this.state.loading) return <div />;
         return (
             <div>
-                <CommentList data={this.state.decks} i={this.state.i} />
+                <CommentList key={"comments"} data={this.state.decks} i={this.state.i} />
                 <ReactPaginate
+                    key={"__list__"}
                     previousLabel={"previous"}
                     nextLabel={"next"}
                     breakLabel={"..."}
@@ -86,8 +105,8 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
                     marginPagesDisplayed={2}
                     pageRangeDisplayed={3}
                     onPageChange={this.handlePageClick}
-                    containerClassName={"pagination"} /* as this work same as bootstrap class */
-                    activeClassName={"active"} /* as this work same as bootstrap class */
+                    containerClassName={"pagination"}
+                    activeClassName={"active"}
                 />
             </div>
         );
