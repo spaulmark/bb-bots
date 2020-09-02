@@ -23,16 +23,15 @@ const imageCache: { [id: string]: string } = {};
 // TODO: add a search bar, add a sort alphebetically function.
 
 // TODO: make it so when it loads the decks,
-// as they appear on the page it loads a random image from them, and caches that image,
-// and also loads their size, and caches the size.
+// it loads their size, and caches the size.
 // Also mousing over that image displays a tooltip.
 
 async function randomImageFromFolder(folder: string) {
     if (imageCache[folder]) return imageCache[folder];
     const links = await (await fetch(`${baseUrl}${folder}/dir.json`)).json();
     const image = _.sample(links["files"]);
-    imageCache[folder] = image;
-    return image;
+    imageCache[folder] = `${baseUrl}${folder}/${image}`;
+    return `${baseUrl}${folder}/${image}`;
 }
 
 async function selectCast(folder: string) {
@@ -50,20 +49,34 @@ async function selectCast(folder: string) {
     // TODO: make a loading circle appear here while it's getting the images
 }
 
-function CommentList(props: { data: string[]; i: number }): JSX.Element {
+function Deck(props: { deck: string }): JSX.Element {
+    const [img, setImage] = React.useState("");
+    const [loading, setLoading] = React.useState(true);
+    const deck = props.deck;
+
+    if (loading)
+        randomImageFromFolder(deck).then((img) => {
+            setLoading(false);
+            setImage(img);
+        });
+    return (
+        <HasText>
+            <img src={img} style={{ width: 50, height: 50 }} />
+            <a onClick={() => selectCast(deck)}>{deck}</a>
+        </HasText>
+    );
+}
+
+function DeckList(props: { data: string[]; i: number }): JSX.Element {
     let commentNodes: JSX.Element[] = [];
     const i = props.i;
     const data = props.data;
     const min = i * decksPerPage;
     for (let j = min; j < min + decksPerPage; j++) {
         const deck = data[j];
-        commentNodes.push(
-            <HasText key={`${deck}__${i}__${j}`} onClick={() => selectCast(deck)}>
-                {deck}
-            </HasText>
-        );
+        if (!deck) continue;
+        commentNodes.push(<Deck key={`${deck}__${i}__${j}`} deck={deck} />);
     }
-
     return (
         <div
             id="project-comments"
@@ -94,7 +107,7 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
         if (this.state.loading) return <div />;
         return (
             <div>
-                <CommentList key={"comments"} data={this.state.decks} i={this.state.i} />
+                <DeckList key={"comments"} data={this.state.decks} i={this.state.i} />
                 <ReactPaginate
                     key={"__list__"}
                     previousLabel={"previous"}

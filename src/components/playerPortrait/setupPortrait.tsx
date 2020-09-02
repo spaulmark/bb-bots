@@ -17,6 +17,7 @@ const EditPortrait = styled.div`
     padding: 5px;
     margin: 5px;
     border: 1px solid grey;
+    background-color: grey;
     color: black;
     border-radius: 5px;
     font-weight: 600;
@@ -78,7 +79,7 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
                     </XButton>
                     <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
                     <br />
-                    <Input onChange={() => this.props.onChange} spellCheck={false} value={this.state.name} />
+                    <p>{this.state.name} </p>
                 </div>
             </EditPortrait>
         );
