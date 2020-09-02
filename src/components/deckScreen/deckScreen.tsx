@@ -6,6 +6,7 @@ import { PlayerProfile } from "../../model";
 import { mainContentStream$ } from "../../subjects/subjects";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import _ from "lodash";
+import styled from "styled-components";
 
 interface DeckScreenProps {}
 
@@ -20,11 +21,26 @@ const baseUrl = "https://spaulmark.github.io/img/";
 
 const imageCache: { [id: string]: string } = {};
 
-// TODO: add a search bar, add a sort alphebetically function.
+const DeckStyle = styled(HasText)`
+    display: flex;
+    align-items: center;
+    :hover {
+        color: red;
+        background-color: #ffe1ea;
+    }
+`;
 
-// TODO: make it so when it loads the decks,
-// it loads their size, and caches the size.
-// Also mousing over that image displays a tooltip.
+const Centered = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const DeckText = styled.p`
+    margin-left: 1rem;
+`;
+
+// TODO: add a search bar, add a sort alphebetically function.
 
 async function randomImageFromFolder(folder: string) {
     if (imageCache[folder]) return imageCache[folder];
@@ -46,7 +62,6 @@ async function selectCast(folder: string) {
         });
     });
     mainContentStream$.next(<CastingScreen cast={playerProfiles} />);
-    // TODO: make a loading circle appear here while it's getting the images
 }
 
 function Deck(props: { deck: string }): JSX.Element {
@@ -60,10 +75,10 @@ function Deck(props: { deck: string }): JSX.Element {
             setImage(img);
         });
     return (
-        <HasText>
+        <DeckStyle className="column is-6" onClick={() => selectCast(deck)}>
             <img src={img} style={{ width: 50, height: 50 }} />
-            <a onClick={() => selectCast(deck)}>{deck}</a>
-        </HasText>
+            <DeckText>{deck}</DeckText>
+        </DeckStyle>
     );
 }
 
@@ -78,13 +93,10 @@ function DeckList(props: { data: string[]; i: number }): JSX.Element {
         commentNodes.push(<Deck key={`${deck}__${i}__${j}`} deck={deck} />);
     }
     return (
-        <div
-            id="project-comments"
-            className="commentList"
-            key={"__commentList__"}
-            style={{ display: "flex" }}
-        >
-            <ul key={"__ul__"}>{commentNodes}</ul>
+        <div id="project-comments" key={"__commentList__"} style={{ display: "flex" }}>
+            <div key={"__ul__"} className={"columns is-multiline"}>
+                {commentNodes}
+            </div>
         </div>
     );
 }
@@ -108,19 +120,21 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
         return (
             <div>
                 <DeckList key={"comments"} data={this.state.decks} i={this.state.i} />
-                <ReactPaginate
-                    key={"__list__"}
-                    previousLabel={"previous"}
-                    nextLabel={"next"}
-                    breakLabel={"..."}
-                    breakClassName={"break-me"}
-                    pageCount={ceil(this.state.decks.length / decksPerPage)}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={3}
-                    onPageChange={this.handlePageClick}
-                    containerClassName={"pagination"}
-                    activeClassName={"active"}
-                />
+                <Centered>
+                    <ReactPaginate
+                        key={"__list__"}
+                        previousLabel={"previous"}
+                        nextLabel={"next"}
+                        breakLabel={"..."}
+                        breakClassName={"break-me"}
+                        pageCount={ceil(this.state.decks.length / decksPerPage)}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={3}
+                        onPageChange={this.handlePageClick}
+                        containerClassName={"pagination"}
+                        activeClassName={"active"}
+                    />
+                </Centered>
             </div>
         );
     }

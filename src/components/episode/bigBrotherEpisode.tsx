@@ -91,7 +91,8 @@ export function generateBbVanilla(initialGameState: GameState): BigBrotherVanill
         <HasText>
             {`Week ${currentGameState.phase}`}
             <MemoryWall houseguests={initialGameState.houseguests} /> <br />
-            <NextEpisodeButton />
+            <NextEpisodeButton /> <br />
+            {currentGameState.phase === 1 && <b>Try clicking on houseguests to view their relationships.</b>}
         </HasText>
     );
     const gameState = new GameState(currentGameState);
