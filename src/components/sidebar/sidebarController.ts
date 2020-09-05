@@ -11,8 +11,10 @@ import {
     switchSceneRelative,
     cast$,
     getSelectedPlayer,
-    selectedPlayer$
+    selectedPlayer$,
+    displayMode$,
 } from "../../subjects/subjects";
+import { popularityMode } from "../../model/portraitDisplayMode";
 
 interface IndexedScene {
     scene: Scene;
@@ -33,19 +35,23 @@ export class SidebarController {
         this.view = view;
         this.subscriptions.push(
             episodes$.subscribe({
-                next: episode => this.onNewEpisode(episode)
+                next: (episode) => this.onNewEpisode(episode),
             })
         );
         this.subscriptions.push(
             switchEpisode$.subscribe({
                 next: (value: number) => {
                     this.switchSceneRelative(value);
-                }
+                },
             })
         );
         this.subscriptions.push(
             cast$.subscribe({
-                next: () => (this.season = new Season())
+                next: () => {
+                    this.season = new Season();
+                    this.selectedEpisode = 0;
+                    displayMode$.next(popularityMode);
+                },
             })
         );
     }
@@ -94,7 +100,6 @@ export class SidebarController {
 
     private _handleKeyDown(event: any) {
         const state = this.view.state;
-
         if (
             state.episodes[this.selectedEpisode] === undefined ||
             !state.episodes[this.selectedEpisode].type.arrowsEnabled
@@ -118,13 +123,13 @@ export class SidebarController {
             const latestIndex = this.scenes.length === 0 ? -1 : this.scenes[this.scenes.length - 1].index;
             const index = latestIndex + 1;
             this.scenes.push({ scene: episode, index });
-            episode.scenes.forEach(scene => this.scenes.push({ scene, index }));
+            episode.scenes.forEach((scene) => this.scenes.push({ scene, index }));
             newState.episodes.push(episode);
             this.view.setState(newState);
         }
     }
 
     public destroy() {
-        this.subscriptions.forEach(sub => sub.unsubscribe());
+        this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 }

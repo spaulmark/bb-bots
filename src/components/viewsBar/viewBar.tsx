@@ -14,7 +14,7 @@ export function ViewsBar() {
         <ViewsBox className="level is-mobile" key="viewsbar">
             <ViewBarTag mode={popularityMode} text={"Relationships"}></ViewBarTag>
             <ViewBarTag mode={powerMode} text={"Power Rankings"}></ViewBarTag>
-            <ViewBarTag mode={powerMode} disabled={true} text={"Cliques [Coming Soon™]"}></ViewBarTag>
+            {/* <ViewBarTag mode={powerMode} disabled={true} text={"Cliques [Coming Soon™]"}></ViewBarTag> */}
         </ViewsBox>
     );
 }

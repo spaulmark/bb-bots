@@ -2,7 +2,7 @@ import React from "react";
 import { PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
-import { EditCastLink } from "../topbar/topBar";
+import { ChooseCastLink } from "../topbar/topBar";
 import { HasText } from "../layout/text";
 
 interface PregameScreenProps {
@@ -13,7 +13,7 @@ export function PregameScreen(props: PregameScreenProps): JSX.Element {
     if (props.cast.length === 0) {
         return (
             <HasText>
-                Cast is empty. <EditCastLink />
+                Cast is empty. <ChooseCastLink />
             </HasText>
         );
     }
@@ -21,6 +21,9 @@ export function PregameScreen(props: PregameScreenProps): JSX.Element {
         <HasText>
             Welcome to Big Brother!
             <MemoryWall houseguests={props.cast} />
+            <p>
+                <b> {"You can use the <- and -> arrow keys to move forwards and backwards."}</b>
+            </p>
             <NextEpisodeButton />
         </HasText>
     );

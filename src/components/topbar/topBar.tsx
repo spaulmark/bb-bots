@@ -5,32 +5,33 @@ import styled from "styled-components";
 import { ThemeSwitcher } from "./themeSwitch";
 import { ColorTheme } from "../../theme/theme";
 import { Box } from "../layout/box";
+import { DeckScreen } from "../deckScreen/deckScreen";
 
 const TopbarLink = styled.div`
     color: ${({ theme }: { theme: ColorTheme }) => theme.link};
     cursor: pointer;
 `;
 
-export function EditCastLink(): JSX.Element {
+export function AdvancedEditLink(): JSX.Element {
     return (
         <TopbarLink
             onClick={() => {
                 mainContentStream$.next(<CastingScreen cast={getCast()} />);
             }}
         >
-            Edit Cast
+            Edit / Upload Cast
         </TopbarLink>
     );
 }
 
-export function EditSeasonLink(): JSX.Element {
+export function ChooseCastLink(): JSX.Element {
     return (
         <TopbarLink
             onClick={() => {
-                mainContentStream$.next(<CastingScreen cast={getCast()} />);
+                mainContentStream$.next(<DeckScreen />);
             }}
         >
-            Edit Season
+            Choose Cast
         </TopbarLink>
     );
 }
@@ -40,10 +41,10 @@ export function Topbar(props: { style?: any }): JSX.Element {
     return (
         <Box className="level is-mobile" style={style}>
             <div className="level-item">
-                <EditCastLink />
+                <ChooseCastLink />
             </div>
             <div className="level-item">
-                <EditSeasonLink />
+                <AdvancedEditLink />
             </div>
             <div className="level-item">
                 <ThemeSwitcher />
