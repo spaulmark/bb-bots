@@ -17,6 +17,7 @@ const EditPortrait = styled.div`
     padding: 5px;
     margin: 5px;
     border: 1px solid grey;
+    background-color: grey;
     color: black;
     border-radius: 5px;
     font-weight: 600;
@@ -45,7 +46,7 @@ const Noselect = styled.div`
 `;
 
 const XButton = styled(Noselect)`
-    color: #df4040;
+    color: #300808;
 
     :active {
         color: #ff7133;
@@ -58,8 +59,6 @@ const XButton = styled(Noselect)`
 `;
 
 export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPortraitState> {
-    // TODO: When you click on the text, you can edit the text.
-
     public constructor(props: SetupPortraitProps) {
         super(props);
         this.state = { name: props.name };
@@ -73,12 +72,10 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
         return (
             <EditPortrait>
                 <div style={{ textAlign: "center" }}>
-                    <XButton className="x-button" onDoubleClick={() => this.props.onDelete()}>
-                        ✘
-                    </XButton>
+                    <XButton onDoubleClick={() => this.props.onDelete()}>✘</XButton>
                     <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
                     <br />
-                    <Input onChange={() => this.props.onChange} spellCheck={false} value={this.state.name} />
+                    <p>{this.state.name} </p>
                 </div>
             </EditPortrait>
         );
