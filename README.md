@@ -14,24 +14,23 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 
 
 # TODO #
-### (I'm not actually focusing on this project)
 
 ## Features ##
 * [x] Cast X random players button on setup screen
 * [x] Click a player to view his/her relationships
 * [x] Power rankings view
 * [x] Endgame stats screen & voting table 
-* [ ] Add pre-set casts for a quick play option <--- current focus
+* [x] Add pre-set casts for a quick play option 
+* [ ] Disable power rankings view until Jury
+* [ ] Weekly Cliques Report <--- current focus
 * [ ] Editable player names
-* [ ] Add a help page and walkthrough for new users
-* [ ] Improve/tweak the color scheme and icons (if nessecary)
-* [ ] Cliques view
+* [ ] Better help features
 
 ## Lower Priority Features ##
 * [ ] Custom season builder, customize the twists in the game (Double Eviction, Double HoH, etc.)
 
 ## Logic ## 
-### (aka: the stuff that I could tweak until the end of time and still not be happy with) ###
+### (aka: cute ideas I probably won't actually implement) ###
 * [x] Basic game logic
 * [ ] Target & pawn based nominations
 * [ ] Better veto logic
