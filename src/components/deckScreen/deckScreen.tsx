@@ -23,6 +23,7 @@ const imageCache: { [id: string]: string } = {};
 
 const DeckStyle = styled(HasText)`
     display: flex;
+    cursor: pointer;
     align-items: center;
     :hover {
         color: red;
