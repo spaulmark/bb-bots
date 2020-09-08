@@ -26,6 +26,8 @@ export class ViewBarTag extends React.Component<ViewBarTagProps, { selected: boo
             next: (mode) => {
                 if (mode !== this.props.mode) {
                     this.setState({ selected: false });
+                } else {
+                    this.setState({ selected: true });
                 }
             },
         });

@@ -50,12 +50,12 @@ export function evictHouseguest(gameState: MutableGameState, id: number) {
     gameState.remainingPlayers--;
 }
 
-export function generateBbVanilla(initialGameState: GameState): BigBrotherVanillaEpisode {
+export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanillaEpisode {
     let currentGameState;
     let hohCompScene;
     let hoh: Houseguest;
     const scenes = [];
-    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGameState);
+    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate);
     scenes.push(hohCompScene);
 
     let nomCeremonyScene;
@@ -90,19 +90,27 @@ export function generateBbVanilla(initialGameState: GameState): BigBrotherVanill
     const content = (
         <HasText>
             {`Week ${currentGameState.phase}`}
-            <MemoryWall houseguests={initialGameState.houseguests} /> <br />
+            <MemoryWall houseguests={initialGamestate.houseguests} /> <br />
             {currentGameState.phase === 1 && <b>Try clicking on houseguests to view their relationships.</b>}
             <br />
             <NextEpisodeButton />
         </HasText>
     );
     const gameState = new GameState(currentGameState);
-    return new BigBrotherVanillaEpisode({ title, scenes, content, gameState, type: BigBrotherVanilla });
+    return new BigBrotherVanillaEpisode({
+        title,
+        scenes,
+        content,
+        gameState,
+        initialGamestate,
+        type: BigBrotherVanilla,
+    });
 }
 export class BigBrotherVanillaEpisode extends Episode {
     readonly title: string;
     readonly scenes: Scene[];
     readonly content: JSX.Element;
+    readonly initialGamestate: GameState;
     readonly gameState: GameState;
     readonly type = BigBrotherVanilla;
 
@@ -112,5 +120,6 @@ export class BigBrotherVanillaEpisode extends Episode {
         this.scenes = init.scenes;
         this.content = init.content;
         this.gameState = init.gameState;
+        this.initialGamestate = init.initialGamestate || init.gameState;
     }
 }
