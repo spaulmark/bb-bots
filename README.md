@@ -21,24 +21,23 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 * [x] Power rankings view
 * [x] Endgame stats screen & voting table 
 * [x] Add pre-set casts for a quick play option 
-* [ ] Disable power rankings view until Jury
+* [x] Disable power rankings view until Jury
 * [ ] Weekly Cliques Report <--- current focus
-* [ ] Editable player names
 * [ ] Better help features
 
 ## Lower Priority Features ##
 * [ ] Custom season builder, customize the twists in the game (Double Eviction, Double HoH, etc.)
 
 ## Logic ## 
-### (aka: cute ideas I probably won't actually implement) ###
 * [x] Basic game logic
+* [ ] Actual non broken nomination logic
+* [ ] Tooltips for nomination/replacement nominee logic
 * [ ] Target & pawn based nominations
 * [ ] Better veto logic
+* [ ] Vote logic post-jury should have more focus on who they can beat
+* [ ] 
 * [x] Players take into account who they can beat in the end
-* [ ] Semi-realistic first impressions algorithm
-* [ ] Dynamic relationships
-* [ ] Complex game logic: Players react to events
-* [ ] Complex game logic: Gossip and influences
+
 
 
 
