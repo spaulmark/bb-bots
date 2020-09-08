@@ -37,7 +37,7 @@ export function ChooseCastLink(): JSX.Element {
 }
 
 export function Topbar(props: { style?: any }): JSX.Element {
-    const style = { ...{ marginTop: 30 }, ...(props.style || {}) };
+    const style = { ...(props.style || {}) };
     return (
         <Box className="level is-mobile" style={style}>
             <div className="level-item">

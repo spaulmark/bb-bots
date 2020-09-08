@@ -8,6 +8,7 @@ export interface InitEpisode {
     title: string;
     content: JSX.Element;
     gameState: GameState;
+    initialGamestate?: GameState;
     type: EpisodeType;
 }
 
@@ -16,10 +17,11 @@ export class Episode {
     readonly title: string;
     readonly content: JSX.Element;
     readonly gameState: GameState;
+    readonly initialGameState: GameState;
     readonly type: EpisodeType;
     readonly arrowsEnabled: boolean = true;
     get render(): JSX.Element {
-        const viewsBar = this.type.hasViewsbar ? <ViewsBar /> : null;
+        const viewsBar = this.type.hasViewsbar ? <ViewsBar gameState={this.initialGameState} /> : null;
         return (
             <div>
                 {viewsBar}
@@ -33,6 +35,7 @@ export class Episode {
         this.title = init.title;
         this.content = init.content;
         this.gameState = init.gameState;
+        this.initialGameState = init.initialGamestate || init.gameState;
         this.type = init.type;
     }
 }

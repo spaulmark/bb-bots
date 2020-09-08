@@ -9,13 +9,13 @@ interface InitScene {
 export class Scene {
     readonly title: string = "";
     readonly gameState: GameState = new GameState([]);
-    readonly content: JSX.Element = <div>{`Error while rendering ${this.title}`}</div>;
+    readonly content: JSX.Element = (<div>{`Error while rendering ${this.title}`}</div>);
     public render: JSX.Element;
     public constructor(init: Partial<InitScene>) {
         Object.assign(this, init);
         this.render = (
             <div>
-                <ViewsBar />
+                <ViewsBar gameState={this.gameState} />
                 {this.content}
             </div>
         );
