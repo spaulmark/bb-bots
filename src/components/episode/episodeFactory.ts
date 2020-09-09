@@ -107,8 +107,7 @@ export class EpisodeFactory {
         }
         updatePopularity(newState);
         updateFriendCounts(newState);
-        const cliques = generateCliques(newState);
-        console.log(cliques);
+        newState.cliques = generateCliques(newState);
         const finalState = new GameState(newState);
         switch (episodeType) {
             case BigBrotherVanilla:

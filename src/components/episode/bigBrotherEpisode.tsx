@@ -22,6 +22,7 @@ import { Scene } from "./scene";
 import { HasText } from "../layout/text";
 import styled from "styled-components";
 import { weekStartTab$ } from "../../subjects/subjects";
+import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
 
 export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
@@ -122,7 +123,8 @@ export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanill
     const content = (
         <HasText>
             <Tabs />
-            <MemoryWall houseguests={initialGamestate.houseguests} /> <br />
+            <WeekStartWrapper gameState={initialGamestate} />
+            <br />
             {currentGameState.phase === 1 && <b>Try clicking on houseguests to view their relationships.</b>}
             <br />
             <NextEpisodeButton />
