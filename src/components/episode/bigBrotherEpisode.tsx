@@ -74,7 +74,7 @@ function Tabs(): JSX.Element {
     const [active, setActive] = React.useState(weekStartTab$.value);
     return (
         <div className="tabs is-centered is-fullwidth is-medium" style={{ marginBottom: 0 }}>
-            <ul>
+            <ul style={{ paddingLeft: 0 }}>
                 <Tab text={"Memory Wall"} active={active} setActive={setActive} id={0} />
                 <Tab text={"Alliances"} active={active} setActive={setActive} id={1} />
             </ul>
