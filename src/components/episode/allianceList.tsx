@@ -11,6 +11,7 @@ export function AllianceList(props: AllianceListProps) {
     const elements: JSX.Element[] = cliques.map((clique, i) => (
         <Portraits
             centered={true}
+            detailed={true}
             key={`${clique}, ${i}, ${props.gameState.phase}`}
             houseguests={clique.map((id) => getById(props.gameState, id))}
         />
