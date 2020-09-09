@@ -11,7 +11,8 @@ export function generateCliques(gameState: GameState): number[][] {
     const g = generateGraph(gameState);
     result = [];
     bronKerbosch(new Set<number>([]), new Set(g.nodes), new Set<number>([]), g);
-    result.forEach(clique => clique.map(id => getById(gameState, id)));
+    result.forEach((clique) => clique.map((id) => getById(gameState, id)));
+    result = result.filter((clique) => clique.length > 2).sort((a, b) => b.length - a.length);
     return result;
 }
 
@@ -21,10 +22,10 @@ function bronKerbosch(r: Set<number>, p: Set<number>, x: Set<number>, g: Graph) 
         result.push(values);
         return;
     }
-    Array.from(p.keys()).forEach(v => {
+    Array.from(p.keys()).forEach((v) => {
         const rPrime = new Set(r.values()).add(v);
-        const pPrime = new Set([...p].filter(node => g.neighbors(v).has(node)));
-        const xPrime = new Set([...x].filter(node => g.neighbors(v).has(node)));
+        const pPrime = new Set([...p].filter((node) => g.neighbors(v).has(node)));
+        const xPrime = new Set([...x].filter((node) => g.neighbors(v).has(node)));
         bronKerbosch(rPrime, pPrime, xPrime, g);
         p.delete(v);
         x.add(v);
