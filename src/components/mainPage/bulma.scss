@@ -1,3 +1,11 @@
+$tabs-link-hover-color: #fff;
+$tabs-link-hover-border-bottom-color: #fff;
+
+$tabs-link-active-border-bottom-color: #00c4a7;
+$tabs-link-active-color: #00c4a7;
+
+$tabs-link-color: hsl(0, 0%, 86%);
+
 @import "../../../node_modules/bulma/sass/utilities/_all.sass";
 @import "../../../node_modules/bulma/sass/components/level.sass";
 @import "../../../node_modules/bulma/sass/elements/tag.sass";
@@ -5,6 +13,8 @@
 @import "../../../node_modules/bulma/sass/grid/columns.sass";
 @import "../../../node_modules/bulma/sass/elements/form.sass";
 @import "../../../node_modules/bulma/sass/elements/button.sass";
+@import "../../../node_modules/bulma/sass/components/tabs.sass";
+
 .box {
     margin-left: 3px;
     margin-right: 3px;

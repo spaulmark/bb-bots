@@ -4,7 +4,7 @@ import {
     calculatePopularity,
     nonEvictedHouseguests,
     inJury,
-    getJurors
+    getJurors,
 } from "../../model/gameState";
 import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
@@ -16,6 +16,7 @@ import { classifyRelationship, RelationshipType as Relationship } from "../../ut
 import { PowerRanking } from "../../model/powerRanking";
 import { GameOver, generateGameOver } from "./gameOver";
 import { EpisodeLog } from "../../model/logging/episodelog";
+import { generateCliques } from "../../utils/graphTest";
 
 function firstImpressions(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
@@ -45,7 +46,7 @@ function populateSuperiors(houseguests: Houseguest[]) {
 }
 
 function updatePowerRankings(houseguests: Houseguest[]) {
-    houseguests.forEach(hg => {
+    houseguests.forEach((hg) => {
         hg.powerRanking = new PowerRanking(
             houseguests.length - 1 - hg.superiors.size,
             houseguests.length - 1
@@ -55,7 +56,7 @@ function updatePowerRankings(houseguests: Houseguest[]) {
 
 function updatePopularity(gameState: GameState) {
     const houseguests = nonEvictedHouseguests(gameState);
-    houseguests.forEach(hg => {
+    houseguests.forEach((hg) => {
         const result = calculatePopularity(hg, nonEvictedHouseguests(gameState));
         hg.deltaPopularity = (roundTwoDigits(result) - roundTwoDigits(hg.popularity)) / 100;
         hg.popularity = result;
@@ -64,11 +65,11 @@ function updatePopularity(gameState: GameState) {
 
 function updateFriendCounts(gameState: GameState) {
     const houseguests = nonEvictedHouseguests(gameState);
-    houseguests.forEach(hero => {
+    houseguests.forEach((hero) => {
         hero.getFriendEnemyCount = () => {
             let friends = 0;
             let enemies = 0;
-            houseguests.forEach(villain => {
+            houseguests.forEach((villain) => {
                 const rel = classifyRelationship(
                     hero.popularity,
                     villain.popularity,
@@ -106,6 +107,7 @@ export class EpisodeFactory {
         }
         updatePopularity(newState);
         updateFriendCounts(newState);
+        newState.cliques = generateCliques(newState);
         const finalState = new GameState(newState);
         switch (episodeType) {
             case BigBrotherVanilla:

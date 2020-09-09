@@ -20,6 +20,9 @@ import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Scene } from "./scene";
 import { HasText } from "../layout/text";
+import styled from "styled-components";
+import { weekStartTab$ } from "../../subjects/subjects";
+import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
 
 export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
@@ -29,6 +32,10 @@ export const BigBrotherVanilla: EpisodeType = {
     arrowsEnabled: true,
     hasViewsbar: true,
 };
+
+const TabItem = styled.li`
+    cursor: pointer;
+`;
 
 // Refactoring ideas
 /**
@@ -48,6 +55,32 @@ export function evictHouseguest(gameState: MutableGameState, id: number) {
         });
     }
     gameState.remainingPlayers--;
+}
+
+function Tab(props: { text: string; active: number; id: number; setActive: any }): JSX.Element {
+    return (
+        <TabItem
+            className={props.active === props.id ? "is-active" : ""}
+            onClick={() => {
+                props.setActive(props.id);
+                weekStartTab$.next(props.id);
+            }}
+        >
+            <a>{props.text}</a>
+        </TabItem>
+    );
+}
+
+function Tabs(): JSX.Element {
+    const [active, setActive] = React.useState(weekStartTab$.value);
+    return (
+        <div className="tabs is-centered is-fullwidth is-medium" style={{ marginBottom: 0 }}>
+            <ul style={{ paddingLeft: 0 }}>
+                <Tab text={"Memory Wall"} active={active} setActive={setActive} id={0} />
+                <Tab text={"Alliances"} active={active} setActive={setActive} id={1} />
+            </ul>
+        </div>
+    );
 }
 
 export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanillaEpisode {
@@ -89,8 +122,9 @@ export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanill
     const title = `Week ${currentGameState.phase}`;
     const content = (
         <HasText>
-            {`Week ${currentGameState.phase}`}
-            <MemoryWall houseguests={initialGamestate.houseguests} /> <br />
+            <Tabs />
+            <WeekStartWrapper gameState={initialGamestate} />
+            <br />
             {currentGameState.phase === 1 && <b>Try clicking on houseguests to view their relationships.</b>}
             <br />
             <NextEpisodeButton />
