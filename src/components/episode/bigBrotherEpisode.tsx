@@ -21,6 +21,7 @@ import React from "react";
 import { Scene } from "./scene";
 import { HasText } from "../layout/text";
 import styled from "styled-components";
+import { weekStartTab$ } from "../../subjects/subjects";
 
 export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
@@ -59,7 +60,10 @@ function Tab(props: { text: string; active: number; id: number; setActive: any }
     return (
         <TabItem
             className={props.active === props.id ? "is-active" : ""}
-            onClick={() => props.setActive(props.id)}
+            onClick={() => {
+                props.setActive(props.id);
+                weekStartTab$.next(props.id);
+            }}
         >
             <a>{props.text}</a>
         </TabItem>
@@ -67,7 +71,7 @@ function Tab(props: { text: string; active: number; id: number; setActive: any }
 }
 
 function Tabs(): JSX.Element {
-    const [active, setActive] = React.useState(0);
+    const [active, setActive] = React.useState(weekStartTab$.value);
     return (
         <div className="tabs is-centered is-fullwidth is-medium" style={{ marginBottom: 0 }}>
             <ul>
