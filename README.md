@@ -19,7 +19,7 @@ BB-bots seeks to fix these issues by having setup be as simple as dragging and d
 * [x] Endgame stats screen & voting table 
 * [x] Add pre-set casts for a quick play option 
 * [x] Disable power rankings view until Jury
-* [x] ~~Weekly Cliques Report~~ (Had performance issues, and wasn't even very useful. Maybe another time.)
+* [ ] ~~Weekly Cliques Report~~ (Had performance issues, and wasn't even very useful. Maybe another time.)
 * [ ] Improved deck selection interface <--- current focus
 
 ## Lower Priority Features ##
