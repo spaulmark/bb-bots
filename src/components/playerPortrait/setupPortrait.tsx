@@ -21,7 +21,7 @@ const EditPortrait = styled.div`
     color: black;
     border-radius: 5px;
     font-weight: 600;
-    max-width: 7rem;
+    width: 7rem;
     word-wrap: break-word;
 `;
 
@@ -32,7 +32,7 @@ const Input = styled.input`
     color: black;
     border-radius: 5px;
     font-weight: 600;
-    max-width: 7rem;
+    width: 7rem;
     word-wrap: break-word;
 `;
 

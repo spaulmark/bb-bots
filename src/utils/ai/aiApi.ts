@@ -13,6 +13,7 @@ interface HouseguestWithLogic {
 }
 
 // Return the index of the eviction target.
+// TODO: this function only works for 2 houseguests despite accepting an array.
 export function castEvictionVote(
     hero: Houseguest,
     nominees: Houseguest[],
@@ -34,14 +35,28 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
     if (zeroIsInferior === oneIsInferior) {
         return cutthroatVote(hero, nominees);
     }
+
     // Don't evict the last person in the game you can beat
     if (gameState.remainingPlayers - hero.superiors.size - 1 === 1 && (zeroIsInferior || oneIsInferior)) {
         const nonVote = zeroIsInferior ? 0 : 1;
         return {
             decision: zeroIsInferior ? 1 : 0,
-            reason: `I can't evict ${nominees[nonVote].name}, because they are the last person I can beat.`
+            reason: `I can't evict ${nominees[nonVote].name}, because they are the last person I can beat.`,
         };
     }
+    // the ultimate in omegalul technology
+    if (
+        heroShouldTargetSuperiors(hero, gameState) &&
+        ((zeroIsInferior && !oneIsInferior) || (!zeroIsInferior && oneIsInferior))
+    ) {
+        const decision = zeroIsInferior ? 1 : 0;
+        return {
+            decision,
+            reason: `I can't beat ${nominees[decision].name} in the end.`,
+        };
+    }
+
+    // everything below this line is basically 50% legacy code, feel free to completely rewrite it
     const target = heroShouldTargetSuperiors(hero, gameState) === oneIsInferior ? 0 : 1;
     const nonTarget = target ? 0 : 1;
     const excuse = heroShouldTargetSuperiors(hero, gameState)
@@ -79,10 +94,22 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
     const nom1 = nominees[1];
     const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
     const r1 = classifyRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
+
+    const nom0isTarget = hero.targets[0] === nom0.id || hero.targets[1] === nom0.id;
+    const nom1isTarget = hero.targets[0] === nom1.id || hero.targets[1] === nom1.id;
+    // KILL TARGETS FIRST
+    if ((nom0isTarget && !nom1isTarget) || (nom1isTarget && !nom0isTarget)) {
+        const decision = nom0isTarget ? 0 : 1;
+        return {
+            decision,
+            reason: `I am targeting ${nominees[decision].name}.`,
+        };
+    }
+
     if (r0 === Relationship.Enemy && r1 === Relationship.Enemy) {
         return {
             decision: nom0.popularity > nom1.popularity ? 0 : 1,
-            reason: "Both noms are my enemies, so I voted for the more popular one."
+            reason: "Both noms are my enemies, so I voted for the more popular one.",
         };
     } else if (
         (r0 === Relationship.Enemy && r1 !== Relationship.Enemy) ||
@@ -101,11 +128,10 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
     const vote = lowestScore(hero, nominees, relationship);
     return {
         decision: vote,
-        reason: `Both noms are my friends. but I like ${nominees[vote === 0 ? 1 : 0].name} more.`
+        reason: `Both noms are my friends. but I like ${nominees[vote === 0 ? 1 : 0].name} more.`,
     };
 }
 
-// TODO: target and pawn based nominations, different pre and post jury.
 export function nominateNPlayers(
     hero: Houseguest,
     options: Houseguest[],
@@ -114,7 +140,7 @@ export function nominateNPlayers(
 ): NumberWithLogic[] {
     const result: NumberWithLogic[] = [];
     const hitlist = hitList(hero, options, gameState);
-    let trueOptions = options.filter(hg => hitlist.has(hg.id));
+    let trueOptions = options.filter((hg) => hitlist.has(hg.id));
     if (trueOptions.length === 0) {
         // if there are no options, we must sadly deviate from the hit list
         trueOptions = options;
@@ -125,7 +151,7 @@ export function nominateNPlayers(
         result.push({ decision: decision.id, reason });
         trueOptions = exclude(trueOptions, [decision]);
         if (trueOptions.length === 0) {
-            trueOptions = options.filter(hg => !hitlist.has(hg.id));
+            trueOptions = options.filter((hg) => !hitlist.has(hg.id));
         }
     }
     return result;
@@ -149,7 +175,7 @@ export function useGoldenVeto(
         if (nonEvictedHouseguests(gameState).length === 4) {
             result = {
                 decision: null,
-                reason: "It doesn't make sense to use the veto here."
+                reason: "It doesn't make sense to use the veto here.",
             };
         }
     }
@@ -227,7 +253,7 @@ function useGoldenVetoPreJury(hero: Houseguest, nominees: Houseguest[]): Housegu
         save = 1;
         reason = `${nominees[1].name} is my friend.`;
     } else if (rel0 === Relationship.Friend && rel1 === Relationship.Friend) {
-        save = Math.max(nominees[0].popularity, nominees[1].popularity) === nominees[0].popularity ? 0 : 1;
+        save = nominees[0].relationshipWith(hero) > nominees[1].relationshipWith(hero) ? 0 : 1;
         reason = `Both nominees are my friends, but I like ${nominees[save].name} more.`;
     }
     return { decision: nominees[save], reason };

@@ -17,7 +17,9 @@ export interface ProfileHouseguest extends PlayerProfile {
     povWins?: number;
     nominations?: number;
     tooltip?: string;
-    getFriendEnemyCount?: () => { friends: number; enemies: number };
+    friends?: number;
+    enemies?: number;
+    targetingMe?: number;
 }
 
 export function MemoryWall(props: IMemoryWallProps): JSX.Element {
@@ -25,10 +27,11 @@ export function MemoryWall(props: IMemoryWallProps): JSX.Element {
         return <div />;
     }
     return (
+        // TODO: modulo magic. i dare you.
         <div
             style={{
                 margin: "auto",
-                maxWidth: props.houseguests.length < 26 ? 700 : -1,
+                maxWidth: props.houseguests.length < 26 ? 800 : -1,
             }}
         >
             <Portraits houseguests={props.houseguests} centered={true} detailed={true} />

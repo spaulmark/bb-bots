@@ -5,6 +5,7 @@ import {
     nonEvictedHouseguests,
     inJury,
     getJurors,
+    getById,
 } from "../../model/gameState";
 import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
@@ -17,6 +18,7 @@ import { PowerRanking } from "../../model/powerRanking";
 import { GameOver, generateGameOver } from "./gameOver";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/graphTest";
+import { getRelationshipSummary, Targets } from "../../utils/ai/targets";
 
 function firstImpressions(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
@@ -57,6 +59,7 @@ function updatePowerRankings(houseguests: Houseguest[]) {
 function updatePopularity(gameState: GameState) {
     const houseguests = nonEvictedHouseguests(gameState);
     houseguests.forEach((hg) => {
+        hg.targetingMe = 0;
         const result = calculatePopularity(hg, nonEvictedHouseguests(gameState));
         hg.deltaPopularity = (roundTwoDigits(result) - roundTwoDigits(hg.popularity)) / 100;
         hg.popularity = result;
@@ -65,26 +68,29 @@ function updatePopularity(gameState: GameState) {
 
 function updateFriendCounts(gameState: GameState) {
     const houseguests = nonEvictedHouseguests(gameState);
-    houseguests.forEach((hero) => {
-        hero.getFriendEnemyCount = () => {
-            let friends = 0;
-            let enemies = 0;
-            houseguests.forEach((villain) => {
-                const rel = classifyRelationship(
-                    hero.popularity,
-                    villain.popularity,
-                    hero.relationshipWith(villain)
-                );
-                if (hero.id === villain.id) {
-                    return;
-                } else if (rel === Relationship.Friend) {
-                    friends++;
-                } else if (rel === Relationship.Enemy) {
-                    enemies++;
-                }
-            });
-            return { friends, enemies };
-        };
+    houseguests.forEach((hero: Houseguest) => {
+        let targets = new Targets(hero);
+        let friends = 0;
+        let enemies = 0;
+        houseguests.forEach((villain) => {
+            if (hero.id === villain.id) return;
+            const type = classifyRelationship(
+                hero.popularity,
+                villain.popularity,
+                hero.relationshipWith(villain)
+            );
+            targets.addTarget(getRelationshipSummary(hero, villain), gameState);
+            if (type === Relationship.Friend) {
+                friends++;
+            } else if (type === Relationship.Enemy) {
+                enemies++;
+            }
+        });
+        hero.targets = targets.getTargets();
+        getById(gameState, hero.targets[0]).targetingMe++;
+        getById(gameState, hero.targets[1]).targetingMe++;
+        hero.friends = friends;
+        hero.enemies = enemies;
     });
 }
 
@@ -106,7 +112,7 @@ export class EpisodeFactory {
             updatePowerRankings(nonEvictedHouseguests(newState));
         }
         updatePopularity(newState);
-        updateFriendCounts(newState);
+        nonEvictedHouseguests(gameState).length > 2 && updateFriendCounts(newState);
         newState.cliques = generateCliques(newState);
         const finalState = new GameState(newState);
         switch (episodeType) {

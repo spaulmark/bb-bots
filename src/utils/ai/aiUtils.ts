@@ -48,7 +48,7 @@ export function doesHeroWinTheFinale(
     const villain = hgs.villain;
     let heroVotes = 0;
     let villainVotes = 0;
-    jury.forEach(juror => {
+    jury.forEach((juror) => {
         if (juror.id === hero.id || juror.id === villain.id) {
             return;
         }
@@ -62,30 +62,24 @@ export function doesHeroWinTheFinale(
 }
 
 export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState): boolean {
-    const totalPlayers = gameState.remainingPlayers;
+    const opponents = gameState.remainingPlayers - 1;
     const superiors = hero.superiors.size;
-    // const inferiors = totalPlayers - 1 - hero.superiors.size;
 
-    // Old logic: Target the larger group. If they are equal, target superiors.
-    // return superiors >= inferiors;
-
-    // New logic: Target superiors unless you are in the top 25% of the playerlist.
-    return superiors / totalPlayers >= 0.25;
+    // New logic: Target superiors unless you are in the top 20% of the playerlist.
+    return superiors / opponents >= 0.2;
 }
 
 // TODO: this function can just honestly die. it's only used in nomination logic (which sucks anyways)
-// when I do the new logic, I think people who are dead center should target their superiors. works in F5.
-
 export function hitList(hero: Houseguest, options: Houseguest[], gameState: GameState): Set<number> {
     let result = options;
     // jury logic is not affected by someone who is dead center in power rankings
     if (inJury(gameState) && heroShouldTargetSuperiors(hero, gameState)) {
         if (hero.superiors.size * 2 < gameState.remainingPlayers - 1) {
-            result = options.filter(hg => !hero.superiors.has(hg.id));
+            result = options.filter((hg) => !hero.superiors.has(hg.id));
         } else {
-            result = options.filter(hg => hero.superiors.has(hg.id));
+            result = options.filter((hg) => hero.superiors.has(hg.id));
         }
     } else {
     }
-    return new Set(result.map(hg => hg.id));
+    return new Set(result.map((hg) => hg.id));
 }
