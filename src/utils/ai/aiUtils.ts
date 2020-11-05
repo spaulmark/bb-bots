@@ -64,9 +64,9 @@ export function doesHeroWinTheFinale(
 export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState): boolean {
     const opponents = gameState.remainingPlayers - 1;
     const superiors = hero.superiors.size;
+    const inferiors = opponents - superiors;
 
-    // New logic: Target superiors unless you are in the top 20% of the playerlist.
-    return superiors / opponents >= 0.2;
+    return inferiors < Math.ceil(opponents / 2) + 2;
 }
 
 // TODO: this function can just honestly die. it's only used in nomination logic (which sucks anyways)

@@ -31,7 +31,10 @@ export function generateVetoCeremonyScene(
     let nameAReplacement = "";
     let finalNominees: any[] = [...initialNominees];
     if (povTarget) {
-        nameAReplacement += ` ${HoH.name}, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
+        const HoHwonPoV = HoH.id === povWinner.id;
+        nameAReplacement += HoHwonPoV
+            ? `Since I have just vetoed one of my nominations, I must name a replacement nominee.`
+            : `${HoH.name}, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
         const replacementNom = {
             ...getById(
                 initialGameState,
@@ -41,14 +44,14 @@ export function generateVetoCeremonyScene(
                         HoH,
                         initialNominees[0],
                         initialNominees[1],
-                        povWinner
+                        povWinner,
                     ]),
                     initialGameState,
                     1
                 )[0].decision
-            )
+            ),
         };
-        const replacementIndex = initialNominees.findIndex(hg => hg.id === vetoChoice.decision!.id);
+        const replacementIndex = initialNominees.findIndex((hg) => hg.id === vetoChoice.decision!.id);
         finalNominees[replacementIndex] = replacementNom;
         replacementNom.nominations++;
         getById(initialGameState, replacementNom.id).nominations++;
@@ -90,7 +93,7 @@ export function generateVetoCeremonyScene(
                 </div>
                 <NextEpisodeButton />
             </div>
-        )
+        ),
     });
     initialGameState.currentLog.nominationsPostVeto = [finalNominees[0].name, finalNominees[1].name];
     return [initialGameState, scene, finalNominees];
