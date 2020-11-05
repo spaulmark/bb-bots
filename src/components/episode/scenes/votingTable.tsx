@@ -88,7 +88,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             houseguestCells[log.winner].push(new WinnerVote().render(gameState));
             houseguestCells[log.runnerUp].push(new RunnerUpVote().render(gameState));
             evictedCells.push(
-                <RunnerUpCell>
+                <RunnerUpCell key={"runnerUp"}>
                     <CenteredBold noMargin={true}>{getById(gameState, log.runnerUp).name}</CenteredBold>
                     <Centered noMargin={true}>
                         <small>Finalist</small> {/** TODO: put "X votes" here instead. */}
@@ -96,7 +96,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                 </RunnerUpCell>
             );
             winnerCells.push(
-                <WinnerCell>
+                <WinnerCell key={"winner"}>
                     <CenteredBold noMargin={true}>{getById(gameState, log.winner).name}</CenteredBold>
                     <Centered noMargin={true}>
                         <small>Winner</small>
