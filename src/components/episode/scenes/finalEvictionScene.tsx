@@ -31,13 +31,13 @@ export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest)
             <div>
                 <Centered>
                     {`As the final HoH of the season, ${HoH.name}, you may now cast the sole vote to evict.`}
-                    <Portrait houseguest={hoh} centered={true} />
-                    <CenteredBold>{`I vote to evict ${evictee.name}.`}</CenteredBold>
-                    <Portraits houseguests={nominees} centered={true} />
-                    <Centered>
-                        It's official... {evictee.name}, you will be the final person leaving the Big Brother
-                        House.
-                    </Centered>
+                </Centered>
+                <Portrait houseguest={hoh} centered={true} />
+                <CenteredBold>{`I vote to evict ${evictee.name}.`}</CenteredBold>
+                <Portraits houseguests={nominees} centered={true} />
+                <Centered>
+                    It's official... {evictee.name}, you will be the final person leaving the Big Brother
+                    House.
                 </Centered>
                 <NextEpisodeButton />
             </div>
