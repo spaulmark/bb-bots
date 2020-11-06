@@ -9,7 +9,7 @@ const PregameEpisodeType: EpisodeType = {
         return n > 2;
     },
     arrowsEnabled: true,
-    hasViewsbar: false
+    hasViewsbar: false,
 };
 
 export class PregameEpisode extends Episode {
@@ -25,7 +25,7 @@ export class PregameEpisode extends Episode {
             scenes: [],
             content: <PregameScreen cast={gameState.houseguests} />,
             gameState,
-            type: PregameEpisodeType
+            type: PregameEpisodeType,
         });
         this.gameState = gameState;
         this.content = <PregameScreen cast={gameState.houseguests} />;
