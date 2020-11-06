@@ -26,7 +26,9 @@ export function generatePowerSubtitle(
             subtitle.push(<div key={key++}>I WOULD</div>);
         } else {
             subtitle.push(
-                <div key={key++}>{`WINS ${state.powerRanking.beats}/${state.powerRanking.outOf}`}</div>
+                <div key={key++}>{`WIN ${state.powerRanking.beats}/${state.powerRanking.outOf}${
+                    hero.targetingMe ? ` | 🎯 ${hero.targetingMe}` : ""
+                }`}</div>
             );
         }
     } else {
@@ -137,7 +139,7 @@ function friendEnemyCountTitle(hero: PortraitProps): string[] {
     titles.push(
         `${count.friends} ${RelationshipTypeToSymbol[Relationship.Friend]} | ${count.enemies} ${
             RelationshipTypeToSymbol[Relationship.Enemy]
-        }${hero.targetingMe ? `| 🎯 ${hero.targetingMe}` : ""}` // TODO: target goes on a new line. Shows up in both views.
+        }${hero.targetingMe ? `| 🎯 ${hero.targetingMe}` : ""}`
     );
     return titles;
 }
