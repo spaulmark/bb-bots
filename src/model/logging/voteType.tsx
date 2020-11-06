@@ -35,7 +35,7 @@ export class NormalVote implements VoteType {
 export class WinnerVote implements VoteType {
     id: number = 1; // unused
     render = (state: GameState) => (
-        <WinnerCell>
+        <WinnerCell key={"winner---"}>
             <Centered noMargin={true}>Winner</Centered>
         </WinnerCell>
     );
@@ -44,7 +44,7 @@ export class WinnerVote implements VoteType {
 export class RunnerUpVote implements VoteType {
     id: number = 1; // unused
     render = (state: GameState) => (
-        <RunnerUpCell>
+        <RunnerUpCell key={"runnerUp---"}>
             <Centered noMargin={true}>Finalist</Centered>
         </RunnerUpCell>
     );

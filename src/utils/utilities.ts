@@ -33,3 +33,11 @@ export function extremeValues(x: number | undefined): number {
         return xSquared + 2 * x;
     }
 }
+
+export function isWellDefined(x: any) {
+    return x !== null && x !== undefined;
+}
+
+export function isNotWellDefined(x: any): x is null | undefined {
+    return x === null || x === undefined;
+}

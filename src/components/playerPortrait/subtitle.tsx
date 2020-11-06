@@ -1,11 +1,11 @@
 import React from "react";
-import { roundTwoDigits } from "../../utils";
+import { isWellDefined, roundTwoDigits } from "../../utils";
 import { ProfileHouseguest, PortraitProps, PortraitState } from "../memoryWall";
 import { SelectedPlayerData } from "./selectedPortrait";
 import {
     RelationshipTypeToSymbol,
     RelationshipType as Relationship,
-    classifyRelationship
+    classifyRelationship,
 } from "../../utils/ai/classifyRelationship";
 import { getSelectedPlayer } from "../../subjects/subjects";
 
@@ -26,7 +26,9 @@ export function generatePowerSubtitle(
             subtitle.push(<div key={key++}>I WOULD</div>);
         } else {
             subtitle.push(
-                <div key={key++}>{`WINS ${state.powerRanking.beats}/${state.powerRanking.outOf}`}</div>
+                <div key={key++}>{`WIN ${state.powerRanking.beats}/${state.powerRanking.outOf}${
+                    hero.targetingMe ? ` | 🎯 ${hero.targetingMe}` : ""
+                }`}</div>
             );
         }
     } else {
@@ -56,10 +58,10 @@ function addFriendshipCountTitles(hero: PortraitProps, subtitle: any[], key: num
         const data = getSelectedPlayer() as SelectedPlayerData | null;
         if (data && data.id !== hero.id) {
             const titles = friendOrEnemyTitle(hero, data);
-            subtitle = subtitle.concat(titles.map(txt => <div key={key++}>{txt}</div>));
+            subtitle = subtitle.concat(titles.map((txt) => <div key={key++}>{txt}</div>));
         } else {
             const titles = friendEnemyCountTitle(hero);
-            subtitle = subtitle.concat(titles.map(txt => <div key={key++}>{txt}</div>));
+            subtitle = subtitle.concat(titles.map((txt) => <div key={key++}>{txt}</div>));
         }
     } else {
         subtitle.push(<br key={key++} style={{ lineHeight: 1 }} />);
@@ -130,11 +132,14 @@ function friendOrEnemyTitle(hero: PortraitProps, villain: SelectedPlayerData): s
 
 function friendEnemyCountTitle(hero: PortraitProps): string[] {
     const titles: string[] = [];
-    const count = hero.getFriendEnemyCount ? hero.getFriendEnemyCount() : { friends: 0, enemies: 0 };
+    const count =
+        isWellDefined(hero.friends) && isWellDefined(hero.enemies)
+            ? { friends: hero.friends, enemies: hero.enemies }
+            : { friends: 0, enemies: 0 };
     titles.push(
         `${count.friends} ${RelationshipTypeToSymbol[Relationship.Friend]} | ${count.enemies} ${
             RelationshipTypeToSymbol[Relationship.Enemy]
-        }`
+        }${hero.targetingMe ? `| 🎯 ${hero.targetingMe}` : ""}`
     );
     return titles;
 }

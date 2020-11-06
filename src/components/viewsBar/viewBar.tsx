@@ -17,7 +17,7 @@ export class ViewsBar extends React.Component<{ gameState: GameState }, {}> {
 
     render() {
         return (
-            <div className="level is-mobile" key="viewsbar">
+            <div className="level is-mobile" key="viewsbar" style={{ marginBottom: 0 }}>
                 <ViewBarTag mode={popularityMode} text={"Relationships"}></ViewBarTag>
                 {inJury(this.props.gameState) && (
                     <ViewBarTag mode={powerMode} text={"Power Rankings"}></ViewBarTag>

@@ -4,14 +4,13 @@ import {
     MutableGameState,
     exclude,
     nonEvictedHouseguests,
-    getById
+    getById,
 } from "../../../model";
 import { Scene } from "../scene";
 import { shuffle } from "lodash";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
-import { nominateNPlayers } from "../../../utils/ai/aiApi";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 
@@ -21,11 +20,7 @@ export function generateNomCeremonyScene(
 ): [GameState, Scene, Houseguest[]] {
     const newGameState = new MutableGameState(initialGameState);
     const options = exclude(nonEvictedHouseguests(newGameState), [HoH]);
-    const nom1 = getById(newGameState, nominateNPlayers(HoH, options, newGameState, 2)[0].decision);
-    const nom2 = getById(
-        newGameState,
-        nominateNPlayers(HoH, exclude(options, [nom1]), newGameState, 2)[1].decision
-    );
+    const [nom1, nom2] = [getById(newGameState, HoH.targets[0]), getById(newGameState, HoH.targets[1])];
     nom1.nominations++;
     nom2.nominations++;
     newGameState.currentLog.nominationsPreVeto = [nom1.name, nom2.name];
@@ -54,7 +49,7 @@ export function generateNomCeremonyScene(
                 <br />
                 <NextEpisodeButton />
             </div>
-        )
+        ),
     });
     return [new GameState(newGameState), scene, [nom1, nom2]];
 }

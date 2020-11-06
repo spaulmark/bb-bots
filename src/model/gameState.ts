@@ -10,8 +10,8 @@ export function getById(gameState: GameState, id: number): Houseguest {
 }
 
 export function exclude(inclusions: Houseguest[], exclusions: Houseguest[]) {
-    const excludedIds = exclusions.map(hg => hg.id);
-    return inclusions.filter(hg => !excludedIds.includes(hg.id) && !hg.isEvicted);
+    const excludedIds = exclusions.map((hg) => hg.id);
+    return inclusions.filter((hg) => !excludedIds.includes(hg.id) && !hg.isEvicted);
 }
 
 export function randomPlayer(inclusions: Houseguest[], exclusions: Houseguest[] = []): Houseguest {
@@ -25,10 +25,10 @@ export function randomPlayer(inclusions: Houseguest[], exclusions: Houseguest[] 
 }
 
 export function nonEvictedHouseguests(gameState: GameState) {
-    return gameState.houseguests.filter(hg => !hg.isEvicted);
+    return gameState.houseguests.filter((hg) => !hg.isEvicted);
 }
 export function getJurors(gameState: GameState): Houseguest[] {
-    return gameState.houseguests.filter(hg => hg.isJury);
+    return gameState.houseguests.filter((hg) => hg.isJury);
 }
 
 export function inJury(gameState: GameState): Boolean {
@@ -39,7 +39,7 @@ export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
     let sum = 0;
     let count = 0;
     const targetId = hero.id;
-    house.forEach(houseguest => {
+    house.forEach((houseguest) => {
         if (houseguest.id !== targetId) {
             count++;
             sum += houseguest.relationships[targetId];
@@ -57,6 +57,7 @@ export class GameState {
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest;
     readonly log: EpisodeLog[] = [];
+    readonly cliques: number[][] = [];
     get currentLog() {
         return this.log[this.phase];
     }
@@ -71,7 +72,7 @@ export class GameState {
                 const hg: Houseguest = new Houseguest({
                     ...profile,
                     id: i,
-                    relationships: newRelationshipMap(profiles.length, i)
+                    relationships: newRelationshipMap(profiles.length, i),
                 });
                 this.houseguestCache[i] = hg;
                 this.houseguests.push(hg);
@@ -86,6 +87,7 @@ export class MutableGameState {
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest;
+    public cliques: number[][] = [];
     public log: EpisodeLog[] = [];
     get currentLog() {
         return this.log[this.phase];

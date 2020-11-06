@@ -1,7 +1,6 @@
 import React from "react";
 import { selectPlayer } from "./selectedPortrait";
-import { isNullOrUndefined } from "util";
-import { RelationshipMap } from "../../utils";
+import { isNotWellDefined, RelationshipMap } from "../../utils";
 import _ from "lodash";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
@@ -21,7 +20,7 @@ const MemoryWallPortrait = styled.div`
     border-radius: 5px;
     text-align: center;
     font-weight: 600;
-    max-width: 7rem;
+    width: 7rem;
     word-wrap: break-word;
     -webkit-transition-property: none;
     -moz-transition-property: none;
@@ -74,7 +73,9 @@ export interface PortraitProps {
     deltaPopularity?: number;
     detailed?: boolean;
     superiors?: Set<number>;
-    getFriendEnemyCount?: () => { friends: number; enemies: number };
+    friends?: number;
+    enemies?: number;
+    targetingMe?: number;
 }
 
 export interface PortraitState {
@@ -92,7 +93,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
     }
 
     public componentDidMount() {
-        if (isNullOrUndefined(this.props.id)) {
+        if (isNotWellDefined(this.props.id)) {
             return;
         }
         this.controller.subscribe();
@@ -103,7 +104,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
     }
 
     private onClick(): void {
-        if (isNullOrUndefined(this.props.id) || !this.props.relationships) {
+        if (isNotWellDefined(this.props.id) || !this.props.relationships) {
             return;
         }
         const data = {

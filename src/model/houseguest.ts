@@ -22,6 +22,8 @@ export class Houseguest extends PlayerProfile {
     public deltaPopularity: number = 0;
     readonly relationships: RelationshipMap = {};
 
+    public targets: [number, number] = [this.id, this.id];
+
     // power rankings range from 0 to 1
     public powerRanking: PowerRanking = new PowerRanking(0, 1);
     readonly superiors: Set<number> = new Set<number>();
@@ -29,10 +31,9 @@ export class Houseguest extends PlayerProfile {
     public relationshipWith(villain: Houseguest): number {
         return this.relationships[villain.id];
     }
-
-    public getFriendEnemyCount: () => { friends: number; enemies: number } = () => {
-        return { friends: 0, enemies: 0 };
-    };
+    public friends = 0;
+    public enemies = 0;
+    public targetingMe = 0;
 
     constructor(init: HouseguestInit) {
         super(init);
