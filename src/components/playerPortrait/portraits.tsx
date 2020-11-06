@@ -47,7 +47,11 @@ export function Portraits(props: {
             result = houseguestToPortrait(houseguest, key++);
         }
         if (houseguest.tooltip) {
-            result = <Tooltip text={houseguest.tooltip}>{result}</Tooltip>;
+            result = (
+                <Tooltip key={key++} text={houseguest.tooltip}>
+                    {result}
+                </Tooltip>
+            );
         }
         rows.push(result);
     });
