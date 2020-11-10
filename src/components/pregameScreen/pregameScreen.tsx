@@ -4,7 +4,6 @@ import { MemoryWall } from "../memoryWall";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import { ChooseCastLink } from "../topbar/topBar";
 import { HasText } from "../layout/text";
-import { render } from "react-dom";
 import { popularityMode } from "../../model/portraitDisplayMode";
 import { displayMode$ } from "../../subjects/subjects";
 

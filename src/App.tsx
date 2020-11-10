@@ -13,9 +13,9 @@ class App extends React.Component<{}, { theme: ColorTheme }> {
         super(props);
         this.state = {
             theme:
-                window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-                    ? darkTheme
-                    : lightTheme,
+                window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches
+                    ? lightTheme
+                    : darkTheme,
         };
     }
 
