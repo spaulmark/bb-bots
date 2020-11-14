@@ -137,7 +137,7 @@ function friendEnemyCountTitle(hero: PortraitProps): string[] {
             ? { friends: hero.friends, enemies: hero.enemies }
             : { friends: 0, enemies: 0 };
     titles.push(
-        `${count.friends} ${RelationshipTypeToSymbol[Relationship.Friend]} | ${count.enemies} ${
+        `${count.friends} ${RelationshipTypeToSymbol[Relationship.Friend]}| ${count.enemies} ${
             RelationshipTypeToSymbol[Relationship.Enemy]
         }${hero.targetingMe ? `| 🎯 ${hero.targetingMe}` : ""}`
     );
