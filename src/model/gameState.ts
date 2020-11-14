@@ -24,8 +24,8 @@ export function randomPlayer(inclusions: Houseguest[], exclusions: Houseguest[] 
     return options[choice];
 }
 
-export function nonEvictedHouseguests(gameState: GameState) {
-    return gameState.houseguests.filter((hg) => !hg.isEvicted);
+export function nonEvictedHouseguests(gameState: GameState): Houseguest[] {
+    return [...gameState.nonEvictedHouseguests.entries()].map(([_, id]) => getById(gameState, id));
 }
 export function getJurors(gameState: GameState): Houseguest[] {
     return gameState.houseguests.filter((hg) => hg.isJury);
@@ -52,6 +52,7 @@ export class GameState {
     // Current state of the game after a phase.
 
     readonly houseguestCache: { [id: number]: Houseguest } = {};
+    readonly nonEvictedHouseguests: Set<number> = new Set<number>();
     readonly houseguests: Houseguest[] = [];
     readonly remainingPlayers: number = 0;
     readonly phase: number = 0;
@@ -74,6 +75,7 @@ export class GameState {
                     id: i,
                     relationships: newRelationshipMap(profiles.length, i),
                 });
+                this.nonEvictedHouseguests.add(i);
                 this.houseguestCache[i] = hg;
                 this.houseguests.push(hg);
             });
@@ -84,6 +86,7 @@ export class GameState {
 export class MutableGameState {
     public houseguests: Houseguest[] = [];
     public houseguestCache: { [id: number]: Houseguest } = {};
+    readonly nonEvictedHouseguests: Set<number> = new Set<number>();
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest;

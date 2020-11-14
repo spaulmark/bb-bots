@@ -172,7 +172,7 @@ export function useGoldenVeto(
         } else {
             result = useGoldenVetoPreJury(hero, nominees);
         }
-        if (nonEvictedHouseguests(gameState).length === 4) {
+        if (gameState.remainingPlayers === 4) {
             result = {
                 decision: null,
                 reason: "It doesn't make sense to use the veto here.",

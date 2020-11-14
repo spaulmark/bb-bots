@@ -116,7 +116,7 @@ export class EpisodeFactory {
             updatePowerRankings(nonEvictedHouseguests(newState));
         }
         updatePopularity(newState);
-        nonEvictedHouseguests(gameState).length > 2 && updateFriendCounts(newState);
+        gameState.remainingPlayers > 2 && updateFriendCounts(newState);
         if (canDisplayCliques(newState)) newState.cliques = generateCliques(newState);
         const finalState = new GameState(newState);
         switch (episodeType) {

@@ -15,7 +15,6 @@ import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
 import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
 import { generateEvictionScene } from "./scenes/evictionScene";
-import { MemoryWall } from "../memoryWall";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Scene } from "./scene";
@@ -54,6 +53,7 @@ export function evictHouseguest(gameState: MutableGameState, id: number) {
             hg.superiors.delete(evictee.id);
         });
     }
+    gameState.nonEvictedHouseguests.delete(evictee.id);
     gameState.remainingPlayers--;
 }
 

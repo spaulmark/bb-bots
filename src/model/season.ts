@@ -57,10 +57,7 @@ export class Season {
     //maybe it uses subjects or something
 
     public renderEpisode(gameState: GameState): Episode {
-        return this.factory.nextEpisode(
-            gameState,
-            this.whichEpisodeType(nonEvictedHouseguests(gameState).length)
-        );
+        return this.factory.nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers));
     }
 
     public whichEpisodeType(players: number) {
