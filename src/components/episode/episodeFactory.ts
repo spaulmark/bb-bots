@@ -20,6 +20,10 @@ import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/graphTest";
 import { getRelationshipSummary, Targets } from "../../utils/ai/targets";
 
+export function canDisplayCliques(newState: GameState): boolean {
+    return newState.remainingPlayers <= 30;
+}
+
 function firstImpressions(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
         const iMap = houseguests[i].relationships;
@@ -101,7 +105,7 @@ export class EpisodeFactory {
             firstImpressions(newState.houseguests);
         }
         newState.phase++;
-        if (nonEvictedHouseguests(gameState).length > 2) {
+        if (gameState.remainingPlayers > 2) {
             newState.log[newState.phase] = new EpisodeLog();
         }
         // If jury starts this episode, populate superior/inferior data. In the future, every jury ep. (dynamic rels)
@@ -112,8 +116,8 @@ export class EpisodeFactory {
             updatePowerRankings(nonEvictedHouseguests(newState));
         }
         updatePopularity(newState);
-        nonEvictedHouseguests(gameState).length > 2 && updateFriendCounts(newState);
-        newState.cliques = generateCliques(newState);
+        gameState.remainingPlayers > 2 && updateFriendCounts(newState);
+        if (canDisplayCliques(newState)) newState.cliques = generateCliques(newState);
         const finalState = new GameState(newState);
         switch (episodeType) {
             case BigBrotherVanilla:
