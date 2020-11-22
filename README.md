@@ -1,7 +1,7 @@
 --> https://spaulmark.github.io/bb-bots/ <--
 
 
-BB-bots is a WIP offline big brother simulator similar to https://www.brantsteele.com/bigbrother/ . 
+BB-bots is a WIP offline big brother simulator similar to the one at brantsteele.com, but it lets you see what's going on in the game.
 
 You can simulate a game of Big Brother using your own custom cast of images, or use a pre-set cast. It's lots of fun, why not try it out?
 
