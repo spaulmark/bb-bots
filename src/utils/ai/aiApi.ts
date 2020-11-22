@@ -166,12 +166,7 @@ export function useGoldenVeto(
     if (hero.id == nominees[0].id || hero.id == nominees[1].id) {
         result = { decision: hero, reason: "I am going to save myself." };
     } else {
-        if (inJury(gameState)) {
-            // Note that I am currently not using the post-jury veto logic, primarily because it sucks at the moment
-            result = useGoldenVetoPreJury(hero, nominees);
-        } else {
-            result = useGoldenVetoPreJury(hero, nominees);
-        }
+        result = useGoldenVetoPreJury(hero, nominees, gameState);
         if (gameState.remainingPlayers === 4) {
             result = {
                 decision: null,
@@ -182,81 +177,57 @@ export function useGoldenVeto(
     return result || null;
 }
 
-// works with any number of nominees
-function useGoldenVetoPostJury(
+function useGoldenVetoPreJury(
     hero: Houseguest,
     nominees: Houseguest[],
     gameState: GameState
 ): HouseguestWithLogic {
-    let save = -1;
-    let reason = "No reason specified.";
+    let reason = "Neither of these nominees are my friends.";
     let potentialSave: Houseguest | null = null;
     let alwaysSave: Houseguest | null = null;
-    // identify potential save targets
-    nominees.forEach((nominee: Houseguest) => {
-        const relationship = classifyRelationship(
-            hero.popularity,
-            nominee.popularity,
-            hero.relationships[nominee.id]
-        );
-        const shouldTargetSuperiors = heroShouldTargetSuperiors(hero, gameState);
+    nominees.forEach((nominee) => {
         const nomineeIsSuperior: boolean = hero.superiors.has(nominee.id);
-        // always save the last person you can beat
         if (gameState.remainingPlayers - hero.superiors.size - 1 === 1 && !nomineeIsSuperior) {
             alwaysSave = nominee;
             reason = `I have to save ${nominee.name}, because they are the last person I can beat.`;
         }
-        // must be a friend and a non-target
-        // TODO: some people have the entire game as targets. they shouldn't be affected. --------------------------
-        if (relationship === Relationship.Friend && nomineeIsSuperior !== shouldTargetSuperiors) {
-            const excuse = heroShouldTargetSuperiors(hero, gameState)
-                ? `I can beat them in the end.`
-                : `I need to keep them around as a shield.`;
+        const relationship = classifyRelationship(
+            hero.popularity,
+            nominee.popularity,
+            hero.relationshipWith(nominee)
+        );
+        if (relationship === Relationship.Friend) {
             if (potentialSave) {
                 potentialSave =
                     hero.relationshipWith(nominee) > hero.relationshipWith(potentialSave)
                         ? nominee
                         : potentialSave;
+                reason = `Of these noms, I like ${nominee.name} the most.`;
             } else {
-                reason = `${nominee.name} is my friend, and ${excuse} `;
+                reason = `${nominee.name} is my friend.`;
                 potentialSave = nominee;
             }
         }
     });
+
+    // basic logic that only saves friends. Doesn't take into account jury stuff.
+    // if (rel0 === Relationship.Friend && rel1 !== Relationship.Friend) {
+    //     save = 0;
+    //     reason = `${nominees[0].name} is my friend.`;
+    // } else if (rel1 === Relationship.Friend && rel0 !== Relationship.Friend) {
+    //     save = 1;
+    //     reason = `${nominees[1].name} is my friend.`;
+    // } else if (rel0 === Relationship.Friend && rel1 === Relationship.Friend) {
+    //     save = nominees[0].relationshipWith(hero) > nominees[1].relationshipWith(hero) ? 0 : 1;
+    //     reason = `Both nominees are my friends, but I like ${nominees[save].name} more.`;
+    // }
     if (alwaysSave) {
         return { decision: alwaysSave, reason };
     } else if (potentialSave) {
         return { decision: potentialSave, reason };
     } else {
-        return { decision: null, reason: "Not sure what to put here yet." };
+        return { decision: null, reason };
     }
-}
-
-function useGoldenVetoPreJury(hero: Houseguest, nominees: Houseguest[]): HouseguestWithLogic {
-    let save = -1;
-    let reason = "Neither of these nominees are my friends.";
-    const rel0 = classifyRelationship(
-        hero.popularity,
-        nominees[0].popularity,
-        hero.relationshipWith(nominees[0])
-    );
-    const rel1 = classifyRelationship(
-        hero.popularity,
-        nominees[1].popularity,
-        hero.relationshipWith(nominees[1])
-    );
-    // basic logic that only saves friends. Doesn't take into account jury stuff.
-    if (rel0 === Relationship.Friend && rel1 !== Relationship.Friend) {
-        save = 0;
-        reason = `${nominees[0].name} is my friend.`;
-    } else if (rel1 === Relationship.Friend && rel0 !== Relationship.Friend) {
-        save = 1;
-        reason = `${nominees[1].name} is my friend.`;
-    } else if (rel0 === Relationship.Friend && rel1 === Relationship.Friend) {
-        save = nominees[0].relationshipWith(hero) > nominees[1].relationshipWith(hero) ? 0 : 1;
-        reason = `Both nominees are my friends, but I like ${nominees[save].name} more.`;
-    }
-    return { decision: nominees[save], reason };
 }
 
 // Returns the index of the finalist with the highest relationship with juror
