@@ -33,7 +33,15 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
     const oneIsInferior = !hero.superiors.has(nom1.id);
     // if there is no sup/inf difference, no point in doing special logic for it
     if (zeroIsInferior === oneIsInferior) {
-        return cutthroatVote(hero, nominees);
+        const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
+        const r1 = classifyRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
+        const decision = hero.relationships[nom0.id] < hero.relationships[nom1.id] ? 0 : 1;
+        return r0 === Relationship.Enemy && r1 === Relationship.Enemy
+            ? {
+                  decision,
+                  reason: `Both noms are my enemies, but I ${nominees[decision].name} dislike more.`,
+              }
+            : cutthroatVote(hero, nominees);
     }
 
     // Don't evict the last person in the game you can beat
@@ -88,7 +96,7 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
     }
 }
 
-// TODO: only works for 2 nominees
+// only works for 2 nominees
 function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogic {
     const nom0 = nominees[0];
     const nom1 = nominees[1];
@@ -202,25 +210,13 @@ function useGoldenVetoPreJury(
                     hero.relationshipWith(nominee) > hero.relationshipWith(potentialSave)
                         ? nominee
                         : potentialSave;
-                reason = `Of these noms, I like ${nominee.name} the most.`;
+                reason = `Of these noms, I like ${potentialSave.name} the most.`;
             } else {
                 reason = `${nominee.name} is my friend.`;
                 potentialSave = nominee;
             }
         }
     });
-
-    // basic logic that only saves friends. Doesn't take into account jury stuff.
-    // if (rel0 === Relationship.Friend && rel1 !== Relationship.Friend) {
-    //     save = 0;
-    //     reason = `${nominees[0].name} is my friend.`;
-    // } else if (rel1 === Relationship.Friend && rel0 !== Relationship.Friend) {
-    //     save = 1;
-    //     reason = `${nominees[1].name} is my friend.`;
-    // } else if (rel0 === Relationship.Friend && rel1 === Relationship.Friend) {
-    //     save = nominees[0].relationshipWith(hero) > nominees[1].relationshipWith(hero) ? 0 : 1;
-    //     reason = `Both nominees are my friends, but I like ${nominees[save].name} more.`;
-    // }
     if (alwaysSave) {
         return { decision: alwaysSave, reason };
     } else if (potentialSave) {
