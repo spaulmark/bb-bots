@@ -1,4 +1,4 @@
-import { Houseguest, GameState, nonEvictedHouseguests, inJury, exclude } from "../../model";
+import { Houseguest, GameState, inJury, exclude } from "../../model";
 import { favouriteIndex, relationship, lowestScore, hitList, heroShouldTargetSuperiors } from "./aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
 
@@ -140,7 +140,7 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
     };
 }
 
-export function nominateNPlayers(
+export function backdoorPlayer(
     hero: Houseguest,
     options: Houseguest[],
     gameState: GameState,

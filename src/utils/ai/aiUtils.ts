@@ -66,10 +66,11 @@ export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState
     const superiors = hero.superiors.size;
     const inferiors = opponents - superiors;
 
-    return inferiors < Math.ceil(opponents / 2) + 2;
+    if (opponents <= 5) return true;
+    return inferiors / opponents < 2 / 3;
 }
 
-// TODO: this function can just honestly die. it's only used in nomination logic (which sucks anyways)
+// this function is part of the old nomination logic (which is only used to name a replacement nominee)
 export function hitList(hero: Houseguest, options: Houseguest[], gameState: GameState): Set<number> {
     let result = options;
     // jury logic is not affected by someone who is dead center in power rankings
