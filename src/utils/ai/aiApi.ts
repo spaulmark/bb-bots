@@ -1,4 +1,5 @@
 import { Houseguest, GameState, inJury, exclude } from "../../model";
+import { rng } from "../BbRandomGenerator";
 import { favouriteIndex, relationship, lowestScore, hitList, heroShouldTargetSuperiors } from "./aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
 
@@ -227,6 +228,12 @@ function useGoldenVetoPreJury(
 }
 
 // Returns the index of the finalist with the highest relationship with juror
+// only works with 2 finalists
 export function castJuryVote(juror: Houseguest, finalists: Houseguest[]): number {
-    return favouriteIndex(juror, finalists);
+    const r1 = juror.relationshipWith(finalists[0]);
+    const r2 = juror.relationshipWith(finalists[1]);
+    const delta = (r1 - r2) / 2;
+    // pronounced "Probability of selecting r1"
+    const Pr1 = 0.5 - delta;
+    return rng().randomFloat() > Pr1 ? 1 : 0;
 }

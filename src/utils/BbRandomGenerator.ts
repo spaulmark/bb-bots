@@ -6,6 +6,7 @@ import { cast$ } from "../subjects/subjects";
 export class BbRandomGenerator {
     private rng: prand.RandomGenerator;
 
+    // returns a random number between 0 and 1.
     public randomFloat(): number {
         let result: number;
         [result, this.rng] = this.rng.next();
@@ -40,9 +41,9 @@ export function rng() {
 const rng$ = new BehaviorSubject(new BbRandomGenerator(0));
 
 const castSub = cast$.subscribe({
-    next: cast => {
+    next: (cast) => {
         let castNames = "";
-        cast.forEach(houseguest => (castNames += houseguest.name));
+        cast.forEach((houseguest) => (castNames += houseguest.name));
         rng$.next(new BbRandomGenerator(hashcode(castNames)));
-    }
+    },
 });
