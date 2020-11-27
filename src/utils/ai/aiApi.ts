@@ -64,37 +64,37 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
             reason: `I can't beat ${nominees[decision].name} in the end.`,
         };
     }
-
-    // everything below this line is basically 50% legacy code, feel free to completely rewrite it
-    const target = heroShouldTargetSuperiors(hero, gameState) === oneIsInferior ? 0 : 1;
-    const nonTarget = target ? 0 : 1;
-    const excuse = heroShouldTargetSuperiors(hero, gameState)
-        ? `I can't beat ${nominees[target].name} in the end.`
-        : `I need to keep ${nominees[nonTarget].name} around as a shield.`;
-    const targetIsFriend =
-        classifyRelationship(
-            hero.popularity,
-            nominees[target].popularity,
-            hero.relationships[nominees[target].id]
-        ) === Relationship.Friend;
-    const nonTargetIsNonFriend =
-        classifyRelationship(
-            hero.popularity,
-            nominees[nonTarget].popularity,
-            hero.relationships[nominees[nonTarget].id]
-        ) !== Relationship.Friend;
-    const nonTargetIsFriend = !nonTargetIsNonFriend;
-    const targetIsNonFriend = !targetIsFriend;
-    // the only reason to not evict your target is if he is your only friend on the block
-    if (targetIsFriend && nonTargetIsNonFriend) {
-        return { decision: nonTarget, reason: `${nominees[nonTarget].name} is my enemy.` };
-    } else if (targetIsFriend && nonTargetIsFriend) {
-        return { decision: target, reason: `Both noms are my friends, but ${excuse}` };
-    } else if (targetIsNonFriend && nonTargetIsNonFriend) {
-        return { decision: target, reason: `Neither of the noms are my friends, but ${excuse}` };
-    } else {
-        return { decision: target, reason: `${excuse}` };
-    }
+    return cutthroatVote(hero, nominees);
+    // everything below this line is basically legacy code, feel free to completely rewrite it
+    // const target = heroShouldTargetSuperiors(hero, gameState) === oneIsInferior ? 0 : 1;
+    // const nonTarget = target ? 0 : 1;
+    // const excuse = heroShouldTargetSuperiors(hero, gameState)
+    //     ? `I can't beat ${nominees[target].name} in the end.`
+    //     : `I need to keep ${nominees[nonTarget].name} around as a shield.`;
+    // const targetIsFriend =
+    //     classifyRelationship(
+    //         hero.popularity,
+    //         nominees[target].popularity,
+    //         hero.relationships[nominees[target].id]
+    //     ) === Relationship.Friend;
+    // const nonTargetIsNonFriend =
+    //     classifyRelationship(
+    //         hero.popularity,
+    //         nominees[nonTarget].popularity,
+    //         hero.relationships[nominees[nonTarget].id]
+    //     ) !== Relationship.Friend;
+    // const nonTargetIsFriend = !nonTargetIsNonFriend;
+    // const targetIsNonFriend = !targetIsFriend;
+    // // the only reason to not evict your target is if he is your only friend on the block
+    // if (targetIsFriend && nonTargetIsNonFriend) {
+    //     return { decision: nonTarget, reason: `${nominees[nonTarget].name} is my enemy.` };
+    // } else if (targetIsFriend && nonTargetIsFriend) {
+    //     return { decision: target, reason: `Both noms are my friends, but ${excuse}` };
+    // } else if (targetIsNonFriend && nonTargetIsNonFriend) {
+    //     return { decision: target, reason: `Neither of the noms are my friends, but ${excuse}` };
+    // } else {
+    //     return { decision: target, reason: `${excuse}` };
+    // }
 }
 
 // only works for 2 nominees
@@ -234,6 +234,8 @@ export function castJuryVote(juror: Houseguest, finalists: Houseguest[]): number
     const r2 = juror.relationshipWith(finalists[1]);
     const delta = (r1 - r2) / 2;
     // pronounced "Probability of selecting r1"
-    const Pr1 = 0.5 - delta;
-    return rng().randomFloat() > Pr1 ? 1 : 0;
+    const Pr1 = 0.5 + delta;
+    const choice = Math.abs(rng().randomFloat());
+    console.log(juror.name, delta, Pr1);
+    return choice > Pr1 ? 1 : 0;
 }
