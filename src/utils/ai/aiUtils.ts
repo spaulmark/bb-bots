@@ -1,4 +1,6 @@
 import { Houseguest, inJury, GameState } from "../../model";
+import { pbincdf } from "../poissonbinomial";
+import { pJurorVotesForHero } from "./aiApi";
 
 export const relationship = (hero: Houseguest, villain: Houseguest) => hero.relationships[villain.id];
 
@@ -40,25 +42,19 @@ export function lowestScore(
     return lowestIndex;
 }
 
-export function doesHeroWinTheFinale(
+// returns the probability that the hero wins the f2 between hero and villian
+export function pHeroWinsTheFinale(
     hgs: { hero: Houseguest; villain: Houseguest },
     jury: Houseguest[]
-): boolean {
+): number {
     const hero = hgs.hero;
     const villain = hgs.villain;
-    let heroVotes = 0;
-    let villainVotes = 0;
+    const p: number[] = [];
     jury.forEach((juror) => {
-        if (juror.id === hero.id || juror.id === villain.id) {
-            return;
-        }
-        if (relationship(hero, juror) > relationship(villain, juror)) {
-            heroVotes++;
-        } else {
-            villainVotes++;
-        }
+        p.push(pJurorVotesForHero(juror, hero, villain));
     });
-    return heroVotes > villainVotes;
+    const cdf = pbincdf(p);
+    return cdf[Math.ceil(jury.length / 2)];
 }
 
 export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState): boolean {

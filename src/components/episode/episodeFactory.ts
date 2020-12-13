@@ -12,7 +12,7 @@ import { EpisodeType } from "./episodes";
 import { BigBrotherVanilla, generateBbVanilla } from "./bigBrotherEpisode";
 import { BigBrotherFinale, generateBbFinale } from "./bigBrotherFinale";
 import { rng, roundTwoDigits } from "../../utils";
-import { doesHeroWinTheFinale as heroWinsTheFinale } from "../../utils/ai/aiUtils";
+import { pHeroWinsTheFinale } from "../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
 import { PowerRanking } from "../../model/powerRanking";
 import { GameOver, generateGameOver } from "./gameOver";
@@ -42,7 +42,7 @@ function populateSuperiors(houseguests: Houseguest[]) {
         const hero = houseguests[i];
         for (let j = i + 1; j < houseguests.length; j++) {
             const villain = houseguests[j];
-            if (heroWinsTheFinale({ hero, villain }, houseguests)) {
+            if (pHeroWinsTheFinale({ hero, villain }, houseguests) > 0.5) {
                 villain.superiors.add(hero.id);
             } else {
                 hero.superiors.add(villain.id);

@@ -227,15 +227,19 @@ function useGoldenVetoPreJury(
     }
 }
 
+export function pJurorVotesForHero(juror: Houseguest, hero: Houseguest, villain: Houseguest): number {
+    const r1 = juror.relationshipWith(hero);
+    const r2 = juror.relationshipWith(villain);
+    const delta = (r1 - r2) / 2;
+    let result = 0.5 + delta;
+    if (result > 1) result = 1;
+    if (result < 0) result = 0;
+    return result;
+}
+
 // Returns the index of the finalist with the highest relationship with juror
 // only works with 2 finalists
 export function castJuryVote(juror: Houseguest, finalists: Houseguest[]): number {
-    const r1 = juror.relationshipWith(finalists[0]);
-    const r2 = juror.relationshipWith(finalists[1]);
-    const delta = (r1 - r2) / 2;
-    // pronounced "Probability of selecting r1"
-    const Pr1 = 0.5 + delta;
     const choice = Math.abs(rng().randomFloat());
-    console.log(juror.name, delta, Pr1);
-    return choice > Pr1 ? 1 : 0;
+    return choice > pJurorVotesForHero(juror, finalists[0], finalists[1]) ? 1 : 0;
 }
