@@ -51,6 +51,7 @@ export function pHeroWinsTheFinale(
     const villain = hgs.villain;
     const p: number[] = [];
     jury.forEach((juror) => {
+        if (juror.id === hero.id || juror.id === villain.id) return;
         p.push(pJurorVotesForHero(juror, hero, villain));
     });
     const cdf = pbincdf(p);

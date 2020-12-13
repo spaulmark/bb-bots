@@ -6,8 +6,8 @@ import { fft } from "./fft";
 // Due to the high complexity of this function, it has been optimized for readability.
 // And even then, it's still pretty spooky.
 
-// TODO: make an optional STOP AT paramater.
 export function pbincdf(p: number[]): number[] {
+    console.log(p);
     const n = p.length;
     const nPlusOne = n + 2; // dude trust me
     const ω = (2 * Math.PI) / nPlusOne;
