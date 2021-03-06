@@ -43,6 +43,7 @@ function populateSuperiors(houseguests: Houseguest[]) {
         for (let j = i + 1; j < houseguests.length; j++) {
             const villain = houseguests[j];
             if (pHeroWinsTheFinale({ hero, villain }, houseguests) > 0.5) {
+                // TODO: the next fix here is to rework superiors/inferiors
                 villain.superiors.add(hero.id);
             } else {
                 hero.superiors.add(villain.id);
