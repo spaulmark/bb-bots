@@ -4,7 +4,7 @@ import {
     MutableGameState,
     nonEvictedHouseguests,
     randomPlayer,
-    getById
+    getById,
 } from "../../../model";
 import { Scene } from "../scene";
 import { Portraits } from "../../playerPortrait/portraits";
@@ -33,7 +33,6 @@ export function generateVetoCompScene(
             povPlayers.push({ ...randomPlayer(choices, povPlayers) });
         }
     } else {
-        // TODO: houseguests choice picks
         povPlayers.push({ ...HoH });
         povPlayers.push({ ...nom1 });
         povPlayers.push({ ...nom2 });
@@ -68,7 +67,7 @@ export function generateVetoCompScene(
                 <CenteredBold>{`${povWinner.name} has won the Golden Power of Veto!`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
-        )
+        ),
     });
     return [new GameState(newGameState), scene, povWinner];
 }

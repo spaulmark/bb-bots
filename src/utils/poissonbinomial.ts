@@ -7,7 +7,20 @@ import { fft } from "./fft";
 // Due to the high complexity of this function, it has been optimized for readability.
 // And even then, it's still pretty spooky.
 
-export function pbincdf(p: number[]): number[] {
+export function pbincdf(pp: number[]): number[] {
+    const p: number[] = [];
+    const zeros: number[] = [];
+    const ones: number[] = [];
+    pp.forEach((num) => {
+        num === 0 && zeros.push(0);
+        num === 1 && ones.push(1);
+        num !== 0 && num !== 1 && p.push(num);
+    });
+    const cdf = _pbincdf(p).reverse();
+    return ones.concat(cdf, zeros);
+}
+
+function _pbincdf(p: number[]): number[] {
     const n = p.length;
     const nPlusOne = n + 1;
     const ω = (2 * Math.PI) / nPlusOne;

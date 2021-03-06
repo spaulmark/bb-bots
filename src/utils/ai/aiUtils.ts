@@ -43,7 +43,6 @@ export function lowestScore(
 }
 
 // returns the probability that the hero wins the f2 between hero and villian
-let debug = 10;
 export function pHeroWinsTheFinale(
     hgs: { hero: Houseguest; villain: Houseguest },
     jury: Houseguest[]
@@ -53,14 +52,9 @@ export function pHeroWinsTheFinale(
     const p: number[] = [];
     jury.forEach((juror) => {
         if (juror.id === hero.id || juror.id === villain.id) return;
-        p.push(pJurorVotesForHero(juror, hero, villain)); //  1 -
-        // TODO: I am highly suspicious that this algorithm is having great difficulty processing probabilites of 0 and 1...
-        // it's probably better to handle them manually anyways.
+        p.push(pJurorVotesForHero(juror, hero, villain));
     });
-    debug === 10 && console.log(p);
     const cdf = pbincdf(p);
-    debug > 0 && console.log(hero.name, villain.name, cdf);
-    debug--;
     return cdf[Math.ceil((jury.length - 2) / 2)];
 }
 
