@@ -52,7 +52,8 @@ export function pHeroWinsTheFinale(
     const p: number[] = [];
     jury.forEach((juror) => {
         if (juror.id === hero.id || juror.id === villain.id) return;
-        p.push(pJurorVotesForHero(juror, hero, villain));
+        // p.push(pJurorVotesForHero(juror, hero, villain));
+        p.push(0.5);
     });
     const cdf = pbincdf(p);
     return cdf[Math.ceil(jury.length / 2)];

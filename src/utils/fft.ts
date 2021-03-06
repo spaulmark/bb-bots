@@ -25,7 +25,7 @@
  * Computes the discrete Fourier transform (DFT) of the given complex vector, storing the result back into the vector.
  * The vector can have any length. This is a wrapper function.
  */
-export function fft(real: Array<number> | Float64Array, imag: Array<number> | Float64Array): void {
+export function fft(real: number[] | Float64Array, imag: number[] | Float64Array): void {
     const n: number = real.length;
     if (n != imag.length) throw "Mismatched lengths";
     if (n == 0) return;
@@ -40,7 +40,7 @@ export function fft(real: Array<number> | Float64Array, imag: Array<number> | Fl
  * Computes the inverse discrete Fourier transform (IDFT) of the given complex vector, storing the result back into the vector.
  * The vector can have any length. This is a wrapper function. This transform does not perform scaling, so the inverse is not a true inverse.
  */
-function inverseTransform(real: Array<number> | Float64Array, imag: Array<number> | Float64Array): void {
+export function inverseFFT(real: Array<number> | Float64Array, imag: Array<number> | Float64Array): void {
     fft(imag, real);
 }
 
@@ -205,7 +205,7 @@ function convolveComplex(
         ximag[i] = ximag[i] * yreal[i] + xreal[i] * yimag[i];
         xreal[i] = temp;
     }
-    inverseTransform(xreal, ximag);
+    inverseFFT(xreal, ximag);
 
     for (let i = 0; i < n; i++) {
         // Scaling (because this FFT implementation omits it)
