@@ -22,6 +22,7 @@ import { HasText } from "../layout/text";
 import styled from "styled-components";
 import { weekStartTab$ } from "../../subjects/subjects";
 import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
+import { MAGIC_SUPERIOR_NUMBER } from "../../utils/ai/aiApi";
 
 export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
@@ -50,7 +51,10 @@ export function evictHouseguest(gameState: MutableGameState, id: number) {
     }
     if (inJury(gameState)) {
         nonEvictedHouseguests(gameState).forEach((hg) => {
-            hg.superiors.delete(evictee.id);
+            if (hg.superiors[evictee.id] > MAGIC_SUPERIOR_NUMBER) {
+                hg.superiors.size--;
+            }
+            delete hg.superiors[evictee.id];
         });
     }
     gameState.nonEvictedHouseguests.delete(evictee.id);

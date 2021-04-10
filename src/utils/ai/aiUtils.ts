@@ -1,6 +1,6 @@
 import { Houseguest, inJury, GameState } from "../../model";
 import { pbincdf } from "../poissonbinomial";
-import { pJurorVotesForHero } from "./aiApi";
+import { MAGIC_SUPERIOR_NUMBER, pJurorVotesForHero } from "./aiApi";
 
 export const relationship = (hero: Houseguest, villain: Houseguest) => hero.relationships[villain.id];
 
@@ -73,9 +73,9 @@ export function hitList(hero: Houseguest, options: Houseguest[], gameState: Game
     // jury logic is not affected by someone who is dead center in power rankings
     if (inJury(gameState) && heroShouldTargetSuperiors(hero, gameState)) {
         if (hero.superiors.size * 2 < gameState.remainingPlayers - 1) {
-            result = options.filter((hg) => !hero.superiors.has(hg.id));
+            result = options.filter((hg) => !(hero.superiors[hg.id] > MAGIC_SUPERIOR_NUMBER));
         } else {
-            result = options.filter((hg) => hero.superiors.has(hg.id));
+            result = options.filter((hg) => hero.superiors[hg.id] > MAGIC_SUPERIOR_NUMBER);
         }
     } else {
     }

@@ -34,6 +34,12 @@ export function extremeValues(x: number | undefined): number {
     }
 }
 
+export function average(x: number[]): number {
+    let sum = 0;
+    x.forEach((xi) => (sum += xi));
+    return sum / x.length;
+}
+
 export function isWellDefined(x: any) {
     return x !== null && x !== undefined;
 }

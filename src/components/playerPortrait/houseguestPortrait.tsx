@@ -4,7 +4,6 @@ import { isNotWellDefined, RelationshipMap } from "../../utils";
 import _ from "lodash";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
-import { PowerRanking } from "../../model/powerRanking";
 import styled from "styled-components";
 import { ColorTheme } from "../../theme/theme";
 
@@ -69,10 +68,10 @@ export interface PortraitProps {
     isEvicted?: boolean;
     isJury?: boolean;
     popularity?: number;
-    powerRanking?: PowerRanking;
+    powerRanking?: number;
     deltaPopularity?: number;
     detailed?: boolean;
-    superiors?: Set<number>;
+    superiors?: { [id: number]: number };
     friends?: number;
     enemies?: number;
     targetingMe?: number;
@@ -80,7 +79,7 @@ export interface PortraitProps {
 
 export interface PortraitState {
     popularity?: number;
-    powerRanking?: PowerRanking;
+    powerRanking?: number;
     displayMode: PortraitDisplayMode;
 }
 export class HouseguestPortrait extends React.Component<PortraitProps, PortraitState> {

@@ -1,6 +1,6 @@
 import { Houseguest, GameState, inJury, exclude } from "../../model";
 import { rng } from "../BbRandomGenerator";
-import { favouriteIndex, relationship, lowestScore, hitList, heroShouldTargetSuperiors } from "./aiUtils";
+import { relationship, lowestScore, hitList, heroShouldTargetSuperiors } from "./aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
 
 interface NumberWithLogic {
@@ -27,11 +27,13 @@ export function castEvictionVote(
     }
 }
 
+export const MAGIC_SUPERIOR_NUMBER = 0.5;
+
 function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): NumberWithLogic {
     const nom0 = nominees[0];
     const nom1 = nominees[1];
-    const zeroIsInferior = !hero.superiors.has(nom0.id);
-    const oneIsInferior = !hero.superiors.has(nom1.id);
+    const zeroIsInferior = hero.superiors[nom0.id] > MAGIC_SUPERIOR_NUMBER;
+    const oneIsInferior = hero.superiors[nom1.id] > MAGIC_SUPERIOR_NUMBER;
     // if there is no sup/inf difference, no point in doing special logic for it
     if (zeroIsInferior === oneIsInferior) {
         const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
@@ -46,6 +48,8 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
     }
 
     // Don't evict the last person in the game you can beat
+
+    // TODO: i screwed up, theres no way of seeing this in the new model
     if (gameState.remainingPlayers - hero.superiors.size - 1 === 1 && (zeroIsInferior || oneIsInferior)) {
         const nonVote = zeroIsInferior ? 0 : 1;
         return {
@@ -195,7 +199,7 @@ function useGoldenVetoPreJury(
     let potentialSave: Houseguest | null = null;
     let alwaysSave: Houseguest | null = null;
     nominees.forEach((nominee) => {
-        const nomineeIsSuperior: boolean = hero.superiors.has(nominee.id);
+        const nomineeIsSuperior: boolean = hero.superiors[nominee.id] > MAGIC_SUPERIOR_NUMBER;
         if (gameState.remainingPlayers - hero.superiors.size - 1 === 1 && !nomineeIsSuperior) {
             alwaysSave = nominee;
             reason = `I have to save ${nominee.name}, because they are the last person I can beat.`;

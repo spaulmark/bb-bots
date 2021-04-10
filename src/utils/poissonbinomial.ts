@@ -16,8 +16,10 @@ export function pbincdf(pp: number[]): number[] {
         num === 1 && ones.push(1);
         num !== 0 && num !== 1 && p.push(num);
     });
-    const cdf = _pbincdf(p).reverse();
-    return ones.concat(cdf, zeros);
+    const cdf = _pbincdf(p);
+    cdf.forEach((number, i) => (cdf[i] = 1 - number));
+    const result = ones.concat(cdf, zeros);
+    return result;
 }
 
 function _pbincdf(p: number[]): number[] {

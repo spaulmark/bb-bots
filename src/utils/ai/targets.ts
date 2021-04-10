@@ -1,4 +1,5 @@
 import { GameState, Houseguest, inJury } from "../../model";
+import { MAGIC_SUPERIOR_NUMBER } from "./aiApi";
 import { heroShouldTargetSuperiors } from "./aiUtils";
 import { classifyRelationship, RelationshipType } from "./classifyRelationship";
 
@@ -17,7 +18,7 @@ const deadValue: RelationshipSummary = {
 };
 
 export function getRelationshipSummary(hero: Houseguest, villain: Houseguest): RelationshipSummary {
-    const doIWin = !hero.superiors.has(villain.id);
+    const doIWin = !(hero.superiors[villain.id] > MAGIC_SUPERIOR_NUMBER);
     const type = classifyRelationship(hero.popularity, villain.popularity, hero.relationshipWith(villain));
     return { id: villain.id, relationship: villain.relationshipWith(hero), type, doIWin };
 }
