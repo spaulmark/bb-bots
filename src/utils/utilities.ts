@@ -47,3 +47,16 @@ export function isWellDefined(x: any) {
 export function isNotWellDefined(x: any): x is null | undefined {
     return x === null || x === undefined;
 }
+
+export function eucDistance(a: number[], b: number[]) {
+    if (a.length !== b.length)
+        throw new Error(
+            `Attempted to calculate distance between arrays of mismatched length. a.length=${a.length}, b.length=${b.length}`
+        );
+    return (
+        a
+            .map((x: number, i: number) => Math.abs(x - b[i]) ** 2) // square the difference
+            .reduce((sum: number, now: number) => sum + now) ** // sum
+        (1 / 2)
+    );
+}

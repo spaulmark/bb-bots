@@ -11,7 +11,7 @@ import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
 import { BigBrotherVanilla, generateBbVanilla } from "./bigBrotherEpisode";
 import { BigBrotherFinale, generateBbFinale } from "./bigBrotherFinale";
-import { average, rng, roundTwoDigits } from "../../utils";
+import { average, eucDistance, rng, roundTwoDigits } from "../../utils";
 import { pHeroWinsTheFinale } from "../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
 import { GameOver, generateGameOver } from "./gameOver";
@@ -25,12 +25,24 @@ export function canDisplayCliques(newState: GameState): boolean {
 }
 
 function firstImpressions(houseguests: Houseguest[]) {
+    const sin = Math.sin;
+    const cos = Math.cos;
+    houseguests.forEach((hg) => {
+        // generate random spherical co-ordinates on the unit sphere
+        const u = rng().randomFloat();
+        const v = Math.abs(rng().randomFloat());
+        const θ = 2 * Math.PI * u;
+        const φ = Math.acos(2 * v - 1);
+        // convert spherical co-ords to cartesian co-ords
+        hg.compatibility = [sin(θ) * cos(φ), sin(θ) * sin(φ), cos(θ)];
+    });
     for (let i = 0; i < houseguests.length; i++) {
         const iMap = houseguests[i].relationships;
         for (let j = i + 1; j < houseguests.length; j++) {
             // creates a bunch of 100% random mutual relationships
             const jMap = houseguests[j].relationships;
-            const impression = rng().randomFloat();
+            // const impression = 1;
+            const impression = 1 - eucDistance(houseguests[i].compatibility, houseguests[j].compatibility);
             jMap[i] = impression;
             iMap[j] = impression;
         }

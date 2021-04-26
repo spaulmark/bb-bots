@@ -17,6 +17,7 @@ export class Houseguest extends PlayerProfile {
     public povWins: number = 0;
 
     // Popularity ranges from -1 to 1
+    public compatibility: [number, number, number] = [0, 0, 0];
     public popularity: number = 0;
     public deltaPopularity: number = 0;
     readonly relationships: RelationshipMap = {};
