@@ -11,7 +11,7 @@ import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
 import { BigBrotherVanilla, generateBbVanilla } from "./bigBrotherEpisode";
 import { BigBrotherFinale, generateBbFinale } from "./bigBrotherFinale";
-import { average, eucDistance, rng, roundTwoDigits } from "../../utils";
+import { angleBetween, average, rng, roundTwoDigits } from "../../utils";
 import { pHeroWinsTheFinale } from "../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
 import { GameOver, generateGameOver } from "./gameOver";
@@ -39,10 +39,10 @@ function firstImpressions(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
         const iMap = houseguests[i].relationships;
         for (let j = i + 1; j < houseguests.length; j++) {
-            // creates a bunch of 100% random mutual relationships
+            // creates a bunch of mutual relationships based on points on a sphere
             const jMap = houseguests[j].relationships;
-            // const impression = 1;
-            const impression = 1 - eucDistance(houseguests[i].compatibility, houseguests[j].compatibility);
+            const impression =
+                1 - (2 * angleBetween(houseguests[i].compatibility, houseguests[j].compatibility)) / Math.PI;
             jMap[i] = impression;
             iMap[j] = impression;
         }

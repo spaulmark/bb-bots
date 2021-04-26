@@ -48,15 +48,30 @@ export function isNotWellDefined(x: any): x is null | undefined {
     return x === null || x === undefined;
 }
 
-export function eucDistance(a: number[], b: number[]) {
-    if (a.length !== b.length)
+export function dot(x: number[], y: number[]) {
+    if (x.length !== y.length)
         throw new Error(
-            `Attempted to calculate distance between arrays of mismatched length. a.length=${a.length}, b.length=${b.length}`
+            `Tried to get the dot product between two vectors of non-equal length: ${x.length} !== ${y.length}`
         );
-    return (
-        a
-            .map((x: number, i: number) => Math.abs(x - b[i]) ** 2) // square the difference
-            .reduce((sum: number, now: number) => sum + now) ** // sum
-        (1 / 2)
-    );
+    let result = 0;
+    x.forEach((_, i) => {
+        result += x[i] * y[i];
+    });
+    return result;
+}
+
+export function magnitude(x: number[]): number {
+    let result = 0;
+    x.forEach((x) => (result += x ** 2));
+    return result;
+}
+
+// returns a value between 0 and pi
+
+export function angleBetween(x: number[], y: number[]): number {
+    if (x.length !== y.length)
+        throw new Error(
+            `Tried to get the angle between two vectors of non-equal length: ${x.length} !== ${y.length}`
+        );
+    return Math.acos((dot(x, y) / magnitude(x)) * magnitude(y));
 }
