@@ -55,7 +55,7 @@ export function pHeroWinsTheFinale(
         p.push(pJurorVotesForHero(juror, hero, villain));
     });
     const cdf = pbincdf(p);
-    return cdf[Math.ceil((jury.length - 2) / 2)];
+    return cdf[Math.ceil((jury.length - 2) / 2) - 1];
 }
 
 export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState): boolean {
