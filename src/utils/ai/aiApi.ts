@@ -32,8 +32,19 @@ export const MAGIC_SUPERIOR_NUMBER = 0.5;
 function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): NumberWithLogic {
     const nom0 = nominees[0];
     const nom1 = nominees[1];
+    // TODO: this is the part we change btw
     const zeroIsInferior = hero.superiors[nom0.id] > MAGIC_SUPERIOR_NUMBER;
     const oneIsInferior = hero.superiors[nom1.id] > MAGIC_SUPERIOR_NUMBER;
+
+    // hard-coded logic for the F4 and F3 votes
+    if (gameState.remainingPlayers <= 4) {
+        const decision = hero.superiors[nom0.id] < hero.superiors[nom1.id] ? 0 : 1;
+        return {
+            decision,
+            reason: `I have better odds of beating ${decision ? nom0.name : nom1.name} in the final 2.`,
+        };
+    }
+
     // if there is no sup/inf difference, no point in doing special logic for it
     if (zeroIsInferior === oneIsInferior) {
         const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
@@ -48,8 +59,6 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
     }
 
     // Don't evict the last person in the game you can beat
-
-    // TODO: i screwed up, theres no way of seeing this in the new model
     if (gameState.remainingPlayers - hero.superiors.size - 1 === 1 && (zeroIsInferior || oneIsInferior)) {
         const nonVote = zeroIsInferior ? 0 : 1;
         return {
@@ -69,36 +78,6 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
         };
     }
     return cutthroatVote(hero, nominees);
-    // everything below this line is basically legacy code, feel free to completely rewrite it
-    // const target = heroShouldTargetSuperiors(hero, gameState) === oneIsInferior ? 0 : 1;
-    // const nonTarget = target ? 0 : 1;
-    // const excuse = heroShouldTargetSuperiors(hero, gameState)
-    //     ? `I can't beat ${nominees[target].name} in the end.`
-    //     : `I need to keep ${nominees[nonTarget].name} around as a shield.`;
-    // const targetIsFriend =
-    //     classifyRelationship(
-    //         hero.popularity,
-    //         nominees[target].popularity,
-    //         hero.relationships[nominees[target].id]
-    //     ) === Relationship.Friend;
-    // const nonTargetIsNonFriend =
-    //     classifyRelationship(
-    //         hero.popularity,
-    //         nominees[nonTarget].popularity,
-    //         hero.relationships[nominees[nonTarget].id]
-    //     ) !== Relationship.Friend;
-    // const nonTargetIsFriend = !nonTargetIsNonFriend;
-    // const targetIsNonFriend = !targetIsFriend;
-    // // the only reason to not evict your target is if he is your only friend on the block
-    // if (targetIsFriend && nonTargetIsNonFriend) {
-    //     return { decision: nonTarget, reason: `${nominees[nonTarget].name} is my enemy.` };
-    // } else if (targetIsFriend && nonTargetIsFriend) {
-    //     return { decision: target, reason: `Both noms are my friends, but ${excuse}` };
-    // } else if (targetIsNonFriend && nonTargetIsNonFriend) {
-    //     return { decision: target, reason: `Neither of the noms are my friends, but ${excuse}` };
-    // } else {
-    //     return { decision: target, reason: `${excuse}` };
-    // }
 }
 
 // only works for 2 nominees
