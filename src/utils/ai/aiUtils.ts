@@ -1,4 +1,6 @@
 import { Houseguest, inJury, GameState } from "../../model";
+import { pbincdf } from "../poissonbinomial";
+import { MAGIC_SUPERIOR_NUMBER, pJurorVotesForHero } from "./aiApi";
 
 export const relationship = (hero: Houseguest, villain: Houseguest) => hero.relationships[villain.id];
 
@@ -7,7 +9,7 @@ export function favouriteIndex(hero: Houseguest, options: Houseguest[]) {
     return highestScore(hero, options, relationship);
 }
 
-export function highestScore(
+function highestScore(
     hero: Houseguest,
     options: Houseguest[],
     callback: (hero: Houseguest, villain: Houseguest) => number
@@ -40,25 +42,20 @@ export function lowestScore(
     return lowestIndex;
 }
 
-export function doesHeroWinTheFinale(
+// returns the probability that the hero wins the f2 between hero and villian
+export function pHeroWinsTheFinale(
     hgs: { hero: Houseguest; villain: Houseguest },
     jury: Houseguest[]
-): boolean {
+): number {
     const hero = hgs.hero;
     const villain = hgs.villain;
-    let heroVotes = 0;
-    let villainVotes = 0;
+    const p: number[] = [];
     jury.forEach((juror) => {
-        if (juror.id === hero.id || juror.id === villain.id) {
-            return;
-        }
-        if (relationship(hero, juror) > relationship(villain, juror)) {
-            heroVotes++;
-        } else {
-            villainVotes++;
-        }
+        if (juror.id === hero.id || juror.id === villain.id) return;
+        p.push(pJurorVotesForHero(juror, hero, villain));
     });
-    return heroVotes > villainVotes;
+    const cdf = pbincdf(p);
+    return cdf[Math.ceil((jury.length - 2) / 2) - 1];
 }
 
 export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState): boolean {
@@ -68,19 +65,4 @@ export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState
 
     if (opponents <= 5) return true;
     return inferiors / opponents < 2 / 3;
-}
-
-// this function is part of the old nomination logic (which is only used to name a replacement nominee)
-export function hitList(hero: Houseguest, options: Houseguest[], gameState: GameState): Set<number> {
-    let result = options;
-    // jury logic is not affected by someone who is dead center in power rankings
-    if (inJury(gameState) && heroShouldTargetSuperiors(hero, gameState)) {
-        if (hero.superiors.size * 2 < gameState.remainingPlayers - 1) {
-            result = options.filter((hg) => !hero.superiors.has(hg.id));
-        } else {
-            result = options.filter((hg) => hero.superiors.has(hg.id));
-        }
-    } else {
-    }
-    return new Set(result.map((hg) => hg.id));
 }

@@ -1,6 +1,6 @@
 import { BigBrotherVanilla } from "../components/episode/bigBrotherEpisode";
 import { EpisodeFactory } from "../components/episode/episodeFactory";
-import { GameState, nonEvictedHouseguests } from "./gameState";
+import { GameState } from "./gameState";
 import { Episode } from ".";
 import { BigBrotherFinale } from "../components/episode/bigBrotherFinale";
 import { cast$ } from "../subjects/subjects";

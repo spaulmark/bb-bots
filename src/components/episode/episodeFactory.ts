@@ -11,26 +11,38 @@ import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
 import { BigBrotherVanilla, generateBbVanilla } from "./bigBrotherEpisode";
 import { BigBrotherFinale, generateBbFinale } from "./bigBrotherFinale";
-import { rng, roundTwoDigits } from "../../utils";
-import { doesHeroWinTheFinale as heroWinsTheFinale } from "../../utils/ai/aiUtils";
+import { angleBetween, average, rng, roundTwoDigits } from "../../utils";
+import { pHeroWinsTheFinale } from "../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
-import { PowerRanking } from "../../model/powerRanking";
 import { GameOver, generateGameOver } from "./gameOver";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/graphTest";
 import { getRelationshipSummary, Targets } from "../../utils/ai/targets";
+import { MAGIC_SUPERIOR_NUMBER } from "../../utils/ai/aiApi";
 
 export function canDisplayCliques(newState: GameState): boolean {
     return newState.remainingPlayers <= 30;
 }
 
 function firstImpressions(houseguests: Houseguest[]) {
+    const sin = Math.sin;
+    const cos = Math.cos;
+    houseguests.forEach((hg) => {
+        // generate random spherical co-ordinates on the unit sphere
+        const u = rng().randomFloat();
+        const v = Math.abs(rng().randomFloat());
+        const θ = 2 * Math.PI * u;
+        const φ = Math.acos(2 * v - 1);
+        // convert spherical co-ords to cartesian co-ords
+        hg.compatibility = [sin(θ) * cos(φ), sin(θ) * sin(φ), cos(θ)];
+    });
     for (let i = 0; i < houseguests.length; i++) {
         const iMap = houseguests[i].relationships;
         for (let j = i + 1; j < houseguests.length; j++) {
-            // creates a bunch of 100% random mutual relationships
+            // creates a bunch of mutual relationships based on points on a sphere
             const jMap = houseguests[j].relationships;
-            const impression = rng().randomFloat();
+            const impression =
+                1 - (2 * angleBetween(houseguests[i].compatibility, houseguests[j].compatibility)) / Math.PI;
             jMap[i] = impression;
             iMap[j] = impression;
         }
@@ -39,24 +51,24 @@ function firstImpressions(houseguests: Houseguest[]) {
 
 function populateSuperiors(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
+        let size = 0;
         const hero = houseguests[i];
         for (let j = i + 1; j < houseguests.length; j++) {
             const villain = houseguests[j];
-            if (heroWinsTheFinale({ hero, villain }, houseguests)) {
-                villain.superiors.add(hero.id);
-            } else {
-                hero.superiors.add(villain.id);
-            }
+            const pHeroWins = pHeroWinsTheFinale({ hero, villain }, houseguests);
+            hero.superiors[villain.id] = pHeroWins;
+            villain.superiors[hero.id] = 1 - pHeroWins;
+            if (pHeroWins > MAGIC_SUPERIOR_NUMBER) size++;
+            hero.superiors.size = size;
         }
     }
 }
 
 function updatePowerRankings(houseguests: Houseguest[]) {
     houseguests.forEach((hg) => {
-        hg.powerRanking = new PowerRanking(
-            houseguests.length - 1 - hg.superiors.size,
-            houseguests.length - 1
-        );
+        const test2: any = { ...hg.superiors };
+        delete test2["size"];
+        hg.powerRanking = average(Object.values(test2));
     });
 }
 
@@ -83,18 +95,22 @@ function updateFriendCounts(gameState: GameState) {
                 villain.popularity,
                 hero.relationshipWith(villain)
             );
-            targets.addTarget(getRelationshipSummary(hero, villain), gameState);
             if (type === Relationship.Friend) {
                 friends++;
             } else if (type === Relationship.Enemy) {
                 enemies++;
             }
         });
-        hero.targets = targets.getTargets();
-        getById(gameState, hero.targets[0]).targetingMe++;
-        getById(gameState, hero.targets[1]).targetingMe++;
         hero.friends = friends;
         hero.enemies = enemies;
+        houseguests.forEach((villain) => {
+            if (hero.id === villain.id) return;
+            targets.addTarget(getRelationshipSummary(hero, villain), gameState);
+        });
+        hero.targets = targets.getTargets();
+        hero.targets.forEach((target) => {
+            getById(gameState, target).targetingMe++;
+        });
     });
 }
 

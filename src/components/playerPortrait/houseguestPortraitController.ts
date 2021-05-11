@@ -3,7 +3,6 @@ import { Subscription } from "rxjs";
 import { selectedPlayer$, displayMode$, getSelectedPlayer } from "../../subjects/subjects";
 import { SelectedPlayerData } from "./selectedPortrait";
 import { Rgb } from "../../model/color";
-import { PowerRanking } from "../../model/powerRanking";
 
 const selectedColor = new Rgb(51, 255, 249);
 
@@ -18,7 +17,7 @@ export class HouseguestPortraitController {
         return {
             popularity: this.view.props.popularity,
             displayMode: displayMode$.value,
-            powerRanking: this.view.props.powerRanking
+            powerRanking: this.view.props.powerRanking,
         };
     }
 
@@ -34,26 +33,26 @@ export class HouseguestPortraitController {
         const subs: Subscription[] = [];
         subs.push(
             selectedPlayer$.subscribe({
-                next: this.refreshData
+                next: this.refreshData,
             })
         );
         subs.push(
             displayMode$.subscribe({
-                next: displayMode => this.view.setState({ displayMode })
+                next: (displayMode) => this.view.setState({ displayMode }),
             })
         );
         this.subs = subs;
     }
 
     public unsubscribe() {
-        this.subs.forEach(sub => sub.unsubscribe());
+        this.subs.forEach((sub) => sub.unsubscribe());
     }
 
-    private comparePowerRankings(data: SelectedPlayerData): PowerRanking {
+    private comparePowerRankings(data: SelectedPlayerData): number {
         // 0 is blue. 1 is orange
-        if (!data.superiors) return new PowerRanking(0, 1);
+        if (!data.superiors) return 0;
         const id = this.view.props.id === undefined ? -1 : this.view.props.id;
-        return data.superiors.has(id) ? new PowerRanking(1, 1) : new PowerRanking(0, 1);
+        return data.superiors[id];
     }
 
     private refreshData = (data: SelectedPlayerData | null) => {
@@ -63,10 +62,10 @@ export class HouseguestPortraitController {
             if (data.id !== this.view.props.id) {
                 this.view.setState({
                     popularity: data.relationships[this.view.props.id!],
-                    powerRanking: this.comparePowerRankings(data)
+                    powerRanking: this.comparePowerRankings(data),
                 });
             } else {
-                this.view.setState({ popularity: 2, powerRanking: new PowerRanking(2, 1) });
+                this.view.setState({ popularity: 2, powerRanking: 2 });
             }
         }
     };

@@ -21,12 +21,12 @@ export function generatePowerSubtitle(
     if (!hero.isEvicted && state.powerRanking) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
         if (data && data.id !== hero.id) {
-            subtitle.push(<div key={key++}>{`${state.powerRanking!.beats > 0 ? "LOSE" : "WIN"}`}</div>);
+            subtitle.push(<div key={key++}>{`WIN ${roundTwoDigits(state.powerRanking!)}%`}</div>);
         } else if (data && data.id === hero.id) {
             subtitle.push(<div key={key++}>I WOULD</div>);
         } else {
             subtitle.push(
-                <div key={key++}>{`WIN ${state.powerRanking.beats}/${state.powerRanking.outOf}${
+                <div key={key++}>{`WIN ${roundTwoDigits(state.powerRanking)}%${
                     hero.targetingMe ? ` | 🎯 ${hero.targetingMe}` : ""
                 }`}</div>
             );

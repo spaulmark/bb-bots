@@ -34,10 +34,44 @@ export function extremeValues(x: number | undefined): number {
     }
 }
 
+export function average(x: number[]): number {
+    let sum = 0;
+    x.forEach((xi) => (sum += xi));
+    return sum / x.length;
+}
+
 export function isWellDefined(x: any) {
     return x !== null && x !== undefined;
 }
 
 export function isNotWellDefined(x: any): x is null | undefined {
     return x === null || x === undefined;
+}
+
+export function dot(x: number[], y: number[]) {
+    if (x.length !== y.length)
+        throw new Error(
+            `Tried to get the dot product between two vectors of non-equal length: ${x.length} !== ${y.length}`
+        );
+    let result = 0;
+    x.forEach((_, i) => {
+        result += x[i] * y[i];
+    });
+    return result;
+}
+
+export function magnitude(x: number[]): number {
+    let result = 0;
+    x.forEach((x) => (result += x ** 2));
+    return result;
+}
+
+// returns a value between 0 and pi
+
+export function angleBetween(x: number[], y: number[]): number {
+    if (x.length !== y.length)
+        throw new Error(
+            `Tried to get the angle between two vectors of non-equal length: ${x.length} !== ${y.length}`
+        );
+    return Math.acos((dot(x, y) / magnitude(x)) * magnitude(y));
 }

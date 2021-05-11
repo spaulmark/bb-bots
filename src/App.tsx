@@ -12,10 +12,7 @@ class App extends React.Component<{}, { theme: ColorTheme }> {
     public constructor(props: any) {
         super(props);
         this.state = {
-            theme:
-                window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches
-                    ? lightTheme
-                    : darkTheme,
+            theme: darkTheme,
         };
     }
 

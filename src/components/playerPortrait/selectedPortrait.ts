@@ -7,7 +7,7 @@ export interface SelectedPlayerData {
     popularity: number;
     relationships: RelationshipMap;
     isEvicted: boolean;
-    superiors?: Set<number>;
+    superiors?: { [id: number]: number };
 }
 
 export function selectPlayer(player: SelectedPlayerData | null) {

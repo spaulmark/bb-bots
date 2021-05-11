@@ -23,7 +23,7 @@ export const popularityMode: PortraitDisplayMode = {
         const percent = (extremePopularity + 1) / 2;
         return interpolateColor(popularityMinColor, popularityMaxColor, percent);
     },
-    generateSubtitle: generatePopularitySubtitle
+    generateSubtitle: generatePopularitySubtitle,
 };
 
 const powerMaxColor = new Rgb(255, 204, 94);
@@ -35,7 +35,7 @@ export const powerMode: PortraitDisplayMode = {
         const powerRanking = state.powerRanking;
         if (powerRanking === undefined) return "";
 
-        return interpolateColor(powerMinColor, powerMaxColor, powerRanking.toFloat);
+        return interpolateColor(powerMinColor, powerMaxColor, powerRanking);
     },
-    generateSubtitle: generatePowerSubtitle
+    generateSubtitle: generatePowerSubtitle,
 };
