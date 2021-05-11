@@ -95,18 +95,22 @@ function updateFriendCounts(gameState: GameState) {
                 villain.popularity,
                 hero.relationshipWith(villain)
             );
-            targets.addTarget(getRelationshipSummary(hero, villain), gameState);
             if (type === Relationship.Friend) {
                 friends++;
             } else if (type === Relationship.Enemy) {
                 enemies++;
             }
         });
-        hero.targets = targets.getTargets();
-        getById(gameState, hero.targets[0]).targetingMe++;
-        getById(gameState, hero.targets[1]).targetingMe++;
         hero.friends = friends;
         hero.enemies = enemies;
+        houseguests.forEach((villain) => {
+            if (hero.id === villain.id) return;
+            targets.addTarget(getRelationshipSummary(hero, villain), gameState);
+        });
+        hero.targets = targets.getTargets();
+        hero.targets.forEach((target) => {
+            getById(gameState, target).targetingMe++;
+        });
     });
 }
 

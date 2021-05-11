@@ -1,6 +1,6 @@
 import { GameState, Houseguest, getById, exclude } from "../../../model";
 import { Scene } from "../scene";
-import { useGoldenVeto, backdoorPlayer } from "../../../utils/ai/aiApi";
+import { useGoldenVeto, backdoorNPlayers } from "../../../utils/ai/aiApi";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
@@ -38,7 +38,7 @@ export function generateVetoCeremonyScene(
         const replacementNom = {
             ...getById(
                 initialGameState,
-                backdoorPlayer(
+                backdoorNPlayers(
                     HoH,
                     exclude(initialGameState.houseguests, [
                         HoH,

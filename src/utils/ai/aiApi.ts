@@ -1,9 +1,8 @@
-import { min, round } from "lodash";
-import { isNotWellDefined, roundTwoDigits } from "..";
 import { Houseguest, GameState, inJury, exclude } from "../../model";
 import { rng } from "../BbRandomGenerator";
-import { relationship, lowestScore, hitList, heroShouldTargetSuperiors } from "./aiUtils";
+import { relationship, lowestScore, heroShouldTargetSuperiors } from "./aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
+import { getRelationshipSummary, isBetterTarget } from "./targets";
 
 interface NumberWithLogic {
     decision: number;
@@ -183,27 +182,30 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
     };
 }
 
-export function backdoorPlayer(
+export function backdoorNPlayers(
     hero: Houseguest,
     options: Houseguest[],
     gameState: GameState,
     n: number
 ): NumberWithLogic[] {
     const result: NumberWithLogic[] = [];
-    const hitlist = hitList(hero, options, gameState);
-    let trueOptions = options.filter((hg) => hitlist.has(hg.id));
-    if (trueOptions.length === 0) {
-        // if there are no options, we must sadly deviate from the hit list
-        trueOptions = options;
-    }
+    const sortedOptions = [...options];
+    // negative value if first is less than second
+    sortedOptions.sort((hg1, hg2) => {
+        return isBetterTarget(
+            getRelationshipSummary(hero, hg1),
+            getRelationshipSummary(hero, hg2),
+            hero,
+            gameState
+        )
+            ? 1
+            : -1;
+    });
+
     while (result.length < n) {
-        const decision = trueOptions[lowestScore(hero, trueOptions, relationship)];
+        const decision = sortedOptions[result.length];
         const reason = "I think you are ugly";
         result.push({ decision: decision.id, reason });
-        trueOptions = exclude(trueOptions, [decision]);
-        if (trueOptions.length === 0) {
-            trueOptions = options.filter((hg) => !hitlist.has(hg.id));
-        }
     }
     return result;
 }

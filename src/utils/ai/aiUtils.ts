@@ -9,7 +9,7 @@ export function favouriteIndex(hero: Houseguest, options: Houseguest[]) {
     return highestScore(hero, options, relationship);
 }
 
-export function highestScore(
+function highestScore(
     hero: Houseguest,
     options: Houseguest[],
     callback: (hero: Houseguest, villain: Houseguest) => number
@@ -65,19 +65,4 @@ export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState
 
     if (opponents <= 5) return true;
     return inferiors / opponents < 2 / 3;
-}
-
-// this function is part of the old nomination logic (which is only used to name a replacement nominee)
-export function hitList(hero: Houseguest, options: Houseguest[], gameState: GameState): Set<number> {
-    let result = options;
-    // jury logic is not affected by someone who is dead center in power rankings
-    if (inJury(gameState) && heroShouldTargetSuperiors(hero, gameState)) {
-        if (hero.superiors.size * 2 < gameState.remainingPlayers - 1) {
-            result = options.filter((hg) => !(hero.superiors[hg.id] > MAGIC_SUPERIOR_NUMBER));
-        } else {
-            result = options.filter((hg) => hero.superiors[hg.id] > MAGIC_SUPERIOR_NUMBER);
-        }
-    } else {
-    }
-    return new Set(result.map((hg) => hg.id));
 }
