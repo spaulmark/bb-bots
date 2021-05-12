@@ -96,10 +96,8 @@ function DeckList(props: { data: string[]; i: number }): JSX.Element {
         commentNodes.push(<Deck key={`${deck}__${i}__${j}`} deck={deck} />);
     }
     return (
-        <div key={"__commentList__"} style={{ display: "flex" }}>
-            <div key={"__ul__"} className={"columns is-multiline"}>
-                {commentNodes}
-            </div>
+        <div key={"__ul__"} className={"columns is-multiline"}>
+            {commentNodes}
         </div>
     );
 }
