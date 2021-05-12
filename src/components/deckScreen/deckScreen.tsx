@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import ReactPaginate from "react-paginate";
 import { HasText } from "../layout/text";
-import { shuffle, ceil } from "lodash";
+import { shuffle, ceil, debounce } from "lodash";
 import { PlayerProfile } from "../../model";
 import { mainContentStream$ } from "../../subjects/subjects";
 import { CastingScreen } from "../castingScreen/castingScreen";
@@ -14,6 +14,8 @@ interface DeckScreenState {
     loading: boolean;
     decks: string[];
     i: number;
+    debouncedSearchText: string;
+    searchText: string;
 }
 
 const decksPerPage = 26;
@@ -94,7 +96,7 @@ function DeckList(props: { data: string[]; i: number }): JSX.Element {
         commentNodes.push(<Deck key={`${deck}__${i}__${j}`} deck={deck} />);
     }
     return (
-        <div id="project-comments" key={"__commentList__"} style={{ display: "flex" }}>
+        <div key={"__commentList__"} style={{ display: "flex" }}>
             <div key={"__ul__"} className={"columns is-multiline"}>
                 {commentNodes}
             </div>
@@ -105,7 +107,7 @@ function DeckList(props: { data: string[]; i: number }): JSX.Element {
 export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState> {
     constructor(props: DeckScreenProps) {
         super(props);
-        this.state = { loading: true, decks: [], i: 0 };
+        this.state = { loading: true, decks: [], i: 0, debouncedSearchText: "", searchText: "" };
     }
     async componentDidMount() {
         const data = await (await fetch("https://spaulmark.github.io/img/dir.json")).json();
@@ -116,11 +118,34 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
         this.setState({ i: page.selected });
     };
 
+    private debounceSearch = debounce((nextValue: string) => {
+        this.setState({ debouncedSearchText: nextValue });
+        console.log(nextValue);
+    }, 250);
+
+    private handleSearch = (event: { target: { value: string } }) => {
+        this.setState({ searchText: event.target.value });
+        this.debounceSearch(event.target.value);
+    };
+
     render() {
         if (this.state.loading) return <div />;
+        const decks = this.state.decks.filter((deck) =>
+            deck.toLowerCase().match(this.state.debouncedSearchText.toLowerCase())
+        );
         return (
             <div>
-                <DeckList key={"comments"} data={this.state.decks} i={this.state.i} />
+                <div>
+                    <input
+                        style={{ marginBottom: "1.5rem", minWidth: "50%" }}
+                        className="input"
+                        type="text"
+                        placeholder="Search..."
+                        onChange={this.handleSearch}
+                        value={this.state.searchText}
+                    ></input>
+                </div>
+                <DeckList key={"comments"} data={decks} i={this.state.i} />
                 <Centered>
                     <ReactPaginate
                         key={"__list__"}
@@ -128,7 +153,7 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
                         nextLabel={"next"}
                         breakLabel={"..."}
                         breakClassName={"break-me"}
-                        pageCount={ceil(this.state.decks.length / decksPerPage)}
+                        pageCount={ceil(decks.length / decksPerPage)}
                         marginPagesDisplayed={2}
                         pageRangeDisplayed={3}
                         onPageChange={this.handlePageClick}

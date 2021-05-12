@@ -25,17 +25,6 @@ const EditPortrait = styled.div`
     word-wrap: break-word;
 `;
 
-const Input = styled.input`
-    padding: 5px;
-    margin: 5px;
-    border: 1px solid ${({ theme }: { theme: ColorTheme }) => theme.portraitBorder};
-    color: black;
-    border-radius: 5px;
-    font-weight: 600;
-    width: 7rem;
-    word-wrap: break-word;
-`;
-
 const Noselect = styled.div`
     -webkit-touch-callout: none;
     -webkit-user-select: none;
