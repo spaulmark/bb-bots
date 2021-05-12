@@ -4,6 +4,7 @@ import _ from "lodash";
 import { newRelationshipMap, rng } from "../utils";
 import { finalJurySize, getFinalists } from "./season";
 import { EpisodeLog } from "./logging/episodelog";
+import { Cliques } from "../utils/generateCliques";
 
 export function getById(gameState: GameState, id: number): Houseguest {
     return gameState.houseguestCache[id];
@@ -58,7 +59,7 @@ export class GameState {
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest;
     readonly log: EpisodeLog[] = [];
-    readonly cliques: number[][] = [];
+    readonly cliques: Cliques[] = [];
     get currentLog() {
         return this.log[this.phase];
     }
@@ -90,7 +91,7 @@ export class MutableGameState {
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest;
-    public cliques: number[][] = [];
+    public cliques: Cliques[] = [];
     public log: EpisodeLog[] = [];
     get currentLog() {
         return this.log[this.phase];

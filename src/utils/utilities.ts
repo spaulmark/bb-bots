@@ -22,6 +22,23 @@ export function max(a: number, b: number) {
     return a > b ? a : b;
 }
 
+export function intersection<T>(setA: Set<T>, setB: Set<T>): Set<T> {
+    let _intersection = new Set<T>();
+    for (let elem of setB) {
+        if (setA.has(elem)) {
+            _intersection.add(elem);
+        }
+    }
+    return _intersection;
+}
+export function difference<T>(setA: Set<T>, setB: Set<T>): Set<T> {
+    let _difference = new Set<T>(setA);
+    for (let elem of setB) {
+        _difference.delete(elem);
+    }
+    return _difference;
+}
+
 export function extremeValues(x: number | undefined): number {
     if (!x) {
         return 0;

@@ -31,7 +31,7 @@ export function Portrait(props: { houseguest: ProfileHouseguest; centered?: bool
 }
 
 export function Portraits(props: {
-    houseguests: ProfileHouseguest[];
+    houseguests: (ProfileHouseguest | "+")[];
     centered?: boolean;
     detailed?: boolean;
 }): JSX.Element {
@@ -39,14 +39,24 @@ export function Portraits(props: {
     if (!props.houseguests || props.houseguests.length === 0) {
         return <div />;
     }
-    props.houseguests.forEach((houseguest: ProfileHouseguest) => {
+    props.houseguests.forEach((houseguest: ProfileHouseguest | "+") => {
         let result;
-        if (props.detailed) {
+        if (houseguest === "+") {
+            result = (
+                <div
+                    key={`plus-${key++}`}
+                    style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+                    className="column is-narrow"
+                >
+                    <p>+</p>
+                </div>
+            );
+        } else if (props.detailed) {
             result = memoryWallPortrait(houseguest, key++);
         } else {
             result = houseguestToPortrait(houseguest, key++);
         }
-        if (houseguest.tooltip) {
+        if (houseguest !== "+" && houseguest.tooltip) {
             result = (
                 <Tooltip key={key++} text={houseguest.tooltip}>
                     {result}

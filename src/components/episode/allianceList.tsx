@@ -19,14 +19,26 @@ export function AllianceList(props: AllianceListProps) {
             </HasText>
         );
     const cliques = props.gameState.cliques;
-    const elements: JSX.Element[] = cliques.map((clique, i) => (
-        <Portraits
-            centered={true}
-            detailed={true}
-            key={`${clique}, ${i}, ${props.gameState.phase}`}
-            houseguests={clique.map((id) => getById(props.gameState, id))}
-        />
-    ));
+    const elements: JSX.Element[] = cliques.map((clique, i) => {
+        if (clique.affiliates.length === 0) {
+            return (
+                <Portraits
+                    centered={true}
+                    detailed={true}
+                    key={`${clique}, ${i}, ${props.gameState.phase}`}
+                    houseguests={clique.core.map((id) => getById(props.gameState, id))}
+                />
+            );
+        }
+        const test2: (number | "+")[] = [...clique.core, "+", ...clique.affiliates];
+        return (
+            <Portraits
+                centered={true}
+                detailed={true}
+                key={`${clique}, ${i}, ${props.gameState.phase}`}
+                houseguests={test2.map((id) => (id === "+" ? "+" : getById(props.gameState, id)))}
+            />
+        );
+    });
     return <div>{elements}</div>;
 }
-// TODO: clicking someone ON THE ALLIANCE PAGE shows only their alliances???

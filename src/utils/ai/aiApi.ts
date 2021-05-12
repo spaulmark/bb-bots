@@ -76,7 +76,7 @@ function castF4vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest, HoH: H
 function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): NumberWithLogic {
     const nom0 = nominees[0];
     const nom1 = nominees[1];
-    // TODO: this is the part we change btw
+    // this could be changed later
     const zeroIsInferior = hero.superiors[nom0.id] > MAGIC_SUPERIOR_NUMBER;
     const oneIsInferior = hero.superiors[nom1.id] > MAGIC_SUPERIOR_NUMBER;
 

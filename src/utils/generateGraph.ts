@@ -3,7 +3,7 @@ import { Houseguest, GameState, nonEvictedHouseguests, getById } from "../model"
 import { classifyRelationship, RelationshipType } from "./ai/classifyRelationship";
 
 import _ from "lodash";
-import { Graph } from "./graphTest";
+import { Graph } from "./generateCliques";
 
 class EdgeMap {
     public data: { [id: number]: Set<number> } = {};
@@ -30,12 +30,12 @@ function generateEdge(
 }
 
 export default function generateGraph(gameState: GameState): Graph {
-    // TODO: this algorithm assumes every relationship is mutual,
-    // and will need a face lift once we start getting non-mutual relationships.
+    // this algorithm assumes every relationship is mutual,
+    // and will need a face lift if we get non-mutual relationships.
     const players = nonEvictedHouseguests(gameState);
     const nodes: number[] = [];
     const edges: EdgeMap = new EdgeMap();
-    players.forEach(player => {
+    players.forEach((player) => {
         let friendCount = 0;
         _.forEach(player.relationships, (relationship, stringId) => {
             const villainId = parseInt(stringId);
@@ -48,7 +48,7 @@ export default function generateGraph(gameState: GameState): Graph {
                 }
             }
         });
-        // nodes[player.id] = friendCount; TODO: for pivot later on, thats why friendcount is there unused
+        // nodes[player.id] = friendCount; // for pivot later on, thats why friendcount is there unused
         nodes.push(player.id);
     });
     return { nodes, neighbors: (v: number) => edges.data[v] || new Set([]) };

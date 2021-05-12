@@ -16,7 +16,7 @@ import { pHeroWinsTheFinale } from "../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "../../utils/ai/classifyRelationship";
 import { GameOver, generateGameOver } from "./gameOver";
 import { EpisodeLog } from "../../model/logging/episodelog";
-import { generateCliques } from "../../utils/graphTest";
+import { generateCliques } from "../../utils/generateCliques";
 import { getRelationshipSummary, Targets } from "../../utils/ai/targets";
 import { MAGIC_SUPERIOR_NUMBER } from "../../utils/ai/aiApi";
 
