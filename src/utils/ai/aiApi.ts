@@ -111,7 +111,7 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
         return r0 === Relationship.Enemy && r1 === Relationship.Enemy
             ? {
                   decision,
-                  reason: `Both noms are my enemies, but I ${nominees[decision].name} dislike more.`,
+                  reason: `Both noms are my enemies, but I dislike ${nominees[decision].name} more.`,
               }
             : cutthroatVote(hero, nominees);
     }
