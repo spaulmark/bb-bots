@@ -117,8 +117,7 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
     };
 
     private debounceSearch = debounce((nextValue: string) => {
-        this.setState({ debouncedSearchText: nextValue });
-        console.log(nextValue);
+        this.setState({ debouncedSearchText: nextValue, i: 0 });
     }, 250);
 
     private handleSearch = (event: { target: { value: string } }) => {
