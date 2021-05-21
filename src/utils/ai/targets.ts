@@ -1,4 +1,5 @@
-import { GameState, Houseguest, inJury } from "../../model";
+import _ from "lodash";
+import { GameState, getById, Houseguest, inJury } from "../../model";
 import { MAGIC_SUPERIOR_NUMBER } from "./aiApi";
 import { heroShouldTargetSuperiors } from "./aiUtils";
 import { classifyRelationship, RelationshipType } from "./classifyRelationship";
@@ -84,31 +85,87 @@ export function isBetterTarget(
             inJury(gameState) && heroShouldTargetSuperiors(hero, gameState)
         );
     else if (strategy === TargetStrategy.MoR) {
-        return isBetterTargetMoR(old, neww);
+        return isBetterTargetMoR(old, neww, gameState, hero);
     } else {
-        return isBetterTargetUnderdog(old, neww);
+        return isBetterTargetUnderdog(old, neww, gameState, hero);
     }
 }
 
-function isBetterTargetMoR(old: RelationshipSummary, neww: RelationshipSummary): boolean {
+function isBetterTargetMoR(
+    old: RelationshipSummary,
+    neww: RelationshipSummary,
+    gameState: GameState,
+    hero: Houseguest
+): boolean {
     // Is the old target a non-enemy? Then neww is a better target if he is an enemy, or if he's a worse non-enemy.
     if (old.type !== RelationshipType.Enemy) {
         return neww.type === RelationshipType.Enemy ? true : neww.relationship < old.relationship;
     }
     // So, the old target is an enemy? Then neww must be an enemy to be a better target.
     // If they are both enemies, the more popular enemy is a better target.
-    return neww.type !== RelationshipType.Enemy ? false : old.villainPopularity < neww.villainPopularity;
+    if (neww.type !== RelationshipType.Enemy) return false;
+
+    let { oldPop, newPop }: { oldPop: number; newPop: number } = test2(
+        gameState,
+        hero,
+        old,
+        neww,
+        (x: RelationshipType) => x === RelationshipType.Enemy
+    );
+    return oldPop < newPop;
 }
 
-function isBetterTargetUnderdog(old: RelationshipSummary, neww: RelationshipSummary): boolean {
+function isBetterTargetUnderdog(
+    old: RelationshipSummary,
+    neww: RelationshipSummary,
+    gameState: GameState,
+    hero: Houseguest
+): boolean {
     // Is the old target a friend? Then neww is a better target if he is NOT a friend, or if he's a worse friend.
     if (old.type === RelationshipType.Friend) {
         return neww.type !== RelationshipType.Friend ? true : neww.relationship < old.relationship;
     }
-
     // So, the old target isn't a friend? Then neww will never be a better target if he is a friend.
-    // But if neww isn't a friend, then the best target is the most popular guy.
-    return neww.type === RelationshipType.Friend ? false : old.villainPopularity < neww.villainPopularity;
+    if (neww.type === RelationshipType.Friend) return false;
+    // But if neww isn't a friend, then the best target is the more central of the two non-friends.
+    let { oldPop, newPop }: { oldPop: number; newPop: number } = test2(
+        gameState,
+        hero,
+        old,
+        neww,
+        (x: RelationshipType) => x !== RelationshipType.Friend
+    );
+    return oldPop < newPop;
+}
+
+function test2(
+    gameState: GameState,
+    hero: Houseguest,
+    old: RelationshipSummary,
+    neww: RelationshipSummary,
+    condition: (x: RelationshipType) => boolean
+) {
+    const nonFriends: Houseguest[] = Array.from(gameState.nonEvictedHouseguests)
+        .map((hg) => getById(gameState, hg))
+        .filter(
+            (villain) =>
+                condition(
+                    classifyRelationship(hero.popularity, villain.popularity, hero.relationshipWith(villain))
+                ) && hero.id !== villain.id
+        );
+    let oldPop: number = 0;
+    const oldHg: Houseguest = getById(gameState, old.id);
+    let newPop: number = 0;
+    const newHg: Houseguest = getById(gameState, neww.id);
+    nonFriends.forEach((hg) => {
+        if (hg.id !== oldHg.id) {
+            oldPop += oldHg.relationshipWith(hg);
+        }
+        if (hg.id !== newHg.id) {
+            newPop += newHg.relationshipWith(hg);
+        }
+    });
+    return { oldPop, newPop };
 }
 
 function isBetterTargetStatusQuo(old: RelationshipSummary, neww: RelationshipSummary, jury: boolean) {
