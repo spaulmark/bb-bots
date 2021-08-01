@@ -19,12 +19,31 @@ export function generateCliques(gameState: GameState): Cliques[] {
     cliques = [];
     bronKerbosch(new Set<number>([]), new Set(g.nodes), new Set<number>([]), g);
     cliques.forEach((clique) => clique.map((id) => getById(gameState, id)));
-    cliques = cliques.filter((clique) => clique.length > 2).sort((a, b) => b.length - a.length);
+    cliques = cliques
+        .filter((clique) => {
+            // let result: boolean = false;
+            // if (clique.length <= 2) {
+            //     const newClique = new Set<number>(clique);
+            //     // true iff there is a new player
+            //     result = new Set([...newClique].filter((x) => !seenPlayers.has(x))).size > 0;
+            // } else {
+            //     result = true;
+            // }
+            // if (result) {
+            //     seenPlayers = new Set<number>([...seenPlayers, ...allPlayers]);
+            // }
+            return true;
+        })
+        .sort((a, b) => b.length - a.length);
     // merge cliques that have a difference of only one person
     const result: Cliques[] = [];
     const blacklist: Set<number> = new Set<number>();
     cliques.forEach((clq, i) => {
         if (blacklist.has(i)) return;
+        if (clq.length === 1) {
+            result.push({ core: clq, affiliates: [] });
+            return;
+        }
         const cliqueI = new Set(clq);
         let cliquePushed: boolean = false;
         for (let j = i + 1; j < cliques.length && cliques[j].length === clq.length; j++) {
