@@ -1,4 +1,4 @@
-import { intersection } from ".";
+import { intersection, isWellDefined } from ".";
 import { GameState, getById } from "../model";
 import generateGraph from "./generateGraph";
 import { difference } from "./utilities";
@@ -19,22 +19,7 @@ export function generateCliques(gameState: GameState): Cliques[] {
     cliques = [];
     bronKerbosch(new Set<number>([]), new Set(g.nodes), new Set<number>([]), g);
     cliques.forEach((clique) => clique.map((id) => getById(gameState, id)));
-    cliques = cliques
-        .filter((clique) => {
-            // let result: boolean = false;
-            // if (clique.length <= 2) {
-            //     const newClique = new Set<number>(clique);
-            //     // true iff there is a new player
-            //     result = new Set([...newClique].filter((x) => !seenPlayers.has(x))).size > 0;
-            // } else {
-            //     result = true;
-            // }
-            // if (result) {
-            //     seenPlayers = new Set<number>([...seenPlayers, ...allPlayers]);
-            // }
-            return true;
-        })
-        .sort((a, b) => b.length - a.length);
+    cliques = cliques.sort((a, b) => b.length - a.length);
     // merge cliques that have a difference of only one person
     const result: Cliques[] = [];
     const blacklist: Set<number> = new Set<number>();
@@ -75,7 +60,36 @@ export function generateCliques(gameState: GameState): Cliques[] {
     });
     // sort result (again...)
     result.sort((a, b) => b.affiliates.length + b.core.length - (a.affiliates.length + a.core.length));
+    // sort cliques within the clique themselves
+    result.forEach((clique) => {
+        let clique_popularity: { [id: number]: number } = {};
+        clique.core.sort((a, b) => {
+            const popularity_a = isWellDefined(clique_popularity[a])
+                ? clique_popularity[a]
+                : _calculatePopularity(a, clique.core.concat(clique.affiliates), gameState);
+            clique_popularity[a] = popularity_a;
+            //
+            const popularity_b = isWellDefined(clique_popularity[b])
+                ? clique_popularity[b]
+                : _calculatePopularity(b, clique.core.concat(clique.affiliates), gameState);
+            clique_popularity[b] = popularity_b;
+            return b - a;
+        });
+        clique_popularity = {};
+    });
     return result;
+}
+
+function _calculatePopularity(hero: number, clique: number[], gameState: GameState) {
+    let sum = 0;
+    let count = 0;
+    clique.forEach((houseguest) => {
+        if (houseguest !== hero) {
+            count++;
+            sum += getById(gameState, hero).relationships[hero];
+        }
+    });
+    return count === 0 ? 0 : sum / count;
 }
 
 function bronKerbosch(r: Set<number>, p: Set<number>, x: Set<number>, g: Graph) {
