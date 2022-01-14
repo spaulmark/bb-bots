@@ -43,8 +43,6 @@ const DeckText = styled.p`
     margin-left: 1rem;
 `;
 
-// TODO: add a search bar, add a sort alphebetically function.
-
 async function randomImageFromFolder(folder: string) {
     if (imageCache[folder]) return imageCache[folder];
     const links = await (await fetch(`${baseUrl}${folder}/dir.json`)).json();
