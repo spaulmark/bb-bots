@@ -21,7 +21,7 @@ export function generateSafetyChain(initialGameState: GameState): SafetyChainEpi
         <HasText>
             <Tabs />
             <WeekStartWrapper gameState={initialGameState} />
-            <MemoryWall houseguests={initialGameState.houseguests} /> <br />
+            {/* <MemoryWall houseguests={initialGameState.houseguests} /> <br /> */}
             <NextEpisodeButton />
         </HasText>
     );

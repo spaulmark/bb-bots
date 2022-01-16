@@ -23,8 +23,6 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         const newSafeIndex = favouriteIndex(currentChooser, options);
         chainOrder.push(options[newSafeIndex]);
         options.splice(newSafeIndex, 1);
-        console.log(options, newSafeIndex);
-        console.log(chainOrder, chainOrder.length - 1);
         stuff.push(
             <Centered key={`safetychain-${newGameState.phase}-${chainOrder.length}`}>
                 {currentChooser.name} has chosen {chainOrder[chainOrder.length - 1].name}!
