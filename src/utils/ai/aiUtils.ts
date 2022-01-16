@@ -1,11 +1,25 @@
-import { Houseguest, inJury, GameState } from "../../model";
+import { Houseguest, GameState } from "../../model";
 import { pbincdf } from "../poissonbinomial";
 import { pJurorVotesForHero } from "./aiApi";
+import { classifyRelationship } from "./classifyRelationship";
 
 export const relationship = (hero: Houseguest, villain: Houseguest) => hero.relationships[villain.id];
 
+export const RelationshipTypeToNumber = { FRIEND: 10, ENEMY: -10, PAWN: 0, QUEEN: +5 };
+
+export const friendship = (hero: Houseguest, villain: Houseguest) =>
+    hero.relationshipWith(villain) +
+    RelationshipTypeToNumber[
+        classifyRelationship(hero.popularity, villain.popularity, hero.relationshipWith(villain))
+    ];
+
+export function getBestFriend(hero: Houseguest, options: Houseguest[]) {
+    // take in the players and return the favourite, taking friend/enemy/nonmutual into account.
+    return highestScore(hero, options, friendship);
+}
+
 export function favouriteIndex(hero: Houseguest, options: Houseguest[]) {
-    // Return the index of the houseguest that hero has the best relationship with.
+    // Return the index of the houseguest that hero has the highest relationship % with.
     return highestScore(hero, options, relationship);
 }
 

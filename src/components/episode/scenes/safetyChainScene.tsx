@@ -1,6 +1,6 @@
 import React from "react";
 import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests, randomPlayer } from "../../../model";
-import { favouriteIndex } from "../../../utils/ai/aiUtils";
+import { getBestFriend } from "../../../utils/ai/aiUtils";
 import { Centered } from "../../layout/centered";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
@@ -20,8 +20,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     let currentChooser: Houseguest = chainStarter;
     const stuff: JSX.Element[] = [];
     while (chainOrder.length < safeSpots) {
-        // add a new safe person
-        const newSafeIndex = favouriteIndex(currentChooser, options);
+        const newSafeIndex = getBestFriend(currentChooser, options);
         chainOrder.push(options[newSafeIndex]);
         options.splice(newSafeIndex, 1);
         stuff.push(
