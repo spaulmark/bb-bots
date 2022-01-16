@@ -1,11 +1,4 @@
-import {
-    GameState,
-    Houseguest,
-    MutableGameState,
-    exclude,
-    nonEvictedHouseguests,
-    getById,
-} from "../../../model";
+import { GameState, Houseguest, MutableGameState, getById } from "../../../model";
 import { Scene } from "../scene";
 import { shuffle } from "lodash";
 import { Portrait } from "../../playerPortrait/portraits";
@@ -19,7 +12,6 @@ export function generateNomCeremonyScene(
     HoH: Houseguest
 ): [GameState, Scene, Houseguest[]] {
     const newGameState = new MutableGameState(initialGameState);
-    const options = exclude(nonEvictedHouseguests(newGameState), [HoH]);
     const [nom1, nom2] = [getById(newGameState, HoH.targets[0]), getById(newGameState, HoH.targets[1])];
     nom1.nominations++;
     nom2.nominations++;

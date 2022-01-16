@@ -1,6 +1,6 @@
 import { Houseguest, inJury, GameState } from "../../model";
 import { pbincdf } from "../poissonbinomial";
-import { MAGIC_SUPERIOR_NUMBER, pJurorVotesForHero } from "./aiApi";
+import { pJurorVotesForHero } from "./aiApi";
 
 export const relationship = (hero: Houseguest, villain: Houseguest) => hero.relationships[villain.id];
 

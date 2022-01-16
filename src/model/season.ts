@@ -5,6 +5,7 @@ import { Episode } from ".";
 import { BigBrotherFinale } from "../components/episode/bigBrotherFinale";
 import { cast$ } from "../subjects/subjects";
 import { GameOver } from "../components/episode/gameOver";
+import { SafetyChain } from "../components/episode/safetyChain";
 
 export function finalJurySize() {
     return jurors;
@@ -38,24 +39,6 @@ export class Season {
     // In the future, this would all be customizable,
     // and not just all big brother episodes by default.
 
-    // TODO: I think the way to do this would be to have season asnycronously generate all episodes here,
-    // and then store them in an array,
-    // and then when sidebar calls renderEpisode, I can just pluck them from a pre-calculated array.
-    // The problem being that if it's not there, it's just not there.
-
-    // then maybe renderEpisode needs to become async?
-    // wait
-    // maybe as i generate them
-    /// obviously i generate episode 1 first
-    // then i have a hanging async function that is like "get episode 2"
-    // and it literally just is an awaiting or something? idk
-
-    // like if its array of async () => episode
-    // then if there is NO episode
-    // and the generator is still generating episode 2, then
-
-    //maybe it uses subjects or something
-
     public renderEpisode(gameState: GameState): Episode {
         return this.factory.nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers));
     }
@@ -67,6 +50,9 @@ export class Season {
         if (players === 2) {
             return GameOver;
         }
-        return BigBrotherVanilla;
+        if (players % 2 == 1) {
+            return BigBrotherVanilla;
+        }
+        return SafetyChain;
     }
 }
