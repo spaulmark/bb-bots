@@ -50,7 +50,7 @@ export class Season {
         if (players === 2) {
             return GameOver;
         }
-        if (players % 2 == 1) {
+        if (players % 4 !== 1) {
             return BigBrotherVanilla;
         }
         return SafetyChain;

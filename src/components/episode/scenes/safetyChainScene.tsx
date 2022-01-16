@@ -3,6 +3,7 @@ import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests, randomP
 import { favouriteIndex } from "../../../utils/ai/aiUtils";
 import { Centered } from "../../layout/centered";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
+import { Portrait, Portraits } from "../../playerPortrait/portraits";
 import { evictHouseguest } from "../bigBrotherEpisode";
 import { Scene } from "../scene";
 
@@ -26,6 +27,10 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         stuff.push(
             <Centered key={`safetychain-${newGameState.phase}-${chainOrder.length}`}>
                 {currentChooser.name} has chosen {chainOrder[chainOrder.length - 1].name}!
+                <Portraits
+                    houseguests={[currentChooser, chainOrder[chainOrder.length - 1]]}
+                    centered={true}
+                />
             </Centered>
         );
         currentChooser = chainOrder[chainOrder.length - 1];
@@ -33,6 +38,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     stuff.push(
         <Centered key={`safetychain-final-${newGameState.phase}-${chainOrder.length}`}>
             {options[0].name} has been left out!
+            <Portrait houseguest={options[0]} centered={true} />
         </Centered>
     );
     evictHouseguest(newGameState, options[0].id);
