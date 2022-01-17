@@ -1,11 +1,13 @@
 import React from "react";
 import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests, randomPlayer } from "../../../model";
+import { HoHVote, NomineeVote, NormalVote } from "../../../model/logging/voteType";
 import { getBestFriend } from "../../../utils/ai/aiUtils";
 import { Centered } from "../../layout/centered";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
 import { evictHouseguest } from "../bigBrotherEpisode";
 import { Scene } from "../scene";
+import { NomineeCell } from "./votingTable";
 
 export function generateSafetyChainScene(initialGameState: GameState): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
@@ -18,12 +20,17 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     chainOrder.push(chainStarter);
     const safeSpots = newGameState.nonEvictedHouseguests.size - 1;
     let currentChooser: Houseguest = chainStarter;
-    const stuff: JSX.Element[] = [];
+    const sceneContent: JSX.Element[] = [];
+    let first = true;
     while (chainOrder.length < safeSpots) {
         const newSafeIndex = getBestFriend(currentChooser, options);
         chainOrder.push(options[newSafeIndex]);
+        newGameState.currentLog.votes[currentChooser.id] = first
+            ? new HoHVote(options[newSafeIndex].id)
+            : new NormalVote(options[newSafeIndex].id);
+        first = false;
         options.splice(newSafeIndex, 1);
-        stuff.push(
+        sceneContent.push(
             <Centered key={`safetychain-${newGameState.phase}-${chainOrder.length}`}>
                 {currentChooser.name} has chosen {chainOrder[chainOrder.length - 1].name}!
                 <Portraits
@@ -35,7 +42,11 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         currentChooser = chainOrder[chainOrder.length - 1];
     }
     newGameState.currentLog.soleVoter = chainOrder[chainOrder.length - 2].name;
-    stuff.push(
+    newGameState.currentLog.votes[chainOrder[chainOrder.length - 1].id] = new NomineeVote(false);
+    newGameState.currentLog.votes[options[0].id] = new NomineeVote(true);
+    newGameState.currentLog.nominationsPostVeto = [options[0].name, chainOrder[chainOrder.length - 1].name];
+
+    sceneContent.push(
         <Centered key={`safetychain-final-${newGameState.phase}-${chainOrder.length}`}>
             {options[0].name} has been left out!
             <Portrait houseguest={options[0]} centered={true} />
@@ -47,7 +58,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         gameState: initialGameState,
         content: (
             <div>
-                {stuff}
+                {sceneContent}
                 <NextEpisodeButton />
             </div>
         ),
