@@ -34,6 +34,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         );
         currentChooser = chainOrder[chainOrder.length - 1];
     }
+    newGameState.currentLog.soleVoter = chainOrder[chainOrder.length - 2].name;
     stuff.push(
         <Centered key={`safetychain-final-${newGameState.phase}-${chainOrder.length}`}>
             {options[0].name} has been left out!
