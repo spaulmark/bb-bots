@@ -50,9 +50,11 @@ export class Season {
         if (players === 2) {
             return GameOver;
         }
-        if (players % 4 !== 1) {
-            return BigBrotherVanilla;
-        }
-        return SafetyChain;
+        ///// commented out lines make every 4th episode a safety chain
+
+        // if (players % 4 !== 1) {
+        return BigBrotherVanilla;
+        // }
+        // return SafetyChain;
     }
 }
