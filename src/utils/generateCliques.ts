@@ -9,9 +9,87 @@ export interface Graph {
     neighbors: (v: number) => Set<number>;
 }
 
+// TODO: we want core [] then affiliates [[], []].
+
 export interface Cliques {
     core: number[];
     affiliates: number[];
+}
+
+export function newCliquesLength(a: NewCliques): number {
+    return a.core.length + (a.affiliates ? a.affiliates[0].length + a.affiliates[1].length : 0);
+}
+
+interface NewCliques {
+    core: number[];
+    affiliates?: [number[], number[]];
+}
+
+function newGenerateCliques(gameState: GameState): NewCliques[] {
+    const g = generateGraph(gameState);
+    cliques = [];
+    bronKerbosch(new Set<number>([]), new Set(g.nodes), new Set<number>([]), g);
+    cliques.forEach((clique) => clique.map((id) => getById(gameState, id)));
+    cliques = cliques.sort((a, b) => b.length - a.length);
+    // merge cliques that are similar *enough*
+    // i think you do this by merging cliques with the most overlap [until when?]
+    const result: NewCliques[] = [];
+    // clique i, clique j, overlap size
+    const mergeCandidates: [number, number, NewCliques][] = [];
+    // generate overlap numbers for each clique (n^2)
+    // if the overlap is significant enough, add it to the merge queue
+    cliques.forEach((clq, i) => {
+        const cliqueI = new Set(clq);
+        // TODO: an optimization is possible to kill this for loop early.
+        // when the coreSize large enough condition will be impossible.
+        for (let j = i + 1; j < cliques.length; j++) {
+            const cliqueJ = new Set(cliques[j]);
+            const core = intersection(cliqueI, cliqueJ);
+            const affiliatesI: Set<number> = difference(cliqueI, core);
+            const affiliatesJ: Set<number> = difference(cliqueJ, core);
+            // if coreSize is high enough, push to a list of cliques that could be merged
+            if (core.size >= affiliatesI.size + affiliatesJ.size) {
+                mergeCandidates.push([
+                    i,
+                    j,
+                    {
+                        core: Array.from(core),
+                        affiliates: [Array.from(affiliatesI), Array.from(affiliatesJ)],
+                    },
+                ]);
+            }
+        }
+    });
+    // cliques that already have been merged get blacklisted
+    const blacklist: Set<number> = new Set<number>();
+
+    // merge cliques with highest overlap numbers until only unnacceptable overlap remains
+    // for example maybe if the size of both left and right affiliates is greater than the core
+    mergeCandidates.sort(
+        (a: [number, number, NewCliques], b: [number, number, NewCliques]) =>
+            b[2].core.length - a[2].core.length
+    );
+
+    mergeCandidates.forEach((candidate: [number, number, NewCliques]) => {
+        const i = candidate[0];
+        const j = candidate[1];
+        if (blacklist.has(i) || blacklist.has(j)) return;
+        blacklist.add(i);
+        blacklist.add(j);
+        result.push(candidate[2]);
+    });
+    // add non merged cliques
+    cliques.forEach((clique, i) => {
+        if (blacklist.has(i)) return;
+        result.push({ core: clique });
+    });
+    // then sort and return result
+    result.sort((a: NewCliques, b: NewCliques) => newCliquesLength(b) - newCliquesLength(a));
+
+    // render with → and ←
+    // ie. [affiliatesL] → [core] ← [affiliatesR]
+
+    return result;
 }
 
 export function generateCliques(gameState: GameState): Cliques[] {
@@ -36,8 +114,6 @@ export function generateCliques(gameState: GameState): Cliques[] {
             const core: Set<number> = intersection(cliqueI, cliqueJ);
             if (core.size === cliqueI.size - 1) {
                 const affiliates: number[] = Array.from(difference(cliqueJ, core));
-                // TODO: make it so that it choses strategically who to include as the in/out groups
-                // ie. it chooses between clique I and clique J, whoever is closer to the core.
                 result.push({ core: clq, affiliates });
                 cliquePushed = true;
                 blacklist.add(j);
