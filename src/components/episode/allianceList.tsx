@@ -1,5 +1,6 @@
 import React from "react";
 import { canDisplayCliques, GameState, getById } from "../../model";
+import { isNotWellDefined } from "../../utils";
 import { Centered } from "../layout/centered";
 import { HasText } from "../layout/text";
 import { Portraits } from "../playerPortrait/portraits";
@@ -20,7 +21,7 @@ export function AllianceList(props: AllianceListProps) {
         );
     const cliques = props.gameState.cliques;
     const elements: JSX.Element[] = cliques.map((clique, i) => {
-        if (clique.affiliates.length === 0) {
+        if (isNotWellDefined(clique.affiliates)) {
             return (
                 <Portraits
                     centered={true}
@@ -30,13 +31,23 @@ export function AllianceList(props: AllianceListProps) {
                 />
             );
         }
-        const test2: (number | "+")[] = [...clique.core, "+", ...clique.affiliates];
+        const test2: (number | "←" | "→")[] = [
+            ...clique.affiliates[0],
+            "→",
+            ...clique.core,
+            "←",
+            ...clique.affiliates[1],
+        ];
         return (
             <Portraits
                 centered={true}
                 detailed={true}
                 key={`${clique}, ${i}, ${props.gameState.phase}`}
-                houseguests={test2.map((id) => (id === "+" ? "+" : getById(props.gameState, id)))}
+                houseguests={test2.map((id) => {
+                    if (id === "←") return "←";
+                    if (id === "→") return "→";
+                    return getById(props.gameState, id);
+                })}
             />
         );
     });
