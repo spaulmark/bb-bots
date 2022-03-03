@@ -31,7 +31,7 @@ export function AllianceList(props: AllianceListProps) {
                 />
             );
         }
-        const test2: (number | "←" | "→")[] = [
+        const entries: (number | "←" | "→")[] = [
             ...clique.affiliates[0],
             "→",
             ...clique.core,
@@ -43,7 +43,7 @@ export function AllianceList(props: AllianceListProps) {
                 centered={true}
                 detailed={true}
                 key={`${clique}, ${i}, ${props.gameState.phase}`}
-                houseguests={test2.map((id) => {
+                houseguests={entries.map((id) => {
                     if (id === "←") return "←";
                     if (id === "→") return "→";
                     return getById(props.gameState, id);

@@ -5,7 +5,6 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { HoHVote } from "../../../model/logging/voteType";
-import { heroShouldTargetSuperiors } from "../../../utils/ai/aiUtils";
 
 export function generateHohCompScene(initialGameState: GameState): [GameState, Scene, Houseguest] {
     const newGameState = new MutableGameState(initialGameState);

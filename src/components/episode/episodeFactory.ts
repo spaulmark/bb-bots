@@ -67,9 +67,9 @@ function populateSuperiors(houseguests: Houseguest[]) {
 
 function updatePowerRankings(houseguests: Houseguest[]) {
     houseguests.forEach((hg) => {
-        const test2: any = { ...hg.superiors };
-        delete test2["size"];
-        hg.powerRanking = average(Object.values(test2));
+        const superiors: any = { ...hg.superiors };
+        delete superiors["size"];
+        hg.powerRanking = average(Object.values(superiors));
     });
 }
 
