@@ -1,6 +1,6 @@
 import { Houseguest, GameState, inJury, exclude } from "../../model";
 import { rng } from "../BbRandomGenerator";
-import { relationship, lowestScore, heroShouldTargetSuperiors } from "./aiUtils";
+import { relationship, lowestScore } from "./aiUtils";
 import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
 import { getRelationshipSummary, isBetterTarget } from "./targets";
 

@@ -27,7 +27,6 @@ export function MemoryWall(props: IMemoryWallProps): JSX.Element {
         return <div />;
     }
     return (
-        // TODO: modulo magic. i dare you.
         <div
             style={{
                 margin: "auto",
