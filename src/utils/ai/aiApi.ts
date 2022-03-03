@@ -1,7 +1,11 @@
 import { Houseguest, GameState, inJury, exclude } from "../../model";
 import { rng } from "../BbRandomGenerator";
 import { relationship, lowestScore } from "./aiUtils";
-import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
+import {
+    classifyRelationship,
+    classifyTwoWayRelationship,
+    RelationshipType as Relationship,
+} from "./classifyRelationship";
 import { getRelationshipSummary, isBetterTarget } from "./targets";
 
 interface NumberWithLogic {
@@ -101,11 +105,11 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
         return cutthroatVote(hero, nominees);
     } else if (hero.powerRanking <= 1 / 3) {
         // with a very low winrate, vote based on winrate
-        return voteBasedOnWinrate();
+        return voteBasedOnWinrate(); // TODO: but like, make it "winrate friends"... for ppl who increase my winrate, vote normally.
     } else {
         // with a sort of low winrate, break ties with winrate
-        const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
-        const r1 = classifyRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
+        const r0 = classifyTwoWayRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
+        const r1 = classifyTwoWayRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
         return r0 === r1 ? voteBasedOnWinrate() : cutthroatVote(hero, nominees);
     }
 
