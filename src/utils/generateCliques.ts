@@ -42,17 +42,17 @@ export function generateCliques(gameState: GameState): Cliques[] {
             const core = intersection(cliqueI, cliqueJ);
             const affiliatesI: Set<number> = difference(cliqueI, core);
             const affiliatesJ: Set<number> = difference(cliqueJ, core);
-            // if (core.size >= affiliatesI.size + affiliatesJ.size) {
-            mergeCandidates.push([
-                i,
-                j,
-                {
-                    core: Array.from(core),
-                    affiliates: [Array.from(affiliatesI), Array.from(affiliatesJ)],
-                },
-            ]);
+            if (core.size > 0) {
+                mergeCandidates.push([
+                    i,
+                    j,
+                    {
+                        core: Array.from(core),
+                        affiliates: [Array.from(affiliatesI), Array.from(affiliatesJ)],
+                    },
+                ]);
+            }
         }
-        // }
     });
     // cliques that already have been merged get blacklisted
     const blacklist: Set<number> = new Set<number>();
@@ -76,6 +76,9 @@ export function generateCliques(gameState: GameState): Cliques[] {
         if (blacklist.has(i)) return;
         result.push({ core: clique });
     });
+
+    // TODO: do some insane madman lunatic merging based on duplicate affiliates
+
     // then sort and return result
     result.sort((a: Cliques, b: Cliques) => newCliquesLength(b) - newCliquesLength(a));
 
