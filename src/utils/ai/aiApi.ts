@@ -76,12 +76,6 @@ function castF4vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest, HoH: H
 function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): NumberWithLogic {
     const nom0 = nominees[0];
     const nom1 = nominees[1];
-    // this could be changed later
-    const zeroIsInferior = hero.superiors[nom0.id] > MAGIC_SUPERIOR_NUMBER;
-    const oneIsInferior = hero.superiors[nom1.id] > MAGIC_SUPERIOR_NUMBER;
-
-    // hard-coded logic for the F4 and F3 votes
-
     // In the F3 vote, take the person who you have better odds against to F2
     if (gameState.remainingPlayers === 3) {
         return castF3Vote(hero, nom0, nom1);
@@ -102,40 +96,26 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
             )[0]
         );
     }
-
-    // if there is no sup/inf difference, no point in doing special logic for it
-    if (zeroIsInferior === oneIsInferior) {
+    if (hero.powerRanking >= 0.45) {
+        // with a high enough winrate, vote normally
+        return cutthroatVote(hero, nominees);
+    } else if (hero.powerRanking <= 1 / 3) {
+        // with a very low winrate, vote based on winrate
+        return voteBasedOnWinrate();
+    } else {
+        // with a sort of low winrate, break ties with winrate
         const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
         const r1 = classifyRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
-        const decision = hero.relationships[nom0.id] < hero.relationships[nom1.id] ? 0 : 1;
-        return r0 === Relationship.Enemy && r1 === Relationship.Enemy
-            ? {
-                  decision,
-                  reason: `Both noms are my enemies, but I dislike ${nominees[decision].name} more.`,
-              }
-            : cutthroatVote(hero, nominees);
+        return r0 === r1 ? voteBasedOnWinrate() : cutthroatVote(hero, nominees);
     }
 
-    // Don't evict the last person in the game you can beat
-    if (gameState.remainingPlayers - hero.superiors.size - 1 === 1 && (zeroIsInferior || oneIsInferior)) {
-        const nonVote = zeroIsInferior ? 0 : 1;
-        return {
-            decision: zeroIsInferior ? 1 : 0,
-            reason: `I can't evict ${nominees[nonVote].name}, because they are the last person I can beat.`,
-        };
-    }
-    // the ultimate in omegalul technology
-    if (
-        heroShouldTargetSuperiors(hero, gameState) &&
-        ((zeroIsInferior && !oneIsInferior) || (!zeroIsInferior && oneIsInferior))
-    ) {
-        const decision = zeroIsInferior ? 1 : 0;
+    function voteBasedOnWinrate() {
+        const decision = hero.superiors[nom0.id] < hero.superiors[nom1.id] ? 0 : 1;
         return {
             decision,
             reason: `I can't beat ${nominees[decision].name} in the end.`,
         };
     }
-    return cutthroatVote(hero, nominees);
 }
 
 // only works for 2 nominees
@@ -157,9 +137,10 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
     }
 
     if (r0 === Relationship.Enemy && r1 === Relationship.Enemy) {
+        const decision = hero.relationships[nom0.id] < hero.relationships[nom1.id] ? 0 : 1;
         return {
-            decision: nom0.popularity > nom1.popularity ? 0 : 1,
-            reason: "Both noms are my enemies, so I voted for the more popular one.",
+            decision,
+            reason: `Both noms are my enemies, but I dislike ${nominees[decision].name} more.`,
         };
     } else if (
         (r0 === Relationship.Enemy && r1 !== Relationship.Enemy) ||
@@ -178,7 +159,7 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
     const vote = lowestScore(hero, nominees, relationship);
     return {
         decision: vote,
-        reason: `Both noms are my friends. but I like ${nominees[vote === 0 ? 1 : 0].name} more.`,
+        reason: `Both noms are my friends, but I like ${nominees[vote === 0 ? 1 : 0].name} more.`,
     };
 }
 
