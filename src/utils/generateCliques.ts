@@ -1,4 +1,4 @@
-import { intersection, isWellDefined } from ".";
+import { intersection } from ".";
 import { GameState, getById } from "../model";
 import generateGraph from "./generateGraph";
 import { difference } from "./utilities";
