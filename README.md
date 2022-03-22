@@ -1,34 +1,14 @@
+## BB-Bots: A Big Brother (US) Simulator ## 
+
 --> https://spaulmark.github.io/bb-bots/ <--
 
+BB-bots simulates a game of Big Brother, using the US format. You can watch as a cast of your favourite characters win head of household, power of veto, form alliances, and vote to evict each other until only one winner remains. 
 
-BB-bots is a Big Brother simulator similar to the one at brantsteele.com, but it lets you see what's going on in the game.
+Use your own custom cast of images by dragging and dropping them, selecting them from your filesystem, or submitting a list of links to images online. You can also use one of many pre-set casts. It's lots of fun, why not try it out?
 
-You can simulate a game of Big Brother using your own custom cast of images, or use a pre-set cast. It's lots of fun, why not try it out?
-
-## Features ##
-* [x] Cast X random players button on setup screen
-* [x] Click a player to view his/her relationships
-* [x] Power rankings view
-* [x] Endgame stats screen & voting table 
-* [x] Add pre-set casts for a quick play option 
-* [x] Disable power rankings view until Jury
-* [x] Clique factoring
-* [x] Improved deck selection interface 
-
-## Lower Priority Features ##
-* [ ] Custom season builder, customize the twists in the game (Double Eviction, Double HoH, etc.)
-
-## Logic ## 
-* [x] Basic game logic
-* [x] Players take into account who they can beat in the end
-* [x] Actual non broken nomination logic
-* [ ] Tooltips for nomination/replacement nominee logic
-* [x] Reworked veto logic
-* [x] Target & pawn based nominations
-* [x] Vote logic post-jury should have more focus on who they can beat
-* [x] Non-random relationships
-
-
+<p align="center">
+    <img width="" src="https://spaulmark.github.io/src/bb-bots.png" alt="Preview Image">
+</p>
 
 ## Running Locally ## 
 ```
