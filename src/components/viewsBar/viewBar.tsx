@@ -20,7 +20,7 @@ export class ViewsBar extends React.Component<{ gameState: GameState }, {}> {
             <div className="level is-mobile" key="viewsbar" style={{ marginBottom: 0 }}>
                 <ViewBarTag mode={popularityMode} text={"Relationships"}></ViewBarTag>
                 {inJury(this.props.gameState) && (
-                    <ViewBarTag mode={powerMode} text={"Power Rankings"}></ViewBarTag>
+                    <ViewBarTag mode={powerMode} text={"Threat Level"}></ViewBarTag>
                 )}
             </div>
         );

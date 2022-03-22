@@ -31,11 +31,11 @@ export function AllianceList(props: AllianceListProps) {
                 />
             );
         }
-        const entries: (number | "←" | "→")[] = [
+        const entries: (number | "⬅️" | "➡️")[] = [
             ...clique.affiliates[0],
-            "→",
+            "➡️",
             ...clique.core,
-            "←",
+            "⬅️",
             ...clique.affiliates[1],
         ];
         return (
@@ -44,8 +44,8 @@ export function AllianceList(props: AllianceListProps) {
                 detailed={true}
                 key={`${clique}, ${i}, ${props.gameState.phase}`}
                 houseguests={entries.map((id) => {
-                    if (id === "←") return "←";
-                    if (id === "→") return "→";
+                    if (id === "⬅️") return "⬅️";
+                    if (id === "➡️") return "➡️";
                     return getById(props.gameState, id);
                 })}
             />

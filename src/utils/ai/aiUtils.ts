@@ -71,12 +71,3 @@ export function pHeroWinsTheFinale(
     const cdf = pbincdf(p);
     return cdf[Math.ceil((jury.length - 2) / 2) - 1];
 }
-
-export function heroShouldTargetSuperiors(hero: Houseguest, gameState: GameState): boolean {
-    const opponents = gameState.remainingPlayers - 1;
-    const superiors = hero.superiors.size;
-    const inferiors = opponents - superiors;
-
-    if (opponents <= 5) return true;
-    return inferiors / opponents < 2 / 3;
-}
