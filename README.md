@@ -15,3 +15,4 @@ Use your own custom cast of images by dragging and dropping them, selecting them
 npm install
 npm start
 ```
+(you might get some issues with node-sass, because i have never in my life not had issues with node-sass. my only advice is just do stuff until it works)
