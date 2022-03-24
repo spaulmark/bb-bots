@@ -1,7 +1,6 @@
 import React from "react";
 import { GameState } from "../../model";
 import { HasText } from "../layout/text";
-import { MemoryWall } from "../memoryWall";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import { Tabs } from "./bigBrotherEpisode";
 import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
