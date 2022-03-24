@@ -4,7 +4,7 @@ import { Episode, PlayerProfile } from "../model";
 import { SelectedPlayerData } from "../components/playerPortrait/selectedPortrait";
 import React from "react";
 import { PortraitDisplayMode, popularityMode } from "../model/portraitDisplayMode";
-import { ColorTheme, lightTheme } from "../theme/theme";
+import { ColorTheme } from "../theme/theme";
 
 // What is currently being displayed.
 export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
@@ -30,6 +30,14 @@ export function getCast(): PlayerProfile[] {
 export const selectedPlayer$ = new BehaviorSubject<SelectedPlayerData | null>(null);
 export function getSelectedPlayer() {
     return selectedPlayer$.value;
+}
+
+// The cast member(s) that the user has clicked on.
+// Used for the casting screen.
+export const selectedCastPlayer$ = new BehaviorSubject<Set<number>>(new Set<number>());
+
+export function getSelectedCastPlayers() {
+    return selectedCastPlayer$.value;
 }
 
 // The tab selected on the start of each week.

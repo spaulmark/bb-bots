@@ -1,4 +1,4 @@
-import { intersection, isWellDefined } from ".";
+import { intersection } from ".";
 import { GameState, getById } from "../model";
 import generateGraph from "./generateGraph";
 import { difference } from "./utilities";
@@ -9,9 +9,13 @@ export interface Graph {
     neighbors: (v: number) => Set<number>;
 }
 
+export function newCliquesLength(a: Cliques): number {
+    return a.core.length + (a.affiliates ? a.affiliates[0].length + a.affiliates[1].length : 0);
+}
+
 export interface Cliques {
     core: number[];
-    affiliates: number[];
+    affiliates?: [number[], number[]];
 }
 
 export function generateCliques(gameState: GameState): Cliques[] {
@@ -20,76 +24,56 @@ export function generateCliques(gameState: GameState): Cliques[] {
     bronKerbosch(new Set<number>([]), new Set(g.nodes), new Set<number>([]), g);
     cliques.forEach((clique) => clique.map((id) => getById(gameState, id)));
     cliques = cliques.sort((a, b) => b.length - a.length);
-    // merge cliques that have a difference of only one person
     const result: Cliques[] = [];
-    const blacklist: Set<number> = new Set<number>();
+    // ids of clique i, clique j, & overlap size
+    const mergeCandidates: [number, number, Cliques][] = [];
+    // generate overlap numbers for each clique (n^2)
     cliques.forEach((clq, i) => {
-        if (blacklist.has(i)) return;
-        if (clq.length === 1) {
-            result.push({ core: clq, affiliates: [] });
-            return;
-        }
         const cliqueI = new Set(clq);
-        let cliquePushed: boolean = false;
-        for (let j = i + 1; j < cliques.length && cliques[j].length === clq.length; j++) {
+        for (let j = i + 1; j < cliques.length; j++) {
             const cliqueJ = new Set(cliques[j]);
-            const core: Set<number> = intersection(cliqueI, cliqueJ);
-            if (core.size === cliqueI.size - 1) {
-                const affiliates: number[] = Array.from(difference(cliqueJ, core));
-                // TODO: make it so that it choses strategically who to include as the in/out groups
-                // ie. it chooses between clique I and clique J, whoever is closer to the core.
-                result.push({ core: clq, affiliates });
-                cliquePushed = true;
-                blacklist.add(j);
-            }
-        }
-        if (!cliquePushed) {
-            result.push({ core: clq, affiliates: [] });
-        }
-    });
-    // Merge duplicate alliances together
-    result.forEach((clq, i) => {
-        for (let j = i + 1; j < result.length; j++) {
-            if (i === j) return;
-            if (JSON.stringify(clq.core) === JSON.stringify(result[j].core)) {
-                result[j].affiliates = result[j].affiliates.concat(clq.affiliates);
-                result.splice(i, 1);
-                j--;
+            const core = intersection(cliqueI, cliqueJ);
+            const affiliatesI: Set<number> = difference(cliqueI, core);
+            const affiliatesJ: Set<number> = difference(cliqueJ, core);
+            if (core.size > 0) {
+                mergeCandidates.push([
+                    i,
+                    j,
+                    {
+                        core: Array.from(core),
+                        affiliates: [Array.from(affiliatesI), Array.from(affiliatesJ)],
+                    },
+                ]);
             }
         }
     });
-    // sort result (again...)
-    result.sort((a, b) => b.affiliates.length + b.core.length - (a.affiliates.length + a.core.length));
-    // sort cliques within the clique themselves
-    result.forEach((clique) => {
-        let clique_popularity: { [id: number]: number } = {};
-        clique.core.sort((a, b) => {
-            const popularity_a = isWellDefined(clique_popularity[a])
-                ? clique_popularity[a]
-                : _calculatePopularity(a, clique.core.concat(clique.affiliates), gameState);
-            clique_popularity[a] = popularity_a;
-            //
-            const popularity_b = isWellDefined(clique_popularity[b])
-                ? clique_popularity[b]
-                : _calculatePopularity(b, clique.core.concat(clique.affiliates), gameState);
-            clique_popularity[b] = popularity_b;
-            return b - a;
-        });
-        clique_popularity = {};
-    });
-    return result;
-}
+    // cliques that already have been merged get blacklisted
+    const blacklist: Set<number> = new Set<number>();
 
-function _calculatePopularity(hero: number, clique: number[], gameState: GameState) {
-    let sum = 0;
-    let count = 0;
-    clique.forEach((houseguest) => {
-        if (houseguest !== hero) {
-            count++;
-            sum += getById(gameState, hero).relationships[hero];
-        }
+    // merge cliques with highest overlap numbers until only unnacceptable overlap remains
+    // for example maybe if the size of both left and right affiliates is greater than the core
+    mergeCandidates.sort(
+        (a: [number, number, Cliques], b: [number, number, Cliques]) => b[2].core.length - a[2].core.length
+    );
+
+    mergeCandidates.forEach((candidate: [number, number, Cliques]) => {
+        const i = candidate[0];
+        const j = candidate[1];
+        if (blacklist.has(i) || blacklist.has(j)) return;
+        blacklist.add(i);
+        blacklist.add(j);
+        result.push(candidate[2]);
     });
-    return count === 0 ? 0 : sum / count;
+    // add non merged cliques
+    cliques.forEach((clique, i) => {
+        if (blacklist.has(i)) return;
+        result.push({ core: clique });
+    });
+
+    // then sort and return result
+    result.sort((a: Cliques, b: Cliques) => newCliquesLength(b) - newCliquesLength(a));
+
+    return result;
 }
 
 function bronKerbosch(r: Set<number>, p: Set<number>, x: Set<number>, g: Graph) {

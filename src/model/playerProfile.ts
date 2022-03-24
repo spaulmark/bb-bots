@@ -1,7 +1,13 @@
+interface InitPlayerProfile {
+    readonly name: string;
+    readonly imageURL: string;
+}
+
 export class PlayerProfile {
     readonly name: string = "";
     readonly imageURL: string = "";
-    constructor(init: PlayerProfile) {
+    public castingScreenId?: number | undefined = 0;
+    constructor(init: InitPlayerProfile) {
         if (!init) {
             return;
         }

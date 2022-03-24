@@ -4,7 +4,7 @@ import { selectedPlayer$, displayMode$, getSelectedPlayer } from "../../subjects
 import { SelectedPlayerData } from "./selectedPortrait";
 import { Rgb } from "../../model/color";
 
-const selectedColor = new Rgb(51, 255, 249);
+export const selectedColor = new Rgb(51, 255, 249);
 
 export class HouseguestPortraitController {
     private subs: Subscription[] = [];

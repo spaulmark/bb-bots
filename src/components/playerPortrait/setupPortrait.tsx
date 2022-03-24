@@ -1,17 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { ColorTheme } from "../../theme/theme";
-
-interface SetupPortraitProps {
-    name: string;
-    imageUrl: string;
-    onDelete: () => void;
-    onChange: (arg0: Event) => void;
-}
-
-interface SetupPortraitState {
-    name: string;
-}
+import { selectedColor } from "./houseguestPortraitController";
 
 const EditPortrait = styled.div`
     padding: 5px;
@@ -47,6 +36,18 @@ const XButton = styled(Noselect)`
     }
 `;
 
+interface SetupPortraitProps {
+    name: string;
+    imageUrl: string;
+    onDelete: () => void;
+    onClick: () => void;
+    selected: boolean;
+}
+
+interface SetupPortraitState {
+    name: string;
+}
+
 export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPortraitState> {
     public constructor(props: SetupPortraitProps) {
         super(props);
@@ -58,13 +59,19 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
     }
 
     public render() {
+        const style = this.props.selected ? { backgroundColor: selectedColor.toHex() } : {};
         return (
-            <EditPortrait>
+            <EditPortrait onClick={() => this.props.onClick()} style={style}>
                 <div style={{ textAlign: "center" }}>
-                    <XButton onDoubleClick={() => this.props.onDelete()}>✘</XButton>
+                    <XButton
+                        onDoubleClick={() => this.props.onDelete()}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        ✘
+                    </XButton>
                     <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
                     <br />
-                    <p>{this.state.name} </p>
+                    <p>{this.state.name}</p>
                 </div>
             </EditPortrait>
         );

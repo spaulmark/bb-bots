@@ -31,7 +31,7 @@ export class MainPage extends React.Component<MainPageProps, MainPageState> {
         const hideOnFullscreen = { display: fullscreen ? "none" : "" };
         const wrapperStyle = fullscreen
             ? { margin: "auto" }
-            : { margin: "auto", maxWidth: 1380, overflow: "hidden" };
+            : { margin: "auto", maxWidth: 1480, overflow: "hidden" };
         return (
             <div style={wrapperStyle}>
                 <Topbar style={hideOnFullscreen} />

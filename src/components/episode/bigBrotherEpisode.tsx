@@ -75,7 +75,7 @@ function Tab(props: { text: string; active: number; id: number; setActive: any }
     );
 }
 
-function Tabs(): JSX.Element {
+export function Tabs(): JSX.Element {
     const [active, setActive] = React.useState(weekStartTab$.value);
     return (
         <div className="tabs is-centered is-fullwidth is-medium" style={{ marginBottom: 0 }}>

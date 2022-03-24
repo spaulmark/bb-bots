@@ -19,6 +19,7 @@ import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
 import { getRelationshipSummary, Targets } from "../../utils/ai/targets";
 import { MAGIC_SUPERIOR_NUMBER } from "../../utils/ai/aiApi";
+import { generateSafetyChain, SafetyChain } from "./safetyChain";
 
 export function canDisplayCliques(newState: GameState): boolean {
     return newState.remainingPlayers <= 30;
@@ -66,9 +67,9 @@ function populateSuperiors(houseguests: Houseguest[]) {
 
 function updatePowerRankings(houseguests: Houseguest[]) {
     houseguests.forEach((hg) => {
-        const test2: any = { ...hg.superiors };
-        delete test2["size"];
-        hg.powerRanking = average(Object.values(test2));
+        const superiors: any = { ...hg.superiors };
+        delete superiors["size"];
+        hg.powerRanking = average(Object.values(superiors));
     });
 }
 
@@ -140,6 +141,8 @@ export class EpisodeFactory {
                 return generateBbVanilla(finalState);
             case BigBrotherFinale:
                 return generateBbFinale(finalState);
+            case SafetyChain:
+                return generateSafetyChain(finalState);
             case GameOver:
                 return generateGameOver(finalState);
             default:
