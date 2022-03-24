@@ -125,7 +125,6 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         this.setState({ players });
     };
 
-    // TODO: delete selected when players are selected
     // TODO: X selected
 
     public render() {
