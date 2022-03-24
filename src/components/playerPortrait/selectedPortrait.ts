@@ -1,6 +1,11 @@
 import { Houseguest } from "../../model";
 import { RelationshipMap } from "../../utils";
-import { getSelectedPlayer, selectedPlayer$ } from "../../subjects/subjects";
+import {
+    getSelectedCastPlayers,
+    getSelectedPlayer,
+    selectedCastPlayer$,
+    selectedPlayer$,
+} from "../../subjects/subjects";
 
 export interface SelectedPlayerData {
     id: number;
@@ -16,4 +21,20 @@ export function selectPlayer(player: SelectedPlayerData | null) {
     } else {
         selectedPlayer$.next(player);
     }
+}
+
+export function selectCastPlayer(id: number | null) {
+    if (id === null) {
+        selectedCastPlayer$.next(new Set());
+        return;
+    }
+    const selectedCastPlayers = getSelectedCastPlayers();
+    if (selectedCastPlayers.has(id)) {
+        // remove if exists
+        selectedCastPlayers.delete(id);
+    } else {
+        // else add
+        selectedCastPlayers.add(id);
+    }
+    selectedCastPlayer$.next(selectedCastPlayers);
 }

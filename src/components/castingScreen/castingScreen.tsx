@@ -7,36 +7,56 @@ import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { shuffle } from "lodash";
 import { RandomButton } from "./randomXButton";
-import { selectPlayer } from "../playerPortrait/selectedPortrait";
-import { mainContentStream$, newEpisode, updateCast } from "../../subjects/subjects";
+import { selectCastPlayer, selectPlayer } from "../playerPortrait/selectedPortrait";
+import { mainContentStream$, newEpisode, selectedCastPlayer$, updateCast } from "../../subjects/subjects";
 import { HasText, Input } from "../layout/text";
 import { Centered } from "../layout/centered";
-
-interface CastingScreenState {
-    players: PlayerProfile[];
-}
+import { Subscription } from "rxjs";
 
 interface CastingScreenProps {
     cast?: PlayerProfile[];
 }
 
+interface CastingScreenState {
+    players: PlayerProfile[];
+    selectedPlayers: Set<number>;
+}
+
+let id = 1;
+
 export class CastingScreen extends React.Component<CastingScreenProps, CastingScreenState> {
+    private sub: Subscription | null = null;
+
     constructor(props: CastingScreenProps) {
         super(props);
-        this.state = { players: props.cast || [] };
+        if (props.cast) {
+            props.cast.forEach((player) => (player.castingScreenId = id++));
+        }
+        this.state = { players: props.cast || [], selectedPlayers: new Set<number>() };
     }
 
-    private handleChange(i: number) {
-        return (event: any) => {
-            const newName = event.target.value.replace(/\r?\n|\r/g, "");
-            const newState = { ...this.state };
-            newState.players[i] = new PlayerProfile({
-                imageURL: newState.players[i].imageURL,
-                name: newName,
-            });
-            this.setState(newState);
-        };
+    public componentDidMount() {
+        this.sub = selectedCastPlayer$.subscribe((selectedPlayers) => {
+            this.setState({ selectedPlayers });
+        });
     }
+
+    public componentWillUnmount() {
+        if (this.sub) this.sub.unsubscribe();
+    }
+
+    // private handleChange(i: number) {
+    //     return (event: any) => {
+    //         const newName = event.target.value.replace(/\r?\n|\r/g, "");
+    //         const newState = { ...this.state };
+    //         newState.players[i] = {
+    //             imageURL: newState.players[i].imageURL,
+    //             name: newName,
+    //             castingScreenId: id++,
+    //         };
+    //         this.setState(newState);
+    //     };
+    // }
 
     private deleteMethod(i: number) {
         return () => {
@@ -59,7 +79,11 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                     name={player.name}
                     imageUrl={player.imageURL}
                     onDelete={this.deleteMethod(i)}
-                    onChange={this.handleChange(i)}
+                    onClick={() => {
+                        console.log(`selecting ${player.castingScreenId}`);
+                        selectCastPlayer(player.castingScreenId || -1);
+                    }}
+                    selected={this.state.selectedPlayers.has(player.castingScreenId || -1)}
                     key={(++i).toString()}
                 />
             )
@@ -77,7 +101,9 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         updateCast(this.state.players);
         mainContentStream$.next(<PregameScreen cast={this.state.players} />);
         selectPlayer(null);
+        // vscode says the awaits are unnessecary here,
         await newEpisode(null);
+        // but if you remove them then bad things happen
         await newEpisode(new PregameEpisode(new GameState(this.state.players)));
     };
 
@@ -87,6 +113,8 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         players = players.slice(0, amount);
         this.setState({ players });
     };
+
+    // TODO: delete selected when players are selected
 
     public render() {
         return (
@@ -132,12 +160,11 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             if (file.type.match(/image\/*/)) {
-                newState.players.push(
-                    new PlayerProfile({
-                        name: file.name.substr(0, file.name.lastIndexOf(".")) || file.name,
-                        imageURL: URL.createObjectURL(file),
-                    })
-                );
+                newState.players.push({
+                    name: file.name.substr(0, file.name.lastIndexOf(".")) || file.name,
+                    imageURL: URL.createObjectURL(file),
+                    castingScreenId: id++,
+                });
             }
         }
         this.setState(newState);

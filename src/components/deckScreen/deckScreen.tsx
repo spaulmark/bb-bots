@@ -1,8 +1,7 @@
-import React, { useCallback } from "react";
+import React from "react";
 import ReactPaginate from "react-paginate";
 import { HasText } from "../layout/text";
 import { shuffle, ceil, debounce } from "lodash";
-import { PlayerProfile } from "../../model";
 import { mainContentStream$ } from "../../subjects/subjects";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import _ from "lodash";
@@ -57,10 +56,10 @@ async function selectCast(folder: string) {
         return { name: file, url: `${baseUrl}${folder}/${file}` };
     });
     const playerProfiles = imageLinks.map((image: { name: string; url: string }) => {
-        return new PlayerProfile({
+        return {
             name: image.name.substr(0, image.name.lastIndexOf(".")) || image.name,
             imageURL: image.url,
-        });
+        };
     });
     mainContentStream$.next(<CastingScreen cast={playerProfiles} />);
 }
