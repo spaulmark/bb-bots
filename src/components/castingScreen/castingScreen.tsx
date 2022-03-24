@@ -12,6 +12,7 @@ import { mainContentStream$, newEpisode, selectedCastPlayer$, updateCast } from 
 import { HasText, Input } from "../layout/text";
 import { Centered } from "../layout/centered";
 import { Subscription } from "rxjs";
+import _ from "lodash";
 
 interface CastingScreenProps {
     cast?: PlayerProfile[];
@@ -30,6 +31,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
     constructor(props: CastingScreenProps) {
         super(props);
         if (props.cast) {
+            selectCastPlayer(null);
             props.cast.forEach((player) => (player.castingScreenId = id++));
         }
         this.state = { players: props.cast || [], selectedPlayers: new Set<number>() };
@@ -45,23 +47,13 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         if (this.sub) this.sub.unsubscribe();
     }
 
-    // private handleChange(i: number) {
-    //     return (event: any) => {
-    //         const newName = event.target.value.replace(/\r?\n|\r/g, "");
-    //         const newState = { ...this.state };
-    //         newState.players[i] = {
-    //             imageURL: newState.players[i].imageURL,
-    //             name: newName,
-    //             castingScreenId: id++,
-    //         };
-    //         this.setState(newState);
-    //     };
-    // }
-
-    private deleteMethod(i: number) {
+    private deleteMethod(i: number, castingScreenId: number) {
         return () => {
             const newState = { ...this.state };
             newState.players.splice(i, 1);
+            if (newState.selectedPlayers.has(castingScreenId)) {
+                selectCastPlayer(castingScreenId);
+            }
             this.setState(newState);
         };
     }
@@ -78,9 +70,8 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                 <SetupPortrait
                     name={player.name}
                     imageUrl={player.imageURL}
-                    onDelete={this.deleteMethod(i)}
+                    onDelete={this.deleteMethod(i, player.castingScreenId || -1)}
                     onClick={() => {
-                        console.log(`selecting ${player.castingScreenId}`);
                         selectCastPlayer(player.castingScreenId || -1);
                     }}
                     selected={this.state.selectedPlayers.has(player.castingScreenId || -1)}
@@ -107,14 +98,35 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         await newEpisode(new PregameEpisode(new GameState(this.state.players)));
     };
 
-    private random = (amount: number) => {
-        let players = this.state.players;
+    private random = (_amount: number) => {
+        // get all the selected players first
+        let result: PlayerProfile[] = [];
+        let amount = _amount;
+
+        const allPlayers = this.state.players;
+        let unselectedPlayers: PlayerProfile[] = [];
+
+        allPlayers.forEach((player) => {
+            if (this.state.selectedPlayers.has(player.castingScreenId || -1)) {
+                result.push(player);
+                amount--;
+            } else {
+                unselectedPlayers.push(player);
+            }
+        });
+
+        if (amount > 0) {
+            unselectedPlayers = shuffle(unselectedPlayers);
+            unselectedPlayers = unselectedPlayers.slice(0, amount);
+            console.log(result, unselectedPlayers);
+        }
+        let players = amount > 0 ? result.concat(unselectedPlayers) : result;
         players = shuffle(players);
-        players = players.slice(0, amount);
         this.setState({ players });
     };
 
     // TODO: delete selected when players are selected
+    // TODO: X selected
 
     public render() {
         return (
@@ -122,13 +134,25 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                 <HasText className="level">
                     <ImportLinks onSubmit={this.appendProfiles} />
                     <div className="level-item">
-                        <button className="button is-danger" onClick={() => this.setState({ players: [] })}>
+                        <button
+                            className="button is-danger"
+                            onClick={() => {
+                                selectCastPlayer(null);
+                                this.setState({ players: [] });
+                            }}
+                        >
                             Delete all
+                        </button>
+                    </div>
+                    <div className="level-item">
+                        <button className="button is-primary" onClick={() => selectCastPlayer(null)}>
+                            Unselect all
                         </button>
                     </div>
                     <div className="level-item">
                         <RandomButton random={this.random} />
                     </div>
+
                     <div className="level-item">
                         <button
                             className="button is-primary"
