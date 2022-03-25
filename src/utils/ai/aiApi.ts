@@ -224,11 +224,7 @@ function useGoldenVetoPreJury(
     let potentialSave: Houseguest | null = null;
     let alwaysSave: Houseguest | null = null;
     nominees.forEach((nominee) => {
-        const nomineeIsSuperior: boolean = hero.superiors[nominee.id] > MAGIC_SUPERIOR_NUMBER;
-        if (gameState.remainingPlayers - hero.superiors.size - 1 === 1 && !nomineeIsSuperior) {
-            alwaysSave = nominee;
-            reason = `I have to save ${nominee.name}, because they are the last person I can beat.`;
-        }
+        // TODO: Save people who you can beat in the end if you are low winrate
         const relationship = classifyRelationship(
             hero.popularity,
             nominee.popularity,
