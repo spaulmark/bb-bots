@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "bac698692b477bc5b301",
+    "revision": "c29ed617b88028d883c6",
     "url": "/bb-bots/static/css/main.cc3ff623.chunk.css"
   },
   {
-    "revision": "bac698692b477bc5b301",
-    "url": "/bb-bots/static/js/main.71496e8e.chunk.js"
+    "revision": "c29ed617b88028d883c6",
+    "url": "/bb-bots/static/js/main.d36a2bcf.chunk.js"
   },
   {
     "revision": "0a78736eeef7e5f831be",
@@ -16,7 +16,7 @@ self.__precacheManifest = [
     "url": "/bb-bots/static/js/2.a76014b7.chunk.js"
   },
   {
-    "revision": "52ded6c51162919662e62c56a45df2fc",
+    "revision": "63ee5e9122611949cdaafe1b30bfa01b",
     "url": "/bb-bots/index.html"
   }
 ];
