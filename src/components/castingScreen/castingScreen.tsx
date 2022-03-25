@@ -118,14 +118,11 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         if (amount > 0) {
             unselectedPlayers = shuffle(unselectedPlayers);
             unselectedPlayers = unselectedPlayers.slice(0, amount);
-            console.log(result, unselectedPlayers);
         }
         let players = amount > 0 ? result.concat(unselectedPlayers) : result;
         players = shuffle(players);
         this.setState({ players });
     };
-
-    // TODO: X selected
 
     public render() {
         return (
@@ -145,7 +142,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                     </div>
                     <div className="level-item">
                         <button className="button is-primary" onClick={() => selectCastPlayer(null)}>
-                            Unselect all
+                            Unselect {this.state.selectedPlayers.size || "all"}
                         </button>
                     </div>
                     <div className="level-item">
