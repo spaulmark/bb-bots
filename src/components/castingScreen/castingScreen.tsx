@@ -125,8 +125,6 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         this.setState({ players });
     };
 
-    // TODO: X selected
-
     public render() {
         return (
             <FileDrop onDrop={this.handleDrop}>
@@ -145,7 +143,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                     </div>
                     <div className="level-item">
                         <button className="button is-primary" onClick={() => selectCastPlayer(null)}>
-                            Unselect all
+                            Unselect {this.state.selectedPlayers.size || "all"}
                         </button>
                     </div>
                     <div className="level-item">
