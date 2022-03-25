@@ -118,7 +118,6 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         if (amount > 0) {
             unselectedPlayers = shuffle(unselectedPlayers);
             unselectedPlayers = unselectedPlayers.slice(0, amount);
-            console.log(result, unselectedPlayers);
         }
         let players = amount > 0 ? result.concat(unselectedPlayers) : result;
         players = shuffle(players);
