@@ -20,6 +20,7 @@ import { generateCliques } from "../../utils/generateCliques";
 import { getRelationshipSummary, Targets } from "../../utils/ai/targets";
 import { MAGIC_SUPERIOR_NUMBER } from "../../utils/ai/aiApi";
 import { generateSafetyChain, SafetyChain } from "./safetyChain";
+import _ from "lodash";
 
 export function canDisplayCliques(newState: GameState): boolean {
     return newState.remainingPlayers <= 30;
@@ -67,9 +68,13 @@ function populateSuperiors(houseguests: Houseguest[]) {
 
 function updatePowerRankings(houseguests: Houseguest[]) {
     houseguests.forEach((hg) => {
-        const superiors: any = { ...hg.superiors };
+        const superiors: { [id: number]: number; size?: number } = { ...hg.superiors };
         delete superiors["size"];
-        hg.powerRanking = average(Object.values(superiors));
+        let newSuperiors: { [id: number]: number } = superiors;
+        const nonEvictedHouseguests: Set<number> = new Set<number>(houseguests.map((h) => h.id));
+        newSuperiors = _.filter(newSuperiors, (_, id) => nonEvictedHouseguests.has(parseInt(id)));
+
+        hg.powerRanking = average(Object.values(newSuperiors));
     });
 }
 
