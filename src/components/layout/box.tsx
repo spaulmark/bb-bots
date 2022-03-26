@@ -7,6 +7,7 @@ const ShadowBox = styled.div`
         theme.name === "light" ? "0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)" : ""};
     border-radius: 6px;
     margin-left: 3px;
+    margin-top: 3px;
     margin-right: 3px;
     background: ${({ theme }: { theme: ColorTheme }) => theme.overlay};
 `;
