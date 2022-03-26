@@ -54,7 +54,6 @@ export function evictHouseguest(gameState: MutableGameState, id: number) {
             if (hg.superiors[evictee.id] > MAGIC_SUPERIOR_NUMBER) {
                 hg.superiors.size--;
             }
-            delete hg.superiors[evictee.id];
         });
     }
     gameState.nonEvictedHouseguests.delete(evictee.id);

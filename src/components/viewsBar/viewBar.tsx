@@ -7,6 +7,9 @@ import { displayMode$ } from "../../subjects/subjects";
 export class ViewsBar extends React.Component<{ gameState: GameState }, {}> {
     public constructor(props: { gameState: GameState }) {
         super(props);
+        if (!inJury(this.props.gameState) && displayMode$.value === powerMode) {
+            displayMode$.next(popularityMode);
+        }
     }
 
     componentDidUpdate() {
