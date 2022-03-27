@@ -49,13 +49,6 @@ export function evictHouseguest(gameState: MutableGameState, id: number) {
     if (gameState.remainingPlayers - getFinalists() <= finalJurySize()) {
         evictee.isJury = true;
     }
-    if (inJury(gameState)) {
-        nonEvictedHouseguests(gameState).forEach((hg) => {
-            if (hg.superiors[evictee.id] > MAGIC_SUPERIOR_NUMBER) {
-                hg.superiors.size--;
-            }
-        });
-    }
     gameState.nonEvictedHouseguests.delete(evictee.id);
     gameState.remainingPlayers--;
 }

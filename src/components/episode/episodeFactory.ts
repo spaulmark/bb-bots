@@ -61,20 +61,16 @@ function populateSuperiors(houseguests: Houseguest[]) {
             hero.superiors[villain.id] = pHeroWins;
             villain.superiors[hero.id] = 1 - pHeroWins;
             if (pHeroWins > MAGIC_SUPERIOR_NUMBER) size++;
-            hero.superiors.size = size;
         }
     }
 }
 
 function updatePowerRankings(houseguests: Houseguest[]) {
     houseguests.forEach((hg) => {
-        const superiors: { [id: number]: number; size?: number } = { ...hg.superiors };
-        delete superiors["size"];
-        let newSuperiors: { [id: number]: number } = superiors;
+        let superiors: { [id: number]: number } = { ...hg.superiors };
         const nonEvictedHouseguests: Set<number> = new Set<number>(houseguests.map((h) => h.id));
-        newSuperiors = _.filter(newSuperiors, (_, id) => nonEvictedHouseguests.has(parseInt(id)));
-
-        hg.powerRanking = average(Object.values(newSuperiors));
+        superiors = _.filter(superiors, (_, id) => nonEvictedHouseguests.has(parseInt(id)));
+        hg.powerRanking = average(Object.values(superiors));
     });
 }
 
