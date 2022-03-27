@@ -26,7 +26,7 @@ export class Houseguest extends PlayerProfile {
 
     // power rankings range from 0 to 1
     public powerRanking: number = 0;
-    readonly superiors: { [id: number]: number; size: number } = { size: 0 }; // { id : pHeroWins }
+    readonly superiors: { [id: number]: number } = {}; // { id : pHeroWins }
 
     public relationshipWith(villain: Houseguest): number {
         return this.relationships[villain.id];

@@ -31,8 +31,6 @@ export function castEvictionVote(
     }
 }
 
-export const MAGIC_SUPERIOR_NUMBER = 0.5;
-
 function winningOddsF3(hero: Houseguest, villain1: Houseguest, villain2: Houseguest): number {
     // chance that hero wins final HoH
     const heroVs1: number = hero.superiors[villain1.id];

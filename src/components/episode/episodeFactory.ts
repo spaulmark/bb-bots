@@ -18,7 +18,6 @@ import { GameOver, generateGameOver } from "./gameOver";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
 import { getRelationshipSummary, Targets } from "../../utils/ai/targets";
-import { MAGIC_SUPERIOR_NUMBER } from "../../utils/ai/aiApi";
 import { generateSafetyChain, SafetyChain } from "./safetyChain";
 import _ from "lodash";
 
@@ -53,28 +52,22 @@ function firstImpressions(houseguests: Houseguest[]) {
 
 function populateSuperiors(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
-        let size = 0;
         const hero = houseguests[i];
         for (let j = i + 1; j < houseguests.length; j++) {
             const villain = houseguests[j];
             const pHeroWins = pHeroWinsTheFinale({ hero, villain }, houseguests);
             hero.superiors[villain.id] = pHeroWins;
             villain.superiors[hero.id] = 1 - pHeroWins;
-            if (pHeroWins > MAGIC_SUPERIOR_NUMBER) size++;
-            hero.superiors.size = size;
         }
     }
 }
 
 function updatePowerRankings(houseguests: Houseguest[]) {
     houseguests.forEach((hg) => {
-        const superiors: { [id: number]: number; size?: number } = { ...hg.superiors };
-        delete superiors["size"];
-        let newSuperiors: { [id: number]: number } = superiors;
+        let superiors: { [id: number]: number } = { ...hg.superiors };
         const nonEvictedHouseguests: Set<number> = new Set<number>(houseguests.map((h) => h.id));
-        newSuperiors = _.filter(newSuperiors, (_, id) => nonEvictedHouseguests.has(parseInt(id)));
-
-        hg.powerRanking = average(Object.values(newSuperiors));
+        superiors = _.filter(superiors, (_, id) => nonEvictedHouseguests.has(parseInt(id)));
+        hg.powerRanking = average(Object.values(superiors));
     });
 }
 
