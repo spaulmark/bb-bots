@@ -18,7 +18,6 @@ import { GameOver, generateGameOver } from "./gameOver";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
 import { getRelationshipSummary, Targets } from "../../utils/ai/targets";
-import { MAGIC_SUPERIOR_NUMBER } from "../../utils/ai/aiApi";
 import { generateSafetyChain, SafetyChain } from "./safetyChain";
 import _ from "lodash";
 
@@ -53,14 +52,12 @@ function firstImpressions(houseguests: Houseguest[]) {
 
 function populateSuperiors(houseguests: Houseguest[]) {
     for (let i = 0; i < houseguests.length; i++) {
-        let size = 0;
         const hero = houseguests[i];
         for (let j = i + 1; j < houseguests.length; j++) {
             const villain = houseguests[j];
             const pHeroWins = pHeroWinsTheFinale({ hero, villain }, houseguests);
             hero.superiors[villain.id] = pHeroWins;
             villain.superiors[hero.id] = 1 - pHeroWins;
-            if (pHeroWins > MAGIC_SUPERIOR_NUMBER) size++;
         }
     }
 }
