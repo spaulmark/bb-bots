@@ -4,7 +4,7 @@ interface InitPlayerProfile {
 }
 
 export class PlayerProfile {
-    readonly name: string = "";
+    public name: string = "";
     readonly imageURL: string = "";
     public castingScreenId?: number | undefined = 0;
     constructor(init: InitPlayerProfile) {

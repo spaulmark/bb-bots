@@ -46,8 +46,8 @@ const EditButton = styled(Noselect)`
         background-color: #ffd8c7;
     }
     :hover {
-        color: #ffe1ea;
-        background-color: yellow;
+        color: orange;
+        background-color: #fff6e1;
     }
 `;
 
@@ -55,6 +55,7 @@ interface SetupPortraitProps {
     name: string;
     imageUrl: string;
     onDelete: () => void;
+    onRename: () => void;
     onClick: () => void;
     selected: boolean;
 }
@@ -85,7 +86,14 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
                         >
                             ✘
                         </XButton>
-                        <EditButton onClick={(event) => event.stopPropagation()}>✎</EditButton>
+                        <EditButton
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                this.props.onRename();
+                            }}
+                        >
+                            ✎
+                        </EditButton>
                     </div>
                     <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
                     <br />
