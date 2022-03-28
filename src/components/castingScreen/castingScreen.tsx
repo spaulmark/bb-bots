@@ -61,7 +61,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
     private rename(i: number) {
         return () => {
             const newState = { ...this.state };
-            const newName: string | null = prompt("Enter a name for this player");
+            const newName: string | null = prompt(`Enter a new name for ${newState.players[i].name}`);
             if (!newName) return;
             newState.players[i].name = newName;
             this.setState(newState);
