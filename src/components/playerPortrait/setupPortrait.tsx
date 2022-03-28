@@ -25,6 +25,7 @@ const Noselect = styled.div`
 
 const XButton = styled(Noselect)`
     color: #300808;
+    width: 50%;
 
     :active {
         color: #ff7133;
@@ -36,10 +37,25 @@ const XButton = styled(Noselect)`
     }
 `;
 
+const EditButton = styled(Noselect)`
+    color: #300808;
+    width: 50%;
+
+    :active {
+        color: #ff7133;
+        background-color: #ffd8c7;
+    }
+    :hover {
+        color: orange;
+        background-color: #fff6e1;
+    }
+`;
+
 interface SetupPortraitProps {
     name: string;
     imageUrl: string;
     onDelete: () => void;
+    onRename: () => void;
     onClick: () => void;
     selected: boolean;
 }
@@ -63,12 +79,22 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
         return (
             <EditPortrait onClick={() => this.props.onClick()} style={style}>
                 <div style={{ textAlign: "center" }}>
-                    <XButton
-                        onDoubleClick={() => this.props.onDelete()}
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        ✘
-                    </XButton>
+                    <div style={{ maxHeight: 20, display: "flex" }}>
+                        <XButton
+                            onDoubleClick={() => this.props.onDelete()}
+                            onClick={(event) => event.stopPropagation()}
+                        >
+                            ✘
+                        </XButton>
+                        <EditButton
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                this.props.onRename();
+                            }}
+                        >
+                            ✎
+                        </EditButton>
+                    </div>
                     <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
                     <br />
                     <p>{this.state.name}</p>

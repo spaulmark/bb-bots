@@ -58,6 +58,16 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         };
     }
 
+    private rename(i: number) {
+        return () => {
+            const newState = { ...this.state };
+            const newName: string | null = prompt("Enter a name for this player");
+            if (!newName) return;
+            newState.players[i].name = newName;
+            this.setState(newState);
+        };
+    }
+
     private getFiles() {
         const players = this.state.players;
         if (!players) {
@@ -74,6 +84,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                     onClick={() => {
                         selectCastPlayer(player.castingScreenId || -1);
                     }}
+                    onRename={this.rename(i)}
                     selected={this.state.selectedPlayers.has(player.castingScreenId || -1)}
                     key={(++i).toString()}
                 />
@@ -148,7 +159,6 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                     <div className="level-item">
                         <RandomButton random={this.random} />
                     </div>
-
                     <div className="level-item">
                         <button
                             className="button is-primary"
