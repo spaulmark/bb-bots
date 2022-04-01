@@ -144,15 +144,34 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                         <button
                             className="button is-danger"
                             onClick={() => {
-                                selectCastPlayer(null);
                                 this.setState({ players: [] });
+                                selectCastPlayer(null);
                             }}
                         >
                             Delete all
                         </button>
                     </div>
                     <div className="level-item">
-                        <button className="button is-primary" onClick={() => selectCastPlayer(null)}>
+                        <button
+                            className="button is-danger"
+                            disabled={this.state.selectedPlayers.size === 0}
+                            onClick={() => {
+                                const players = this.state.players.filter(
+                                    (player) => !this.state.selectedPlayers.has(player.castingScreenId || -1)
+                                );
+                                this.setState({ players });
+                                selectCastPlayer(null);
+                            }}
+                        >
+                            Delete selected
+                        </button>
+                    </div>
+                    <div className="level-item">
+                        <button
+                            className="button is-warning"
+                            onClick={() => selectCastPlayer(null)}
+                            disabled={this.state.selectedPlayers.size === 0}
+                        >
                             Unselect {this.state.selectedPlayers.size || "all"}
                         </button>
                     </div>
@@ -161,7 +180,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                     </div>
                     <div className="level-item">
                         <button
-                            className="button is-primary"
+                            className="button is-success"
                             disabled={this.state.players.length < 3}
                             onClick={this.submit}
                         >

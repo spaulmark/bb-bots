@@ -2,10 +2,13 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import { HasText } from "../layout/text";
 import { shuffle, ceil, debounce } from "lodash";
-import { mainContentStream$ } from "../../subjects/subjects";
+import { mainContentStream$, selectDeckSubject, selectedDecks$ } from "../../subjects/subjects";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import _ from "lodash";
 import styled from "styled-components";
+import { Subscription } from "rxjs";
+import { selectedColor } from "../playerPortrait/houseguestPortraitController";
+import { PlayerProfile } from "../../model";
 
 interface DeckScreenProps {}
 
@@ -15,6 +18,7 @@ interface DeckScreenState {
     i: number;
     debouncedSearchText: string;
     searchText: string;
+    selectedDecks: Set<string>;
 }
 
 const decksPerPage = 26;
@@ -50,21 +54,27 @@ async function randomImageFromFolder(folder: string) {
     return `${baseUrl}${folder}/${image}`;
 }
 
-async function selectCast(folder: string) {
-    const links = await (await fetch(`${baseUrl}${folder}/dir.json`)).json();
-    const imageLinks = links["files"].map((file: string) => {
-        return { name: file, url: `${baseUrl}${folder}/${file}` };
-    });
-    const playerProfiles = imageLinks.map((image: { name: string; url: string }) => {
-        return {
-            name: image.name.substr(0, image.name.lastIndexOf(".")) || image.name,
-            imageURL: image.url,
-        };
-    });
+async function submitCasts(casts: Set<string>) {
+    const playerProfiles: PlayerProfile[] = [];
+
+    for (const cast of casts) {
+        const links = await (await fetch(`${baseUrl}${cast}/dir.json`)).json();
+        const imageLinks = links["files"].map((file: string) => {
+            return { name: file, url: `${baseUrl}${cast}/${file}` };
+        });
+        const folderProfiles = imageLinks.map((image: { name: string; url: string }) => {
+            return {
+                name: image.name.substr(0, image.name.lastIndexOf(".")) || image.name,
+                imageURL: image.url,
+            };
+        });
+        playerProfiles.push(...folderProfiles);
+    }
+
     mainContentStream$.next(<CastingScreen cast={playerProfiles} />);
 }
 
-function Deck(props: { deck: string }): JSX.Element {
+function Deck(props: { deck: string; selected: boolean }): JSX.Element {
     const [img, setImage] = React.useState("");
     const [loading, setLoading] = React.useState(true);
     const deck = props.deck;
@@ -74,39 +84,54 @@ function Deck(props: { deck: string }): JSX.Element {
             setLoading(false);
             setImage(img);
         });
+    const style = props.selected ? { backgroundColor: selectedColor.toHex(), color: "black" } : {};
     return (
-        <DeckStyle className="column is-6" onClick={() => selectCast(deck)}>
+        <DeckStyle className="column is-6" onClick={() => selectDeckSubject(props.deck)} style={style}>
             <img src={img} style={{ width: 50, height: 50 }} />
             <DeckText>{deck}</DeckText>
         </DeckStyle>
     );
 }
 
-function DeckList(props: { data: string[]; i: number }): JSX.Element {
-    let commentNodes: JSX.Element[] = [];
+function DeckList(props: { data: string[]; i: number; selected: Set<string> }): JSX.Element {
+    let decks: JSX.Element[] = [];
     const i = props.i;
     const data = props.data;
     const min = i * decksPerPage;
     for (let j = min; j < min + decksPerPage; j++) {
         const deck = data[j];
         if (!deck) continue;
-        commentNodes.push(<Deck key={`${deck}__${i}__${j}`} deck={deck} />);
+        decks.push(<Deck selected={props.selected.has(deck)} key={`${deck}__${i}__${j}`} deck={deck} />);
     }
     return (
         <div key={"__ul__"} className={"columns is-multiline"}>
-            {commentNodes}
+            {decks}
         </div>
     );
 }
 
 export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState> {
+    private subs: Subscription[] = [];
+
     constructor(props: DeckScreenProps) {
         super(props);
-        this.state = { loading: true, decks: [], i: 0, debouncedSearchText: "", searchText: "" };
+        this.state = {
+            loading: true,
+            decks: [],
+            selectedDecks: new Set<string>(),
+            i: 0,
+            debouncedSearchText: "",
+            searchText: "",
+        };
     }
     async componentDidMount() {
+        selectDeckSubject(null);
+        this.subs.push(selectedDecks$.subscribe((selectedDecks) => this.setState({ selectedDecks })));
         const data = await (await fetch("https://spaulmark.github.io/img/dir.json")).json();
-        this.setState({ decks: shuffle(data.decks), loading: false });
+        this.setState({ decks: shuffle(data.decks), selectedDecks: new Set<string>(), loading: false });
+    }
+    componentWillUnmount() {
+        this.subs.forEach((sub) => sub.unsubscribe());
     }
 
     private handlePageClick = (page: { selected: number }) => {
@@ -129,17 +154,45 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
         );
         return (
             <div>
-                <div>
-                    <input
-                        style={{ marginBottom: "1.5rem", minWidth: "50%" }}
-                        className="input"
-                        type="text"
-                        placeholder="Search..."
-                        onChange={this.handleSearch}
-                        value={this.state.searchText}
-                    ></input>
+                <div className="level">
+                    <div className="level-item">
+                        <input
+                            style={{ marginBottom: "1.5rem", minWidth: "50%" }}
+                            className="input"
+                            type="text"
+                            placeholder="Search..."
+                            onChange={this.handleSearch}
+                            value={this.state.searchText}
+                        ></input>
+                    </div>
+                    <div className="level-item">
+                        <button
+                            className="button is-warning"
+                            onClick={() => selectDeckSubject(null)}
+                            disabled={this.state.selectedDecks.size === 0}
+                        >
+                            Unselect All
+                        </button>
+                    </div>
+                    <div className="level-item">
+                        <HasText>{`${this.state.selectedDecks.size} casts selected`}</HasText>
+                    </div>
+                    <div className="level-item">
+                        <button
+                            className="button is-success"
+                            disabled={this.state.selectedDecks.size === 0}
+                            onClick={() => submitCasts(this.state.selectedDecks)}
+                        >
+                            Submit
+                        </button>
+                    </div>
                 </div>
-                <DeckList key={"comments"} data={decks} i={this.state.i} />
+                <DeckList
+                    key={"comments"}
+                    selected={this.state.selectedDecks}
+                    data={decks}
+                    i={this.state.i}
+                />
                 <Centered>
                     <ReactPaginate
                         key={"__list__"}

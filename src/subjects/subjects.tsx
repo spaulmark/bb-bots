@@ -40,6 +40,25 @@ export function getSelectedCastPlayers() {
     return selectedCastPlayer$.value;
 }
 
+// The decks that have been selected on the casting screen.
+export const selectedDecks$ = new BehaviorSubject<Set<string>>(new Set<string>());
+
+export function selectDeckSubject(deck: string | null) {
+    if (deck === null) {
+        selectedDecks$.next(new Set());
+        return;
+    }
+    const selectedDecks = selectedDecks$.value;
+    if (selectedDecks.has(deck)) {
+        // remove if exists
+        selectedDecks.delete(deck);
+    } else {
+        // else add
+        selectedDecks.add(deck);
+    }
+    selectedDecks$.next(selectedDecks);
+}
+
 // The tab selected on the start of each week.
 export const weekStartTab$ = new BehaviorSubject<number>(0);
 
