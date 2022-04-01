@@ -152,7 +152,11 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                         </button>
                     </div>
                     <div className="level-item">
-                        <button className="button is-primary" onClick={() => selectCastPlayer(null)}>
+                        <button
+                            className="button is-warning"
+                            onClick={() => selectCastPlayer(null)}
+                            disabled={this.state.selectedPlayers.size === 0}
+                        >
                             Unselect {this.state.selectedPlayers.size || "all"}
                         </button>
                     </div>
