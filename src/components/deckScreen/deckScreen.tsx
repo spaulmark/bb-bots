@@ -8,6 +8,7 @@ import _ from "lodash";
 import styled from "styled-components";
 import { Subscription } from "rxjs";
 import { selectedColor } from "../playerPortrait/houseguestPortraitController";
+import { PlayerProfile } from "../../model";
 
 interface DeckScreenProps {}
 
@@ -53,18 +54,23 @@ async function randomImageFromFolder(folder: string) {
     return `${baseUrl}${folder}/${image}`;
 }
 
-// TODO: make this function take in an array of folders instead of one folder
-async function submitCasts(folder: string) {
-    const links = await (await fetch(`${baseUrl}${folder}/dir.json`)).json();
-    const imageLinks = links["files"].map((file: string) => {
-        return { name: file, url: `${baseUrl}${folder}/${file}` };
-    });
-    const playerProfiles = imageLinks.map((image: { name: string; url: string }) => {
-        return {
-            name: image.name.substr(0, image.name.lastIndexOf(".")) || image.name,
-            imageURL: image.url,
-        };
-    });
+async function submitCasts(casts: Set<string>) {
+    const playerProfiles: PlayerProfile[] = [];
+
+    for (const cast of casts) {
+        const links = await (await fetch(`${baseUrl}${cast}/dir.json`)).json();
+        const imageLinks = links["files"].map((file: string) => {
+            return { name: file, url: `${baseUrl}${cast}/${file}` };
+        });
+        const folderProfiles = imageLinks.map((image: { name: string; url: string }) => {
+            return {
+                name: image.name.substr(0, image.name.lastIndexOf(".")) || image.name,
+                imageURL: image.url,
+            };
+        });
+        playerProfiles.push(...folderProfiles);
+    }
+
     mainContentStream$.next(<CastingScreen cast={playerProfiles} />);
 }
 
@@ -169,10 +175,14 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
                         </button>
                     </div>
                     <div className="level-item">
-                        <HasText>{`${this.state.selectedDecks.size} decks selected`}</HasText>
+                        <HasText>{`${this.state.selectedDecks.size} casts selected`}</HasText>
                     </div>
                     <div className="level-item">
-                        <button className="button is-success" disabled={this.state.selectedDecks.size === 0}>
+                        <button
+                            className="button is-success"
+                            disabled={this.state.selectedDecks.size === 0}
+                            onClick={() => submitCasts(this.state.selectedDecks)}
+                        >
                             Submit
                         </button>
                     </div>
