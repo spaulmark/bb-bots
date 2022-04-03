@@ -18,7 +18,7 @@ export function generateVetoCeremonyScene(
     initialNominees[0] = getById(initialGameState, initialNominees[0].id);
     initialNominees[1] = getById(initialGameState, initialNominees[1].id);
     HoH = getById(initialGameState, HoH.id);
-    const vetoChoice = useGoldenVeto(povWinner, initialNominees, initialGameState);
+    const vetoChoice = useGoldenVeto(povWinner, initialNominees, initialGameState, HoH.id);
     povTarget = vetoChoice.decision;
     if (!povTarget) {
         descisionText += "... not to use the power of veto.";

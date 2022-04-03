@@ -205,9 +205,13 @@ export function backdoorNPlayers(
 export function useGoldenVeto(
     hero: Houseguest,
     nominees: Houseguest[],
-    gameState: GameState
+    gameState: GameState,
+    HoH: number
 ): HouseguestWithLogic {
     let result: HouseguestWithLogic;
+    if (hero.id === HoH) {
+        return { decision: null, reason: "I support my original nominations." };
+    }
     if (hero.id == nominees[0].id || hero.id == nominees[1].id) {
         result = { decision: hero, reason: "I am going to save myself." };
     } else {
