@@ -7,10 +7,12 @@ import { Centered } from "../layout/centered";
 import { HasText } from "../layout/text";
 import { Portraits } from "../playerPortrait/portraits";
 
-const HelpLink = styled.a`
+export const HelpLink = styled.a`
     color: ${({ theme }: { theme: ColorTheme }) => theme.link};
     cursor: pointer;
     font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
 `;
 
 interface AllianceListProps {
@@ -62,13 +64,15 @@ export function AllianceList(props: AllianceListProps) {
     return (
         <div>
             {elements}
-            <HelpLink
-                href="https://github.com/spaulmark/bb-bots/blob/master/README.md#understanding-alliances-or-what-do-the-arrows-mean"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                What do the arrows mean?
-            </HelpLink>
+            {props.gameState.phase < 3 && (
+                <HelpLink
+                    href="https://github.com/spaulmark/bb-bots/blob/master/README.md#understanding-alliances-or-what-do-the-arrows-mean"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    What do the arrows mean?
+                </HelpLink>
+            )}
         </div>
     );
 }
