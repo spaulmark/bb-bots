@@ -13,6 +13,7 @@ import { HasText, Input } from "../layout/text";
 import { Centered } from "../layout/centered";
 import { Subscription } from "rxjs";
 import _ from "lodash";
+import { HelpLink } from "../episode/allianceList";
 
 interface CastingScreenProps {
     cast?: PlayerProfile[];
@@ -189,7 +190,20 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                     </div>
                 </HasText>
                 <Input type="file" multiple onChange={this.handleUpload} />
-                {this.state.players.length === 0 && <Centered>~ Drop images ~</Centered>}
+                {this.state.players.length === 0 && (
+                    <Centered>
+                        ~ Drop images here ~
+                        <br />
+                        <br />
+                        <HelpLink
+                            href="https://github.com/spaulmark/bb-bots/blob/master/README.md#choose-a-cast-of-characters"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Need help setting up a game?
+                        </HelpLink>
+                    </Centered>
+                )}
                 {this.getFiles()}
             </FileDrop>
         );
