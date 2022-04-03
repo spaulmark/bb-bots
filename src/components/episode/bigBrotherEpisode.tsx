@@ -120,8 +120,6 @@ export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanill
             <Tabs />
             <WeekStartWrapper gameState={initialGamestate} />
             <br />
-            {currentGameState.phase === 1 && <b>Try clicking on houseguests to view their relationships.</b>}
-            <br />
             <NextEpisodeButton />
         </HasText>
     );

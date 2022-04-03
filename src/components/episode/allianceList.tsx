@@ -1,9 +1,17 @@
 import React from "react";
+import styled from "styled-components";
 import { canDisplayCliques, GameState, getById } from "../../model";
+import { ColorTheme } from "../../theme/theme";
 import { isNotWellDefined } from "../../utils";
 import { Centered } from "../layout/centered";
 import { HasText } from "../layout/text";
 import { Portraits } from "../playerPortrait/portraits";
+
+const HelpLink = styled.a`
+    color: ${({ theme }: { theme: ColorTheme }) => theme.link};
+    cursor: pointer;
+    font-weight: bold;
+`;
 
 interface AllianceListProps {
     gameState: GameState;
@@ -51,5 +59,16 @@ export function AllianceList(props: AllianceListProps) {
             />
         );
     });
-    return <div>{elements}</div>;
+    return (
+        <div>
+            {elements}
+            <HelpLink
+                href="https://github.com/spaulmark/bb-bots/blob/master/README.md#understanding-alliances-or-what-do-the-arrows-mean"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                What do the arrows mean?
+            </HelpLink>
+        </div>
+    );
 }
