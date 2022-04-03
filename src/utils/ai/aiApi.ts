@@ -103,7 +103,7 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
         return cutthroatVote(hero, nominees);
     } else if (hero.powerRanking <= 1 / 3) {
         // with a very low winrate, vote based on winrate
-        return voteBasedOnWinrate(); // TODO: but like, make it "winrate friends"... for ppl who increase my winrate, vote normally.
+        return voteBasedOnWinrate();
     } else {
         // with a sort of low winrate, break ties with winrate
         const r0 = classifyTwoWayRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
@@ -112,6 +112,15 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
     }
 
     function voteBasedOnWinrate() {
+        const heroBeatsnom0 = hero.powerRanking < hero.superiors[nom0.id];
+        const heroBeatsnom1 = hero.powerRanking < hero.superiors[nom1.id];
+
+        // if i am voting between 2 people who i can't beat, vote based on relationship
+        if (!heroBeatsnom0 && !heroBeatsnom1) {
+            return cutthroatVote(hero, nominees);
+        }
+        // otherwise, vote based on relationship
+
         const decision = hero.superiors[nom0.id] < hero.superiors[nom1.id] ? 0 : 1;
         return {
             decision,
@@ -196,9 +205,13 @@ export function backdoorNPlayers(
 export function useGoldenVeto(
     hero: Houseguest,
     nominees: Houseguest[],
-    gameState: GameState
+    gameState: GameState,
+    HoH: number
 ): HouseguestWithLogic {
     let result: HouseguestWithLogic;
+    if (hero.id === HoH) {
+        return { decision: null, reason: "I support my original nominations." };
+    }
     if (hero.id == nominees[0].id || hero.id == nominees[1].id) {
         result = { decision: hero, reason: "I am going to save myself." };
     } else {
