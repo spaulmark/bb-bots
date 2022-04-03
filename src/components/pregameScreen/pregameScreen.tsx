@@ -6,7 +6,6 @@ import { ChooseCastLink } from "../topbar/topBar";
 import { HasText } from "../layout/text";
 import { popularityMode } from "../../model/portraitDisplayMode";
 import { displayMode$ } from "../../subjects/subjects";
-import { HelpLink } from "../episode/allianceList";
 
 interface PregameScreenProps {
     cast: PlayerProfile[];
