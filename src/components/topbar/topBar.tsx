@@ -24,6 +24,10 @@ export function AdvancedEditLink(): JSX.Element {
     );
 }
 
+export function EditSeasonLink(): JSX.Element {
+    return <TopbarLink onClick={() => {}}>Edit Season/Twists</TopbarLink>;
+}
+
 export function ChooseCastLink(): JSX.Element {
     return (
         <TopbarLink
@@ -47,8 +51,11 @@ export function Topbar(props: { style?: any }): JSX.Element {
                 <AdvancedEditLink />
             </div>
             <div className="level-item">
-                <ThemeSwitcher />
+                <EditSeasonLink />
             </div>
+            {/* <div className="level-item">
+                <ThemeSwitcher /> TODO: eventually this can be used for custom themes
+            </div> */}
         </Box>
     );
 }

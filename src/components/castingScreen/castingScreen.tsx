@@ -213,7 +213,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         this.handleFiles(event.target.files);
     };
 
-    private handleDrop = (files: FileList | null, event: React.DragEvent) => {
+    private handleDrop = (files: FileList | null) => {
         if (!files) return;
         this.handleFiles(files);
     };
