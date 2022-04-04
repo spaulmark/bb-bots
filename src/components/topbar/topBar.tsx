@@ -6,6 +6,7 @@ import { ThemeSwitcher } from "./themeSwitch";
 import { ColorTheme } from "../../theme/theme";
 import { Box } from "../layout/box";
 import { DeckScreen } from "../deckScreen/deckScreen";
+import { SeasonEditorPage } from "../seasonEditor/seasonEditor";
 
 const TopbarLink = styled.div`
     color: ${({ theme }: { theme: ColorTheme }) => theme.link};
@@ -25,7 +26,19 @@ export function AdvancedEditLink(): JSX.Element {
 }
 
 export function EditSeasonLink(): JSX.Element {
-    return <TopbarLink onClick={() => {}}>Edit Season/Twists</TopbarLink>;
+    return (
+        <TopbarLink
+            onClick={() => {
+                mainContentStream$.next(
+                    <div style={{ overflow: "auto" }}>
+                        <SeasonEditorPage />
+                    </div>
+                );
+            }}
+        >
+            Edit Season/Twists
+        </TopbarLink>
+    );
 }
 
 export function ChooseCastLink(): JSX.Element {
