@@ -52,8 +52,8 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
     public constructor(props: SeasonEditorListProps) {
         super(props);
         const elements: SeasonEditorListItem[] = [];
-        for (let i = props.castSize - 2; i > 2; i--) {
-            elements.push({ id: i.toString(), content: "F" + i });
+        for (let i = props.castSize; i > 3; i--) {
+            elements.push({ id: i.toString(), content: "F" + i + ": BB" });
         }
         this.state = { items: elements };
     }
@@ -66,6 +66,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             const newItems = Array.from(this.state.items);
             const [removed] = newItems.splice(result.source.index, 1);
             newItems.splice(result.destination.index, 0, removed);
+
             this.setState({ items: newItems });
         };
         const items = this.state.items;

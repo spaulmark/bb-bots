@@ -10,7 +10,7 @@ export function SeasonEditorPage(): JSX.Element {
                 <SeasonEditorList castSize={16} />
             </Noselect>
             <div className="column">
-                <HasText>SeasonEditorList</HasText>
+                <HasText>[2] double evictions</HasText>
             </div>
         </div>
     );
