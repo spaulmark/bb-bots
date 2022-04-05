@@ -14,7 +14,7 @@ const EditPortrait = styled.div`
     word-wrap: break-word;
 `;
 
-const Noselect = styled.div`
+export const Noselect = styled.div`
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
