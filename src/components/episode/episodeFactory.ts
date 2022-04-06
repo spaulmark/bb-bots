@@ -20,6 +20,7 @@ import { generateCliques } from "../../utils/generateCliques";
 import { getRelationshipSummary, Targets } from "../../utils/ai/targets";
 import { generateSafetyChain, SafetyChain } from "./safetyChain";
 import _ from "lodash";
+import { DoubleEviction, generateDoubleEviction } from "./doubleEvictionEpisode";
 
 export function canDisplayCliques(newState: GameState): boolean {
     return newState.remainingPlayers <= 30;
@@ -143,6 +144,8 @@ export class EpisodeFactory {
                 return generateSafetyChain(finalState);
             case GameOver:
                 return generateGameOver(finalState);
+            case DoubleEviction:
+                return generateDoubleEviction(finalState);
             default:
                 throw new Error("Unsupported Episode Type");
         }

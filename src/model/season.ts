@@ -6,6 +6,7 @@ import { BigBrotherFinale } from "../components/episode/bigBrotherFinale";
 import { cast$ } from "../subjects/subjects";
 import { GameOver } from "../components/episode/gameOver";
 import { SafetyChain } from "../components/episode/safetyChain";
+import { DoubleEviction } from "../components/episode/doubleEvictionEpisode";
 
 export function finalJurySize() {
     return jurors;
@@ -43,6 +44,7 @@ export class Season {
         return this.factory.nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers));
     }
 
+    // TODO: this function needs to get injected or something
     public whichEpisodeType(players: number) {
         if (players === 3) {
             return BigBrotherFinale;
@@ -50,6 +52,11 @@ export class Season {
         if (players === 2) {
             return GameOver;
         }
+        if (players === 16) {
+            return DoubleEviction;
+        }
+
+        // TODO: make safety chain into a big brother canada safety chain
         ///// commented out lines make every 4th episode a safety chain
 
         // if (players % 4 !== 1) {

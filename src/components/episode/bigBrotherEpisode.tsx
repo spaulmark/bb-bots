@@ -1,8 +1,6 @@
 import {
     MutableGameState,
     getById,
-    inJury,
-    nonEvictedHouseguests,
     GameState,
     Houseguest,
     EpisodeType,
@@ -79,10 +77,51 @@ export function Tabs(): JSX.Element {
 }
 
 export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanillaEpisode {
-    let currentGameState;
-    let hohCompScene;
+    const episode = generateBBVanillaScenes(initialGamestate);
+    const content = (
+        <HasText>
+            <Tabs />
+            <WeekStartWrapper gameState={initialGamestate} />
+            <br />
+            <NextEpisodeButton />
+        </HasText>
+    );
+    return new BigBrotherVanillaEpisode({
+        title: episode.title,
+        scenes: episode.scenes,
+        content,
+        gameState: new GameState(episode.gameState),
+        initialGamestate,
+        type: BigBrotherVanilla,
+    });
+}
+export class BigBrotherVanillaEpisode extends Episode {
+    readonly title: string;
+    readonly scenes: Scene[];
+    readonly content: JSX.Element;
+    readonly initialGamestate: GameState;
+    readonly gameState: GameState;
+    readonly type = BigBrotherVanilla;
+
+    public constructor(init: InitEpisode) {
+        super(init);
+        this.title = init.title;
+        this.scenes = init.scenes;
+        this.content = init.content;
+        this.gameState = init.gameState;
+        this.initialGamestate = init.initialGamestate || init.gameState;
+    }
+}
+export function generateBBVanillaScenes(initialGamestate: GameState): {
+    gameState: GameState;
+    scenes: Scene[];
+    title: string;
+} {
     let hoh: Houseguest;
-    const scenes = [];
+    let currentGameState: GameState;
+    let hohCompScene: Scene;
+    const scenes: Scene[] = [];
+
     [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate);
     scenes.push(hohCompScene);
 
@@ -113,40 +152,6 @@ export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanill
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hoh, nominees);
     scenes.push(evictionScene);
-
     const title = `Week ${currentGameState.phase}`;
-    const content = (
-        <HasText>
-            <Tabs />
-            <WeekStartWrapper gameState={initialGamestate} />
-            <br />
-            <NextEpisodeButton />
-        </HasText>
-    );
-    const gameState = new GameState(currentGameState);
-    return new BigBrotherVanillaEpisode({
-        title,
-        scenes,
-        content,
-        gameState,
-        initialGamestate,
-        type: BigBrotherVanilla,
-    });
-}
-export class BigBrotherVanillaEpisode extends Episode {
-    readonly title: string;
-    readonly scenes: Scene[];
-    readonly content: JSX.Element;
-    readonly initialGamestate: GameState;
-    readonly gameState: GameState;
-    readonly type = BigBrotherVanilla;
-
-    public constructor(init: InitEpisode) {
-        super(init);
-        this.title = init.title;
-        this.scenes = init.scenes;
-        this.content = init.content;
-        this.gameState = init.gameState;
-        this.initialGamestate = init.initialGamestate || init.gameState;
-    }
+    return { gameState: currentGameState, scenes, title };
 }
