@@ -5,7 +5,7 @@ import { generateVotingTable } from "./scenes/votingTable";
 import { evictHouseguest } from "./utilities/evictHouseguest";
 
 export const GameOver: EpisodeType = {
-    canPlayWith: (n: number) => n === 1,
+    canPlayWith: (n: number) => true,
     eliminates: 1,
     arrowsEnabled: false,
     hasViewsbar: false,
