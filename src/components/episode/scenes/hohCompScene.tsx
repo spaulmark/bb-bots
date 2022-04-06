@@ -29,7 +29,7 @@ export function generateHohCompScene(
                         </CenteredBold>
                     ) : (
                         <Centered>
-                            {`Houseguests, it's time to find a new Head of Household. As outgoing HoH, ${previousHoh[0].name} will not compete. `}{" "}
+                            {`Houseguests, it's time to find a new Head of Household. As outgoing HoH, ${previousHoh[0].name} will not compete.`}
                         </Centered>
                     ))}
                 <Portrait centered={true} houseguest={newHoH} />

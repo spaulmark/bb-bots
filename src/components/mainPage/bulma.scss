@@ -25,6 +25,10 @@ $tabs-link-color: hsl(0, 0%, 86%);
     display: inline-block;
     padding-left: 0;
 }
+
+mark {
+    background-color: #33fff9;
+}
 .pagination > li {
     list-style: none;
     border: 0.9px solid;
