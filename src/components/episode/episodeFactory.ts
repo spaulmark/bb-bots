@@ -48,10 +48,9 @@ export class EpisodeFactory {
             firstImpressions(newState.houseguests);
         }
         newState.phase++;
+        newState.resetLogIndex();
         if (gameState.remainingPlayers > 2) {
-            // TODO: this may need to become a multiple-row long episode log
-            // like newState.log could have a list of EpisodeLogs or a single EpisodeLog
-            newState.log[newState.phase] = new EpisodeLog();
+            newState.log[newState.phase] = [new EpisodeLog()];
         }
         refreshHgStats(newState);
 

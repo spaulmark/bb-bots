@@ -51,7 +51,7 @@ const BlackRow = styled.tr`
 `;
 
 export function generateVotingTable(gameState: GameState): JSX.Element {
-    const masterLog: EpisodeLog[] = gameState.log;
+    const masterLog: EpisodeLog[][] = gameState.log;
     const houseguestCells: JSX.Element[][] = [];
     gameState.houseguests.forEach((hg, i) => {
         houseguestCells[hg.id] = [
@@ -67,43 +67,54 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const postVetoCells: JSX.Element[] = [];
     const evictedCells: JSX.Element[] = [];
     const winnerCells: JSX.Element[] = [];
-    masterLog.forEach((log, i) => {
-        generateTopRow(log, i, topRowCells, masterLog.length - 1);
-        generatePreVetoRow(log, i, preVetoCells);
-        generateVetoRow(log, i, vetoCells);
-        generatePostVetoRow(log, i, postVetoCells);
-        generateEvictedRow(log, i, evictedCells, gameState);
-        if (!log) return;
-        evictionOrder.push(log.evicted);
-        if (log.runnerUp !== undefined) evictionOrder.push(log.runnerUp);
-        if (log.winner !== undefined) evictionOrder.push(log.winner);
-        // add each of the votes to the houseguest cells
-        for (const [key, value] of Object.entries(log.votes)) {
-            // typescript for .. in loops kinda suck so i need to do a sketchy type conversion
-            const id: number = (key as unknown) as number;
-            const vote: VoteType = value;
-            houseguestCells[id].push(vote.render(gameState));
-        }
-        if (log.winner !== undefined && log.runnerUp !== undefined) {
-            houseguestCells[log.winner].push(new WinnerVote().render(gameState));
-            houseguestCells[log.runnerUp].push(new RunnerUpVote().render(gameState));
-            evictedCells.push(
-                <RunnerUpCell key={"runnerUp"}>
-                    <CenteredBold noMargin={true}>{getById(gameState, log.runnerUp).name}</CenteredBold>
-                    <Centered noMargin={true}>
-                        <small>Finalist</small> {/** TODO: put "X votes" here instead. */}
-                    </Centered>
-                </RunnerUpCell>
-            );
-            winnerCells.push(
-                <WinnerCell key={"winner"}>
-                    <CenteredBold noMargin={true}>{getById(gameState, log.winner).name}</CenteredBold>
-                    <Centered noMargin={true}>
-                        <small>Winner</small>
-                    </Centered>
-                </WinnerCell>
-            );
-        }
+    console.log(masterLog);
+    masterLog.forEach((logs: EpisodeLog[] | undefined, i) => {
+        // multiple entries (ie. a double eviction) will all share the same toprow
+        generateTopRow(
+            logs ? logs[0] : undefined,
+            i,
+            topRowCells,
+            masterLog.length - 1,
+            logs ? logs.length : -1 // -1 doesn't matter because its unread
+        );
+        const iterateLogs = logs ? logs : [undefined]; // this is incredibly dank
+        iterateLogs.forEach((log: EpisodeLog | undefined) => {
+            generatePreVetoRow(log, i, preVetoCells);
+            generateVetoRow(log, i, vetoCells);
+            generatePostVetoRow(log, i, postVetoCells);
+            generateEvictedRow(log, i, evictedCells, gameState);
+            if (!log) return;
+            evictionOrder.push(log.evicted);
+            if (log.runnerUp !== undefined) evictionOrder.push(log.runnerUp);
+            if (log.winner !== undefined) evictionOrder.push(log.winner);
+            // add each of the votes to the houseguest cells
+            for (const [key, value] of Object.entries(log.votes)) {
+                // typescript for .. in loops kinda suck so i need to do a sketchy type conversion
+                const id: number = key as unknown as number;
+                const vote: VoteType = value;
+                houseguestCells[id].push(vote.render(gameState));
+            }
+            if (log.winner !== undefined && log.runnerUp !== undefined) {
+                houseguestCells[log.winner].push(new WinnerVote().render(gameState));
+                houseguestCells[log.runnerUp].push(new RunnerUpVote().render(gameState));
+                evictedCells.push(
+                    <RunnerUpCell key={"runnerUp"}>
+                        <CenteredBold noMargin={true}>{getById(gameState, log.runnerUp).name}</CenteredBold>
+                        <Centered noMargin={true}>
+                            <small>Finalist</small>
+                        </Centered>
+                    </RunnerUpCell>
+                );
+                winnerCells.push(
+                    <WinnerCell key={"winner"}>
+                        <CenteredBold noMargin={true}>{getById(gameState, log.winner).name}</CenteredBold>
+                        <Centered noMargin={true}>
+                            <small>Winner</small>
+                        </Centered>
+                    </WinnerCell>
+                );
+            }
+        });
     });
     preVetoCells.push(
         <White key={`preveto--finale`} rowSpan={3}>
@@ -276,7 +287,13 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
     );
 }
 
-function generateTopRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[], max: number) {
+function generateTopRow(
+    log: EpisodeLog | undefined,
+    i: number,
+    cells: JSX.Element[],
+    max: number,
+    colspan: number
+) {
     if (!log) {
         cells.push(<Gray key={`toprow--${i}`} />);
         return;
@@ -290,7 +307,7 @@ function generateTopRow(log: EpisodeLog | undefined, i: number, cells: JSX.Eleme
         return;
     }
     cells.push(
-        <Gray key={`toprow--${i}`}>
+        <Gray key={`toprow--${i}`} colSpan={colspan}>
             <CenteredBold noMargin={true}>Week {i}</CenteredBold>
         </Gray>
     );

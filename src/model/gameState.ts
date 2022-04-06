@@ -58,10 +58,19 @@ export class GameState {
     readonly remainingPlayers: number = 0;
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest;
-    readonly log: EpisodeLog[] = [];
+    readonly log: EpisodeLog[][] = [];
     readonly cliques: Cliques[] = [];
-    get currentLog() {
-        return this.log[this.phase];
+
+    public __logindex__: number = 0;
+    get currentLog(): EpisodeLog {
+        if (!this.log[this.phase]) return new EpisodeLog();
+        return this.log[this.phase][this.__logindex__];
+    }
+    public incrementLogIndex() {
+        this.__logindex__++;
+    }
+    public resetLogIndex() {
+        this.__logindex__ = 0;
     }
 
     public constructor(init: PlayerProfile[] | GameState) {
@@ -92,9 +101,18 @@ export class MutableGameState {
     public phase: number = 0;
     public previousHOH?: Houseguest;
     public cliques: Cliques[] = [];
-    public log: EpisodeLog[] = [];
-    get currentLog() {
-        return this.log[this.phase];
+    public log: EpisodeLog[][] = [];
+
+    public __logindex__: number = 0;
+    get currentLog(): EpisodeLog {
+        if (!this.log[this.phase]) return new EpisodeLog();
+        return this.log[this.phase][this.__logindex__];
+    }
+    public incrementLogIndex() {
+        this.__logindex__++;
+    }
+    public resetLogIndex() {
+        this.__logindex__ = 0;
     }
 
     public constructor(init: GameState | MutableGameState) {
