@@ -60,14 +60,13 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             </Gray>,
         ];
     });
-    const evictionOrder: number[] = [];
+    const evictionOrder: [number, number][] = [];
     const topRowCells: JSX.Element[] = [];
     const preVetoCells: JSX.Element[] = [];
     const vetoCells: JSX.Element[] = [];
     const postVetoCells: JSX.Element[] = [];
     const evictedCells: JSX.Element[] = [];
     const winnerCells: JSX.Element[] = [];
-    console.log(masterLog);
     masterLog.forEach((logs: EpisodeLog[] | undefined, i) => {
         // multiple entries (ie. a double eviction) will all share the same toprow
         generateTopRow(
@@ -84,9 +83,9 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             generatePostVetoRow(log, i, postVetoCells);
             generateEvictedRow(log, i, evictedCells, gameState);
             if (!log) return;
-            evictionOrder.push(log.evicted);
-            if (log.runnerUp !== undefined) evictionOrder.push(log.runnerUp);
-            if (log.winner !== undefined) evictionOrder.push(log.winner);
+            evictionOrder.push([log.evicted, i]);
+            if (log.runnerUp !== undefined) evictionOrder.push([log.runnerUp, i]);
+            if (log.winner !== undefined) evictionOrder.push([log.winner, i]);
             // add each of the votes to the houseguest cells
             for (const [key, value] of Object.entries(log.votes)) {
                 // typescript for .. in loops kinda suck so i need to do a sketchy type conversion
@@ -134,14 +133,13 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const houseguestRows: JSX.Element[] = [];
     const evictedRow = <tr>{evictedCells}</tr>;
     let evictionColSpan = -1;
-    const weeks = evictionOrder.length;
-    evictionOrder.reverse().forEach((id, i) => {
+    evictionOrder.reverse().forEach(([id, week], i) => {
         if (evictionColSpan > 0) {
-            const weekText = i === 2 ? "(Finale)" : `(Week ${weeks - i})`;
+            const weekText = i === 2 ? "(Finale)" : `(Week ${week})`; // this is going backwards. 15, 14...
             const isJury = getById(gameState, id).isJury;
             const colSpan = isJury ? evictionColSpan - 1 : evictionColSpan;
             const evicted = (
-                <Evicted colSpan={colSpan} key={`evicted-week-${weeks - i}`}>
+                <Evicted colSpan={colSpan} key={`evicted-week-${weekText}-${i}`}>
                     <CenteredItallic noMargin={true}>Evicted</CenteredItallic>
                     <CenteredItallic noMargin={true}>
                         <small>{weekText}</small>

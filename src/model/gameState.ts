@@ -68,6 +68,7 @@ export class GameState {
     }
     public incrementLogIndex() {
         this.__logindex__++;
+        this.log[this.phase].push(new EpisodeLog());
     }
     public resetLogIndex() {
         this.__logindex__ = 0;
@@ -110,6 +111,7 @@ export class MutableGameState {
     }
     public incrementLogIndex() {
         this.__logindex__++;
+        this.log[this.phase].push(new EpisodeLog());
     }
     public resetLogIndex() {
         this.__logindex__ = 0;
