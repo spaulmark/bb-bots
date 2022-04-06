@@ -45,4 +45,5 @@ export interface EpisodeType {
     readonly eliminates: number;
     readonly arrowsEnabled: boolean;
     readonly hasViewsbar: boolean;
+    readonly name: string;
 }

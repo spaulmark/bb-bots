@@ -57,6 +57,10 @@ export class EpisodeFactory {
 
         if (canDisplayCliques(newState)) newState.cliques = generateCliques(newState);
         const finalState = new GameState(newState);
+        if (!episodeType.canPlayWith(finalState.remainingPlayers))
+            throw new Error(
+                `Episode type ${episodeType.name} not playable with ${finalState.remainingPlayers} players`
+            );
         switch (episodeType) {
             case BigBrotherVanilla:
                 return generateBbVanilla(finalState);

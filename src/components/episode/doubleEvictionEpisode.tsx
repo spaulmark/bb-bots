@@ -12,6 +12,7 @@ export const DoubleEviction: EpisodeType = {
     eliminates: 2,
     arrowsEnabled: true,
     hasViewsbar: true,
+    name: "Double Eviction",
 };
 
 export class DoubleEvictionEpisode extends Episode {

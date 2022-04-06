@@ -52,7 +52,7 @@ export class Season {
         if (players === 2) {
             return GameOver;
         }
-        if (players === 16) {
+        if (players === 12) {
             return DoubleEviction;
         }
 

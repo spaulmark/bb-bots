@@ -9,6 +9,7 @@ export const GameOver: EpisodeType = {
     eliminates: 1,
     arrowsEnabled: false,
     hasViewsbar: false,
+    name: "Game Over",
 };
 
 export function generateGameOver(gameState: GameState): GameOverEpisode {

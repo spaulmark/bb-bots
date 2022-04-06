@@ -10,6 +10,7 @@ const PregameEpisodeType: EpisodeType = {
     },
     arrowsEnabled: true,
     hasViewsbar: false,
+    name: "Pregame",
 };
 
 export class PregameEpisode extends Episode {
