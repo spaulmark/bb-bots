@@ -50,7 +50,7 @@ export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
 }
 
 export class GameState {
-    // Current state of the game after a phase.
+    // State of the game after a phase.
 
     readonly houseguestCache: { [id: number]: Houseguest } = {};
     readonly nonEvictedHouseguests: Set<number> = new Set<number>();

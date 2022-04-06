@@ -14,7 +14,8 @@ import { evictHouseguest } from "../utilities/evictHouseguest";
 export function generateEvictionScene(
     initialGameState: GameState,
     HoH: Houseguest,
-    nominees: Houseguest[]
+    nominees: Houseguest[],
+    doubleEviction: boolean = false
 ): [GameState, Scene] {
     let newGameState = new MutableGameState(initialGameState);
     nominees = shuffle(nominees);
@@ -65,11 +66,12 @@ export function generateEvictionScene(
 
     const displayHoH: ProfileHouseguest = { ...HoH };
     displayHoH.tooltip = tieBreaker.reason;
+    const margin = doubleEviction ? { marginTop: 200 } : {};
     const scene = new Scene({
         title: "Live Eviction",
         gameState: initialGameState,
         content: (
-            <div>
+            <div style={margin}>
                 <CenteredBold>{voteCountText}</CenteredBold>
                 <div className="columns is-centered">
                     <DividerBox className="column">

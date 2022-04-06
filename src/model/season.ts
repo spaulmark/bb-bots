@@ -5,7 +5,6 @@ import { Episode } from ".";
 import { BigBrotherFinale } from "../components/episode/bigBrotherFinale";
 import { cast$ } from "../subjects/subjects";
 import { GameOver } from "../components/episode/gameOver";
-import { SafetyChain } from "../components/episode/safetyChain";
 import { DoubleEviction } from "../components/episode/doubleEvictionEpisode";
 
 export function finalJurySize() {

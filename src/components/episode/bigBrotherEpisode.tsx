@@ -140,7 +140,12 @@ export function generateBBVanillaScenes(
     scenes.push(vetoCeremonyScene);
 
     let evictionScene;
-    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hoh, nominees);
+    [currentGameState, evictionScene] = generateEvictionScene(
+        currentGameState,
+        hoh,
+        nominees,
+        doubleEviction
+    );
     scenes.push(evictionScene);
     const title = `Week ${currentGameState.phase}`;
     return { gameState: currentGameState, scenes, title };
