@@ -1,13 +1,4 @@
-import {
-    MutableGameState,
-    getById,
-    GameState,
-    Houseguest,
-    EpisodeType,
-    Episode,
-    InitEpisode,
-} from "../../model";
-import { getFinalists, finalJurySize } from "../../model/season";
+import { GameState, Houseguest, EpisodeType, Episode, InitEpisode } from "../../model";
 import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
@@ -38,17 +29,6 @@ const TabItem = styled.li`
 /**
  * Might be best to start passing ids instead of houseguests for HoH/nominees/veto winner
  */
-
-export function evictHouseguest(gameState: MutableGameState, id: number) {
-    const evictee = getById(gameState, id);
-    if (gameState.currentLog) gameState.currentLog.evicted = evictee.id;
-    evictee.isEvicted = true;
-    if (gameState.remainingPlayers - getFinalists() <= finalJurySize()) {
-        evictee.isJury = true;
-    }
-    gameState.nonEvictedHouseguests.delete(evictee.id);
-    gameState.remainingPlayers--;
-}
 
 function Tab(props: { text: string; active: number; id: number; setActive: any }): JSX.Element {
     return (

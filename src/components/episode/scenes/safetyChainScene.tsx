@@ -5,9 +5,8 @@ import { getBestFriend } from "../../../utils/ai/aiUtils";
 import { Centered } from "../../layout/centered";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
-import { evictHouseguest } from "../bigBrotherEpisode";
 import { Scene } from "../scene";
-import { NomineeCell } from "./votingTable";
+import { evictHouseguest } from "../utilities/evictHouseguest";
 
 export function generateSafetyChainScene(initialGameState: GameState): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
@@ -52,7 +51,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
             <Portrait houseguest={options[0]} centered={true} />
         </Centered>
     );
-    evictHouseguest(newGameState, options[0].id);
+    evictHouseguest(newGameState, options[0].id); // TODO: newGameState = evicthouseguest...
     const scene: Scene = new Scene({
         title: "Chain Ceremony",
         gameState: initialGameState,
