@@ -18,7 +18,7 @@ export function generatePowerSubtitle(
     let subtitle: any[] = [];
     key = addPopularityLine(state, hero, !!_, subtitle, key);
     key = addCompsLine(hero, subtitle, key);
-    if (!hero.isEvicted && state.powerRanking) {
+    if (!hero.isEvicted && state.powerRanking !== undefined) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
         if (data && data.id !== hero.id) {
             subtitle.push(<div key={key++}>{`WIN ${roundTwoDigits(state.powerRanking!)}%`}</div>);
