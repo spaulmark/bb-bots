@@ -16,7 +16,8 @@ export function generateVetoCompScene(
     initialGameState: GameState,
     HoH: Houseguest,
     nom1: Houseguest,
-    nom2: Houseguest
+    nom2: Houseguest,
+    doubleEviction: boolean = false
 ): [GameState, Scene, Houseguest] {
     const newGameState = new MutableGameState(initialGameState);
 
@@ -58,14 +59,18 @@ export function generateVetoCompScene(
         gameState: initialGameState,
         content: (
             <div>
-                <Centered>It's time to pick players for the veto competition.</Centered>
+                <Centered>
+                    {doubleEviction
+                        ? "The houseguests compete in the veto competition."
+                        : "It's time to pick players for the veto competition."}
+                </Centered>
                 <Portraits centered={true} houseguests={[HoH, nom1, nom2]} />
-                <Centered>{introText}</Centered>
+                {!doubleEviction && <Centered>{introText}</Centered>}
                 <Portraits centered={true} houseguests={extras} />
                 <Centered>...</Centered>
                 <Portraits centered={true} houseguests={[povWinner]} />
                 <CenteredBold>{`${povWinner.name} has won the Golden Power of Veto!`}</CenteredBold>
-                <NextEpisodeButton />
+                {!doubleEviction && <NextEpisodeButton />}
             </div>
         ),
     });

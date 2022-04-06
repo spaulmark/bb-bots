@@ -9,7 +9,8 @@ import { DividerBox } from "../../layout/box";
 
 export function generateNomCeremonyScene(
     initialGameState: GameState,
-    HoH: Houseguest
+    HoH: Houseguest,
+    doubleEviction: boolean = false
 ): [GameState, Scene, Houseguest[]] {
     const newGameState = new MutableGameState(initialGameState);
     const [nom1, nom2] = [getById(newGameState, HoH.targets[0]), getById(newGameState, HoH.targets[1])];
@@ -23,10 +24,11 @@ export function generateNomCeremonyScene(
         content: (
             <div>
                 <Centered>
-                    This is the nomination ceremony. It is my responsibility as the Head of Household to
-                    nominate two houseguests for eviction.
+                    {!doubleEviction &&
+                        `This is the nomination ceremony. It is my responsibility as the Head of Household to
+                    nominate two houseguests for eviction.`}
                 </Centered>
-                <Portrait centered={true} houseguest={HoH} />
+                {!doubleEviction && <Portrait centered={true} houseguest={HoH} />}
                 <div className="columns is-marginless is-centered">
                     <DividerBox className="column">
                         <Centered> My first nominee is...</Centered>
@@ -39,7 +41,7 @@ export function generateNomCeremonyScene(
                 </div>
                 <CenteredBold>{`I have nominated you, ${noms[0].name} and you, ${noms[1].name} for eviction.`}</CenteredBold>
                 <br />
-                <NextEpisodeButton />
+                {!doubleEviction && <NextEpisodeButton />}
             </div>
         ),
     });

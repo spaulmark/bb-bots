@@ -35,7 +35,7 @@ export function generateDoubleEviction(initialGamestate: GameState): DoubleEvict
     let currentGameState = episode.gameState;
     const scenes: Scene[] = episode.scenes;
 
-    const doubleEviction = generateBBVanillaScenes(currentGameState);
+    const doubleEviction = generateBBVanillaScenes(currentGameState, true);
     currentGameState = doubleEviction.gameState;
     scenes.push(
         new Scene({

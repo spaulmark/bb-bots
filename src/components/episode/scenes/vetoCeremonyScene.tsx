@@ -11,7 +11,8 @@ export function generateVetoCeremonyScene(
     initialGameState: GameState,
     HoH: Houseguest,
     initialNominees: Houseguest[],
-    povWinner: Houseguest
+    povWinner: Houseguest,
+    doubleEviction: boolean = false
 ): [GameState, Scene, Houseguest[]] {
     let povTarget: Houseguest | null = null;
     let descisionText = "";
@@ -62,11 +63,13 @@ export function generateVetoCeremonyScene(
         gameState: initialGameState,
         content: (
             <div>
-                <Centered>This is the Veto Ceremony.</Centered>
-                <Centered>
-                    {`${initialNominees[0].name} and ${initialNominees[1].name} have been nominated for eviction, 
+                {!doubleEviction && <Centered>This is the Veto Ceremony.</Centered>}
+                {!doubleEviction && (
+                    <Centered>
+                        {`${initialNominees[0].name} and ${initialNominees[1].name} have been nominated for eviction, 
                     but I have the power to veto one of these nominations.`}
-                </Centered>
+                    </Centered>
+                )}
                 <div className="columns is-marginless is-centered">
                     <DividerBox className="column">
                         <Portrait centered={true} houseguest={initialNominees[0]} />
@@ -91,7 +94,7 @@ export function generateVetoCeremonyScene(
                         <Portrait centered={true} houseguest={finalNominees[1]} />
                     </DividerBox>
                 </div>
-                <NextEpisodeButton />
+                {!doubleEviction && <NextEpisodeButton />}
             </div>
         ),
     });

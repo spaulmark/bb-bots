@@ -112,7 +112,10 @@ export class BigBrotherVanillaEpisode extends Episode {
         this.initialGamestate = init.initialGamestate || init.gameState;
     }
 }
-export function generateBBVanillaScenes(initialGamestate: GameState): {
+export function generateBBVanillaScenes(
+    initialGamestate: GameState,
+    doubleEviction: boolean = false
+): {
     gameState: GameState;
     scenes: Scene[];
     title: string;
@@ -122,12 +125,16 @@ export function generateBBVanillaScenes(initialGamestate: GameState): {
     let hohCompScene: Scene;
     const scenes: Scene[] = [];
 
-    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate);
+    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate, doubleEviction);
     scenes.push(hohCompScene);
 
     let nomCeremonyScene;
     let nominees: Houseguest[];
-    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hoh);
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(
+        currentGameState,
+        hoh,
+        doubleEviction
+    );
     scenes.push(nomCeremonyScene);
 
     let vetoCompScene;
@@ -136,7 +143,8 @@ export function generateBBVanillaScenes(initialGamestate: GameState): {
         currentGameState,
         hoh,
         nominees[0],
-        nominees[1]
+        nominees[1],
+        doubleEviction
     );
     scenes.push(vetoCompScene);
     let vetoCeremonyScene;
@@ -145,7 +153,8 @@ export function generateBBVanillaScenes(initialGamestate: GameState): {
         currentGameState,
         hoh,
         nominees,
-        povWinner
+        povWinner,
+        doubleEviction
     );
     scenes.push(vetoCeremonyScene);
 
