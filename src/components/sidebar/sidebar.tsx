@@ -3,7 +3,7 @@ import { SidebarController } from "./sidebarController";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { Episode, GameState } from "../../model";
 import { Scene } from "../episode/scene";
-import { newEpisode } from "../../subjects/subjects";
+import { defaultCast, newEpisode } from "../../subjects/subjects";
 import { Box } from "../layout/box";
 import { HasText } from "../layout/text";
 interface SidebarState {
@@ -17,7 +17,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
         super(props);
         this.controller = new SidebarController(this);
         this.state = { episodes: [], selectedScene: 0 };
-        newEpisode(new PregameEpisode(new GameState([])));
+        newEpisode(new PregameEpisode(new GameState(defaultCast)));
     }
 
     public componentDidMount() {
