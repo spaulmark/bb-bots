@@ -3,6 +3,8 @@ import { Subscription } from "rxjs";
 import { selectedPlayer$, displayMode$, getSelectedPlayer } from "../../subjects/subjects";
 import { SelectedPlayerData } from "./selectedPortrait";
 import { Rgb } from "../../model/color";
+import { heroIsPregame } from "./subtitle";
+import { shuffle } from "lodash";
 
 export const selectedColor = new Rgb(51, 255, 249);
 
@@ -22,6 +24,18 @@ export class HouseguestPortraitController {
     }
 
     public backgroundColor(props: PortraitProps): undefined | string {
+        if (heroIsPregame(props)) {
+            return shuffle([
+                "#ca9389",
+                "#cab389",
+                "#c0ca89",
+                "#cabb89",
+                "#c0ca89",
+                "#cabb89",
+                "#b9ca89",
+                "#98ca89",
+            ])[0];
+        }
         const selectedPlayer = getSelectedPlayer();
         if (selectedPlayer !== null && selectedPlayer.id === props.id) {
             return selectedColor.toHex();

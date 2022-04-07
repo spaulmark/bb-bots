@@ -9,6 +9,12 @@ import {
 } from "../../utils/ai/classifyRelationship";
 import { getSelectedPlayer } from "../../subjects/subjects";
 
+export function heroIsPregame(hero: PortraitProps): boolean {
+    const heroIsZero =
+        hero.friends === 0 && hero.enemies === 0 && hero.popularity === 0 && hero.targetingMe === 0;
+    return heroIsZero || (hero.friends === undefined && hero.enemies === undefined);
+}
+
 export function generatePowerSubtitle(
     hero: PortraitProps,
     state: PortraitState,
@@ -54,6 +60,10 @@ export function generatePopularitySubtitle(
 }
 
 function addFriendshipCountTitles(hero: PortraitProps, subtitle: any[], key: number) {
+    if (heroIsPregame(hero)) {
+        subtitle = subtitle.concat(<br key={key++} />);
+        return { subtitle, key };
+    }
     if (!hero.isEvicted) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
         if (data && data.id !== hero.id) {
