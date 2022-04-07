@@ -135,7 +135,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     let evictionColSpan = -1;
     evictionOrder.reverse().forEach(([id, week], i) => {
         if (evictionColSpan > 0) {
-            const weekText = i === 2 ? "(Finale)" : `(Week ${week})`; // this is going backwards. 15, 14...
+            const weekText = i === 2 ? "(Finale)" : `(Week ${week})`;
             const isJury = getById(gameState, id).isJury;
             const colSpan = isJury ? evictionColSpan - 1 : evictionColSpan;
             const evicted = (
