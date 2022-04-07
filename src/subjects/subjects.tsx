@@ -5,9 +5,34 @@ import { SelectedPlayerData } from "../components/playerPortrait/selectedPortrai
 import React from "react";
 import { PortraitDisplayMode, popularityMode } from "../model/portraitDisplayMode";
 import { ColorTheme } from "../theme/theme";
+import { shuffle } from "lodash";
+
+const baseURL = "https://spaulmark.github.io/img//Big%20Brother%20Canada%2010/";
+const defaultNames = shuffle([
+    "Betty",
+    "Hermon",
+    "Josh",
+    "Melina",
+    "Tynesha",
+    "Jacey Lynne",
+    "Kevin",
+    "Moose",
+    "Gino",
+    "Jay",
+    "Kyle",
+    "Stephanie",
+    "Haleena",
+    "Jess",
+    "Marty",
+    "Summer",
+]);
+export const defaultCast: PlayerProfile[] = defaultNames.map((name) => ({
+    name,
+    imageURL: `${baseURL}${name}.jpg`,
+}));
 
 // What is currently being displayed.
-export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
+export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={defaultCast} />);
 // Push episodes to this subject to add them to the sidebar. Null resets everything.
 export const episodes$ = new BehaviorSubject<Episode | null>(null);
 // Forcibly switches to an episode. Used when adding a new episode.
@@ -18,8 +43,9 @@ export function newEpisode(episode: Episode | null) {
 export function switchSceneRelative(n: number) {
     switchEpisode$.next(n);
 }
+
 // the list of players in the game
-export const cast$ = new BehaviorSubject<PlayerProfile[]>([]);
+export const cast$ = new BehaviorSubject<PlayerProfile[]>(defaultCast);
 export function updateCast(newCast: PlayerProfile[]) {
     cast$.next(newCast);
 }

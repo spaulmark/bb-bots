@@ -6,7 +6,6 @@ import { Scene } from "../episode/scene";
 import { newEpisode } from "../../subjects/subjects";
 import { Box } from "../layout/box";
 import { HasText } from "../layout/text";
-import { selectedColor } from "../playerPortrait/houseguestPortraitController";
 interface SidebarState {
     episodes: Episode[];
     selectedScene: number;
