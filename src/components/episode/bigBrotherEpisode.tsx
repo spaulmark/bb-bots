@@ -14,7 +14,7 @@ import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
 
 export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
-        return n > 1;
+        return n > 3;
     },
     eliminates: 1,
     arrowsEnabled: true,

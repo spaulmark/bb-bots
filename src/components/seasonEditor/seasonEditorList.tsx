@@ -54,6 +54,7 @@ interface SeasonEditorListItem {
 }
 
 export class SeasonEditorList extends React.Component<SeasonEditorListProps, SeasonEditorListState> {
+    private id: number = 0;
     public constructor(props: SeasonEditorListProps) {
         super(props);
         const elements: SeasonEditorListItem[] = [];
@@ -61,14 +62,43 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         for (let i = props.castSize; i > 3; i--) {
             week++;
             elements.push({
-                id: i.toString(),
+                id: (this.id++).toString(),
                 weekText: `Week ${week}: F${i}`,
-                episode: i === 16 ? DoubleEviction : BigBrotherVanilla,
+                episode: BigBrotherVanilla,
             });
         }
         this.state = { items: elements };
     }
 
+    private refreshItems(newItems: SeasonEditorListItem[]) {
+        const finalItems = [];
+        let week: number = 0;
+        let playerCount: number = this.props.castSize;
+
+        for (const item of newItems) {
+            const isValid = item.episode.canPlayWith(playerCount);
+            week++;
+            item.weekText = `${isValid ? `Week ${week}: F${playerCount}` : "N/A"}`;
+            playerCount -= item.episode.eliminates;
+            // delete all vanilla big brother episodes if player count is below 3
+            if (isValid || item.episode !== BigBrotherVanilla) {
+                finalItems.push(item);
+            }
+        }
+        // if we have to add new vanilla episodes b/c we dont have enough to get to F4, add them
+        if (playerCount > 3) {
+            while (playerCount > 3) {
+                week++;
+                finalItems.push({
+                    id: (this.id++).toString(),
+                    weekText: `Week ${week}: F${playerCount}`,
+                    episode: BigBrotherVanilla,
+                });
+                playerCount--;
+            }
+        }
+        this.setState({ items: finalItems });
+    }
     public render() {
         const onDragEnd = (result: any) => {
             if (!result.destination) {
@@ -77,15 +107,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             const newItems = Array.from(this.state.items);
             const [removed] = newItems.splice(result.source.index, 1);
             newItems.splice(result.destination.index, 0, removed);
-            let week: number = 0;
-            // TODO: make it so that if your twists go off the edge of the game,
-            // it just says N/A instead of "Week X: FX"
-            for (let i = 0; i < this.props.castSize - 3; i++) {
-                week++;
-                newItems[i].weekText = `Week ${week}: F${this.props.castSize - i}`;
-            }
-
-            this.setState({ items: newItems });
+            this.refreshItems(newItems);
         };
         const items = this.state.items;
         return (

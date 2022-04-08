@@ -59,7 +59,7 @@ export class Targets {
     }
 }
 
-// TODO: target strategies that account for jury winrate?
+// TODO: merge vote logic with nomination logic
 
 // Statusquo goes with the status quo, underdog tries to disrupt & go after big targets, MoR goes after his personal targets
 export enum TargetStrategy {
