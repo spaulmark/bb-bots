@@ -3,7 +3,6 @@ import { Draggable } from "react-beautiful-dnd";
 import React from "react";
 import styled from "styled-components";
 import { EpisodeType } from "../episode/episodes";
-import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 
 const DragItem = styled.div`
@@ -11,7 +10,8 @@ const DragItem = styled.div`
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     background: white;
-    margin: 0 0 4px 0;
+    margin: 0 0 3px 0;
+    border: 1px solid #d6d6d6;
     display: grid;
     flex-direction: column;
 `;
@@ -77,9 +77,9 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
 
         for (const item of newItems) {
             const isValid = item.episode.canPlayWith(playerCount);
-            week++;
+            if (isValid) week++;
             item.weekText = `${isValid ? `Week ${week}: F${playerCount}` : "N/A"}`;
-            playerCount -= item.episode.eliminates;
+            if (isValid) playerCount -= item.episode.eliminates;
             // delete all vanilla big brother episodes if player count is below 3
             if (isValid || item.episode !== BigBrotherVanilla) {
                 finalItems.push(item);
