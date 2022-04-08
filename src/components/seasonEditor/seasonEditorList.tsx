@@ -2,6 +2,9 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Draggable } from "react-beautiful-dnd";
 import React from "react";
 import styled from "styled-components";
+import { EpisodeType } from "../episode/episodes";
+import { DoubleEviction } from "../episode/doubleEvictionEpisode";
+import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 
 const DragItem = styled.div`
     padding: 10px;
@@ -29,7 +32,9 @@ const ListItem = ({
             {...provided.draggableProps}
             {...provided.dragHandleProps}
         >
-            <span>{`${item.weekText} | Double Eviction`}</span>
+            <span>{`${item.weekText}${
+                item.episode !== BigBrotherVanilla ? ` | ${item.episode.name}` : ""
+            }`}</span>
         </DragItem>
     );
 };
@@ -45,6 +50,7 @@ interface SeasonEditorListState {
 interface SeasonEditorListItem {
     id: string;
     weekText: string;
+    episode: EpisodeType;
 }
 
 export class SeasonEditorList extends React.Component<SeasonEditorListProps, SeasonEditorListState> {
@@ -54,7 +60,11 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         let week: number = 0;
         for (let i = props.castSize; i > 3; i--) {
             week++;
-            elements.push({ id: i.toString(), weekText: `Week ${week}: F${i}` });
+            elements.push({
+                id: i.toString(),
+                weekText: `Week ${week}: F${i}`,
+                episode: i === 16 ? DoubleEviction : BigBrotherVanilla,
+            });
         }
         this.state = { items: elements };
     }
