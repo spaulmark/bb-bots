@@ -4,16 +4,18 @@ import React from "react";
 import styled from "styled-components";
 import { EpisodeType } from "../episode/episodes";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
+import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 
 const DragItem = styled.div`
     padding: 10px;
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    background: white;
+    background: #444346;
     margin: 0 0 3px 0;
-    border: 1px solid #d6d6d6;
+    border: 1px solid #6c6c6c;
     display: grid;
     flex-direction: column;
+    color: #fff;
 `;
 
 const ListItem = ({
@@ -64,7 +66,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             elements.push({
                 id: (this.id++).toString(),
                 weekText: `Week ${week}: F${i}`,
-                episode: BigBrotherVanilla,
+                episode: i === 16 ? DoubleEviction : BigBrotherVanilla,
             });
         }
         this.state = { items: elements };
