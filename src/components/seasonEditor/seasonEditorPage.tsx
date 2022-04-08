@@ -25,6 +25,7 @@ export function SeasonEditorPage(): JSX.Element {
             </div>
             <div className="column">
                 <Subheader>Add Twists</Subheader>
+                <hr />
                 <HasText>
                     <Centered>[Twists go here]</Centered>
                     <Centered>Edit Jury Size</Centered>
