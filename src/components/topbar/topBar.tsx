@@ -16,7 +16,7 @@ export function AdvancedEditLink(): JSX.Element {
     return (
         <TopbarLink
             onClick={() => {
-                mainContentStream$.next(<CastingScreen cast={getCast()} />);
+                mainContentStream$.next(<CastingScreen cast={JSON.parse(JSON.stringify(getCast()))} />);
             }}
         >
             Edit / Upload Cast

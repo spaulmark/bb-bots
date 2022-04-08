@@ -8,9 +8,8 @@ const DragItem = styled.div`
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     background: white;
-    margin: 0 0 8px 0;
+    margin: 0 0 4px 0;
     display: grid;
-    grid-gap: 20px;
     flex-direction: column;
 `;
 
@@ -30,7 +29,7 @@ const ListItem = ({
             {...provided.draggableProps}
             {...provided.dragHandleProps}
         >
-            <span>{item.content}</span>
+            <span>{`${item.weekText} | Double Eviction`}</span>
         </DragItem>
     );
 };
@@ -45,15 +44,17 @@ interface SeasonEditorListState {
 
 interface SeasonEditorListItem {
     id: string;
-    content: string;
+    weekText: string;
 }
 
 export class SeasonEditorList extends React.Component<SeasonEditorListProps, SeasonEditorListState> {
     public constructor(props: SeasonEditorListProps) {
         super(props);
         const elements: SeasonEditorListItem[] = [];
+        let week: number = 0;
         for (let i = props.castSize; i > 3; i--) {
-            elements.push({ id: i.toString(), content: "F" + i + ": BB" });
+            week++;
+            elements.push({ id: i.toString(), weekText: `Week ${week}: F${i}` });
         }
         this.state = { items: elements };
     }
@@ -66,6 +67,13 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             const newItems = Array.from(this.state.items);
             const [removed] = newItems.splice(result.source.index, 1);
             newItems.splice(result.destination.index, 0, removed);
+            let week: number = 0;
+            // TODO: make it so that if your twists go off the edge of the game,
+            // it just says N/A instead of "Week X: FX"
+            for (let i = 0; i < this.props.castSize - 3; i++) {
+                week++;
+                newItems[i].weekText = `Week ${week}: F${this.props.castSize - i}`;
+            }
 
             this.setState({ items: newItems });
         };
