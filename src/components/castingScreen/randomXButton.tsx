@@ -7,7 +7,7 @@ interface RandomButtonProps {
 export function RandomButton(props: RandomButtonProps): JSX.Element {
     const [number, setNumber] = useState("16");
     return (
-        <div>
+        <div style={{ display: "flex" }}>
             <button
                 disabled={number === ""}
                 className="button is-primary"
@@ -32,7 +32,7 @@ function NumericInput(props: NumericInputProps) {
             type="text"
             style={{ width: "3em", marginLeft: 5 }}
             value={props.value}
-            onChange={event => {
+            onChange={(event) => {
                 const value = event.target.value;
                 if (/^\d*$/g.test(value)) {
                     props.onChange(value);
