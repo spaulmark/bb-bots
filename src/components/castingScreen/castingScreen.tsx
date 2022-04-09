@@ -185,7 +185,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                             disabled={this.state.players.length < 3}
                             onClick={this.submit}
                         >
-                            Submit
+                            Next
                         </button>
                     </div>
                 </HasText>

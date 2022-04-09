@@ -183,7 +183,7 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
                             disabled={this.state.selectedDecks.size === 0}
                             onClick={() => submitCasts(this.state.selectedDecks)}
                         >
-                            Submit
+                            Next
                         </button>
                     </div>
                 </div>
