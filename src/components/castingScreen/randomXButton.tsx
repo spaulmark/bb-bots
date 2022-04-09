@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { NumericInput } from "./numericInput";
 
 interface RandomButtonProps {
     random: (n: number) => void;
@@ -17,27 +18,5 @@ export function RandomButton(props: RandomButtonProps): JSX.Element {
             </button>
             <NumericInput value={number} onChange={setNumber} />
         </div>
-    );
-}
-
-interface NumericInputProps {
-    value: string;
-    onChange: (newValue: string) => void;
-}
-
-function NumericInput(props: NumericInputProps) {
-    return (
-        <input
-            className="input"
-            type="text"
-            style={{ width: "3em", marginLeft: 5 }}
-            value={props.value}
-            onChange={(event) => {
-                const value = event.target.value;
-                if (/^\d*$/g.test(value)) {
-                    props.onChange(value);
-                }
-            }}
-        />
     );
 }

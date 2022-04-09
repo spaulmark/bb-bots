@@ -66,7 +66,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             elements.push({
                 id: (this.id++).toString(),
                 weekText: `Week ${week}: F${i}`,
-                episode: i === 16 ? DoubleEviction : BigBrotherVanilla,
+                episode: i === props.castSize ? DoubleEviction : BigBrotherVanilla,
             });
         }
         this.state = { items: elements };

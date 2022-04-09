@@ -14,6 +14,17 @@ export function finalJurySize() {
 // 7 is not a magic number: it is just an arbitrary value which is always overwritten by cast$ before it is read.
 let jurors = 7;
 
+export function validateJurySize(j: number): boolean {
+    return j >= 1 && j % 2 === 1 && cast$.value.length - 2 > j;
+}
+
+export function manualOverrideJurors(newJurors: number) {
+    if (!validateJurySize(newJurors)) {
+        return;
+    }
+    jurors = newJurors;
+}
+
 const sub = cast$.subscribe({
     next: (newCast) => {
         let players = newCast.length;
