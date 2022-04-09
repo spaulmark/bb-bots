@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { finalJurySize, manualOverrideJurors, validateJurySize } from "../../model/season";
-import { cast$, mainContentStream$ } from "../../subjects/subjects";
+import { cast$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
 import { Centered } from "../layout/centered";
 import { HasText } from "../layout/text";
 import { Noselect } from "../playerPortrait/setupPortrait";
-import { Tooltip } from "../tooltip/tooltip";
 import { SeasonEditorList } from "./seasonEditorList";
 
 const Subheader = styled.h3`

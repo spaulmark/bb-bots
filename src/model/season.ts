@@ -62,9 +62,6 @@ export class Season {
         if (players === 2) {
             return GameOver;
         }
-        if (players >= 5) {
-            return DoubleEviction;
-        }
 
         // TODO: make safety chain into a big brother canada safety chain
         ///// commented out lines make every 4th episode a safety chain
