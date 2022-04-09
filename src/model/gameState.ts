@@ -2,7 +2,7 @@ import { Houseguest } from "./houseguest";
 import { PlayerProfile } from "./playerProfile";
 import _ from "lodash";
 import { newRelationshipMap, rng } from "../utils";
-import { finalJurySize, getFinalists } from "./season";
+import { getFinalists } from "./season";
 import { EpisodeLog } from "./logging/episodelog";
 import { Cliques } from "../utils/generateCliques";
 
@@ -33,7 +33,7 @@ export function getJurors(gameState: GameState): Houseguest[] {
 }
 
 export function inJury(gameState: GameState): Boolean {
-    return gameState.remainingPlayers - getFinalists() <= finalJurySize();
+    return gameState.remainingPlayers - getFinalists() <= gameState.finalJurySize();
 }
 
 export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
@@ -49,12 +49,38 @@ export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
     return count === 0 ? 0 : sum / count;
 }
 
-export class GameState {
+export function defaultJurySize(castSize: number): number {
+    castSize = Math.round(castSize * 0.55);
+    if (castSize % 2 === 0) {
+        castSize--;
+    }
+    return castSize;
+}
+
+export function validateJurySize(j: number, castSize: number): boolean {
+    return j >= 1 && j % 2 === 1 && castSize - 2 > j;
+}
+
+class _GameState {
+    private jurors: number = 0;
+    readonly houseguests: Houseguest[] = [];
+
+    public finalJurySize() {
+        return this.jurors;
+    }
+    set jurySize(j: number) {
+        if (!validateJurySize(j, this.houseguests.length)) {
+            return;
+        }
+        this.jurors = j;
+    }
+}
+
+export class GameState extends _GameState {
     // State of the game after a phase.
 
     readonly houseguestCache: { [id: number]: Houseguest } = {};
     readonly nonEvictedHouseguests: Set<number> = new Set<number>();
-    readonly houseguests: Houseguest[] = [];
     readonly remainingPlayers: number = 0;
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest;
@@ -63,7 +89,7 @@ export class GameState {
 
     public __logindex__: number = 0;
     get currentLog(): EpisodeLog {
-        if (!this.log[this.phase]) return new EpisodeLog();
+        if (!this.log[this.phase]) return new EpisodeLog(); // an unused episode log, kind of like /dev/null
         return this.log[this.phase][this.__logindex__];
     }
     public incrementLogIndex() {
@@ -75,6 +101,7 @@ export class GameState {
     }
 
     public constructor(init: PlayerProfile[] | GameState) {
+        super();
         if (!(init instanceof Array)) {
             Object.assign(this, init);
         } else {
@@ -91,11 +118,13 @@ export class GameState {
                 this.houseguests.push(hg);
             });
         }
+        if (!this.finalJurySize()) {
+            this.jurySize = defaultJurySize(this.houseguests.length);
+        }
     }
 }
 
-export class MutableGameState {
-    public houseguests: Houseguest[] = [];
+export class MutableGameState extends _GameState {
     public houseguestCache: { [id: number]: Houseguest } = {};
     readonly nonEvictedHouseguests: Set<number> = new Set<number>();
     public remainingPlayers: number = 0;
@@ -118,6 +147,7 @@ export class MutableGameState {
     }
 
     public constructor(init: GameState | MutableGameState) {
+        super();
         const copy = _.cloneDeep(init);
         Object.assign(this, copy);
     }

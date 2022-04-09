@@ -9,7 +9,7 @@ import {
     inJury,
     MutableGameState,
 } from "../../../model";
-import { getFinalists, finalJurySize } from "../../../model/season";
+import { getFinalists } from "../../../model/season";
 import { average, roundTwoDigits } from "../../../utils";
 import { pHeroWinsTheFinale } from "../../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
@@ -19,7 +19,7 @@ export function evictHouseguest(gameState: MutableGameState, id: number): GameSt
     const evictee = getById(gameState, id);
     if (gameState.currentLog) gameState.currentLog.evicted = evictee.id;
     evictee.isEvicted = true;
-    if (gameState.remainingPlayers - getFinalists() <= finalJurySize()) {
+    if (gameState.remainingPlayers - getFinalists() <= gameState.finalJurySize()) {
         evictee.isJury = true;
     }
     gameState.nonEvictedHouseguests.delete(evictee.id);

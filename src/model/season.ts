@@ -3,38 +3,7 @@ import { EpisodeFactory } from "../components/episode/episodeFactory";
 import { GameState } from "./gameState";
 import { Episode } from ".";
 import { BigBrotherFinale } from "../components/episode/bigBrotherFinale";
-import { cast$ } from "../subjects/subjects";
 import { GameOver } from "../components/episode/gameOver";
-import { DoubleEviction } from "../components/episode/doubleEvictionEpisode";
-
-export function finalJurySize() {
-    return jurors;
-}
-
-// 7 is not a magic number: it is just an arbitrary value which is always overwritten by cast$ before it is read.
-let jurors = 7;
-
-export function validateJurySize(j: number): boolean {
-    return j >= 1 && j % 2 === 1 && cast$.value.length - 2 > j;
-}
-
-export function manualOverrideJurors(newJurors: number) {
-    if (!validateJurySize(newJurors)) {
-        return;
-    }
-    jurors = newJurors;
-}
-
-const sub = cast$.subscribe({
-    next: (newCast) => {
-        let players = newCast.length;
-        players = Math.round(players * 0.55);
-        if (players % 2 === 0) {
-            players--;
-        }
-        jurors = players;
-    },
-});
 
 export function getFinalists() {
     return 2;
@@ -54,7 +23,8 @@ export class Season {
         return this.factory.nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers));
     }
 
-    // TODO: this function needs to get injected or something
+    // TODO: this function needs to get injected or something,
+    // also this class should have jury size in it
     public whichEpisodeType(players: number) {
         if (players === 3) {
             return BigBrotherFinale;

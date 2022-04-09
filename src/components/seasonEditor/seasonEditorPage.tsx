@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { finalJurySize, manualOverrideJurors, validateJurySize } from "../../model/season";
+import { defaultJurySize, validateJurySize } from "../../model/gameState";
 import { cast$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
 import { Centered } from "../layout/centered";
@@ -14,8 +14,8 @@ const Subheader = styled.h3`
 `;
 
 export function SeasonEditorPage(): JSX.Element {
-    const [jurySize, setJurySize] = useState(finalJurySize().toString());
-    const validJurySize = validateJurySize(parseInt(jurySize));
+    const [jurySize, setJurySize] = useState(`${defaultJurySize(cast$.value.length)}`);
+    const validJurySize = validateJurySize(parseInt(jurySize), cast$.value.length);
     const numericInputStyle: any = { marginLeft: "1em" };
     if (!validJurySize) {
         numericInputStyle["border"] = "2px solid #fb8a8a";
@@ -48,7 +48,8 @@ export function SeasonEditorPage(): JSX.Element {
                     className="button is-success"
                     style={{ float: "right" }}
                     onClick={() => {
-                        manualOverrideJurors(parseInt(jurySize));
+                        // TODO: inject jurors somehow when setting up
+                        // manualOverrideJurors(parseInt(jurySize));
                         // TODO: inject the custom season
                         // TODO: terrifying intial setup stuff
                     }}
