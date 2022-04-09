@@ -31,6 +31,11 @@ export function SeasonEditorPage(): JSX.Element {
                     <Centered>Edit Jury Size</Centered>
                 </HasText>
             </div>
+            <div className="column is-narrow" style={{ padding: 40 }}>
+                <button className="button is-success" style={{ float: "right" }} onClick={() => {}}>
+                    Submit
+                </button>
+            </div>
         </div>
     );
 }
