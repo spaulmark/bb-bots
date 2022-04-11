@@ -5,9 +5,11 @@ interface NumericInputProps {
     value: string;
     onChange: (newValue: string) => void;
     style?: any;
+    className?: string;
+    placeholder?: string;
 }
 
-const NumericInputStyled = styled.input`
+export const NumericInputStyle = styled.input`
     width: 3em;
     marginleft: 5px;
 `;
@@ -15,11 +17,12 @@ const NumericInputStyled = styled.input`
 export function NumericInput(props: NumericInputProps) {
     const style = props.style || {};
     return (
-        <NumericInputStyled
+        <NumericInputStyle
             type="text"
-            className="input"
+            className={`input${props.className ? ` ${props.className}` : ""}`}
             style={style}
             value={props.value}
+            placeholder={props.placeholder || ""}
             onChange={(event) => {
                 const value = event.target.value;
                 if (/^\d*$/g.test(value)) {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
 import { cast$, mainContentStream$, newEpisode } from "../../subjects/subjects";
-import { NumericInput } from "../castingScreen/numericInput";
+import { NumericInput, NumericInputStyle } from "../castingScreen/numericInput";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { Centered } from "../layout/centered";
 import { HasText } from "../layout/text";
@@ -13,6 +13,10 @@ import { SeasonEditorList } from "./seasonEditorList";
 
 const Subheader = styled.h3`
     text-align: center;
+    color: #fff;
+`;
+
+const Label = styled.label`
     color: #fff;
 `;
 
@@ -32,11 +36,6 @@ export function SeasonEditorPage(): JSX.Element {
     const castLength = cast$.value.length;
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
     const validJurySize = validateJurySize(parseInt(jurySize), castLength);
-    const numericInputStyle: any = { marginLeft: "1em" };
-    if (!validJurySize) {
-        numericInputStyle["border"] = "2px solid #fb8a8a";
-        numericInputStyle["borderRadius"] = "3px";
-    }
     return (
         <div className="columns">
             <div className="column is-one-quarter">
@@ -48,25 +47,55 @@ export function SeasonEditorPage(): JSX.Element {
                     <SeasonEditorList castSize={castLength} />
                 </Noselect>
             </div>
-            <div className="column">
+            <div className="column" style={{ padding: 20 }}>
                 <Subheader>Add Twists</Subheader>
                 <hr />
-                <HasText>
-                    <Centered>
-                        <button className="button is-small is-danger" style={{ marginRight: 10 }}>
-                            -
-                        </button>
-                        Double Eviction
-                        <button className="button is-small is-success" style={{ marginLeft: 10 }}>
-                            +
-                        </button>
-                    </Centered>
-                    <Centered style={validJurySize ? {} : { color: "#fb8a8a" }}>
-                        Change Jury Size:
-                        <NumericInput value={jurySize} onChange={setJurySize} style={numericInputStyle} />
-                        <br />
-                        <small>{validJurySize ? `(Jury starts at F${parseInt(jurySize) + 2})` : ""}</small>
-                    </Centered>
+
+                <div className="columns is-multiline is-centered">
+                    <div className="column is-narrow">
+                        <div className="field has-addons has-addons-centered">
+                            <p
+                                className="field-label is-normal control"
+                                style={{ textAlign: "right", marginRight: "1em" }}
+                            >
+                                <Label className="label">Double Eviction</Label>
+                            </p>
+                            <p className="control">
+                                <a className="button is-danger">-</a>
+                            </p>
+                            <p className="control">
+                                <NumericInputStyle className="input" readOnly value="0" />
+                            </p>
+                            <p className="control">
+                                <a className="button is-success">+</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div className="column is-narrow"></div>
+                </div>
+                <HasText className="field is-horizontal centered">
+                    <div className="field-label is-normal">
+                        <Label className="label" style={validJurySize ? {} : { color: "#fb8a8a" }}>
+                            Jury Size:
+                        </Label>
+                    </div>
+                    <div className="field-body">
+                        <div className="field">
+                            <div className="control">
+                                <NumericInput
+                                    className={validJurySize ? undefined : "is-danger"}
+                                    value={jurySize}
+                                    onChange={setJurySize}
+                                    placeholder={`${defaultJurySize(castLength)}`}
+                                />
+                            </div>
+                            <p className="help" style={validJurySize ? {} : { color: "#fb8a8a" }}>
+                                {validJurySize
+                                    ? `(Jury starts at F${parseInt(jurySize) + 2})`
+                                    : `Jury must be an odd number < ${castLength - 2}`}
+                            </p>
+                        </div>
+                    </div>
                 </HasText>
             </div>
             <div className="column is-narrow" style={{ padding: 40 }}>
