@@ -46,4 +46,5 @@ export interface EpisodeType {
     readonly arrowsEnabled: boolean;
     readonly hasViewsbar: boolean;
     readonly name: string;
+    readonly generate: (gameState: GameState) => Episode;
 }

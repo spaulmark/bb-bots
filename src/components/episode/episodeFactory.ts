@@ -60,19 +60,6 @@ export class EpisodeFactory {
             throw new Error(
                 `Episode type ${episodeType.name} not playable with ${finalState.remainingPlayers} players`
             );
-        switch (episodeType) {
-            case BigBrotherVanilla:
-                return generateBbVanilla(finalState);
-            case BigBrotherFinale:
-                return generateBbFinale(finalState);
-            case SafetyChain:
-                return generateSafetyChain(finalState);
-            case GameOver:
-                return generateGameOver(finalState);
-            case DoubleEviction:
-                return generateDoubleEviction(finalState);
-            default:
-                throw new Error("Unsupported Episode Type");
-        }
+        return episodeType.generate(finalState);
     }
 }

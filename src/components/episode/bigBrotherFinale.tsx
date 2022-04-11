@@ -15,6 +15,7 @@ export const BigBrotherFinale: EpisodeType = {
     arrowsEnabled: true,
     hasViewsbar: true,
     name: "Big Brother Finale",
+    generate: generateBbFinale,
 };
 
 export function generateBbFinale(initialGameState: GameState): BigBrotherFinaleEpisode {

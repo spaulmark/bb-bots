@@ -14,6 +14,7 @@ export const SafetyChain: EpisodeType = {
     arrowsEnabled: true,
     hasViewsbar: true,
     name: "Safety Chain",
+    generate: generateSafetyChain,
 };
 
 export function generateSafetyChain(initialGameState: GameState): SafetyChainEpisode {

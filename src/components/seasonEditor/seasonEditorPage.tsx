@@ -16,7 +16,7 @@ const Subheader = styled.h3`
     color: #fff;
 `;
 
-const submit = async (): Promise<any> => {
+const submit = async (): Promise<void> => {
     mainContentStream$.next(<PregameScreen cast={cast$.value} />);
     selectPlayer(null);
     // vscode says the awaits are unnessecary here,

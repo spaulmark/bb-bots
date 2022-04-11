@@ -20,6 +20,7 @@ export const BigBrotherVanilla: EpisodeType = {
     arrowsEnabled: true,
     hasViewsbar: true,
     name: "BigBrotherVanilla",
+    generate: generateBbVanilla,
 };
 
 const TabItem = styled.li`
