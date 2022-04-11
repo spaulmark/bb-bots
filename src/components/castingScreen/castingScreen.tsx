@@ -1,14 +1,11 @@
 import React from "react";
 import FileDrop from "react-file-drop";
-import { PlayerProfile, GameState } from "../../model";
+import { PlayerProfile } from "../../model";
 import { SetupPortrait } from "../playerPortrait/setupPortrait";
-import { ImportLinks } from "./importLinks";
-import { PregameScreen } from "../pregameScreen/pregameScreen";
-import { PregameEpisode } from "../episode/pregameEpisode";
 import { shuffle } from "lodash";
 import { RandomButton } from "./randomXButton";
-import { selectCastPlayer, selectPlayer } from "../playerPortrait/selectedPortrait";
-import { mainContentStream$, newEpisode, selectedCastPlayer$, updateCast } from "../../subjects/subjects";
+import { selectCastPlayer } from "../playerPortrait/selectedPortrait";
+import { mainContentStream$, selectedCastPlayer$, updateCast } from "../../subjects/subjects";
 import { HasText, Input } from "../layout/text";
 import { Centered } from "../layout/centered";
 import { Subscription } from "rxjs";
@@ -136,7 +133,6 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         return (
             <FileDrop onDrop={this.handleDrop}>
                 <HasText className="level">
-                    <ImportLinks onSubmit={this.appendProfiles} />
                     <div className="level-item">
                         <button
                             className="button is-danger"

@@ -8,15 +8,19 @@ interface RandomButtonProps {
 export function RandomButton(props: RandomButtonProps): JSX.Element {
     const [number, setNumber] = useState("16");
     return (
-        <div style={{ display: "flex" }}>
-            <button
-                disabled={number === ""}
-                className="button is-primary"
-                onClick={() => props.random(parseInt(number))}
-            >
-                Random
-            </button>
-            <NumericInput value={number} onChange={setNumber} />
+        <div className="field has-addons" style={{ display: "flex" }}>
+            <div className="control">
+                <button
+                    disabled={number === ""}
+                    className="button is-primary"
+                    onClick={() => props.random(parseInt(number))}
+                >
+                    Random
+                </button>
+            </div>
+            <div className="control">
+                <NumericInput value={number} onChange={setNumber} />
+            </div>
         </div>
     );
 }

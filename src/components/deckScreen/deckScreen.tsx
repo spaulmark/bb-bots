@@ -157,7 +157,7 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
                 <div className="level">
                     <div className="level-item">
                         <input
-                            style={{ marginBottom: "1.5rem", minWidth: "50%" }}
+                            style={{ minWidth: "50%" }}
                             className="input"
                             type="text"
                             placeholder="Search..."
