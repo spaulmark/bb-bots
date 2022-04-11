@@ -1,15 +1,10 @@
 import { GameState, MutableGameState } from "../../model/gameState";
 import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
-import { BigBrotherVanilla, generateBbVanilla } from "./bigBrotherEpisode";
-import { BigBrotherFinale, generateBbFinale } from "./bigBrotherFinale";
 import { angleBetween, rng } from "../../utils";
-import { GameOver, generateGameOver } from "./gameOver";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
-import { generateSafetyChain, SafetyChain } from "./safetyChain";
 import _ from "lodash";
-import { DoubleEviction, generateDoubleEviction } from "./doubleEvictionEpisode";
 import { refreshHgStats } from "./utilities/evictHouseguest";
 
 export function canDisplayCliques(newState: GameState): boolean {

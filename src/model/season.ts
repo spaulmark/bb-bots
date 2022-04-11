@@ -16,9 +16,6 @@ export class Season {
         this.factory = new EpisodeFactory();
     }
 
-    // In the future, this would all be customizable,
-    // and not just all big brother episodes by default.
-
     public renderEpisode(gameState: GameState): Episode {
         return this.factory.nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers));
     }
