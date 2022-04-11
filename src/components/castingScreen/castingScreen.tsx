@@ -14,6 +14,7 @@ import { Centered } from "../layout/centered";
 import { Subscription } from "rxjs";
 import _ from "lodash";
 import { HelpLink } from "../episode/allianceList";
+import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 
 interface CastingScreenProps {
     cast?: PlayerProfile[];
@@ -100,14 +101,9 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         this.setState(newState);
     };
 
-    private submit = async () => {
+    private submit = () => {
         updateCast(this.state.players);
-        mainContentStream$.next(<PregameScreen cast={this.state.players} />);
-        selectPlayer(null);
-        // vscode says the awaits are unnessecary here,
-        await newEpisode(null);
-        // but if you remove them then bad things happen
-        await newEpisode(new PregameEpisode(new GameState(this.state.players)));
+        mainContentStream$.next(<SeasonEditorPage />);
     };
 
     private random = (_amount: number) => {

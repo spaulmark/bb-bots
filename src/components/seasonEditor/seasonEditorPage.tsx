@@ -1,17 +1,29 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { defaultJurySize, validateJurySize } from "../../model/gameState";
-import { cast$ } from "../../subjects/subjects";
+import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
+import { cast$, mainContentStream$, newEpisode } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
+import { PregameEpisode } from "../episode/pregameEpisode";
 import { Centered } from "../layout/centered";
 import { HasText } from "../layout/text";
+import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
+import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { SeasonEditorList } from "./seasonEditorList";
 
 const Subheader = styled.h3`
     text-align: center;
     color: #fff;
 `;
+
+const submit = async (): Promise<any> => {
+    mainContentStream$.next(<PregameScreen cast={cast$.value} />);
+    selectPlayer(null);
+    // vscode says the awaits are unnessecary here,
+    await newEpisode(null);
+    // but if you remove them then bad things happen
+    await newEpisode(new PregameEpisode(new GameState(cast$.value)));
+};
 
 export function SeasonEditorPage(): JSX.Element {
     const [jurySize, setJurySize] = useState(`${defaultJurySize(cast$.value.length)}`);
@@ -51,7 +63,7 @@ export function SeasonEditorPage(): JSX.Element {
                         // TODO: inject jurors somehow when setting up
                         // manualOverrideJurors(parseInt(jurySize));
                         // TODO: inject the custom season
-                        // TODO: terrifying intial setup stuff
+                        submit();
                     }}
                 >
                     Submit
