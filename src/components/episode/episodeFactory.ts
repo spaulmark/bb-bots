@@ -36,25 +36,23 @@ function firstImpressions(houseguests: Houseguest[]) {
     }
 }
 
-export class EpisodeFactory {
-    public nextEpisode(gameState: GameState, episodeType: EpisodeType): Episode {
-        let newState = new MutableGameState(gameState);
-        if (gameState.phase === 0) {
-            firstImpressions(newState.houseguests);
-        }
-        newState.phase++;
-        newState.resetLogIndex();
-        if (gameState.remainingPlayers > 2) {
-            newState.log[newState.phase] = [new EpisodeLog()];
-        }
-        refreshHgStats(newState);
-
-        if (canDisplayCliques(newState)) newState.cliques = generateCliques(newState);
-        const finalState = new GameState(newState);
-        if (!episodeType.canPlayWith(finalState.remainingPlayers))
-            throw new Error(
-                `Episode type ${episodeType.name} not playable with ${finalState.remainingPlayers} players`
-            );
-        return episodeType.generate(finalState);
+export function nextEpisode(gameState: GameState, episodeType: EpisodeType): Episode {
+    let newState = new MutableGameState(gameState);
+    if (gameState.phase === 0) {
+        firstImpressions(newState.houseguests);
     }
+    newState.phase++;
+    newState.resetLogIndex();
+    if (gameState.remainingPlayers > 2) {
+        newState.log[newState.phase] = [new EpisodeLog()];
+    }
+    refreshHgStats(newState);
+
+    if (canDisplayCliques(newState)) newState.cliques = generateCliques(newState);
+    const finalState = new GameState(newState);
+    if (!episodeType.canPlayWith(finalState.remainingPlayers))
+        throw new Error(
+            `Episode type ${episodeType.name} not playable with ${finalState.remainingPlayers} players`
+        );
+    return episodeType.generate(finalState);
 }
