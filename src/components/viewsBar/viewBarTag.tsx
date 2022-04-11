@@ -1,9 +1,16 @@
 import React from "react";
-import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
-import { displayMode$ } from "../../subjects/subjects";
+import { PortraitDisplayMode, powerMode } from "../../model/portraitDisplayMode";
+import { displayMode$, getSelectedPlayer, selectedPlayer$ } from "../../subjects/subjects";
 import { Subscription } from "rxjs";
 
 function setDisplayMode(p: PortraitDisplayMode) {
+    if (p === powerMode) {
+        const player = getSelectedPlayer();
+        console.log(player);
+        if (player && (!player.superiors || Object.keys(player.superiors).length === 0)) {
+            selectedPlayer$.next(null);
+        }
+    }
     displayMode$.next(p);
 }
 
