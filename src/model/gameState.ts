@@ -58,7 +58,7 @@ export function defaultJurySize(castSize: number): number {
 }
 
 export function validateJurySize(j: number, castSize: number): boolean {
-    return j >= 1 && j % 2 === 1 && castSize - 2 > j;
+    return j >= 1 && j % 2 === 1 && castSize - 2 >= j;
 }
 
 class _GameState {
@@ -100,6 +100,7 @@ export class GameState extends _GameState {
         this.__logindex__ = 0;
     }
 
+    // TODO: a way to pass in the jury size
     public constructor(init: PlayerProfile[] | GameState) {
         super();
         if (!(init instanceof Array)) {
