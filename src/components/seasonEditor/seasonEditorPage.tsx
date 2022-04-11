@@ -3,22 +3,26 @@ import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
 import { cast$, mainContentStream$, newEpisode } from "../../subjects/subjects";
 import { NumericInput, NumericInputStyle } from "../castingScreen/numericInput";
+import { DoubleEviction } from "../episode/doubleEvictionEpisode";
+import { EpisodeType } from "../episode/episodes";
 import { PregameEpisode } from "../episode/pregameEpisode";
-import { Centered } from "../layout/centered";
 import { HasText } from "../layout/text";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { SeasonEditorList } from "./seasonEditorList";
+import { TwistAdder } from "./twistAdder";
 
 const Subheader = styled.h3`
     text-align: center;
     color: #fff;
 `;
 
-const Label = styled.label`
+export const Label = styled.label`
     color: #fff;
 `;
+
+const twists: EpisodeType[] = [DoubleEviction];
 
 const submit = async (jury: number): Promise<void> => {
     // TODO: generate episode library and pass it to the sidebar via a subject
@@ -52,37 +56,9 @@ export function SeasonEditorPage(): JSX.Element {
                 <Subheader>Add Twists</Subheader>
                 <hr />
                 <div className="columns is-multiline is-centered">
-                    <div className="column is-narrow">
-                        <div className="field has-addons has-addons-centered">
-                            <p
-                                className="field-label is-normal control"
-                                style={{ textAlign: "right", marginRight: "1em" }}
-                            >
-                                <Label className="label">Double Eviction</Label>
-                            </p>
-                            <p className="control">
-                                <button
-                                    className="button is-danger"
-                                    disabled={doubleEvictions === 0}
-                                    onClick={() => setDEs(doubleEvictions - 1)}
-                                >
-                                    -
-                                </button>
-                            </p>
-                            <p className="control">
-                                <NumericInputStyle className="input" readOnly value={`${doubleEvictions}`} />
-                            </p>
-                            <p className="control">
-                                <button
-                                    className="button is-success"
-                                    onClick={() => setDEs(doubleEvictions + 1)}
-                                >
-                                    +
-                                </button>
-                            </p>
-                        </div>
-                    </div>
-                    <div className="column is-narrow"></div>
+                    {twists.map((type) => (
+                        <TwistAdder type={type} key={type.name} />
+                    ))}
                 </div>
                 <HasText className="field is-horizontal centered">
                     <div className="field-label is-normal">
