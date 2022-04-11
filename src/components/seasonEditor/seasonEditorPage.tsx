@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
+import { getFinalists } from "../../model/season";
 import { cast$, mainContentStream$, newEpisode } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
 import { PregameEpisode } from "../episode/pregameEpisode";
@@ -29,8 +30,9 @@ const submit = async (jury: number): Promise<void> => {
 };
 
 export function SeasonEditorPage(): JSX.Element {
-    const [jurySize, setJurySize] = useState(`${defaultJurySize(cast$.value.length)}`);
-    const validJurySize = validateJurySize(parseInt(jurySize), cast$.value.length);
+    const castLength = cast$.value.length;
+    const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
+    const validJurySize = validateJurySize(parseInt(jurySize), castLength);
     const numericInputStyle: any = { marginLeft: "1em" };
     if (!validJurySize) {
         numericInputStyle["border"] = "2px solid #fb8a8a";
@@ -44,7 +46,7 @@ export function SeasonEditorPage(): JSX.Element {
                 </HasText>
                 <hr />
                 <Noselect>
-                    <SeasonEditorList castSize={cast$.value.length} />
+                    <SeasonEditorList castSize={castLength} />
                 </Noselect>
             </div>
             <div className="column">
@@ -55,6 +57,10 @@ export function SeasonEditorPage(): JSX.Element {
                     <Centered style={validJurySize ? {} : { color: "#fb8a8a" }}>
                         Change Jury Size:
                         <NumericInput value={jurySize} onChange={setJurySize} style={numericInputStyle} />
+                        <br />
+                        <small>
+                            {validJurySize ? `(Jury starts at F${parseInt(jurySize) + getFinalists()})` : ""}
+                        </small>
                     </Centered>
                 </HasText>
             </div>
