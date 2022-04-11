@@ -24,20 +24,18 @@ export function evictHouseguest(gameState: MutableGameState, id: number): GameSt
     }
     gameState.nonEvictedHouseguests.delete(evictee.id);
     gameState.remainingPlayers--;
-
-    // If jury starts this episode, populate superior/inferior data. In the future, every jury ep. (dynamic rels)
     refreshHgStats(gameState);
     return gameState;
 }
 
-export function refreshHgStats(gameState: MutableGameState) {
+export function refreshHgStats(gameState: MutableGameState, updateDelta: boolean = false) {
     if (inJury(gameState) && getJurors(gameState).length === 0) {
         populateSuperiors(nonEvictedHouseguests(gameState));
     }
     if (inJury(gameState)) {
         updatePowerRankings(nonEvictedHouseguests(gameState));
     }
-    updatePopularity(gameState);
+    updatePopularity(gameState, updateDelta);
     gameState.remainingPlayers > 2 && updateFriendCounts(gameState);
 }
 
@@ -62,12 +60,13 @@ function updatePowerRankings(houseguests: Houseguest[]) {
     });
 }
 
-function updatePopularity(gameState: GameState) {
+function updatePopularity(gameState: GameState, updateDelta: boolean = false) {
     const houseguests = nonEvictedHouseguests(gameState);
     houseguests.forEach((hg) => {
         hg.targetingMe = 0;
         const result = calculatePopularity(hg, nonEvictedHouseguests(gameState));
-        hg.deltaPopularity = (roundTwoDigits(result) - roundTwoDigits(hg.popularity)) / 100;
+        if (updateDelta)
+            hg.deltaPopularity = (roundTwoDigits(result) - roundTwoDigits(hg.previousPopularity)) / 100;
         hg.popularity = result;
     });
 }

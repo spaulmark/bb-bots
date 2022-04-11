@@ -1,7 +1,7 @@
-import { GameState, MutableGameState } from "../../model/gameState";
+import { GameState, MutableGameState, nonEvictedHouseguests } from "../../model/gameState";
 import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
-import { angleBetween, rng } from "../../utils";
+import { angleBetween, rng, roundTwoDigits } from "../../utils";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
 import _ from "lodash";
@@ -46,8 +46,10 @@ export function nextEpisode(gameState: GameState, episodeType: EpisodeType): Epi
     if (gameState.remainingPlayers > 2) {
         newState.log[newState.phase] = [new EpisodeLog()];
     }
-    refreshHgStats(newState);
-
+    refreshHgStats(newState, true);
+    nonEvictedHouseguests(newState).forEach((hg) => {
+        hg.previousPopularity = hg.popularity;
+    });
     if (canDisplayCliques(newState)) newState.cliques = generateCliques(newState);
     const finalState = new GameState(newState);
     if (!episodeType.canPlayWith(finalState.remainingPlayers))

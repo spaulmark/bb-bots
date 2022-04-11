@@ -52,7 +52,15 @@ export function SeasonEditorPage(): JSX.Element {
                 <Subheader>Add Twists</Subheader>
                 <hr />
                 <HasText>
-                    <Centered>[Twists go here]</Centered>
+                    <Centered>
+                        <button className="button is-small is-danger" style={{ marginRight: 10 }}>
+                            -
+                        </button>
+                        Double Eviction
+                        <button className="button is-small is-success" style={{ marginLeft: 10 }}>
+                            +
+                        </button>
+                    </Centered>
                     <Centered style={validJurySize ? {} : { color: "#fb8a8a" }}>
                         Change Jury Size:
                         <NumericInput value={jurySize} onChange={setJurySize} style={numericInputStyle} />
