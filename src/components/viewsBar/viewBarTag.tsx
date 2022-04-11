@@ -6,7 +6,6 @@ import { Subscription } from "rxjs";
 function setDisplayMode(p: PortraitDisplayMode) {
     if (p === powerMode) {
         const player = getSelectedPlayer();
-        console.log(player);
         if (player && (!player.superiors || Object.keys(player.superiors).length === 0)) {
             selectedPlayer$.next(null);
         }
