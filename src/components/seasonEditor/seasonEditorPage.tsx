@@ -65,6 +65,7 @@ export function SeasonEditorPage(): JSX.Element {
                     onClick={() => {
                         submit(parseInt(jurySize));
                     }}
+                    disabled={!validJurySize}
                 >
                     Submit
                 </button>
