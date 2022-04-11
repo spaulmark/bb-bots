@@ -36,6 +36,7 @@ export function SeasonEditorPage(): JSX.Element {
     const castLength = cast$.value.length;
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
     const validJurySize = validateJurySize(parseInt(jurySize), castLength);
+    const [doubleEvictions, setDEs] = useState(0);
     return (
         <div className="columns">
             <div className="column is-one-quarter">
@@ -50,7 +51,6 @@ export function SeasonEditorPage(): JSX.Element {
             <div className="column" style={{ padding: 20 }}>
                 <Subheader>Add Twists</Subheader>
                 <hr />
-
                 <div className="columns is-multiline is-centered">
                     <div className="column is-narrow">
                         <div className="field has-addons has-addons-centered">
@@ -61,13 +61,24 @@ export function SeasonEditorPage(): JSX.Element {
                                 <Label className="label">Double Eviction</Label>
                             </p>
                             <p className="control">
-                                <a className="button is-danger">-</a>
+                                <button
+                                    className="button is-danger"
+                                    disabled={doubleEvictions === 0}
+                                    onClick={() => setDEs(doubleEvictions - 1)}
+                                >
+                                    -
+                                </button>
                             </p>
                             <p className="control">
-                                <NumericInputStyle className="input" readOnly value="0" />
+                                <NumericInputStyle className="input" readOnly value={`${doubleEvictions}`} />
                             </p>
                             <p className="control">
-                                <a className="button is-success">+</a>
+                                <button
+                                    className="button is-success"
+                                    onClick={() => setDEs(doubleEvictions + 1)}
+                                >
+                                    +
+                                </button>
                             </p>
                         </div>
                     </div>
