@@ -23,7 +23,6 @@ export class Season {
         return nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers));
     }
 
-    // TODO: this class should have jury size in it (or should it?)
     public whichEpisodeType(players: number) {
         if (players === 3) {
             return BigBrotherFinale;

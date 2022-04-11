@@ -1,7 +1,7 @@
 import React from "react";
 import { SidebarController } from "./sidebarController";
 import { PregameEpisode } from "../episode/pregameEpisode";
-import { Episode, GameState } from "../../model";
+import { defaultJurySize, Episode, GameState } from "../../model";
 import { Scene } from "../episode/scene";
 import { defaultCast, newEpisode } from "../../subjects/subjects";
 import { Box } from "../layout/box";
@@ -17,7 +17,11 @@ export class Sidebar extends React.Component<{}, SidebarState> {
         super(props);
         this.controller = new SidebarController(this);
         this.state = { episodes: [], selectedScene: 0 };
-        newEpisode(new PregameEpisode(new GameState(defaultCast)));
+        newEpisode(
+            new PregameEpisode(
+                new GameState({ players: defaultCast, jury: defaultJurySize(defaultCast.length) })
+            )
+        );
     }
 
     public componentDidMount() {

@@ -76,6 +76,11 @@ class _GameState {
     }
 }
 
+interface InitGameState {
+    players: PlayerProfile[];
+    jury: number;
+}
+
 export class GameState extends _GameState {
     // State of the game after a phase.
 
@@ -100,13 +105,13 @@ export class GameState extends _GameState {
         this.__logindex__ = 0;
     }
 
-    // TODO: a way to pass in the jury size
-    public constructor(init: PlayerProfile[] | GameState) {
+    public constructor(init: InitGameState | GameState) {
         super();
-        if (!(init instanceof Array)) {
+        if (init instanceof GameState || init instanceof MutableGameState) {
             Object.assign(this, init);
         } else {
-            const profiles = init as PlayerProfile[];
+            const _init = init as InitGameState;
+            const profiles = _init.players;
             this.remainingPlayers = profiles.length;
             profiles.forEach((profile, i) => {
                 const hg: Houseguest = new Houseguest({
@@ -118,6 +123,7 @@ export class GameState extends _GameState {
                 this.houseguestCache[i] = hg;
                 this.houseguests.push(hg);
             });
+            this.jurySize = _init.jury;
         }
         if (!this.finalJurySize()) {
             this.jurySize = defaultJurySize(this.houseguests.length);
