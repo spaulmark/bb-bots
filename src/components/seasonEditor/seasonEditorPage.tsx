@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
-import { getFinalists } from "../../model/season";
 import { cast$, mainContentStream$, newEpisode } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
 import { PregameEpisode } from "../episode/pregameEpisode";
@@ -52,15 +51,13 @@ export function SeasonEditorPage(): JSX.Element {
             <div className="column">
                 <Subheader>Add Twists</Subheader>
                 <hr />
-                <HasText style={{ position: "relative" }}>
+                <HasText>
                     <Centered>[Twists go here]</Centered>
                     <Centered style={validJurySize ? {} : { color: "#fb8a8a" }}>
                         Change Jury Size:
                         <NumericInput value={jurySize} onChange={setJurySize} style={numericInputStyle} />
                         <br />
-                        <small>
-                            {validJurySize ? `(Jury starts at F${parseInt(jurySize) + getFinalists()})` : ""}
-                        </small>
+                        <small>{validJurySize ? `(Jury starts at F${parseInt(jurySize) + 2})` : ""}</small>
                     </Centered>
                 </HasText>
             </div>
