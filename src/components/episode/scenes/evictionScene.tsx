@@ -3,24 +3,25 @@ import { Scene } from "../scene";
 import { shuffle } from "lodash";
 import { ProfileHouseguest } from "../../memoryWall";
 import { castEvictionVote } from "../../../utils/ai/aiApi";
-import { evictHouseguest } from "../bigBrotherEpisode";
 import { Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { CenteredBold, Centered } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { NomineeVote, NormalVote, HoHVote } from "../../../model/logging/voteType";
+import { evictHouseguest } from "../utilities/evictHouseguest";
 
 export function generateEvictionScene(
     initialGameState: GameState,
     HoH: Houseguest,
-    nominees: Houseguest[]
+    nominees: Houseguest[],
+    doubleEviction: boolean = false
 ): [GameState, Scene] {
-    const newGameState = new MutableGameState(initialGameState);
+    let newGameState = new MutableGameState(initialGameState);
     nominees = shuffle(nominees);
     const votes: Array<ProfileHouseguest[]> = [[], []];
     let lastVoter: Houseguest;
-    nonEvictedHouseguests(newGameState).forEach(hg => {
+    nonEvictedHouseguests(newGameState).forEach((hg) => {
         if (hg.id !== nominees[0].id && hg.id !== nominees[1].id && hg.id !== HoH.id) {
             const logic = castEvictionVote(hg, nominees, newGameState);
             const result: ProfileHouseguest = { ...hg };
@@ -57,7 +58,7 @@ export function generateEvictionScene(
     newGameState.currentLog.votes[nominees[0].id] = new NomineeVote(evictee.id === nominees[0].id);
     newGameState.currentLog.votes[nominees[1].id] = new NomineeVote(evictee.id !== nominees[0].id);
 
-    evictHouseguest(newGameState, evictee.id);
+    newGameState = evictHouseguest(newGameState, evictee.id);
     const isUnanimous = votesFor0 === 0 || votesFor1 === 0;
     const voteCountText = isUnanimous
         ? "By a unanimous vote..."
@@ -65,11 +66,12 @@ export function generateEvictionScene(
 
     const displayHoH: ProfileHouseguest = { ...HoH };
     displayHoH.tooltip = tieBreaker.reason;
+    const margin = doubleEviction ? { marginTop: 200 } : {};
     const scene = new Scene({
         title: "Live Eviction",
         gameState: initialGameState,
         content: (
-            <div>
+            <div style={margin}>
                 <CenteredBold>{voteCountText}</CenteredBold>
                 <div className="columns is-centered">
                     <DividerBox className="column">
@@ -90,14 +92,14 @@ export function generateEvictionScene(
                 <Portraits
                     houseguests={[
                         getById(newGameState, nominees[0].id),
-                        getById(newGameState, nominees[1].id)
+                        getById(newGameState, nominees[1].id),
                     ]}
                     centered={true}
                 />
                 <CenteredBold>{`${evictee.name}... you have been evicted from the Big Brother House.`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
-        )
+        ),
     });
     return [newGameState, scene];
 }

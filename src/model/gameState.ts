@@ -2,7 +2,7 @@ import { Houseguest } from "./houseguest";
 import { PlayerProfile } from "./playerProfile";
 import _ from "lodash";
 import { newRelationshipMap, rng } from "../utils";
-import { finalJurySize, getFinalists } from "./season";
+import { getFinalists } from "./season";
 import { EpisodeLog } from "./logging/episodelog";
 import { Cliques } from "../utils/generateCliques";
 
@@ -33,7 +33,7 @@ export function getJurors(gameState: GameState): Houseguest[] {
 }
 
 export function inJury(gameState: GameState): Boolean {
-    return gameState.remainingPlayers - getFinalists() <= finalJurySize();
+    return gameState.remainingPlayers - getFinalists() <= gameState.finalJurySize();
 }
 
 export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
@@ -49,26 +49,69 @@ export function calculatePopularity(hero: Houseguest, house: Houseguest[]) {
     return count === 0 ? 0 : sum / count;
 }
 
-export class GameState {
-    // Current state of the game after a phase.
+export function defaultJurySize(castSize: number): number {
+    castSize = Math.round(castSize * 0.55);
+    if (castSize % 2 === 0) {
+        castSize--;
+    }
+    return castSize;
+}
+
+export function validateJurySize(j: number, castSize: number): boolean {
+    return j >= 1 && j % 2 === 1 && castSize - 2 >= j;
+}
+
+class _GameState {
+    private jurors: number = 0;
+    readonly houseguests: Houseguest[] = [];
+
+    public finalJurySize() {
+        return this.jurors;
+    }
+    set jurySize(j: number) {
+        if (!validateJurySize(j, this.houseguests.length)) {
+            return;
+        }
+        this.jurors = j;
+    }
+}
+
+interface InitGameState {
+    players: PlayerProfile[];
+    jury: number;
+}
+
+export class GameState extends _GameState {
+    // State of the game after a phase.
 
     readonly houseguestCache: { [id: number]: Houseguest } = {};
     readonly nonEvictedHouseguests: Set<number> = new Set<number>();
-    readonly houseguests: Houseguest[] = [];
     readonly remainingPlayers: number = 0;
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest;
-    readonly log: EpisodeLog[] = [];
+    readonly log: EpisodeLog[][] = [];
     readonly cliques: Cliques[] = [];
-    get currentLog() {
-        return this.log[this.phase];
+
+    public __logindex__: number = 0;
+    get currentLog(): EpisodeLog {
+        if (!this.log[this.phase]) return new EpisodeLog(); // an unused episode log, kind of like /dev/null
+        return this.log[this.phase][this.__logindex__];
+    }
+    public incrementLogIndex() {
+        this.__logindex__++;
+        this.log[this.phase].push(new EpisodeLog());
+    }
+    public resetLogIndex() {
+        this.__logindex__ = 0;
     }
 
-    public constructor(init: PlayerProfile[] | GameState) {
-        if (!(init instanceof Array)) {
+    public constructor(init: InitGameState | GameState) {
+        super();
+        if (init instanceof GameState || init instanceof MutableGameState) {
             Object.assign(this, init);
         } else {
-            const profiles = init as PlayerProfile[];
+            const _init = init as InitGameState;
+            const profiles = _init.players;
             this.remainingPlayers = profiles.length;
             profiles.forEach((profile, i) => {
                 const hg: Houseguest = new Houseguest({
@@ -80,24 +123,38 @@ export class GameState {
                 this.houseguestCache[i] = hg;
                 this.houseguests.push(hg);
             });
+            this.jurySize = _init.jury;
+        }
+        if (!this.finalJurySize()) {
+            this.jurySize = defaultJurySize(this.houseguests.length);
         }
     }
 }
 
-export class MutableGameState {
-    public houseguests: Houseguest[] = [];
+export class MutableGameState extends _GameState {
     public houseguestCache: { [id: number]: Houseguest } = {};
     readonly nonEvictedHouseguests: Set<number> = new Set<number>();
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest;
     public cliques: Cliques[] = [];
-    public log: EpisodeLog[] = [];
-    get currentLog() {
-        return this.log[this.phase];
+    public log: EpisodeLog[][] = [];
+
+    public __logindex__: number = 0;
+    get currentLog(): EpisodeLog {
+        if (!this.log[this.phase]) return new EpisodeLog();
+        return this.log[this.phase][this.__logindex__];
+    }
+    public incrementLogIndex() {
+        this.__logindex__++;
+        this.log[this.phase].push(new EpisodeLog());
+    }
+    public resetLogIndex() {
+        this.__logindex__ = 0;
     }
 
     public constructor(init: GameState | MutableGameState) {
+        super();
         const copy = _.cloneDeep(init);
         Object.assign(this, copy);
     }

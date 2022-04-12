@@ -9,6 +9,12 @@ import {
 } from "../../utils/ai/classifyRelationship";
 import { getSelectedPlayer } from "../../subjects/subjects";
 
+export function heroIsPregame(hero: PortraitProps): boolean {
+    const heroIsZero =
+        hero.friends === 0 && hero.enemies === 0 && hero.popularity === 0 && hero.targetingMe === 0;
+    return heroIsZero || (hero.friends === undefined && hero.enemies === undefined);
+}
+
 export function generatePowerSubtitle(
     hero: PortraitProps,
     state: PortraitState,
@@ -18,7 +24,7 @@ export function generatePowerSubtitle(
     let subtitle: any[] = [];
     key = addPopularityLine(state, hero, !!_, subtitle, key);
     key = addCompsLine(hero, subtitle, key);
-    if (!hero.isEvicted && state.powerRanking) {
+    if (!hero.isEvicted && state.powerRanking !== undefined) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
         if (data && data.id !== hero.id) {
             subtitle.push(<div key={key++}>{`WIN ${roundTwoDigits(state.powerRanking!)}%`}</div>);
@@ -54,6 +60,10 @@ export function generatePopularitySubtitle(
 }
 
 function addFriendshipCountTitles(hero: PortraitProps, subtitle: any[], key: number) {
+    if (heroIsPregame(hero)) {
+        subtitle = subtitle.concat(<br key={key++} />);
+        return { subtitle, key };
+    }
     if (!hero.isEvicted) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
         if (data && data.id !== hero.id) {

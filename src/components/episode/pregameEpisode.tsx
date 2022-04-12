@@ -10,6 +10,8 @@ const PregameEpisodeType: EpisodeType = {
     },
     arrowsEnabled: true,
     hasViewsbar: false,
+    name: "Pregame",
+    generate: (gameState: GameState) => new PregameEpisode(gameState),
 };
 
 export class PregameEpisode extends Episode {

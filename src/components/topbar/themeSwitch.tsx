@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { theme$ } from "../../subjects/subjects";
 import { darkTheme, lightTheme } from "../../theme/theme";
 
+// this class is temporarily unused, but in the future it will be used for custom themes
 export function ThemeSwitcher() {
     const [theme, setTheme] = useState(
         window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"

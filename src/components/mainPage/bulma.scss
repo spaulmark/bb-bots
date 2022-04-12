@@ -14,6 +14,8 @@ $tabs-link-color: hsl(0, 0%, 86%);
 @import "../../../node_modules/bulma/sass/elements/form.sass";
 @import "../../../node_modules/bulma/sass/elements/button.sass";
 @import "../../../node_modules/bulma/sass/components/tabs.sass";
+@import "../../../node_modules/bulma/sass/form/_all.sass";
+@import "../../../node_modules/bulma/sass/form/tools.sass";
 
 .box {
     margin-left: 3px;
@@ -24,6 +26,10 @@ $tabs-link-color: hsl(0, 0%, 86%);
 .pagination > li {
     display: inline-block;
     padding-left: 0;
+}
+
+mark {
+    background-color: #33fff9;
 }
 .pagination > li {
     list-style: none;

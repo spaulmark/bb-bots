@@ -92,3 +92,18 @@ export function angleBetween(x: number[], y: number[]): number {
         );
     return Math.acos((dot(x, y) / magnitude(x)) * magnitude(y));
 }
+
+// takes in an array, a number n, and a match function, then removes the first n elements from the array for which the match function returns true
+
+export function removeFirstNMatching(array: any[], n: number, match: (x: any) => boolean): any[] {
+    let i = 0;
+    while (i < array.length && n > 0) {
+        if (match(array[i])) {
+            n--;
+            array.splice(i, 1);
+            i--;
+        }
+        i++;
+    }
+    return array;
+}

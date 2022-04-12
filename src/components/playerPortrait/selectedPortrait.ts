@@ -1,11 +1,13 @@
 import { Houseguest } from "../../model";
 import { RelationshipMap } from "../../utils";
 import {
+    displayMode$,
     getSelectedCastPlayers,
     getSelectedPlayer,
     selectedCastPlayer$,
     selectedPlayer$,
 } from "../../subjects/subjects";
+import { powerMode } from "../../model/portraitDisplayMode";
 
 export interface SelectedPlayerData {
     id: number;
@@ -18,9 +20,16 @@ export interface SelectedPlayerData {
 export function selectPlayer(player: SelectedPlayerData | null) {
     if (!player || (getSelectedPlayer() && (getSelectedPlayer() as Houseguest).id === player.id)) {
         selectedPlayer$.next(null);
-    } else {
-        selectedPlayer$.next(player);
+        return;
     }
+    if (
+        !player.superiors ||
+        (displayMode$.value === powerMode && Object.keys(player.superiors).length === 0)
+    ) {
+        selectedPlayer$.next(null);
+        return;
+    }
+    selectedPlayer$.next(player);
 }
 
 export function selectCastPlayer(id: number | null) {

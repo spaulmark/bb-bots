@@ -8,7 +8,7 @@ interface InitScene {
 }
 export class Scene {
     readonly title: string = "";
-    readonly gameState: GameState = new GameState([]);
+    readonly gameState: GameState = new GameState({ players: [], jury: -1 });
     readonly content: JSX.Element = (<div>{`Error while rendering ${this.title}`}</div>);
     public render: JSX.Element;
     public constructor(init: Partial<InitScene>) {

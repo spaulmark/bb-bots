@@ -1,46 +1,26 @@
 import { BigBrotherVanilla } from "../components/episode/bigBrotherEpisode";
-import { EpisodeFactory } from "../components/episode/episodeFactory";
 import { GameState } from "./gameState";
-import { Episode } from ".";
+import { Episode, EpisodeType, nextEpisode } from ".";
 import { BigBrotherFinale } from "../components/episode/bigBrotherFinale";
-import { cast$ } from "../subjects/subjects";
 import { GameOver } from "../components/episode/gameOver";
-import { SafetyChain } from "../components/episode/safetyChain";
-
-export function finalJurySize() {
-    return jurors;
-}
-
-// 7 is not a magic number: it is just an arbitrary value which is always overwritten by cast$ before it is read.
-let jurors = 7;
-
-const sub = cast$.subscribe({
-    next: (newCast) => {
-        let players = newCast.length;
-        players = Math.round(players * 0.55);
-        if (players % 2 === 0) {
-            players--;
-        }
-        jurors = players;
-    },
-});
 
 export function getFinalists() {
     return 2;
 }
 
-export class Season {
-    private factory: EpisodeFactory;
+export interface EpisodeLibrary {
+    [id: number]: EpisodeType;
+}
 
-    public constructor() {
-        this.factory = new EpisodeFactory();
+export class Season {
+    private episodeLibrary: EpisodeLibrary = {};
+
+    public constructor(episodeLibrary?: EpisodeLibrary) {
+        if (episodeLibrary) this.episodeLibrary = episodeLibrary;
     }
 
-    // In the future, this would all be customizable,
-    // and not just all big brother episodes by default.
-
     public renderEpisode(gameState: GameState): Episode {
-        return this.factory.nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers));
+        return nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers));
     }
 
     public whichEpisodeType(players: number) {
@@ -50,11 +30,9 @@ export class Season {
         if (players === 2) {
             return GameOver;
         }
-        ///// commented out lines make every 4th episode a safety chain
-
-        // if (players % 4 !== 1) {
+        if (this.episodeLibrary[players]) {
+            return this.episodeLibrary[players];
+        }
         return BigBrotherVanilla;
-        // }
-        // return SafetyChain;
     }
 }

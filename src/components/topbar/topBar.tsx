@@ -2,10 +2,10 @@ import React from "react";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import { mainContentStream$, getCast } from "../../subjects/subjects";
 import styled from "styled-components";
-import { ThemeSwitcher } from "./themeSwitch";
 import { ColorTheme } from "../../theme/theme";
 import { Box } from "../layout/box";
 import { DeckScreen } from "../deckScreen/deckScreen";
+import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 
 const TopbarLink = styled.div`
     color: ${({ theme }: { theme: ColorTheme }) => theme.link};
@@ -16,10 +16,22 @@ export function AdvancedEditLink(): JSX.Element {
     return (
         <TopbarLink
             onClick={() => {
-                mainContentStream$.next(<CastingScreen cast={getCast()} />);
+                mainContentStream$.next(<CastingScreen cast={JSON.parse(JSON.stringify(getCast()))} />);
             }}
         >
             Edit / Upload Cast
+        </TopbarLink>
+    );
+}
+
+export function EditSeasonLink(): JSX.Element {
+    return (
+        <TopbarLink
+            onClick={() => {
+                mainContentStream$.next(<SeasonEditorPage />);
+            }}
+        >
+            Edit Season/Twists
         </TopbarLink>
     );
 }
@@ -47,8 +59,11 @@ export function Topbar(props: { style?: any }): JSX.Element {
                 <AdvancedEditLink />
             </div>
             <div className="level-item">
-                <ThemeSwitcher />
+                <EditSeasonLink />
             </div>
+            {/* <div className="level-item">
+                <ThemeSwitcher />  eventually this can be used for custom themes
+            </div> */}
         </Box>
     );
 }

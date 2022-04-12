@@ -2,12 +2,12 @@ import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests } from "
 import { Scene } from "../scene";
 import { castEvictionVote } from "../../../utils/ai/aiApi";
 import { ProfileHouseguest } from "../../memoryWall";
-import { evictHouseguest } from "../bigBrotherEpisode";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { CenteredBold, Centered } from "../../layout/centered";
 import { HoHVote, NomineeVote } from "../../../model/logging/voteType";
+import { evictHouseguest } from "../utilities/evictHouseguest";
 
 export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);

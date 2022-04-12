@@ -1,21 +1,23 @@
 import { Episode, InitEpisode, EpisodeType } from "./episodes";
 import { Scene } from "./scene";
 import { GameState } from "../../model";
-import { evictHouseguest } from "./bigBrotherEpisode";
 import { generateVotingTable } from "./scenes/votingTable";
+import { evictHouseguest } from "./utilities/evictHouseguest";
 
 export const GameOver: EpisodeType = {
-    canPlayWith: (n: number) => n === 1,
+    canPlayWith: (_: number) => true,
     eliminates: 1,
     arrowsEnabled: false,
-    hasViewsbar: false
+    hasViewsbar: false,
+    name: "Game Over",
+    generate: generateGameOver,
 };
 
 export function generateGameOver(gameState: GameState): GameOverEpisode {
     const title = "Game Over";
     const scenes: Scene[] = [];
     const content = generateVotingTable(gameState);
-    gameState.houseguests.forEach(hg => {
+    gameState.houseguests.forEach((hg) => {
         evictHouseguest(gameState, hg.id);
     });
     return new GameOverEpisode({ gameState, content, title, scenes, type: GameOver });

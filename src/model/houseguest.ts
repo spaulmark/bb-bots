@@ -20,6 +20,7 @@ export class Houseguest extends PlayerProfile {
     public compatibility: [number, number, number] = [0, 0, 0];
     public popularity: number = 0;
     public deltaPopularity: number = 0;
+    public previousPopularity: number = 0;
     readonly relationships: RelationshipMap = {};
 
     public targets: [number, number] = [this.id, this.id];

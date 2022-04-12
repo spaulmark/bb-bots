@@ -157,7 +157,7 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
                 <div className="level">
                     <div className="level-item">
                         <input
-                            style={{ marginBottom: "1.5rem", minWidth: "50%" }}
+                            style={{ minWidth: "50%" }}
                             className="input"
                             type="text"
                             placeholder="Search..."
@@ -183,7 +183,7 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
                             disabled={this.state.selectedDecks.size === 0}
                             onClick={() => submitCasts(this.state.selectedDecks)}
                         >
-                            Submit
+                            Next
                         </button>
                     </div>
                 </div>

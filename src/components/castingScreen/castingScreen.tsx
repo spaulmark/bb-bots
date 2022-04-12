@@ -1,19 +1,17 @@
 import React from "react";
 import FileDrop from "react-file-drop";
-import { PlayerProfile, GameState } from "../../model";
+import { PlayerProfile } from "../../model";
 import { SetupPortrait } from "../playerPortrait/setupPortrait";
-import { ImportLinks } from "./importLinks";
-import { PregameScreen } from "../pregameScreen/pregameScreen";
-import { PregameEpisode } from "../episode/pregameEpisode";
 import { shuffle } from "lodash";
 import { RandomButton } from "./randomXButton";
-import { selectCastPlayer, selectPlayer } from "../playerPortrait/selectedPortrait";
-import { mainContentStream$, newEpisode, selectedCastPlayer$, updateCast } from "../../subjects/subjects";
+import { selectCastPlayer } from "../playerPortrait/selectedPortrait";
+import { mainContentStream$, selectedCastPlayer$, updateCast } from "../../subjects/subjects";
 import { HasText, Input } from "../layout/text";
 import { Centered } from "../layout/centered";
 import { Subscription } from "rxjs";
 import _ from "lodash";
 import { HelpLink } from "../episode/allianceList";
+import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 
 interface CastingScreenProps {
     cast?: PlayerProfile[];
@@ -100,14 +98,9 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         this.setState(newState);
     };
 
-    private submit = async () => {
+    private submit = () => {
         updateCast(this.state.players);
-        mainContentStream$.next(<PregameScreen cast={this.state.players} />);
-        selectPlayer(null);
-        // vscode says the awaits are unnessecary here,
-        await newEpisode(null);
-        // but if you remove them then bad things happen
-        await newEpisode(new PregameEpisode(new GameState(this.state.players)));
+        mainContentStream$.next(<SeasonEditorPage />);
     };
 
     private random = (_amount: number) => {
@@ -140,7 +133,6 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         return (
             <FileDrop onDrop={this.handleDrop}>
                 <HasText className="level">
-                    <ImportLinks onSubmit={this.appendProfiles} />
                     <div className="level-item">
                         <button
                             className="button is-danger"
@@ -185,7 +177,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
                             disabled={this.state.players.length < 3}
                             onClick={this.submit}
                         >
-                            Submit
+                            Next
                         </button>
                     </div>
                 </HasText>
@@ -213,7 +205,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         this.handleFiles(event.target.files);
     };
 
-    private handleDrop = (files: FileList | null, event: React.DragEvent) => {
+    private handleDrop = (files: FileList | null) => {
         if (!files) return;
         this.handleFiles(files);
     };

@@ -5,6 +5,8 @@ import { ColorTheme } from "../../theme/theme";
 interface TextProps {
     noMargin?: boolean;
     children?: any;
+    style?: any;
+    className?: string;
 }
 
 const NoMargin = styled.div`
@@ -18,12 +20,16 @@ const Center = styled.p`
 
 export function Centered(props: TextProps): JSX.Element {
     if (props.noMargin) return <NoMargin>{props.children}</NoMargin>;
-    return <Center>{props.children} </Center>;
+    return (
+        <Center className={props.className || ""} style={props.style || {}}>
+            {props.children}
+        </Center>
+    );
 }
 
 export function CenteredBold(props: TextProps): JSX.Element {
     return (
-        <Centered noMargin={props.noMargin}>
+        <Centered className={props.className || ""} style={props.style || {}} noMargin={props.noMargin}>
             <b>{props.children} </b>
         </Centered>
     );
@@ -31,7 +37,7 @@ export function CenteredBold(props: TextProps): JSX.Element {
 
 export function CenteredItallic(props: TextProps): JSX.Element {
     return (
-        <Centered noMargin={props.noMargin}>
+        <Centered className={props.className || ""} style={props.style || {}} noMargin={props.noMargin}>
             <i>{props.children} </i>
         </Centered>
     );
