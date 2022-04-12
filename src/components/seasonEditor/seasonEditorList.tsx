@@ -6,6 +6,8 @@ import { EpisodeType } from "../episode/episodes";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { twist$ } from "./twistAdder";
+import { min } from "lodash";
+import { removeFirstNMatching } from "../../utils";
 
 const DragItem = styled.div`
     padding: 10px;
@@ -77,6 +79,10 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         this.state = { items: elements };
     }
 
+    private maxCapacity(): number {
+        return this.props.castSize - 3;
+    }
+
     private updateTwistCapacity(newCapacity: number) {
         twistCapacity$.next(newCapacity);
     }
@@ -84,13 +90,34 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
     private addRemoveTwist(twist: { type: EpisodeType; add: boolean }) {
         this.updateTwistCapacity(
             twist.add
-                ? twistCapacity$.value - twist.type.eliminates
+                ? min([twistCapacity$.value - twist.type.eliminates, this.maxCapacity()]) || 0
                 : twistCapacity$.value + twist.type.eliminates
         );
+        // add or remove the twist
+        if (twist.add) {
+            // remove X vanilla episodes, then add the twist
+            const newItems = Array.from(this.state.items);
+            removeFirstNMatching(
+                newItems,
+                twist.type.eliminates,
+                (item) => item.episode === BigBrotherVanilla
+            );
+            newItems.unshift({
+                id: (this.id++).toString(),
+                weekText: `error lol`,
+                episode: twist.type,
+            });
+            this.refreshItems(newItems);
+        } else {
+            // remove the first instance of the twist, and add X vanilla episodes
+            const newItems = Array.from(this.state.items);
+            removeFirstNMatching(newItems, 1, (item) => item.episode === twist.type);
+            this.refreshItems(newItems);
+        }
     }
 
     public componentDidMount() {
-        twistCapacity$.next(this.props.castSize - 3);
+        twistCapacity$.next(this.maxCapacity());
         this.subs.push(twist$.subscribe((twist) => this.addRemoveTwist(twist)));
     }
     public componentWillUnmount(): void {
