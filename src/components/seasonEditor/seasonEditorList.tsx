@@ -8,6 +8,7 @@ import { BehaviorSubject, Subscription } from "rxjs";
 import { twist$ } from "./twistAdder";
 import { min } from "lodash";
 import { removeFirstNMatching } from "../../utils";
+import { EpisodeLibrary } from "../../model/season";
 
 const DragItem = styled.div`
     padding: 10px;
@@ -20,6 +21,21 @@ const DragItem = styled.div`
     flex-direction: column;
     color: #fff;
 `;
+
+let _items: SeasonEditorListItem[] = [];
+let _castSize: number = 0;
+
+export function getEpisodeLibrary(): EpisodeLibrary {
+    const result: EpisodeLibrary = {};
+    let playersRemaining = _castSize;
+    for (const item of _items) {
+        if (item.episode !== BigBrotherVanilla) {
+            result[playersRemaining] = item.episode;
+        }
+        playersRemaining -= item.episode.eliminates;
+    }
+    return result;
+}
 
 const ListItem = ({
     item,
@@ -66,6 +82,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
 
     public constructor(props: SeasonEditorListProps) {
         super(props);
+        _castSize = props.castSize;
         const elements: SeasonEditorListItem[] = [];
         let week: number = 0;
         for (let i = props.castSize; i > 3; i--) {
@@ -76,6 +93,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 episode: BigBrotherVanilla,
             });
         }
+        _items = elements;
         this.state = { items: elements };
     }
 
@@ -120,9 +138,11 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         twistCapacity$.next(this.maxCapacity());
         this.subs.push(twist$.subscribe((twist) => this.addRemoveTwist(twist)));
     }
+
     public componentWillUnmount(): void {
         this.subs.forEach((sub) => sub.unsubscribe());
     }
+
     private refreshItems(newItems: SeasonEditorListItem[]) {
         const finalItems = [];
         let week: number = 0;
@@ -142,7 +162,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         if (playerCount > 3) {
             while (playerCount > 3) {
                 week++;
-                finalItems.push({
+                finalItems.unshift({
                     id: (this.id++).toString(),
                     weekText: `Week ${week}: F${playerCount}`,
                     episode: BigBrotherVanilla,
@@ -150,6 +170,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 playerCount--;
             }
         }
+        _items = finalItems;
         this.setState({ items: finalItems });
     }
     public render() {

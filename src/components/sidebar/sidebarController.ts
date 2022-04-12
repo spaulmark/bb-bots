@@ -1,6 +1,6 @@
 import { Subscription } from "rxjs";
 import { Sidebar } from "./sidebar";
-import { Season } from "../../model/season";
+import { EpisodeLibrary, Season } from "../../model/season";
 import { Episode, nonEvictedHouseguests, getById } from "../../model";
 import { Scene } from "../episode/scene";
 import {
@@ -9,10 +9,10 @@ import {
     switchEpisode$,
     newEpisode,
     switchSceneRelative,
-    cast$,
     getSelectedPlayer,
     selectedPlayer$,
     displayMode$,
+    season$,
 } from "../../subjects/subjects";
 import { popularityMode } from "../../model/portraitDisplayMode";
 
@@ -46,9 +46,9 @@ export class SidebarController {
             })
         );
         this.subscriptions.push(
-            cast$.subscribe({
-                next: () => {
-                    this.season = new Season();
+            season$.subscribe({
+                next: (library: EpisodeLibrary) => {
+                    this.season = new Season(library);
                     this.selectedEpisode = 0;
                     displayMode$.next(popularityMode);
                 },

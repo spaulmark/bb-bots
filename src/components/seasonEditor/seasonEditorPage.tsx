@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
-import { cast$, mainContentStream$, newEpisode } from "../../subjects/subjects";
+import { cast$, mainContentStream$, newEpisode, season$ } from "../../subjects/subjects";
 import { NumericInput, NumericInputStyle } from "../castingScreen/numericInput";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
@@ -10,7 +10,7 @@ import { HasText } from "../layout/text";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
-import { SeasonEditorList } from "./seasonEditorList";
+import { getEpisodeLibrary, SeasonEditorList } from "./seasonEditorList";
 import { TwistAdder } from "./twistAdder";
 
 const Subheader = styled.h3`
@@ -25,7 +25,7 @@ export const Label = styled.label`
 const twists: EpisodeType[] = [DoubleEviction];
 
 const submit = async (jury: number): Promise<void> => {
-    // TODO: generate episode library and pass it to the sidebar via a subject
+    season$.next(getEpisodeLibrary());
 
     // reset stuff and start a new game
     mainContentStream$.next(<PregameScreen cast={cast$.value} />);

@@ -6,6 +6,7 @@ import React from "react";
 import { PortraitDisplayMode, popularityMode } from "../model/portraitDisplayMode";
 import { ColorTheme } from "../theme/theme";
 import { shuffle } from "lodash";
+import { EpisodeLibrary } from "../model/season";
 
 const baseURL = "https://spaulmark.github.io/img//Big%20Brother%20Canada%2010/";
 const defaultNames = shuffle([
@@ -43,6 +44,9 @@ export function newEpisode(episode: Episode | null) {
 export function switchSceneRelative(n: number) {
     switchEpisode$.next(n);
 }
+
+// pushed when a new season is created (may need to be upgraded to behavior subject in the future)
+export const season$ = new Subject<EpisodeLibrary>();
 
 // the list of players in the game
 export const cast$ = new BehaviorSubject<PlayerProfile[]>(defaultCast);

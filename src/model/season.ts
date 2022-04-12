@@ -8,7 +8,7 @@ export function getFinalists() {
     return 2;
 }
 
-interface EpisodeLibrary {
+export interface EpisodeLibrary {
     [id: number]: EpisodeType;
 }
 
