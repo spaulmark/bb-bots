@@ -40,7 +40,6 @@ export function SeasonEditorPage(): JSX.Element {
     const castLength = cast$.value.length;
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
     const validJurySize = validateJurySize(parseInt(jurySize), castLength);
-    const [doubleEvictions, setDEs] = useState(0);
     return (
         <div className="columns">
             <div className="column is-one-quarter">

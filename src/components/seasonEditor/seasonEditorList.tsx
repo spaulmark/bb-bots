@@ -4,7 +4,8 @@ import React from "react";
 import styled from "styled-components";
 import { EpisodeType } from "../episode/episodes";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
-import { DoubleEviction } from "../episode/doubleEvictionEpisode";
+import { BehaviorSubject, Subscription } from "rxjs";
+import { twist$ } from "./twistAdder";
 
 const DragItem = styled.div`
     padding: 10px;
@@ -55,8 +56,12 @@ interface SeasonEditorListItem {
     episode: EpisodeType;
 }
 
+export const twistCapacity$ = new BehaviorSubject<number>(0);
+
 export class SeasonEditorList extends React.Component<SeasonEditorListProps, SeasonEditorListState> {
     private id: number = 0;
+    private subs: Subscription[] = [];
+
     public constructor(props: SeasonEditorListProps) {
         super(props);
         const elements: SeasonEditorListItem[] = [];
@@ -72,6 +77,25 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         this.state = { items: elements };
     }
 
+    private updateTwistCapacity(newCapacity: number) {
+        twistCapacity$.next(newCapacity);
+    }
+
+    private addRemoveTwist(twist: { type: EpisodeType; add: boolean }) {
+        this.updateTwistCapacity(
+            twist.add
+                ? twistCapacity$.value - twist.type.eliminates
+                : twistCapacity$.value + twist.type.eliminates
+        );
+    }
+
+    public componentDidMount() {
+        twistCapacity$.next(this.props.castSize - 3);
+        this.subs.push(twist$.subscribe((twist) => this.addRemoveTwist(twist)));
+    }
+    public componentWillUnmount(): void {
+        this.subs.forEach((sub) => sub.unsubscribe());
+    }
     private refreshItems(newItems: SeasonEditorListItem[]) {
         const finalItems = [];
         let week: number = 0;
