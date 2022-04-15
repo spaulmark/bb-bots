@@ -169,6 +169,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 });
                 playerCount--;
             }
+            this.refreshItems(finalItems);
         }
         _items = finalItems;
         this.setState({ items: finalItems });

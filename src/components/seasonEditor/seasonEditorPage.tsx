@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
 import { cast$, mainContentStream$, newEpisode, season$ } from "../../subjects/subjects";
-import { NumericInput, NumericInputStyle } from "../castingScreen/numericInput";
+import { NumericInput } from "../castingScreen/numericInput";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
 import { PregameEpisode } from "../episode/pregameEpisode";
