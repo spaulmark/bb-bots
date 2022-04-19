@@ -1,37 +1,30 @@
-import { GameState } from "../../model";
+import React from "react";
+import { Episode, EpisodeType, GameState } from "../../model";
 import { HasText } from "../layout/text";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import { generateBBVanillaScenes, Tabs } from "./bigBrotherEpisode";
 import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
-import { Episode, EpisodeType, InitEpisode } from "./episodes";
-import React from "react";
 import { Scene } from "./scene";
 
-export const DoubleEviction: EpisodeType = {
-    canPlayWith: (n: number) => n >= 5,
-    eliminates: 2,
+export const TripleEvictionCad: EpisodeType = {
+    canPlayWith: (n: number) => n >= 6,
+    eliminates: 3,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Double Eviction",
-    generate: generateDoubleEviction,
+    name: "Triple Eviction CAD",
+    generate: generateTripleEvictionCad,
 };
 
-export function generateDoubleEviction(initialGamestate: GameState): Episode {
+// TODO: we need to make it so they don't use triple eviction veto -___-
+
+export function generateTripleEvictionCad(initialGamestate: GameState): Episode {
     const episode = generateBBVanillaScenes(initialGamestate);
     let currentGameState = episode.gameState;
     const scenes: Scene[] = episode.scenes;
 
     currentGameState.incrementLogIndex();
-    const doubleEviction = generateBBVanillaScenes(currentGameState, true);
-    currentGameState = doubleEviction.gameState;
-    scenes.push(
-        new Scene({
-            title: "Double Eviction",
-            content: <div>{doubleEviction.scenes.map((scene) => scene.content)}</div>,
-            gameState: doubleEviction.gameState,
-        })
-    );
 
+    const gameState = new GameState(currentGameState);
     const content = (
         <HasText>
             <Tabs />
@@ -40,12 +33,11 @@ export function generateDoubleEviction(initialGamestate: GameState): Episode {
             <NextEpisodeButton />
         </HasText>
     );
-    const gameState = new GameState(currentGameState);
     return new Episode({
         gameState,
         content,
         title: episode.title,
         scenes,
-        type: DoubleEviction,
+        type: TripleEvictionCad,
     });
 }

@@ -17,7 +17,7 @@ export const SafetyChain: EpisodeType = {
     generate: generateSafetyChain,
 };
 
-export function generateSafetyChain(initialGameState: GameState): SafetyChainEpisode {
+export function generateSafetyChain(initialGameState: GameState): Episode {
     const content = (
         <HasText>
             <Tabs />
@@ -31,21 +31,5 @@ export function generateSafetyChain(initialGameState: GameState): SafetyChainEpi
     let safetyChainScene;
     [currentGameState, safetyChainScene] = generateSafetyChainScene(initialGameState);
     scenes.push(safetyChainScene);
-    return new SafetyChainEpisode({ gameState: currentGameState, content, title, scenes, type: SafetyChain });
-}
-
-export class SafetyChainEpisode extends Episode {
-    readonly title: string;
-    readonly scenes: Scene[];
-    readonly content: JSX.Element;
-    readonly gameState: GameState;
-    readonly type = SafetyChain;
-
-    public constructor(init: InitEpisode) {
-        super(init);
-        this.title = init.title;
-        this.scenes = init.scenes;
-        this.content = init.content;
-        this.gameState = init.gameState;
-    }
+    return new Episode({ gameState: currentGameState, content, title, scenes, type: SafetyChain });
 }
