@@ -58,7 +58,7 @@ export function Tabs(): JSX.Element {
     );
 }
 
-export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanillaEpisode {
+export function generateBbVanilla(initialGamestate: GameState): Episode {
     const episode = generateBBVanillaScenes(initialGamestate);
     const content = (
         <HasText>
@@ -68,7 +68,7 @@ export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanill
             <NextEpisodeButton />
         </HasText>
     );
-    return new BigBrotherVanillaEpisode({
+    return new Episode({
         title: episode.title,
         scenes: episode.scenes,
         content,
@@ -77,23 +77,7 @@ export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanill
         type: BigBrotherVanilla,
     });
 }
-export class BigBrotherVanillaEpisode extends Episode {
-    readonly title: string;
-    readonly scenes: Scene[];
-    readonly content: JSX.Element;
-    readonly initialGamestate: GameState;
-    readonly gameState: GameState;
-    readonly type = BigBrotherVanilla;
 
-    public constructor(init: InitEpisode) {
-        super(init);
-        this.title = init.title;
-        this.scenes = init.scenes;
-        this.content = init.content;
-        this.gameState = init.gameState;
-        this.initialGamestate = init.initialGamestate || init.gameState;
-    }
-}
 export function generateBBVanillaScenes(
     initialGamestate: GameState,
     doubleEviction: boolean = false
