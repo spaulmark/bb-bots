@@ -1,4 +1,4 @@
-## BB-Bots: A Big Brother (US) Simulator ## 
+## Big Brother Bots: A Big Brother (US) Simulator ## 
 
 --> https://spaulmark.github.io/bb-bots/ <--
 
