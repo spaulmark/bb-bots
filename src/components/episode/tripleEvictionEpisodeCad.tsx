@@ -1,9 +1,6 @@
 import React from "react";
 import { Episode, EpisodeType, GameState } from "../../model";
-import { HasText } from "../layout/text";
-import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
-import { generateBBVanillaScenes, Tabs } from "./bigBrotherEpisode";
-import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
+import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Scene } from "./scene";
 
 export const TripleEvictionCad: EpisodeType = {
@@ -11,7 +8,7 @@ export const TripleEvictionCad: EpisodeType = {
     eliminates: 3,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Triple Eviction CAD",
+    name: "Triple Eviction CA",
     generate: generateTripleEvictionCad,
 };
 
@@ -23,19 +20,10 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
     const scenes: Scene[] = episode.scenes;
 
     currentGameState.incrementLogIndex();
+    // TODO: triple eviction stuff
 
-    const gameState = new GameState(currentGameState);
-    const content = (
-        <HasText>
-            <Tabs />
-            <WeekStartWrapper gameState={initialGamestate} />
-            <br />
-            <NextEpisodeButton />
-        </HasText>
-    );
     return new Episode({
-        gameState,
-        content,
+        gameState: new GameState(currentGameState),
         title: episode.title,
         scenes,
         type: TripleEvictionCad,

@@ -2,11 +2,12 @@ import React from "react";
 import { GameState } from "../../model/gameState";
 import { Scene } from "./scene";
 import { ViewsBar } from "../viewsBar/viewBar";
+import { defaultContent } from "./bigBrotherEpisode";
 
 export interface InitEpisode {
     scenes: Scene[];
     title: string;
-    content: JSX.Element;
+    content?: JSX.Element;
     gameState: GameState;
     initialGamestate?: GameState;
     type: EpisodeType;
@@ -33,7 +34,7 @@ export class Episode {
     constructor(init: InitEpisode) {
         this.scenes = init.scenes;
         this.title = init.title;
-        this.content = init.content;
+        this.content = init.content || defaultContent(init.initialGamestate || init.gameState);
         this.gameState = init.gameState;
         this.initialGameState = init.initialGamestate || init.gameState;
         this.type = init.type;

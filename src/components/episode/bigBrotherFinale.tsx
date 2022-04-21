@@ -18,7 +18,7 @@ export const BigBrotherFinale: EpisodeType = {
     generate: generateBbFinale,
 };
 
-export function generateBbFinale(initialGameState: GameState): BigBrotherFinaleEpisode {
+export function generateBbFinale(initialGameState: GameState): Episode {
     const title = "Finale";
     const content = (
         <HasText>
@@ -37,21 +37,5 @@ export function generateBbFinale(initialGameState: GameState): BigBrotherFinaleE
     scenes.push(finalEviction);
     const [gameState, juryScene] = juryVoteScene(currentGameState);
     scenes.push(juryScene);
-    return new BigBrotherFinaleEpisode({ gameState, content, title, scenes, type: BigBrotherFinale });
-}
-
-export class BigBrotherFinaleEpisode extends Episode {
-    readonly title: string;
-    readonly scenes: Scene[];
-    readonly content: JSX.Element;
-    readonly gameState: GameState;
-    readonly type = BigBrotherFinale;
-
-    public constructor(init: InitEpisode) {
-        super(init);
-        this.title = init.title;
-        this.scenes = init.scenes;
-        this.content = init.content;
-        this.gameState = init.gameState;
-    }
+    return new Episode({ gameState, content, title, scenes, type: BigBrotherFinale });
 }

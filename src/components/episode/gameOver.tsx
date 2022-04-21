@@ -13,27 +13,12 @@ export const GameOver: EpisodeType = {
     generate: generateGameOver,
 };
 
-export function generateGameOver(gameState: GameState): GameOverEpisode {
+export function generateGameOver(gameState: GameState): Episode {
     const title = "Game Over";
     const scenes: Scene[] = [];
     const content = generateVotingTable(gameState);
     gameState.houseguests.forEach((hg) => {
         evictHouseguest(gameState, hg.id);
     });
-    return new GameOverEpisode({ gameState, content, title, scenes, type: GameOver });
-}
-
-export class GameOverEpisode extends Episode {
-    readonly title: string;
-    readonly scenes: Scene[];
-    readonly content: JSX.Element;
-    readonly gameState: GameState;
-
-    public constructor(init: InitEpisode) {
-        super(init);
-        this.title = init.title;
-        this.scenes = init.scenes;
-        this.content = init.content;
-        this.gameState = init.gameState;
-    }
+    return new Episode({ gameState, content, title, scenes, type: GameOver });
 }

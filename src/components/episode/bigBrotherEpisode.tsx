@@ -1,4 +1,4 @@
-import { GameState, Houseguest, EpisodeType, Episode, InitEpisode } from "../../model";
+import { GameState, Houseguest, EpisodeType, Episode } from "../../model";
 import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
@@ -58,20 +58,23 @@ export function Tabs(): JSX.Element {
     );
 }
 
-export function generateBbVanilla(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate);
-    const content = (
+export function defaultContent(initialGameState: GameState) {
+    return (
         <HasText>
             <Tabs />
-            <WeekStartWrapper gameState={initialGamestate} />
+            <WeekStartWrapper gameState={initialGameState} />
             <br />
             <NextEpisodeButton />
         </HasText>
     );
+}
+
+export function generateBbVanilla(initialGamestate: GameState): Episode {
+    const episode = generateBBVanillaScenes(initialGamestate);
+
     return new Episode({
         title: episode.title,
         scenes: episode.scenes,
-        content,
         gameState: new GameState(episode.gameState),
         initialGamestate,
         type: BigBrotherVanilla,

@@ -1,9 +1,6 @@
 import { GameState } from "../../model";
-import { HasText } from "../layout/text";
-import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
-import { generateBBVanillaScenes, Tabs } from "./bigBrotherEpisode";
-import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
-import { Episode, EpisodeType, InitEpisode } from "./episodes";
+import { generateBBVanillaScenes } from "./bigBrotherEpisode";
+import { Episode, EpisodeType } from "./episodes";
 import React from "react";
 import { Scene } from "./scene";
 
@@ -32,18 +29,9 @@ export function generateDoubleEviction(initialGamestate: GameState): Episode {
         })
     );
 
-    const content = (
-        <HasText>
-            <Tabs />
-            <WeekStartWrapper gameState={initialGamestate} />
-            <br />
-            <NextEpisodeButton />
-        </HasText>
-    );
     const gameState = new GameState(currentGameState);
     return new Episode({
         gameState,
-        content,
         title: episode.title,
         scenes,
         type: DoubleEviction,
