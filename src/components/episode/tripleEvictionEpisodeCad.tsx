@@ -8,7 +8,7 @@ export const TripleEvictionCad: EpisodeType = {
     eliminates: 3,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Triple Eviction CA",
+    name: "Triple Eviction 🇨🇦",
     generate: generateTripleEvictionCad,
 };
 

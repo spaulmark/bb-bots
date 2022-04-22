@@ -208,22 +208,20 @@ export function useGoldenVeto(
     gameState: GameState,
     HoH: number
 ): HouseguestWithLogic {
-    let result: HouseguestWithLogic;
     if (hero.id === HoH) {
         return { decision: null, reason: "I support my original nominations." };
     }
-    if (hero.id == nominees[0].id || hero.id == nominees[1].id) {
-        result = { decision: hero, reason: "I am going to save myself." };
-    } else {
-        result = useGoldenVetoPreJury(hero, nominees, gameState);
-        if (gameState.remainingPlayers === 4) {
-            result = {
-                decision: null,
-                reason: "It doesn't make sense to use the veto here.",
-            };
-        }
+    for (const nom of nominees) {
+        if (hero.id === nom.id) return { decision: hero, reason: "I am going to save myself." };
     }
-    return result || null;
+    // if you're not nominated, don't use the veto if you are the only replacement nominee
+    if (gameState.remainingPlayers - 1 - nominees.length === 1) {
+        return {
+            decision: null,
+            reason: "It doesn't make sense to use the veto here.",
+        };
+    }
+    return useGoldenVetoPreJury(hero, nominees, gameState) || null;
 }
 
 function useGoldenVetoPreJury(
