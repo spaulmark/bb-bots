@@ -3,16 +3,16 @@ import React from "react";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Scene } from "./scenes/scene";
 
-export const TripleEvictionCad: EpisodeType = {
+export const TripleEvictionUs: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
     eliminates: 3,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Triple Eviction 🇨🇦",
-    generate: generateTripleEvictionCad,
+    name: "Triple Eviction 🇺🇸",
+    generate: generateTripleEvictionUs,
 };
 
-export function generateTripleEvictionCad(initialGamestate: GameState): Episode {
+export function generateTripleEvictionUs(initialGamestate: GameState): Episode {
     const episode = generateBBVanillaScenes(initialGamestate);
     let currentGameState = episode.gameState;
     const scenes: Scene[] = episode.scenes;
@@ -27,12 +27,21 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
             gameState: doubleEviction.gameState,
         })
     );
-
+    currentGameState.incrementLogIndex();
+    const tripleEviction = generateBBVanillaScenes(currentGameState, true);
+    currentGameState = tripleEviction.gameState;
+    scenes.push(
+        new Scene({
+            title: "Triple Eviction",
+            content: <div>{tripleEviction.scenes.map((scene) => scene.content)}</div>,
+            gameState: tripleEviction.gameState,
+        })
+    );
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,
         title: episode.title,
         scenes,
-        type: TripleEvictionCad,
+        type: TripleEvictionUs,
     });
 }

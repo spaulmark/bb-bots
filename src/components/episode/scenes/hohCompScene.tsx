@@ -25,7 +25,8 @@ export function generateHohCompScene(
                 {previousHoh.length > 0 &&
                     (doubleEviction ? (
                         <CenteredBold>
-                            Houseguests, please return to the living room. Tonight will be a double eviction.
+                            Houseguests, please return to the living room. Tonight will be a{" "}
+                            {initialGameState.__logindex__ === 1 ? "double" : "triple"} eviction.
                         </CenteredBold>
                     ) : (
                         <Centered>
