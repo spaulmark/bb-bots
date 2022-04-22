@@ -32,6 +32,7 @@ export function generateDoubleEviction(initialGamestate: GameState): Episode {
     const gameState = new GameState(currentGameState);
     return new Episode({
         gameState,
+        initialGamestate,
         title: episode.title,
         scenes,
         type: DoubleEviction,
