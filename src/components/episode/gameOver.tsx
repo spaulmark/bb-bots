@@ -1,4 +1,4 @@
-import { Episode, InitEpisode, EpisodeType } from "./episodes";
+import { Episode, EpisodeType } from "./episodes";
 import { Scene } from "./scenes/scene";
 import { GameState } from "../../model";
 import { generateVotingTable } from "./scenes/votingTable";
