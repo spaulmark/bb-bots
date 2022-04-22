@@ -1,5 +1,5 @@
 import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests, getById } from "../../../model";
-import { Scene } from "../scene";
+import { Scene } from "./scene";
 import { shuffle } from "lodash";
 import { ProfileHouseguest } from "../../memoryWall";
 import { castEvictionVote } from "../../../utils/ai/aiApi";

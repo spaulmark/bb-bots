@@ -2,7 +2,7 @@ import React from "react";
 import { SidebarController } from "./sidebarController";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { defaultJurySize, Episode, GameState } from "../../model";
-import { Scene } from "../episode/scene";
+import { Scene } from "../episode/scenes/scene";
 import { defaultCast, newEpisode } from "../../subjects/subjects";
 import { Box } from "../layout/box";
 import { HasText } from "../layout/text";

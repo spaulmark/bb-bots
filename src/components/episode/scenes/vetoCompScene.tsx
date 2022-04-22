@@ -6,7 +6,7 @@ import {
     randomPlayer,
     getById,
 } from "../../../model";
-import { Scene } from "../scene";
+import { Scene } from "./scene";
 import { Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";

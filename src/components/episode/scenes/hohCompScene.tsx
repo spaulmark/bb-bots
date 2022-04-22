@@ -1,5 +1,5 @@
 import { GameState, Houseguest, MutableGameState, randomPlayer } from "../../../model";
-import { Scene } from "../scene";
+import { Scene } from "./scene";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";

@@ -1,6 +1,6 @@
 import React from "react";
 import { EpisodeType, Episode, InitEpisode } from "./episodes";
-import { Scene } from "./scene";
+import { Scene } from "./scenes/scene";
 import { GameState } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";

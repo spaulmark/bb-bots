@@ -1,5 +1,5 @@
 import { GameState, Houseguest, MutableGameState, getById } from "../../../model";
-import { Scene } from "../scene";
+import { Scene } from "./scene";
 import { shuffle } from "lodash";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";

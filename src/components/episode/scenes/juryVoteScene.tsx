@@ -1,5 +1,5 @@
 import { GameState, getJurors, nonEvictedHouseguests, MutableGameState, Houseguest } from "../../../model";
-import { Scene } from "../scene";
+import { Scene } from "./scene";
 import { castJuryVote } from "../../../utils/ai/aiApi";
 import { Portraits } from "../../playerPortrait/portraits";
 import React from "react";
@@ -14,7 +14,7 @@ export function juryVoteScene(initialGameState: GameState): [GameState, Scene] {
     const jurors: Houseguest[] = getJurors(newGameState);
     const finalists = nonEvictedHouseguests(newGameState);
     const votes: Array<ProfileHouseguest[]> = [[], []];
-    jurors.forEach(juror => {
+    jurors.forEach((juror) => {
         const decision = castJuryVote(juror, finalists);
         const result: ProfileHouseguest = { ...juror };
         votes[decision].push(result);
@@ -49,7 +49,7 @@ export function juryVoteScene(initialGameState: GameState): [GameState, Scene] {
                 <CenteredBold>{`Congratulations, ${winner.name}... you are the winner of Big Brother!`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
-        )
+        ),
     });
     return [newGameState, scene];
 }

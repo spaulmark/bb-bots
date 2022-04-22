@@ -6,7 +6,7 @@ import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
 import { generateEvictionScene } from "./scenes/evictionScene";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
-import { Scene } from "./scene";
+import { Scene } from "./scenes/scene";
 import { HasText } from "../layout/text";
 import styled from "styled-components";
 import { weekStartTab$ } from "../../subjects/subjects";
@@ -71,7 +71,6 @@ export function defaultContent(initialGameState: GameState) {
 
 export function generateBbVanilla(initialGamestate: GameState): Episode {
     const episode = generateBBVanillaScenes(initialGamestate);
-
     return new Episode({
         title: episode.title,
         scenes: episode.scenes,

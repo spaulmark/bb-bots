@@ -2,7 +2,7 @@ import { GameState } from "../../model";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Episode, EpisodeType } from "./episodes";
 import React from "react";
-import { Scene } from "./scene";
+import { Scene } from "./scenes/scene";
 
 export const DoubleEviction: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
@@ -29,9 +29,8 @@ export function generateDoubleEviction(initialGamestate: GameState): Episode {
         })
     );
 
-    const gameState = new GameState(currentGameState);
     return new Episode({
-        gameState,
+        gameState: new GameState(currentGameState),
         initialGamestate,
         title: episode.title,
         scenes,

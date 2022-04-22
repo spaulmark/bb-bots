@@ -1,6 +1,6 @@
 import React from "react";
 import { GameState } from "../../model/gameState";
-import { Scene } from "./scene";
+import { Scene } from "./scenes/scene";
 import { ViewsBar } from "../viewsBar/viewBar";
 import { defaultContent } from "./bigBrotherEpisode";
 

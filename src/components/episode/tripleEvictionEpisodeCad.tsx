@@ -1,7 +1,7 @@
-import React from "react";
 import { Episode, EpisodeType, GameState } from "../../model";
+import React from "react";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
-import { Scene } from "./scene";
+import { Scene } from "./scenes/scene";
 
 export const TripleEvictionCad: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
@@ -20,7 +20,15 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
     const scenes: Scene[] = episode.scenes;
 
     currentGameState.incrementLogIndex();
-    // TODO: triple eviction stuff
+    const doubleEviction = generateBBVanillaScenes(currentGameState, true);
+    currentGameState = doubleEviction.gameState;
+    scenes.push(
+        new Scene({
+            title: "Double Eviction",
+            content: <div>{doubleEviction.scenes.map((scene) => scene.content)}</div>,
+            gameState: doubleEviction.gameState,
+        })
+    );
 
     return new Episode({
         gameState: new GameState(currentGameState),

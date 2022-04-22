@@ -1,7 +1,6 @@
-import React from "react";
 import { GameState } from "../../model";
 import { Episode, EpisodeType } from "./episodes";
-import { Scene } from "./scene";
+import { Scene } from "./scenes/scene";
 import { generateSafetyChainScene } from "./scenes/safetyChainScene";
 
 export const SafetyChain: EpisodeType = {

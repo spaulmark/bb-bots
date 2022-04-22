@@ -1,5 +1,5 @@
 import { Episode, InitEpisode, EpisodeType } from "./episodes";
-import { Scene } from "./scene";
+import { Scene } from "./scenes/scene";
 import { GameState } from "../../model";
 import { generateVotingTable } from "./scenes/votingTable";
 import { evictHouseguest } from "./utilities/evictHouseguest";

@@ -54,7 +54,6 @@ export function SeasonEditorPage(): JSX.Element {
             </div>
             <div className="column" style={{ padding: 20 }}>
                 <Subheader>Add Twists</Subheader>
-                <hr />
                 <div className="columns is-multiline is-centered">
                     {twists.map((type) => (
                         <TwistAdder type={type} key={type.name} />

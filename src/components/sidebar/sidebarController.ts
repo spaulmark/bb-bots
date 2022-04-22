@@ -2,7 +2,7 @@ import { Subscription } from "rxjs";
 import { Sidebar } from "./sidebar";
 import { EpisodeLibrary, Season } from "../../model/season";
 import { Episode, nonEvictedHouseguests, getById } from "../../model";
-import { Scene } from "../episode/scene";
+import { Scene } from "../episode/scenes/scene";
 import {
     mainContentStream$,
     episodes$,
