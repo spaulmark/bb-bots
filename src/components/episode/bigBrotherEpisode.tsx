@@ -93,7 +93,7 @@ export function generateBBVanillaScenes(
     let hohCompScene: Scene;
     const scenes: Scene[] = [];
 
-    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate, doubleEviction);
+    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate, { doubleEviction });
     scenes.push(hohCompScene);
 
     let nomCeremonyScene;

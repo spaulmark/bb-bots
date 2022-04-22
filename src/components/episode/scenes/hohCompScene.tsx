@@ -6,12 +6,17 @@ import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { HoHVote } from "../../../model/logging/voteType";
 
+interface HohCompOptions {
+    doubleEviction: boolean;
+    customText?: string;
+}
+
 export function generateHohCompScene(
     initialGameState: GameState,
-    doubleEviction: boolean = false
+    options: HohCompOptions
 ): [GameState, Scene, Houseguest] {
     const newGameState = new MutableGameState(initialGameState);
-
+    const doubleEviction = options.doubleEviction;
     const previousHoh = initialGameState.previousHOH ? [initialGameState.previousHOH] : [];
     const newHoH: Houseguest = randomPlayer(newGameState.houseguests, previousHoh);
     newGameState.previousHOH = newHoH;
@@ -22,7 +27,10 @@ export function generateHohCompScene(
         gameState: initialGameState,
         content: (
             <div>
-                {previousHoh.length > 0 &&
+                {options.customText ? (
+                    <CenteredBold>{options.customText}</CenteredBold>
+                ) : (
+                    previousHoh.length > 0 &&
                     (doubleEviction ? (
                         <CenteredBold>
                             Houseguests, please return to the living room. Tonight will be a{" "}
@@ -32,7 +40,8 @@ export function generateHohCompScene(
                         <Centered>
                             {`Houseguests, it's time to find a new Head of Household. As outgoing HoH, ${previousHoh[0].name} will not compete.`}
                         </Centered>
-                    ))}
+                    ))
+                )}
                 <Portrait centered={true} houseguest={newHoH} />
                 <CenteredBold>{newHoH.name} has won Head of Household!</CenteredBold>
                 <br />
