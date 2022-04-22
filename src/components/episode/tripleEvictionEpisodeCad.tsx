@@ -3,6 +3,9 @@ import React from "react";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Scene } from "./scenes/scene";
 import { generateHohCompScene } from "./scenes/hohCompScene";
+import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
+import { generateVetoCompScene } from "./scenes/vetoCompScene";
+import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
 
 export const TripleEvictionCad: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
@@ -20,20 +23,43 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
 
     currentGameState.incrementLogIndex();
 
-    // hoh comp
     let hoh: Houseguest;
     let hohCompScene: Scene;
     const tripleScenes: Scene[] = [];
     [currentGameState, hohCompScene, hoh] = generateHohCompScene(currentGameState, {
         doubleEviction: true,
         customText: "Houseguests, please return to the living room. Tonight will be a triple eviction.",
-    }); // TODO: HoH comp scene options object
+    });
     tripleScenes.push(hohCompScene);
-    // nominations, TODO: use backdoorNplayers function to find N nominees
 
-    // pov
+    let nomCeremonyScene;
+    let nominees: Houseguest[];
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hoh, {
+        doubleEviction: true,
+        thirdNominee: true,
+    });
+    tripleScenes.push(nomCeremonyScene);
 
-    // veto ceremony
+    let vetoCompScene;
+    let povWinner: Houseguest;
+    [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
+        currentGameState,
+        hoh,
+        nominees,
+        true
+    );
+    tripleScenes.push(vetoCompScene);
+
+    let vetoCeremonyScene;
+
+    [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
+        currentGameState,
+        hoh,
+        nominees,
+        povWinner,
+        { doubleEviction: true, finalNominees: 3 }
+    );
+    tripleScenes.push(vetoCeremonyScene);
 
     // vote to SAVE
 

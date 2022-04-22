@@ -98,11 +98,9 @@ export function generateBBVanillaScenes(
 
     let nomCeremonyScene;
     let nominees: Houseguest[];
-    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(
-        currentGameState,
-        hoh,
-        doubleEviction
-    );
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hoh, {
+        doubleEviction,
+    });
     scenes.push(nomCeremonyScene);
 
     let vetoCompScene;
@@ -110,8 +108,7 @@ export function generateBBVanillaScenes(
     [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
         currentGameState,
         hoh,
-        nominees[0],
-        nominees[1],
+        nominees,
         doubleEviction
     );
     scenes.push(vetoCompScene);
@@ -122,7 +119,7 @@ export function generateBBVanillaScenes(
         hoh,
         nominees,
         povWinner,
-        doubleEviction
+        { doubleEviction, finalNominees: 2 }
     );
     scenes.push(vetoCeremonyScene);
 

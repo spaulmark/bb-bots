@@ -229,7 +229,7 @@ function useGoldenVetoPreJury(
     nominees: Houseguest[],
     gameState: GameState
 ): HouseguestWithLogic {
-    let reason = "Neither of these nominees are my friends.";
+    let reason = "None of these nominees are my friends.";
     let potentialSave: Houseguest | null = null;
     let alwaysSave: Houseguest | null = null;
     nominees.forEach((nominee) => {
