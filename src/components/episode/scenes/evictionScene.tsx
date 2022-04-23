@@ -80,12 +80,11 @@ export function generateEvictionScene(
             <div style={margin}>
                 <CenteredBold>{voteCountText}</CenteredBold>
                 <div className="columns is-centered">
-                    <DividerBox className="column">
-                        <Portraits houseguests={votes[0]} centered={true} />
-                    </DividerBox>
-                    <DividerBox className="column">
-                        <Portraits houseguests={votes[1]} centered={true} />
-                    </DividerBox>
+                    {votes.map((voters, i) => (
+                        <DividerBox className="column" key={`voters${i}`}>
+                            <Portraits houseguests={voters} centered={true} />
+                        </DividerBox>
+                    ))}
                 </div>
                 {tieVote && (
                     <div>
