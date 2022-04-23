@@ -11,7 +11,7 @@ import { Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
-import { listNames } from "../../../utils/names";
+import { listNames } from "../../../utils/listStrings";
 
 export function generateVetoCompScene(
     initialGameState: GameState,

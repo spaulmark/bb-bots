@@ -6,11 +6,11 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
-import { listNames } from "../../../utils/names";
+import { listNames } from "../../../utils/listStrings";
 
 interface VetoCeremonyOptions {
     doubleEviction: boolean;
-    finalNominees: number; // TODO: this does nothing
+    finalNominees: number; // TODO: this does nothing, replace with nameReplacement? / forceUse? idk.
 }
 
 export function generateVetoCeremonyScene(

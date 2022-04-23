@@ -6,6 +6,7 @@ import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
 import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
+import { generateEvictionScene } from "./scenes/evictionScene";
 
 export const TripleEvictionCad: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
@@ -62,6 +63,9 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
     tripleScenes.push(vetoCeremonyScene);
 
     // vote to SAVE
+    let evictionScene;
+    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hoh, nominees, true);
+    tripleScenes.push(evictionScene);
 
     scenes.push(
         new Scene({

@@ -10,11 +10,24 @@ import { CenteredBold, Centered } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { NomineeVote, NormalVote, HoHVote } from "../../../model/logging/voteType";
 import { evictHouseguest } from "../utilities/evictHouseguest";
+import { listVotes } from "../../../utils/listStrings";
 
 // TODO: use these
 interface EvictionSceneOptions {
     votingTo: "Save" | "Evict";
     doubleEviction: boolean;
+}
+
+// a function that takes in an array of numbers and returns the indicies of all the numbers tied for the highest number
+function getHighestIndicies(numbers: number[]): number[] {
+    const highest = Math.max(...numbers);
+    const highestIndicies = numbers.reduce((acc: any[], cur, i) => {
+        if (cur === highest) {
+            acc.push(i);
+        }
+        return acc;
+    }, []);
+    return highestIndicies;
 }
 
 export function generateEvictionScene(
@@ -25,50 +38,58 @@ export function generateEvictionScene(
 ): [GameState, Scene] {
     let newGameState = new MutableGameState(initialGameState);
     nominees = shuffle(nominees);
-    const votes: Array<ProfileHouseguest[]> = [[], []];
+    const votes: Array<ProfileHouseguest[]> = nominees.map((_) => []);
     let lastVoter: Houseguest;
+    let outOf = 0;
+    const nonVoters = new Set<number>(nominees.map((hg) => hg.id));
+    nonVoters.add(HoH.id);
     nonEvictedHouseguests(newGameState).forEach((hg) => {
-        if (hg.id !== nominees[0].id && hg.id !== nominees[1].id && hg.id !== HoH.id) {
+        if (!nonVoters.has(hg.id)) {
             const logic = castEvictionVote(hg, nominees, newGameState);
             const result: ProfileHouseguest = { ...hg };
             result.tooltip = logic.reason;
             newGameState.currentLog.votes[hg.id] = new NormalVote(nominees[logic.decision].id);
             votes[logic.decision].push(result);
             lastVoter = hg;
+            outOf++;
         }
     });
-    const votesFor0 = votes[0].length;
-    const votesFor1 = votes[1].length;
-    newGameState.currentLog.outOf = votesFor0 + votesFor1;
-    if (votesFor0 + votesFor1 === 1) {
+    const voteCounts: number[] = votes.map((vote) => vote.length);
+    const pluralities = getHighestIndicies(voteCounts);
+    newGameState.currentLog.outOf = outOf;
+    if (outOf === 1) {
         newGameState.currentLog.soleVoter = lastVoter!!.name;
     }
-    let tieVote = votesFor0 === votesFor1;
-    let tieBreaker = { decision: 0, reason: "Error you should not be seeing this" };
+    let tieVote = pluralities.length > 1;
+    let tieBreaker = { decision: -1, reason: "Error you should not be seeing this" };
     if (tieVote) {
         newGameState.currentLog.outOf++;
-        tieBreaker = castEvictionVote(HoH, nominees, newGameState);
+        tieBreaker = castEvictionVote(
+            HoH,
+            pluralities.map((p) => nominees[p]), // i hope this works?
+            newGameState
+        );
         newGameState.currentLog.votes[HoH.id] = new HoHVote(nominees[tieBreaker.decision].id);
     }
     let evictee: Houseguest;
-    if (votesFor0 > votesFor1) {
-        evictee = nominees[0];
-        newGameState.currentLog.votesInMajority = votesFor0;
-    } else if (votesFor1 > votesFor0) {
-        evictee = nominees[1];
-        newGameState.currentLog.votesInMajority = votesFor1;
-    } else {
+    if (tieBreaker.decision > -1) {
+        // there was a tie
         evictee = nominees[tieBreaker.decision];
-        newGameState.currentLog.votesInMajority = votesFor1 + 1;
+        newGameState.currentLog.votesInMajority = voteCounts[tieBreaker.decision] + 1;
+    } else {
+        // there wasn't a tie
+        evictee = nominees[pluralities[0]];
+        newGameState.currentLog.votesInMajority = voteCounts[pluralities[0]];
     }
-    newGameState.currentLog.votes[nominees[0].id] = new NomineeVote(evictee.id === nominees[0].id);
-    newGameState.currentLog.votes[nominees[1].id] = new NomineeVote(evictee.id !== nominees[0].id);
 
+    nominees.forEach((hg) => {
+        newGameState.currentLog.votes[hg.id] = new NomineeVote(evictee.id === hg.id);
+    });
     newGameState = evictHouseguest(newGameState, evictee.id);
-    const isUnanimous = votesFor0 === 0 || votesFor1 === 0;
+    const isUnanimous = voteCounts.filter((n) => n !== 0).length === 1;
     const voteCountText = isUnanimous
         ? "By a unanimous vote..."
-        : `By a vote of ${votesFor0} to ${votesFor1}...`;
+        : `By a vote of ${listVotes(voteCounts.map((v) => `${v}`))}...`;
 
     const displayHoH: ProfileHouseguest = { ...HoH };
     displayHoH.tooltip = tieBreaker.reason;
