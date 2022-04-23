@@ -11,6 +11,12 @@ import { DividerBox } from "../../layout/box";
 import { NomineeVote, NormalVote, HoHVote } from "../../../model/logging/voteType";
 import { evictHouseguest } from "../utilities/evictHouseguest";
 
+// TODO: use these
+interface EvictionSceneOptions {
+    votingTo: "Save" | "Evict";
+    doubleEviction: boolean;
+}
+
 export function generateEvictionScene(
     initialGameState: GameState,
     HoH: Houseguest,
@@ -89,13 +95,7 @@ export function generateEvictionScene(
                         <CenteredBold>I vote to evict {`${evictee.name}.`}</CenteredBold>
                     </div>
                 )}
-                <Portraits
-                    houseguests={[
-                        getById(newGameState, nominees[0].id),
-                        getById(newGameState, nominees[1].id),
-                    ]}
-                    centered={true}
-                />
+                <Portraits houseguests={nominees.map((hg) => getById(newGameState, hg.id))} centered={true} />
                 <CenteredBold>{`${evictee.name}... you have been evicted from the Big Brother House.`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
