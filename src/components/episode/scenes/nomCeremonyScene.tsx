@@ -32,7 +32,11 @@ export function generateNomCeremonyScene(
                 .decision
         );
         nom3.nominations++;
+        newGameState.currentLog.nominationsPreVeto.push(nom3.name);
     }
+    newGameState.currentLog.nominationsPreVeto = require("alphanum-sort")(
+        newGameState.currentLog.nominationsPreVeto
+    );
     const noms = nom3 ? shuffle([nom1, nom2, nom3]) : shuffle([nom1, nom2]);
     const finalStatement = options.thirdNominee
         ? `I have nominated you, ${noms[0].name}, ${noms[1].name}, and ${noms[2].name} for eviction. `

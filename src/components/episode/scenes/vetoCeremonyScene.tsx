@@ -7,6 +7,7 @@ import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { listNames } from "../../../utils/listStrings";
+import _ from "lodash";
 
 interface VetoCeremonyOptions {
     doubleEviction: boolean;
@@ -105,6 +106,8 @@ export function generateVetoCeremonyScene(
             </div>
         ),
     });
-    initialGameState.currentLog.nominationsPostVeto = [finalNominees[0].name, finalNominees[1].name];
+    initialGameState.currentLog.nominationsPostVeto = require("alphanum-sort")(
+        finalNominees.map((nom) => nom.name)
+    );
     return [initialGameState, scene, finalNominees];
 }

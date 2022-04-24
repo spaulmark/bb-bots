@@ -49,7 +49,7 @@ const BlackRow = styled.tr`
     height: 0.4em;
     background-color: #000000;
 `;
-
+let anotherKey = 0;
 export function generateVotingTable(gameState: GameState): JSX.Element {
     const masterLog: EpisodeLog[][] = gameState.log;
     const houseguestCells: JSX.Element[][] = [];
@@ -155,7 +155,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                 houseguestCells[id] = tempList;
             }
         }
-        houseguestRows.push(<tr key={`hgrow--${id}`}>{houseguestCells[id]}</tr>);
+        houseguestRows.push(<tr key={`hgrow--${id}--${anotherKey++}`}>{houseguestCells[id]}</tr>);
         evictionColSpan++;
     });
 
@@ -187,7 +187,7 @@ function generateEvictedRow(
 ) {
     if (!log) {
         cells.push(
-            <Gray key={i} rowSpan={2}>
+            <Gray key={`evicted${i}--${anotherKey++}`} rowSpan={2}>
                 <CenteredBold noMargin={true}>Evicted</CenteredBold>
             </Gray>
         );
@@ -200,7 +200,7 @@ function generateEvictedRow(
             : `${log.votesInMajority} of ${log.outOf} votes`;
 
     cells.push(
-        <Evicted key={i} rowSpan={2}>
+        <Evicted key={`evicted${i}--${anotherKey++}`} rowSpan={2}>
             <Centered noMargin={true}>
                 <b>{getById(gameState, log.evicted).name}</b>
                 <br />
@@ -216,7 +216,7 @@ function generateEvictedRow(
 function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={`postVeto--${i}`}>
+            <Gray key={`postVeto--${i}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
@@ -227,10 +227,15 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
         return;
     }
     cells.push(
-        <White key={`postVeto--${i}`}>
+        <White key={`preveto--${i}-${anotherKey++}`}>
             <Centered noMargin={true}>
-                {log.nominationsPostVeto[0]}
-                <br /> {log.nominationsPostVeto[1]}
+                {interleave(
+                    log.nominationsPostVeto as any,
+                    (key) => (
+                        <br key={`preveto--br--${i}-${key++}`} />
+                    ),
+                    anotherKey
+                )}
             </Centered>
         </White>
     );
@@ -239,7 +244,7 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
 function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={`veto--${i}`}>
+            <Gray key={`veto--${i}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>Veto Winner</CenteredBold>
             </Gray>
         );
@@ -248,16 +253,21 @@ function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Elem
     if (log.vetoWinner === undefined) return;
 
     cells.push(
-        <White key={`veto--${i}`}>
+        <White key={`veto--${i}-${anotherKey++}`}>
             <Centered noMargin={true}>{log.vetoWinner}</Centered>
         </White>
     );
 }
 
+// javascript is my passion
+function interleave<T>(arr: T[], thing: (key: number) => T, key: number): T[] {
+    return ([] as T[]).concat(...arr.map((n: T) => [n, thing(key++)])).slice(0, -1);
+}
+
 function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={`preveto--${i}`}>
+            <Gray key={`preveto--${i}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
@@ -269,17 +279,22 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
     }
     if (log.nominationsPreVeto.length === 0) {
         cells.push(
-            <White key={`preveto--${i}`} rowSpan={2}>
+            <White key={`preveto--${i}-${anotherKey++}`} rowSpan={2}>
                 <CenteredItallic noMargin={true}>(none)</CenteredItallic>
             </White>
         );
         return;
     }
     cells.push(
-        <White key={`preveto--${i}`}>
+        <White key={`preveto--${i}-${anotherKey++}`}>
             <Centered noMargin={true}>
-                {log.nominationsPreVeto[0]}
-                <br /> {log.nominationsPreVeto[1]}
+                {interleave(
+                    log.nominationsPreVeto as any,
+                    (key) => (
+                        <br key={`preveto--br--${i}-${key++}`} />
+                    ),
+                    anotherKey
+                )}
             </Centered>
         </White>
     );
