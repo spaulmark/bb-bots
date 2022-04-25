@@ -2,7 +2,7 @@ import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests, getById
 import { Scene } from "./scene";
 import { shuffle } from "lodash";
 import { ProfileHouseguest } from "../../memoryWall";
-import { castEvictionVote } from "../../../utils/ai/aiApi";
+import { castEvictionVote, castVoteToSave, NumberWithLogic } from "../../../utils/ai/aiApi";
 import { Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
@@ -10,13 +10,7 @@ import { CenteredBold, Centered } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { NomineeVote, NormalVote, HoHVote } from "../../../model/logging/voteType";
 import { evictHouseguest } from "../utilities/evictHouseguest";
-import { listVotes } from "../../../utils/listStrings";
-
-// TODO: use these
-interface EvictionSceneOptions {
-    votingTo: "Save" | "Evict";
-    doubleEviction: boolean;
-}
+import { listNames, listVotes } from "../../../utils/listStrings";
 
 // a function that takes in an array of numbers and returns the indicies of all the numbers tied for the highest number
 function getHighestIndicies(numbers: number[]): number[] {
@@ -30,12 +24,20 @@ function getHighestIndicies(numbers: number[]): number[] {
     return highestIndicies;
 }
 
+interface EvictionSceneOptions {
+    votingTo: "Save" | "Evict";
+    doubleEviction: boolean;
+}
+
 export function generateEvictionScene(
     initialGameState: GameState,
     HoH: Houseguest,
     nominees: Houseguest[],
-    doubleEviction: boolean = false
+    options: EvictionSceneOptions
 ): [GameState, Scene] {
+    const doubleEviction = options.doubleEviction;
+    const castVote: (hero: Houseguest, noms: Houseguest[], gameState: GameState) => NumberWithLogic =
+        options.votingTo === "Save" ? castVoteToSave : castEvictionVote;
     let newGameState = new MutableGameState(initialGameState);
     nominees = shuffle(nominees);
     const votes: Array<ProfileHouseguest[]> = nominees.map((_) => []);
@@ -45,7 +47,7 @@ export function generateEvictionScene(
     nonVoters.add(HoH.id);
     nonEvictedHouseguests(newGameState).forEach((hg) => {
         if (!nonVoters.has(hg.id)) {
-            const logic = castEvictionVote(hg, nominees, newGameState);
+            const logic = castVote(hg, nominees, newGameState);
             const result: ProfileHouseguest = { ...hg };
             result.tooltip = logic.reason;
             newGameState.currentLog.votes[hg.id] = new NormalVote(nominees[logic.decision].id);
@@ -64,28 +66,45 @@ export function generateEvictionScene(
     let tieBreaker = { decision: -1, reason: "Error you should not be seeing this" };
     if (tieVote) {
         newGameState.currentLog.outOf++;
-        tieBreaker = castEvictionVote(
+        tieBreaker = castVote(
             HoH,
             pluralities.map((p) => nominees[p]), // i hope this works?
             newGameState
         );
         newGameState.currentLog.votes[HoH.id] = new HoHVote(nominees[tieBreaker.decision].id);
     }
-    let evictee: Houseguest;
-    if (tieBreaker.decision > -1) {
-        // there was a tie
-        evictee = nominees[tieBreaker.decision];
-        newGameState.currentLog.votesInMajority = voteCounts[tieBreaker.decision] + 1;
-    } else {
-        // there wasn't a tie
-        evictee = nominees[pluralities[0]];
-        newGameState.currentLog.votesInMajority = voteCounts[pluralities[0]];
-    }
+    let evictees: Houseguest[] = [];
 
+    if (options.votingTo === "Evict") {
+        // voting to evict
+        if (tieBreaker.decision > -1) {
+            // there was a tie
+            evictees.push(nominees[tieBreaker.decision]);
+            newGameState.currentLog.votesInMajority = voteCounts[tieBreaker.decision] + 1;
+        } else {
+            // there wasn't a tie
+            evictees.push(nominees[pluralities[0]]);
+            newGameState.currentLog.votesInMajority = voteCounts[pluralities[0]];
+        }
+    } else {
+        // voting to save
+        if (tieBreaker.decision > -1) {
+            // there was a tie
+            // evictee = nominees[tieBreaker.decision];
+            // newGameState.currentLog.votesInMajority = voteCounts[tieBreaker.decision] + 1;
+        } else {
+            // there wasn't a tie
+            // evictee = nominees[pluralities[0]];
+            // newGameState.currentLog.votesInMajority = voteCounts[pluralities[0]];
+        }
+    }
+    const evicteesSet = new Set<number>(evictees.map((hg) => hg.id));
     nominees.forEach((hg) => {
-        newGameState.currentLog.votes[hg.id] = new NomineeVote(evictee.id === hg.id);
+        newGameState.currentLog.votes[hg.id] = new NomineeVote(evicteesSet.has(hg.id));
     });
-    newGameState = evictHouseguest(newGameState, evictee.id);
+    evictees.forEach((evictee) => {
+        newGameState = evictHouseguest(newGameState, evictee.id);
+    });
     const isUnanimous = voteCounts.filter((n) => n !== 0).length === 1;
     const voteCountText = isUnanimous
         ? "By a unanimous vote..."
@@ -112,11 +131,16 @@ export function generateEvictionScene(
                         <CenteredBold> We have a tie.</CenteredBold>
                         <Centered>{`${HoH.name}, as current Head of Household, you must cast the sole vote to evict.`}</Centered>
                         <Portraits houseguests={[displayHoH]} centered={true} />
-                        <CenteredBold>I vote to evict {`${evictee.name}.`}</CenteredBold>
+                        <CenteredBold>
+                            I vote to {options.votingTo.toLowerCase()}
+                            {` ${nominees[tieBreaker.decision].name}.`}
+                        </CenteredBold>
                     </div>
                 )}
                 <Portraits houseguests={nominees.map((hg) => getById(newGameState, hg.id))} centered={true} />
-                <CenteredBold>{`${evictee.name}... you have been evicted from the Big Brother House.`}</CenteredBold>
+                <CenteredBold>{`${listNames(
+                    evictees.map((hg) => hg.name)
+                )}... you have been evicted from the Big Brother House.`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
         ),

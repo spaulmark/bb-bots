@@ -8,7 +8,7 @@ import {
 } from "./classifyRelationship";
 import { getRelationshipSummary, isBetterTarget } from "./targets";
 
-interface NumberWithLogic {
+export interface NumberWithLogic {
     decision: number;
     reason: string;
 }
@@ -19,6 +19,31 @@ interface HouseguestWithLogic {
 }
 
 // Return the index of the eviction target.
+
+// vote to save, in the future, generalize this to n nominees instead of going 2 by 2
+export function castVoteToSave(
+    hero: Houseguest,
+    nominees: Houseguest[],
+    gameState: GameState
+): NumberWithLogic {
+    if (nominees.length === 0) throw new Error("Tried to cast a vote to save with no nominees.");
+    let currentSave: NumberWithLogic = { decision: 0, reason: "" };
+    nominees.forEach((nominee, i) => {
+        if (i === 0) return;
+        const evictionTarget = castEvictionVote(hero, [nominee, nominees[currentSave.decision]], gameState);
+        if (!currentSave.reason) {
+            currentSave.reason = evictionTarget.reason;
+        }
+        if (evictionTarget.decision === 1) {
+            currentSave = { decision: i, reason: evictionTarget.reason };
+        }
+    });
+    return currentSave;
+}
+
+// TODO: generalize this to 3 nominees now hahahahahahaHAHAHAHAHAHAHAH
+
+// returns the index in the array of the person you're voting to evict
 export function castEvictionVote(
     hero: Houseguest,
     nominees: Houseguest[],
@@ -151,7 +176,7 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
         const decision = hero.relationships[nom0.id] < hero.relationships[nom1.id] ? 0 : 1;
         return {
             decision,
-            reason: `Both noms are my enemies, but I dislike ${nominees[decision].name} more.`,
+            reason: `I dislike ${nominees[decision].name} the most of these enemies.`,
         };
     } else if (
         (r0 === Relationship.Enemy && r1 !== Relationship.Enemy) ||
@@ -170,7 +195,7 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
     const vote = lowestScore(hero, nominees, relationship);
     return {
         decision: vote,
-        reason: `Both noms are my friends, but I like ${nominees[vote === 0 ? 1 : 0].name} more.`,
+        reason: `I like ${nominees[vote === 0 ? 1 : 0].name} the most of these friends.`,
     };
 }
 
