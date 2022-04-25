@@ -6,6 +6,7 @@ import { GameState, getById } from "../../../model";
 import { VoteType, WinnerVote, RunnerUpVote } from "../../../model/logging/voteType";
 import { FullscreenButton } from "../../mainPage/fullscreenButton";
 import { ColorTheme } from "../../../theme/theme";
+import _ from "lodash";
 
 export const EndgameTableCell = styled.td`
     padding: 0.1em 0.4em;
@@ -196,17 +197,20 @@ function generateEvictedRow(
         );
         return;
     }
-
-    const voteTextLine1 =
-        log.soleVoter !== undefined
-            ? `${log.soleVoter}'s choice`
-            : `${log.votesInMajority} of ${log.outOf} votes`;
-
     const saveOrEvict =
         log.soleVoter !== undefined ? "evict" : (log.votingTo && log.votingTo.toLowerCase()) || "evict";
 
     const rowSpan = log.evicted.length === 1 ? 2 : 1;
     log.evicted.forEach((evicted, i) => {
+        const voteTextLine1 =
+            log.soleVoter !== undefined
+                ? `${log.soleVoter}'s choice`
+                : `${
+                      log.votingTo === "Save"
+                          ? Object.values(log.votes).filter((vote) => vote.id === evicted).length
+                          : log.votesInMajority
+                  } of ${log.outOf} votes`;
+
         const content = (
             <Evicted key={`evicted${i}--${anotherKey++}`} rowSpan={rowSpan}>
                 <Centered noMargin={true}>
