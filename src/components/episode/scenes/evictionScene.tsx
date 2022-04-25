@@ -141,7 +141,9 @@ export function generateEvictionScene(
                 {tieVote && (
                     <div>
                         <CenteredBold> We have a tie.</CenteredBold>
-                        <Centered>{`${HoH.name}, as current Head of Household, you must cast the sole vote to evict.`}</Centered>
+                        <Centered>{`${
+                            HoH.name
+                        }, as current Head of Household, you must cast the sole vote to ${options.votingTo.toLowerCase()}.`}</Centered>
                         <Portraits houseguests={[displayHoH]} centered={true} />
                         <CenteredBold>
                             I vote to {options.votingTo.toLowerCase()}
