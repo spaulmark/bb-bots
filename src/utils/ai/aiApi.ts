@@ -41,8 +41,6 @@ export function castVoteToSave(
     return currentSave;
 }
 
-// TODO: generalize this to 3 nominees now hahahahahahaHAHAHAHAHAHAHAH
-
 // returns the index in the array of the person you're voting to evict
 export function castEvictionVote(
     hero: Houseguest,

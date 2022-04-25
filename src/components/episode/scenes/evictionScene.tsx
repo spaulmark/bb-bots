@@ -67,13 +67,13 @@ export function generateEvictionScene(
     let tieBreaker = { decision: -1, reason: "Error you should not be seeing this" };
     if (tieVote) {
         newGameState.currentLog.outOf++;
-        // TODO: this is returning a vote to EVICT when they're saving
         tieBreaker = castVote(
             HoH,
             pluralities.map((p) => nominees[p]),
             newGameState
         );
-        newGameState.currentLog.votes[HoH.id] = new HoHVote(nominees[tieBreaker.decision].id);
+
+        newGameState.currentLog.votes[HoH.id] = new HoHVote(nominees[pluralities[tieBreaker.decision]].id);
     }
     let evictees: Houseguest[] = [];
 
@@ -81,8 +81,8 @@ export function generateEvictionScene(
         // voting to evict
         if (tieBreaker.decision > -1) {
             // there was a tie
-            evictees.push(nominees[tieBreaker.decision]);
-            newGameState.currentLog.votesInMajority = voteCounts[tieBreaker.decision] + 1;
+            evictees.push(nominees[pluralities[tieBreaker.decision]]);
+            newGameState.currentLog.votesInMajority = voteCounts[pluralities[tieBreaker.decision]] + 1;
         } else {
             // there wasn't a tie
             evictees.push(nominees[pluralities[0]]);
@@ -92,8 +92,8 @@ export function generateEvictionScene(
         // voting to save
         if (tieBreaker.decision > -1) {
             // there was a tie
-            const safe = nominees[tieBreaker.decision];
-            newGameState.currentLog.votesInMajority = voteCounts[tieBreaker.decision] + 1;
+            const safe = nominees[pluralities[tieBreaker.decision]];
+            newGameState.currentLog.votesInMajority = voteCounts[pluralities[tieBreaker.decision]] + 1;
             nominees.forEach((nom) => {
                 if (nom.id !== safe.id) {
                     evictees.push(nom);
@@ -147,7 +147,7 @@ export function generateEvictionScene(
                         <Portraits houseguests={[displayHoH]} centered={true} />
                         <CenteredBold>
                             I vote to {options.votingTo.toLowerCase()}
-                            {` ${nominees[tieBreaker.decision].name}.`}
+                            {` ${nominees[pluralities[tieBreaker.decision]].name}.`}
                         </CenteredBold>
                     </div>
                 )}
