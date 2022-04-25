@@ -39,6 +39,7 @@ export function generateEvictionScene(
     const castVote: (hero: Houseguest, noms: Houseguest[], gameState: GameState) => NumberWithLogic =
         options.votingTo === "Save" ? castVoteToSave : castEvictionVote;
     let newGameState = new MutableGameState(initialGameState);
+    newGameState.currentLog.votingTo = options.votingTo;
     nominees = shuffle(nominees);
     const votes: Array<ProfileHouseguest[]> = nominees.map((_) => []);
     let lastVoter: Houseguest;
@@ -66,9 +67,10 @@ export function generateEvictionScene(
     let tieBreaker = { decision: -1, reason: "Error you should not be seeing this" };
     if (tieVote) {
         newGameState.currentLog.outOf++;
+        // TODO: this is returning a vote to EVICT when they're saving
         tieBreaker = castVote(
             HoH,
-            pluralities.map((p) => nominees[p]), // i hope this works?
+            pluralities.map((p) => nominees[p]),
             newGameState
         );
         newGameState.currentLog.votes[HoH.id] = new HoHVote(nominees[tieBreaker.decision].id);
@@ -90,12 +92,22 @@ export function generateEvictionScene(
         // voting to save
         if (tieBreaker.decision > -1) {
             // there was a tie
-            // evictee = nominees[tieBreaker.decision];
-            // newGameState.currentLog.votesInMajority = voteCounts[tieBreaker.decision] + 1;
+            const safe = nominees[tieBreaker.decision];
+            newGameState.currentLog.votesInMajority = voteCounts[tieBreaker.decision] + 1;
+            nominees.forEach((nom) => {
+                if (nom.id !== safe.id) {
+                    evictees.push(nom);
+                }
+            });
         } else {
             // there wasn't a tie
-            // evictee = nominees[pluralities[0]];
-            // newGameState.currentLog.votesInMajority = voteCounts[pluralities[0]];
+            const safe = nominees[pluralities[0]];
+            newGameState.currentLog.votesInMajority = voteCounts[pluralities[0]];
+            nominees.forEach((nom) => {
+                if (nom.id !== safe.id) {
+                    evictees.push(nom);
+                }
+            });
         }
     }
     const evicteesSet = new Set<number>(evictees.map((hg) => hg.id));
@@ -138,7 +150,12 @@ export function generateEvictionScene(
                     </div>
                 )}
                 <Portraits houseguests={nominees.map((hg) => getById(newGameState, hg.id))} centered={true} />
-                <CenteredBold>{`${listNames(
+                {options.votingTo === "Save" && (
+                    <CenteredBold>{`${listNames(
+                        nominees.filter((nom) => !evicteesSet.has(nom.id)).map((hg) => hg.name)
+                    )}... you are safe.`}</CenteredBold>
+                )}
+                <CenteredBold>{`${options.votingTo === "Save" && "That means "}${listNames(
                     evictees.map((hg) => hg.name)
                 )}... you have been evicted from the Big Brother House.`}</CenteredBold>
                 <NextEpisodeButton />

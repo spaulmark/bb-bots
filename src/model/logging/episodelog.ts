@@ -6,9 +6,10 @@ export class EpisodeLog {
     public winner?: number;
     public runnerUp?: number;
     public nominationsPostVeto: string[] = [];
-    public evicted: number = -1; // TODO: but what if multiple people were evicted in one row
+    public evicted: number[] = [];
     public votes: { [id: string]: VoteType } = {};
     public votesInMajority: number = -1;
     public outOf: number = -1;
     public soleVoter?: string;
+    public votingTo?: string;
 }

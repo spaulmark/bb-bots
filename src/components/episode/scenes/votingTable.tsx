@@ -81,9 +81,10 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             generatePreVetoRow(log, i, preVetoCells);
             generateVetoRow(log, i, vetoCells);
             generatePostVetoRow(log, i, postVetoCells);
-            generateEvictedRow(log, i, evictedCells, gameState);
+            generateEvictedRow(log, i, evictedCells, winnerCells, gameState);
             if (!log) return;
-            evictionOrder.push([log.evicted, i]);
+            log.evicted.forEach((evicted) => evictionOrder.push([evicted, i]));
+
             if (log.runnerUp !== undefined) evictionOrder.push([log.runnerUp, i]);
             if (log.winner !== undefined) evictionOrder.push([log.winner, i]);
             // add each of the votes to the houseguest cells
@@ -183,6 +184,7 @@ function generateEvictedRow(
     log: EpisodeLog | undefined,
     i: number,
     cells: JSX.Element[],
+    winnerCells: JSX.Element[],
     gameState: GameState
 ) {
     if (!log) {
@@ -199,18 +201,23 @@ function generateEvictedRow(
             ? `${log.soleVoter}'s choice`
             : `${log.votesInMajority} of ${log.outOf} votes`;
 
-    cells.push(
-        <Evicted key={`evicted${i}--${anotherKey++}`} rowSpan={2}>
-            <Centered noMargin={true}>
-                <b>{getById(gameState, log.evicted).name}</b>
-                <br />
-                <small>
-                    {voteTextLine1} <br />
-                    to evict
-                </small>
-            </Centered>
-        </Evicted>
-    );
+    const rowSpan = log.evicted.length === 1 ? 2 : 1;
+    log.evicted.forEach((evicted, i) => {
+        const content = (
+            <Evicted key={`evicted${i}--${anotherKey++}`} rowSpan={rowSpan}>
+                <Centered noMargin={true}>
+                    <b>{getById(gameState, evicted).name}</b>
+                    <br />
+                    <small>
+                        {voteTextLine1} <br />
+                        to {(log.votingTo && log.votingTo.toLowerCase()) || "evict"}
+                    </small>
+                </Centered>
+            </Evicted>
+        );
+        if (i === 0) cells.push(content);
+        else winnerCells.push(content);
+    });
 }
 
 function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
