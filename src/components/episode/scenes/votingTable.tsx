@@ -202,6 +202,9 @@ function generateEvictedRow(
             ? `${log.soleVoter}'s choice`
             : `${log.votesInMajority} of ${log.outOf} votes`;
 
+    const saveOrEvict =
+        log.soleVoter !== undefined ? "evict" : (log.votingTo && log.votingTo.toLowerCase()) || "evict";
+
     const rowSpan = log.evicted.length === 1 ? 2 : 1;
     log.evicted.forEach((evicted, i) => {
         const content = (
@@ -211,7 +214,7 @@ function generateEvictedRow(
                     <br />
                     <small>
                         {voteTextLine1} <br />
-                        to {(log.votingTo && log.votingTo.toLowerCase()) || "evict"}
+                        to {saveOrEvict}
                     </small>
                 </Centered>
             </Evicted>

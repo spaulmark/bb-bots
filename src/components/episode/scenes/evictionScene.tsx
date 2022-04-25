@@ -12,7 +12,6 @@ import { NomineeVote, NormalVote, HoHVote } from "../../../model/logging/voteTyp
 import { evictHouseguest } from "../utilities/evictHouseguest";
 import { listNames, listVotes } from "../../../utils/listStrings";
 
-// a function that takes in an array of numbers and returns the indicies of all the numbers tied for the highest number
 function getHighestIndicies(numbers: number[]): number[] {
     const highest = Math.max(...numbers);
     const highestIndicies = numbers.reduce((acc: any[], cur, i) => {
@@ -64,7 +63,7 @@ export function generateEvictionScene(
         newGameState.currentLog.soleVoter = lastVoter!!.name;
     }
     let tieVote = pluralities.length > 1;
-    let tieBreaker = { decision: -1, reason: "Error you should not be seeing this" };
+    let tieBreaker = { decision: -1, reason: "" };
     if (tieVote) {
         newGameState.currentLog.outOf++;
         tieBreaker = castVote(
