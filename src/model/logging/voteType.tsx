@@ -7,6 +7,7 @@ import {
     RunnerUpCell,
     NomineeCell,
     HohCell,
+    SaveCell,
 } from "../../components/episode/scenes/votingTable";
 
 let voteKey = 0;
@@ -18,6 +19,18 @@ function getKey(): string {
 export interface VoteType {
     id: number;
     render: (state: GameState) => JSX.Element;
+}
+
+export class SaveVote implements VoteType {
+    id: number;
+    render = (state: GameState) => (
+        <SaveCell key={getKey()}>
+            <Centered noMargin={true}>{getById(state, this.id).name}</Centered>
+        </SaveCell>
+    );
+    constructor(id: number) {
+        this.id = id;
+    }
 }
 
 export class NormalVote implements VoteType {

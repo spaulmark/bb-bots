@@ -22,6 +22,10 @@ const Gray = styled(EndgameTableCell)`
     background-color: ${({ theme }: { theme: ColorTheme }) => theme.grayCell};
 `;
 
+export const SaveCell = styled(EndgameTableCell)`
+    background-color: ${({ theme }: { theme: ColorTheme }) => theme.saveCell};
+`;
+
 const White = styled(EndgameTableCell)`
     background-color: ${({ theme }: { theme: ColorTheme }) => theme.lightGrayCell};
 `;

@@ -8,7 +8,7 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { CenteredBold, Centered } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
-import { NomineeVote, NormalVote, HoHVote } from "../../../model/logging/voteType";
+import { NomineeVote, NormalVote, HoHVote, SaveVote } from "../../../model/logging/voteType";
 import { evictHouseguest } from "../utilities/evictHouseguest";
 import { listNames, listVotes } from "../../../utils/listStrings";
 
@@ -50,7 +50,10 @@ export function generateEvictionScene(
             const logic = castVote(hg, nominees, newGameState);
             const result: ProfileHouseguest = { ...hg };
             result.tooltip = logic.reason;
-            newGameState.currentLog.votes[hg.id] = new NormalVote(nominees[logic.decision].id);
+            newGameState.currentLog.votes[hg.id] =
+                options.votingTo === "Evict"
+                    ? new NormalVote(nominees[logic.decision].id)
+                    : new SaveVote(nominees[logic.decision].id);
             votes[logic.decision].push(result);
             lastVoter = hg;
             outOf++;
