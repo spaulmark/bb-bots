@@ -133,21 +133,23 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     );
     const houseguestRows: JSX.Element[] = [];
     const evictedRow = <tr>{evictedCells}</tr>;
-    let evictionColSpan = -1;
+    let desiredLength = -1;
     evictionOrder.reverse().forEach(([id, week], i) => {
-        if (evictionColSpan > 0) {
+        if (i === 0) desiredLength = houseguestCells[id].length;
+        if (i > 1) {
             const weekText = i === 2 ? "(Finale)" : `(Week ${week})`;
-            const isJury = getById(gameState, id).isJury;
-            const colSpan = isJury ? evictionColSpan - 1 : evictionColSpan;
             const evicted = (
-                <Evicted colSpan={colSpan} key={`evicted-week-${weekText}-${i}`}>
+                <Evicted
+                    colSpan={desiredLength - houseguestCells[id].length}
+                    key={`evicted-week-${weekText}-${i}`}
+                >
                     <CenteredItallic noMargin={true}>Evicted</CenteredItallic>
                     <CenteredItallic noMargin={true}>
                         <small>{weekText}</small>
                     </CenteredItallic>
                 </Evicted>
             );
-            if (!isJury) {
+            if (!getById(gameState, id).isJury) {
                 houseguestCells[id].push(evicted); // not jury, they dead
             } else {
                 const tempList = houseguestCells[id].slice(0, -1);
@@ -157,7 +159,6 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             }
         }
         houseguestRows.push(<tr key={`hgrow--${id}--${anotherKey++}`}>{houseguestCells[id]}</tr>);
-        evictionColSpan++;
     });
 
     return (

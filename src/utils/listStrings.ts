@@ -18,5 +18,8 @@ export function listVotes(votes: string[]): string {
     if (votes.length === 1) {
         return votes[0];
     }
-    return votes.slice(0, votes.length - 1).join(` to `) + ` to ` + votes[votes.length - 1];
+    if (votes.length === 2) {
+        return votes[0] + " to " + votes[1];
+    }
+    return votes.slice(0, votes.length - 1).join(` - `) + ` - ` + votes[votes.length - 1];
 }

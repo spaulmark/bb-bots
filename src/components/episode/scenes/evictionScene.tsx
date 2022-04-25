@@ -155,7 +155,7 @@ export function generateEvictionScene(
                         nominees.filter((nom) => !evicteesSet.has(nom.id)).map((hg) => hg.name)
                     )}... you are safe.`}</CenteredBold>
                 )}
-                <CenteredBold>{`${options.votingTo === "Save" && "That means "}${listNames(
+                <CenteredBold>{`${options.votingTo === "Save" ? "That means " : ""}${listNames(
                     evictees.map((hg) => hg.name)
                 )}... you have been evicted from the Big Brother House.`}</CenteredBold>
                 <NextEpisodeButton />
