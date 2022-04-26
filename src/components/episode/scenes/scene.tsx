@@ -1,6 +1,6 @@
 import React from "react";
-import { GameState } from "../../model/gameState";
-import { ViewsBar } from "../viewsBar/viewBar";
+import { GameState } from "../../../model/gameState";
+import { ViewsBar } from "../../viewsBar/viewBar";
 interface InitScene {
     readonly title: string;
     readonly gameState: GameState;

@@ -1,5 +1,5 @@
 import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests } from "../../../model";
-import { Scene } from "../scene";
+import { Scene } from "./scene";
 import { castEvictionVote } from "../../../utils/ai/aiApi";
 import { ProfileHouseguest } from "../../memoryWall";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";

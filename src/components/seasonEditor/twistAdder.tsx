@@ -34,7 +34,15 @@ export class TwistAdder extends React.Component<
     public render(): JSX.Element {
         const twistCount = this.state.twistCount;
         return (
-            <div className="column is-narrow">
+            <div
+                className="column is-narrow"
+                style={{
+                    border: "1px solid #808080",
+                    borderRadius: "4px",
+                    backgroundColor: "#444346",
+                    margin: "10px",
+                }}
+            >
                 <div className="field has-addons has-addons-centered">
                     <p
                         className="field-label is-normal control"

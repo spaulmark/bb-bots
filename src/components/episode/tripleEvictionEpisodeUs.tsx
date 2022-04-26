@@ -1,19 +1,18 @@
-import { GameState } from "../../model";
-import { generateBBVanillaScenes } from "./bigBrotherEpisode";
-import { Episode, EpisodeType } from "./episodes";
+import { Episode, EpisodeType, GameState } from "../../model";
 import React from "react";
+import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Scene } from "./scenes/scene";
 
-export const DoubleEviction: EpisodeType = {
-    canPlayWith: (n: number) => n >= 5,
-    eliminates: 2,
+export const TripleEvictionUs: EpisodeType = {
+    canPlayWith: (n: number) => n >= 6,
+    eliminates: 3,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Double Eviction",
-    generate: generateDoubleEviction,
+    name: "Triple Eviction 🇺🇸",
+    generate: generateTripleEvictionUs,
 };
 
-export function generateDoubleEviction(initialGamestate: GameState): Episode {
+export function generateTripleEvictionUs(initialGamestate: GameState): Episode {
     const episode = generateBBVanillaScenes(initialGamestate);
     let currentGameState = episode.gameState;
     const scenes: Scene[] = episode.scenes;
@@ -28,12 +27,21 @@ export function generateDoubleEviction(initialGamestate: GameState): Episode {
             gameState: doubleEviction.gameState,
         })
     );
-
+    currentGameState.incrementLogIndex();
+    const tripleEviction = generateBBVanillaScenes(currentGameState, true);
+    currentGameState = tripleEviction.gameState;
+    scenes.push(
+        new Scene({
+            title: "Triple Eviction",
+            content: <div>{tripleEviction.scenes.map((scene) => scene.content)}</div>,
+            gameState: tripleEviction.gameState,
+        })
+    );
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,
         title: episode.title,
         scenes,
-        type: DoubleEviction,
+        type: TripleEvictionUs,
     });
 }

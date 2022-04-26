@@ -1,4 +1,4 @@
-import { GameState, Houseguest, EpisodeType, Episode, InitEpisode } from "../../model";
+import { GameState, Houseguest, EpisodeType, Episode } from "../../model";
 import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
@@ -6,7 +6,7 @@ import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
 import { generateEvictionScene } from "./scenes/evictionScene";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
-import { Scene } from "./scene";
+import { Scene } from "./scenes/scene";
 import { HasText } from "../layout/text";
 import styled from "styled-components";
 import { weekStartTab$ } from "../../subjects/subjects";
@@ -58,42 +58,28 @@ export function Tabs(): JSX.Element {
     );
 }
 
-export function generateBbVanilla(initialGamestate: GameState): BigBrotherVanillaEpisode {
-    const episode = generateBBVanillaScenes(initialGamestate);
-    const content = (
+export function defaultContent(initialGameState: GameState) {
+    return (
         <HasText>
             <Tabs />
-            <WeekStartWrapper gameState={initialGamestate} />
+            <WeekStartWrapper gameState={initialGameState} />
             <br />
             <NextEpisodeButton />
         </HasText>
     );
-    return new BigBrotherVanillaEpisode({
+}
+
+export function generateBbVanilla(initialGamestate: GameState): Episode {
+    const episode = generateBBVanillaScenes(initialGamestate);
+    return new Episode({
         title: episode.title,
         scenes: episode.scenes,
-        content,
         gameState: new GameState(episode.gameState),
         initialGamestate,
         type: BigBrotherVanilla,
     });
 }
-export class BigBrotherVanillaEpisode extends Episode {
-    readonly title: string;
-    readonly scenes: Scene[];
-    readonly content: JSX.Element;
-    readonly initialGamestate: GameState;
-    readonly gameState: GameState;
-    readonly type = BigBrotherVanilla;
 
-    public constructor(init: InitEpisode) {
-        super(init);
-        this.title = init.title;
-        this.scenes = init.scenes;
-        this.content = init.content;
-        this.gameState = init.gameState;
-        this.initialGamestate = init.initialGamestate || init.gameState;
-    }
-}
 export function generateBBVanillaScenes(
     initialGamestate: GameState,
     doubleEviction: boolean = false
@@ -107,16 +93,14 @@ export function generateBBVanillaScenes(
     let hohCompScene: Scene;
     const scenes: Scene[] = [];
 
-    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate, doubleEviction);
+    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate, { doubleEviction });
     scenes.push(hohCompScene);
 
     let nomCeremonyScene;
     let nominees: Houseguest[];
-    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(
-        currentGameState,
-        hoh,
-        doubleEviction
-    );
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hoh, {
+        doubleEviction,
+    });
     scenes.push(nomCeremonyScene);
 
     let vetoCompScene;
@@ -124,8 +108,7 @@ export function generateBBVanillaScenes(
     [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
         currentGameState,
         hoh,
-        nominees[0],
-        nominees[1],
+        nominees,
         doubleEviction
     );
     scenes.push(vetoCompScene);
@@ -136,17 +119,15 @@ export function generateBBVanillaScenes(
         hoh,
         nominees,
         povWinner,
-        doubleEviction
+        { doubleEviction, finalNominees: 2 }
     );
     scenes.push(vetoCeremonyScene);
 
     let evictionScene;
-    [currentGameState, evictionScene] = generateEvictionScene(
-        currentGameState,
-        hoh,
-        nominees,
-        doubleEviction
-    );
+    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hoh, nominees, {
+        doubleEviction: false,
+        votingTo: "Evict",
+    });
     scenes.push(evictionScene);
     const title = `Week ${currentGameState.phase}`;
     return { gameState: currentGameState, scenes, title };

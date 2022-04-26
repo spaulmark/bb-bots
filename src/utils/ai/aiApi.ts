@@ -8,7 +8,7 @@ import {
 } from "./classifyRelationship";
 import { getRelationshipSummary, isBetterTarget } from "./targets";
 
-interface NumberWithLogic {
+export interface NumberWithLogic {
     decision: number;
     reason: string;
 }
@@ -19,6 +19,29 @@ interface HouseguestWithLogic {
 }
 
 // Return the index of the eviction target.
+
+// vote to save, in the future, generalize this to n nominees instead of going 2 by 2
+export function castVoteToSave(
+    hero: Houseguest,
+    nominees: Houseguest[],
+    gameState: GameState
+): NumberWithLogic {
+    if (nominees.length === 0) throw new Error("Tried to cast a vote to save with no nominees.");
+    let currentSave: NumberWithLogic = { decision: 0, reason: "" };
+    nominees.forEach((nominee, i) => {
+        if (i === 0) return;
+        const evictionTarget = castEvictionVote(hero, [nominee, nominees[currentSave.decision]], gameState);
+        if (!currentSave.reason) {
+            currentSave.reason = evictionTarget.reason;
+        }
+        if (evictionTarget.decision === 1) {
+            currentSave = { decision: i, reason: evictionTarget.reason };
+        }
+    });
+    return currentSave;
+}
+
+// returns the index in the array of the person you're voting to evict
 export function castEvictionVote(
     hero: Houseguest,
     nominees: Houseguest[],
@@ -151,7 +174,7 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
         const decision = hero.relationships[nom0.id] < hero.relationships[nom1.id] ? 0 : 1;
         return {
             decision,
-            reason: `Both noms are my enemies, but I dislike ${nominees[decision].name} more.`,
+            reason: `I dislike ${nominees[decision].name} the most of these enemies.`,
         };
     } else if (
         (r0 === Relationship.Enemy && r1 !== Relationship.Enemy) ||
@@ -170,7 +193,7 @@ function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogi
     const vote = lowestScore(hero, nominees, relationship);
     return {
         decision: vote,
-        reason: `Both noms are my friends, but I like ${nominees[vote === 0 ? 1 : 0].name} more.`,
+        reason: `I like ${nominees[vote === 0 ? 1 : 0].name} the most of these friends.`,
     };
 }
 
@@ -208,22 +231,20 @@ export function useGoldenVeto(
     gameState: GameState,
     HoH: number
 ): HouseguestWithLogic {
-    let result: HouseguestWithLogic;
     if (hero.id === HoH) {
         return { decision: null, reason: "I support my original nominations." };
     }
-    if (hero.id == nominees[0].id || hero.id == nominees[1].id) {
-        result = { decision: hero, reason: "I am going to save myself." };
-    } else {
-        result = useGoldenVetoPreJury(hero, nominees, gameState);
-        if (gameState.remainingPlayers === 4) {
-            result = {
-                decision: null,
-                reason: "It doesn't make sense to use the veto here.",
-            };
-        }
+    for (const nom of nominees) {
+        if (hero.id === nom.id) return { decision: hero, reason: "I am going to save myself." };
     }
-    return result || null;
+    // if you're not nominated, don't use the veto if you are the only replacement nominee
+    if (gameState.remainingPlayers - 1 - nominees.length === 1) {
+        return {
+            decision: null,
+            reason: "It doesn't make sense to use the veto here.",
+        };
+    }
+    return useGoldenVetoPreJury(hero, nominees, gameState) || null;
 }
 
 function useGoldenVetoPreJury(
@@ -231,7 +252,7 @@ function useGoldenVetoPreJury(
     nominees: Houseguest[],
     gameState: GameState
 ): HouseguestWithLogic {
-    let reason = "Neither of these nominees are my friends.";
+    let reason = "None of these nominees are my friends.";
     let potentialSave: Houseguest | null = null;
     let alwaysSave: Houseguest | null = null;
     nominees.forEach((nominee) => {

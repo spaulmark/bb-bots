@@ -17,7 +17,7 @@ import { Targets, getRelationshipSummary } from "../../../utils/ai/targets";
 
 export function evictHouseguest(gameState: MutableGameState, id: number): GameState {
     const evictee = getById(gameState, id);
-    if (gameState.currentLog) gameState.currentLog.evicted = evictee.id;
+    if (gameState.currentLog) gameState.currentLog.evicted.push(evictee.id);
     evictee.isEvicted = true;
     if (gameState.remainingPlayers - getFinalists() <= gameState.finalJurySize()) {
         evictee.isJury = true;

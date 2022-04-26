@@ -5,7 +5,7 @@ import { getBestFriend } from "../../../utils/ai/aiUtils";
 import { Centered } from "../../layout/centered";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
-import { Scene } from "../scene";
+import { Scene } from "./scene";
 import { evictHouseguest } from "../utilities/evictHouseguest";
 
 export function generateSafetyChainScene(initialGameState: GameState): [GameState, Scene] {

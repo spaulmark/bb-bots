@@ -4,9 +4,9 @@ import {
     MutableGameState,
     nonEvictedHouseguests,
     randomPlayer,
-    getById
+    getById,
 } from "../../../model";
-import { Scene } from "../scene";
+import { Scene } from "./scene";
 import { Portraits, Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
@@ -16,7 +16,7 @@ export function finalHohCompScene(initialGameState: GameState): [GameState, Scen
     const newGameState = new MutableGameState(initialGameState);
     const final3 = nonEvictedHouseguests(initialGameState);
     const enduranceWinner = randomPlayer(final3);
-    const enduranceLosers = final3.filter(hg => hg.id !== enduranceWinner.id);
+    const enduranceLosers = final3.filter((hg) => hg.id !== enduranceWinner.id);
     const skillWinner = randomPlayer(final3, [enduranceWinner]);
     const finalHoH = getById(newGameState, randomPlayer([enduranceWinner, skillWinner]).id);
     finalHoH.hohWins++;
@@ -41,7 +41,7 @@ export function finalHohCompScene(initialGameState: GameState): [GameState, Scen
                 <CenteredBold>{`Congratulations ${finalHoH.name}, you are the final Head of Household!`}</CenteredBold>
                 <NextEpisodeButton />
             </div>
-        )
+        ),
     });
     return [new GameState(newGameState), scene, finalHoH];
 }

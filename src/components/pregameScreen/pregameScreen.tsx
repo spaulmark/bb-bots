@@ -19,13 +19,6 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
 
     public render() {
         const props = this.props;
-        if (props.cast.length === 0) {
-            return (
-                <HasText>
-                    Cast is empty. <ChooseCastLink />
-                </HasText>
-            );
-        }
         return (
             <HasText>
                 <h2
@@ -37,7 +30,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                 >
                     Big Brother Bots
                 </h2>
-                <MemoryWall houseguests={props.cast} />
+                {props.cast.length === 0 ? "Loading..." : <MemoryWall houseguests={props.cast} />}
                 <p>
                     <b> {"You can use the <- and -> arrow keys to move forwards and backwards."}</b>
                 </p>

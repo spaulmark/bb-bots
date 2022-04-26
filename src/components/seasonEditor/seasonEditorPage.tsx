@@ -6,6 +6,8 @@ import { NumericInput } from "../castingScreen/numericInput";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
 import { PregameEpisode } from "../episode/pregameEpisode";
+import { TripleEvictionCad } from "../episode/tripleEvictionEpisodeCad";
+import { TripleEvictionUs } from "../episode/tripleEvictionEpisodeUs";
 import { HasText } from "../layout/text";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
@@ -22,7 +24,7 @@ export const Label = styled.label`
     color: #fff;
 `;
 
-const twists: EpisodeType[] = [DoubleEviction];
+const twists: EpisodeType[] = [DoubleEviction, TripleEvictionCad, TripleEvictionUs];
 
 const submit = async (jury: number): Promise<void> => {
     season$.next(getEpisodeLibrary());
@@ -53,36 +55,45 @@ export function SeasonEditorPage(): JSX.Element {
             </div>
             <div className="column" style={{ padding: 20 }}>
                 <Subheader>Add Twists</Subheader>
-                <hr />
                 <div className="columns is-multiline is-centered">
                     {twists.map((type) => (
                         <TwistAdder type={type} key={type.name} />
                     ))}
-                </div>
-                <HasText className="field is-horizontal centered">
-                    <div className="field-label is-normal">
-                        <Label className="label" style={validJurySize ? {} : { color: "#fb8a8a" }}>
-                            Jury Size:
-                        </Label>
-                    </div>
-                    <div className="field-body">
-                        <div className="field">
-                            <div className="control">
-                                <NumericInput
-                                    className={validJurySize ? undefined : "is-danger"}
-                                    value={jurySize}
-                                    onChange={setJurySize}
-                                    placeholder={`${defaultJurySize(castLength)}`}
-                                />
+                    <div
+                        className="column is-4"
+                        style={{
+                            border: "1px solid #808080",
+                            borderRadius: "4px",
+                            backgroundColor: "#444346",
+                            margin: "10px",
+                        }}
+                    >
+                        <HasText className="field is-horizontal centered">
+                            <div className="field-label is-normal">
+                                <Label className="label" style={validJurySize ? {} : { color: "#fb8a8a" }}>
+                                    Jury Size:
+                                </Label>
                             </div>
-                            <p className="help" style={validJurySize ? {} : { color: "#fb8a8a" }}>
-                                {validJurySize
-                                    ? `(Jury starts at F${parseInt(jurySize) + 2})`
-                                    : `Jury must be an odd number < ${castLength - 2}`}
-                            </p>
-                        </div>
+                            <div className="field-body">
+                                <div className="field">
+                                    <div className="control">
+                                        <NumericInput
+                                            className={validJurySize ? undefined : "is-danger"}
+                                            value={jurySize}
+                                            onChange={setJurySize}
+                                            placeholder={`${defaultJurySize(castLength)}`}
+                                        />
+                                    </div>
+                                    <p className="help" style={validJurySize ? {} : { color: "#fb8a8a" }}>
+                                        {validJurySize
+                                            ? `(Jury starts at F${parseInt(jurySize) + 2})`
+                                            : `Jury must be an odd number < ${castLength - 2}`}
+                                    </p>
+                                </div>
+                            </div>
+                        </HasText>
                     </div>
-                </HasText>
+                </div>
             </div>
             <div className="column is-narrow" style={{ padding: 40 }}>
                 <button

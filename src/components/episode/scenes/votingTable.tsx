@@ -6,6 +6,7 @@ import { GameState, getById } from "../../../model";
 import { VoteType, WinnerVote, RunnerUpVote } from "../../../model/logging/voteType";
 import { FullscreenButton } from "../../mainPage/fullscreenButton";
 import { ColorTheme } from "../../../theme/theme";
+import _ from "lodash";
 
 export const EndgameTableCell = styled.td`
     padding: 0.1em 0.4em;
@@ -19,6 +20,10 @@ const EndgameTable = styled.table`
 
 const Gray = styled(EndgameTableCell)`
     background-color: ${({ theme }: { theme: ColorTheme }) => theme.grayCell};
+`;
+
+export const SaveCell = styled(EndgameTableCell)`
+    background-color: ${({ theme }: { theme: ColorTheme }) => theme.saveCell};
 `;
 
 const White = styled(EndgameTableCell)`
@@ -49,7 +54,7 @@ const BlackRow = styled.tr`
     height: 0.4em;
     background-color: #000000;
 `;
-
+let anotherKey = 0;
 export function generateVotingTable(gameState: GameState): JSX.Element {
     const masterLog: EpisodeLog[][] = gameState.log;
     const houseguestCells: JSX.Element[][] = [];
@@ -81,9 +86,10 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             generatePreVetoRow(log, i, preVetoCells);
             generateVetoRow(log, i, vetoCells);
             generatePostVetoRow(log, i, postVetoCells);
-            generateEvictedRow(log, i, evictedCells, gameState);
+            generateEvictedRow(log, i, evictedCells, winnerCells, gameState);
             if (!log) return;
-            evictionOrder.push([log.evicted, i]);
+            log.evicted.forEach((evicted) => evictionOrder.push([evicted, i]));
+
             if (log.runnerUp !== undefined) evictionOrder.push([log.runnerUp, i]);
             if (log.winner !== undefined) evictionOrder.push([log.winner, i]);
             // add each of the votes to the houseguest cells
@@ -132,21 +138,23 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     );
     const houseguestRows: JSX.Element[] = [];
     const evictedRow = <tr>{evictedCells}</tr>;
-    let evictionColSpan = -1;
+    let desiredLength = -1;
     evictionOrder.reverse().forEach(([id, week], i) => {
-        if (evictionColSpan > 0) {
+        if (i === 0) desiredLength = houseguestCells[id].length;
+        if (i > 1) {
             const weekText = i === 2 ? "(Finale)" : `(Week ${week})`;
-            const isJury = getById(gameState, id).isJury;
-            const colSpan = isJury ? evictionColSpan - 1 : evictionColSpan;
             const evicted = (
-                <Evicted colSpan={colSpan} key={`evicted-week-${weekText}-${i}`}>
+                <Evicted
+                    colSpan={desiredLength - houseguestCells[id].length}
+                    key={`evicted-week-${weekText}-${i}`}
+                >
                     <CenteredItallic noMargin={true}>Evicted</CenteredItallic>
                     <CenteredItallic noMargin={true}>
                         <small>{weekText}</small>
                     </CenteredItallic>
                 </Evicted>
             );
-            if (!isJury) {
+            if (!getById(gameState, id).isJury) {
                 houseguestCells[id].push(evicted); // not jury, they dead
             } else {
                 const tempList = houseguestCells[id].slice(0, -1);
@@ -155,8 +163,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                 houseguestCells[id] = tempList;
             }
         }
-        houseguestRows.push(<tr key={`hgrow--${id}`}>{houseguestCells[id]}</tr>);
-        evictionColSpan++;
+        houseguestRows.push(<tr key={`hgrow--${id}--${anotherKey++}`}>{houseguestCells[id]}</tr>);
     });
 
     return (
@@ -183,40 +190,52 @@ function generateEvictedRow(
     log: EpisodeLog | undefined,
     i: number,
     cells: JSX.Element[],
+    winnerCells: JSX.Element[],
     gameState: GameState
 ) {
     if (!log) {
         cells.push(
-            <Gray key={i} rowSpan={2}>
+            <Gray key={`evicted${i}--${anotherKey++}`} rowSpan={2}>
                 <CenteredBold noMargin={true}>Evicted</CenteredBold>
             </Gray>
         );
         return;
     }
+    const saveOrEvict =
+        log.soleVoter !== undefined ? "evict" : (log.votingTo && log.votingTo.toLowerCase()) || "evict";
 
-    const voteTextLine1 =
-        log.soleVoter !== undefined
-            ? `${log.soleVoter}'s choice`
-            : `${log.votesInMajority} of ${log.outOf} votes`;
+    const rowSpan = log.evicted.length === 1 ? 2 : 1;
+    log.evicted.forEach((evicted, i) => {
+        const voteTextLine1 =
+            log.soleVoter !== undefined
+                ? `${log.soleVoter}'s choice`
+                : `${
+                      log.votingTo === "Save"
+                          ? Object.values(log.votes).filter((vote) => vote.id === evicted).length
+                          : log.votesInMajority
+                  } of ${log.outOf} votes`;
 
-    cells.push(
-        <Evicted key={i} rowSpan={2}>
-            <Centered noMargin={true}>
-                <b>{getById(gameState, log.evicted).name}</b>
-                <br />
-                <small>
-                    {voteTextLine1} <br />
-                    to evict
-                </small>
-            </Centered>
-        </Evicted>
-    );
+        const content = (
+            <Evicted key={`evicted${i}--${anotherKey++}`} rowSpan={rowSpan}>
+                <Centered noMargin={true}>
+                    <b>{getById(gameState, evicted).name}</b>
+                    <br />
+                    <small>
+                        {voteTextLine1} <br />
+                        to {saveOrEvict}
+                    </small>
+                </Centered>
+            </Evicted>
+        );
+        if (i === 0) cells.push(content);
+        else winnerCells.push(content);
+    });
 }
 
 function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={`postVeto--${i}`}>
+            <Gray key={`postVeto--${i}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
@@ -227,10 +246,15 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
         return;
     }
     cells.push(
-        <White key={`postVeto--${i}`}>
+        <White key={`preveto--${i}-${anotherKey++}`}>
             <Centered noMargin={true}>
-                {log.nominationsPostVeto[0]}
-                <br /> {log.nominationsPostVeto[1]}
+                {interleave(
+                    log.nominationsPostVeto as any,
+                    (key) => (
+                        <br key={`preveto--br--${i}-${key++}`} />
+                    ),
+                    anotherKey
+                )}
             </Centered>
         </White>
     );
@@ -239,7 +263,7 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
 function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={`veto--${i}`}>
+            <Gray key={`veto--${i}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>Veto Winner</CenteredBold>
             </Gray>
         );
@@ -248,16 +272,21 @@ function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Elem
     if (log.vetoWinner === undefined) return;
 
     cells.push(
-        <White key={`veto--${i}`}>
+        <White key={`veto--${i}-${anotherKey++}`}>
             <Centered noMargin={true}>{log.vetoWinner}</Centered>
         </White>
     );
 }
 
+// javascript is my passion
+function interleave<T>(arr: T[], thing: (key: number) => T, key: number): T[] {
+    return ([] as T[]).concat(...arr.map((n: T) => [n, thing(key++)])).slice(0, -1);
+}
+
 function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={`preveto--${i}`}>
+            <Gray key={`preveto--${i}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
@@ -269,17 +298,22 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
     }
     if (log.nominationsPreVeto.length === 0) {
         cells.push(
-            <White key={`preveto--${i}`} rowSpan={2}>
+            <White key={`preveto--${i}-${anotherKey++}`} rowSpan={2}>
                 <CenteredItallic noMargin={true}>(none)</CenteredItallic>
             </White>
         );
         return;
     }
     cells.push(
-        <White key={`preveto--${i}`}>
+        <White key={`preveto--${i}-${anotherKey++}`}>
             <Centered noMargin={true}>
-                {log.nominationsPreVeto[0]}
-                <br /> {log.nominationsPreVeto[1]}
+                {interleave(
+                    log.nominationsPreVeto as any,
+                    (key) => (
+                        <br key={`preveto--br--${i}-${key++}`} />
+                    ),
+                    anotherKey
+                )}
             </Centered>
         </White>
     );

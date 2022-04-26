@@ -1,29 +1,43 @@
 import { GameState, Houseguest, getById, exclude } from "../../../model";
-import { Scene } from "../scene";
+import { Scene } from "./scene";
 import { useGoldenVeto, backdoorNPlayers } from "../../../utils/ai/aiApi";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
+import { listNames } from "../../../utils/listStrings";
+import _ from "lodash";
+
+interface VetoCeremonyOptions {
+    doubleEviction: boolean;
+    finalNominees: number; // TODO: this does nothing, replace with nameReplacement? / forceUse? idk.
+}
 
 export function generateVetoCeremonyScene(
     initialGameState: GameState,
     HoH: Houseguest,
     initialNominees: Houseguest[],
     povWinner: Houseguest,
-    doubleEviction: boolean = false
+    options: VetoCeremonyOptions
 ): [GameState, Scene, Houseguest[]] {
+    const doubleEviction = options.doubleEviction;
     let povTarget: Houseguest | null = null;
     let descisionText = "";
-    initialNominees[0] = getById(initialGameState, initialNominees[0].id);
-    initialNominees[1] = getById(initialGameState, initialNominees[1].id);
+
+    initialNominees = initialNominees.map((nominee) => {
+        return getById(initialGameState, nominee.id);
+    });
     HoH = getById(initialGameState, HoH.id);
     const vetoChoice = useGoldenVeto(povWinner, initialNominees, initialGameState, HoH.id);
+
+    let nomineeWonPov = false;
+    initialNominees.forEach((nom) => nom.id === povWinner.id && (nomineeWonPov = true));
+
     povTarget = vetoChoice.decision;
     if (!povTarget) {
         descisionText += "... not to use the power of veto.";
-    } else if (povWinner.id == initialNominees[0].id || povWinner.id == initialNominees[1].id) {
+    } else if (nomineeWonPov) {
         descisionText += "...to use the power of veto on myself.";
     } else {
         descisionText += `...to use the power of veto on ${povTarget.name}.`;
@@ -41,12 +55,7 @@ export function generateVetoCeremonyScene(
                 initialGameState,
                 backdoorNPlayers(
                     HoH,
-                    exclude(initialGameState.houseguests, [
-                        HoH,
-                        initialNominees[0],
-                        initialNominees[1],
-                        povWinner,
-                    ]),
+                    exclude(initialGameState.houseguests, [HoH, ...initialNominees, povWinner]),
                     initialGameState,
                     1
                 )[0].decision
@@ -58,6 +67,7 @@ export function generateVetoCeremonyScene(
         getById(initialGameState, replacementNom.id).nominations++;
         replacementSpeech = `My replacement nominee is ${replacementNom.name}.`;
     }
+    const nomineeNames = initialNominees.map((nom) => nom.name);
     const scene = new Scene({
         title: "Veto Ceremony",
         gameState: initialGameState,
@@ -66,17 +76,16 @@ export function generateVetoCeremonyScene(
                 {!doubleEviction && <Centered>This is the Veto Ceremony.</Centered>}
                 {!doubleEviction && (
                     <Centered>
-                        {`${initialNominees[0].name} and ${initialNominees[1].name} have been nominated for eviction, 
+                        {`${listNames(nomineeNames)} have been nominated for eviction, 
                     but I have the power to veto one of these nominations.`}
                     </Centered>
                 )}
                 <div className="columns is-marginless is-centered">
-                    <DividerBox className="column">
-                        <Portrait centered={true} houseguest={initialNominees[0]} />
-                    </DividerBox>
-                    <DividerBox className="column">
-                        <Portrait centered={true} houseguest={initialNominees[1]} />
-                    </DividerBox>
+                    {initialNominees.map((nom, i) => (
+                        <DividerBox className="column" key={`nominee-${i}`}>
+                            <Portrait centered={true} houseguest={nom} />
+                        </DividerBox>
+                    ))}
                 </div>
                 <CenteredBold>
                     I have decided... <br />
@@ -87,17 +96,18 @@ export function generateVetoCeremonyScene(
                 {replacementSpeech && <Portrait centered={true} houseguest={HoH} />}
                 <CenteredBold>{replacementSpeech}</CenteredBold>
                 <div className="columns is-marginless is-centered">
-                    <DividerBox className="column">
-                        <Portrait centered={true} houseguest={finalNominees[0]} />
-                    </DividerBox>
-                    <DividerBox className="column">
-                        <Portrait centered={true} houseguest={finalNominees[1]} />
-                    </DividerBox>
+                    {finalNominees.map((nom, i) => (
+                        <DividerBox className="column" key={`final-nominee-${i}`}>
+                            <Portrait centered={true} houseguest={nom} />
+                        </DividerBox>
+                    ))}
                 </div>
                 {!doubleEviction && <NextEpisodeButton />}
             </div>
         ),
     });
-    initialGameState.currentLog.nominationsPostVeto = [finalNominees[0].name, finalNominees[1].name];
+    initialGameState.currentLog.nominationsPostVeto = require("alphanum-sort")(
+        finalNominees.map((nom) => nom.name)
+    );
     return [initialGameState, scene, finalNominees];
 }
