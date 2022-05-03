@@ -125,7 +125,7 @@ export function generateBBVanillaScenes(
 
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hoh, nominees, {
-        doubleEviction: false,
+        doubleEviction,
         votingTo: "Evict",
     });
     scenes.push(evictionScene);
