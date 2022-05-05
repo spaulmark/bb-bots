@@ -12,11 +12,13 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { listNames } from "../../../utils/listStrings";
+import { Veto } from "../veto/veto";
 
 export function generateVetoCompScene(
     initialGameState: GameState,
     HoH: Houseguest,
     nominees: Houseguest[],
+    veto: Veto,
     doubleEviction: boolean = false
 ): [GameState, Scene, Houseguest] {
     const newGameState = new MutableGameState(initialGameState);
@@ -71,7 +73,7 @@ export function generateVetoCompScene(
                 <Portraits centered={true} houseguests={extras} />
                 <Centered>...</Centered>
                 <Portraits centered={true} houseguests={[povWinner]} />
-                <CenteredBold>{`${povWinner.name} has won the Golden Power of Veto!`}</CenteredBold>
+                <CenteredBold>{`${povWinner.name} has won the ${veto.name}!`}</CenteredBold>
                 {!doubleEviction && <NextEpisodeButton />}
             </div>
         ),

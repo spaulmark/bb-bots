@@ -7,6 +7,7 @@ import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
 import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
 import { generateEvictionScene } from "./scenes/evictionScene";
+import { GoldenVeto } from "./veto/veto";
 
 export const TripleEvictionCad: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
@@ -18,7 +19,7 @@ export const TripleEvictionCad: EpisodeType = {
 };
 
 export function generateTripleEvictionCad(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate);
+    const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
     let currentGameState = episode.gameState;
     const scenes: Scene[] = episode.scenes;
 
@@ -47,6 +48,7 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
         currentGameState,
         hoh,
         nominees,
+        GoldenVeto,
         true
     );
     tripleScenes.push(vetoCompScene);
