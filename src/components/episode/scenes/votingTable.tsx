@@ -296,7 +296,7 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
         );
         return;
     }
-    if (log.nominationsPreVeto.length === 0) {
+    if (log.nominationsPreVeto.length === 0 || log.vetoWinner === undefined) {
         cells.push(
             <White key={`preveto--${i}-${anotherKey++}`} rowSpan={2}>
                 <CenteredItallic noMargin={true}>(none)</CenteredItallic>

@@ -23,6 +23,8 @@ function generateInstantEviction(initialGamestate: GameState): Episode {
     currentGameState.incrementLogIndex();
     const doubleEviction = generateBBVanillaScenes(currentGameState, null, true);
     currentGameState = doubleEviction.gameState;
+    doubleEviction.gameState.currentLog.nominationsPostVeto =
+        doubleEviction.gameState.currentLog.nominationsPreVeto;
     scenes.push(
         new Scene({
             title: "Instant Eviction",
