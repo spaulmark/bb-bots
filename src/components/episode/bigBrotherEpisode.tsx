@@ -132,6 +132,9 @@ export function generateBBVanillaScenes(
         doubleEviction,
         votingTo: "Evict",
     });
+    if (veto === null) {
+        currentGameState.currentLog.nominationsPostVeto = currentGameState.currentLog.nominationsPreVeto;
+    }
     scenes.push(evictionScene);
     const title = `Week ${currentGameState.phase}`;
     return { gameState: currentGameState, scenes, title };
