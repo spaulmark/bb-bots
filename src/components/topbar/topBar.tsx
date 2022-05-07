@@ -7,7 +7,7 @@ import { Box } from "../layout/box";
 import { DeckScreen } from "../deckScreen/deckScreen";
 import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 
-const TopbarLink = styled.div`
+export const TopbarLink = styled.a`
     color: ${({ theme }: { theme: ColorTheme }) => theme.link};
     cursor: pointer;
 `;
