@@ -116,6 +116,16 @@ export function generateEvictionScene(
     nominees.forEach((hg) => {
         newGameState.currentLog.votes[hg.id] = new NomineeVote(evicteesSet.has(hg.id));
     });
+
+    const votesPerEvictee: any = {};
+    nominees.forEach((hg, i) => {
+        if (!evicteesSet.has(hg.id)) return;
+        votesPerEvictee[hg.id] = voteCounts[i] + (tieBreaker.decision === i ? 1 : 0);
+    });
+
+    if (options.votingTo === "Evict") evictees.sort((a, b) => votesPerEvictee[b.id] - votesPerEvictee[a.id]);
+    else evictees.sort((a, b) => votesPerEvictee[a.id] - votesPerEvictee[b.id]);
+
     evictees.forEach((evictee) => {
         newGameState = evictHouseguest(newGameState, evictee.id);
     });
