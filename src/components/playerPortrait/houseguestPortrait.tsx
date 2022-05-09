@@ -75,6 +75,7 @@ export interface PortraitProps {
     friends?: number;
     enemies?: number;
     targetingMe?: number;
+    targets?: number[];
 }
 
 export interface PortraitState {
@@ -103,7 +104,11 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
     }
 
     private onClick(): void {
-        if (isNotWellDefined(this.props.id) || !this.props.relationships) {
+        if (
+            (this.props.targets && this.props.targets[0] === 0 && this.props.targets[1] == 0) ||
+            isNotWellDefined(this.props.id) ||
+            !this.props.relationships
+        ) {
             return;
         }
         const data = {
