@@ -1,69 +1,102 @@
 import React from "react";
 import { CastingScreen } from "../castingScreen/castingScreen";
-import { mainContentStream$, getCast } from "../../subjects/subjects";
+import { getCast, pushToMainContentStream } from "../../subjects/subjects";
 import styled from "styled-components";
 import { ColorTheme } from "../../theme/theme";
 import { Box } from "../layout/box";
 import { DeckScreen } from "../deckScreen/deckScreen";
 import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
+import { BehaviorSubject, Subscription } from "rxjs";
+
+export enum Screens {
+    Deck = "choosecast",
+    Casting = "editcast",
+    Season = "editseason",
+    Other = "other",
+}
+
+// for topbar minty colors
+export const activeScreen$ = new BehaviorSubject<Screens>(Screens.Other);
 
 export const TopbarLink = styled.a`
     color: ${({ theme }: { theme: ColorTheme }) => theme.link};
     cursor: pointer;
 `;
 
-export function AdvancedEditLink(): JSX.Element {
+export const ActiveTopbarLink = styled.mark`
+    cursor: pointer;
+    font-weight: bold;
+`;
+
+export function CastingScreenLink(): JSX.Element {
+    const LinkStyle = activeScreen$.value === Screens.Casting ? ActiveTopbarLink : TopbarLink;
     return (
-        <TopbarLink
+        <LinkStyle
             onClick={() => {
-                mainContentStream$.next(<CastingScreen cast={JSON.parse(JSON.stringify(getCast()))} />);
+                pushToMainContentStream(
+                    <CastingScreen cast={JSON.parse(JSON.stringify(getCast()))} />,
+                    Screens.Casting
+                );
             }}
         >
             Edit / Upload Cast
-        </TopbarLink>
+        </LinkStyle>
     );
 }
 
 export function EditSeasonLink(): JSX.Element {
+    const LinkStyle = activeScreen$.value === Screens.Season ? ActiveTopbarLink : TopbarLink;
     return (
-        <TopbarLink
+        <LinkStyle
             onClick={() => {
-                mainContentStream$.next(<SeasonEditorPage />);
+                pushToMainContentStream(<SeasonEditorPage />, Screens.Season);
             }}
         >
             Edit Season/Twists
-        </TopbarLink>
+        </LinkStyle>
     );
 }
 
 export function ChooseCastLink(): JSX.Element {
+    const LinkStyle = activeScreen$.value === Screens.Deck ? ActiveTopbarLink : TopbarLink;
     return (
-        <TopbarLink
+        <LinkStyle
             onClick={() => {
-                mainContentStream$.next(<DeckScreen />);
+                pushToMainContentStream(<DeckScreen />, Screens.Deck);
             }}
         >
             Choose Cast
-        </TopbarLink>
+        </LinkStyle>
     );
 }
 
-export function Topbar(props: { style?: any }): JSX.Element {
-    const style = { ...(props.style || {}) };
-    return (
-        <Box className="level is-mobile" style={style}>
-            <div className="level-item">
-                <ChooseCastLink />
-            </div>
-            <div className="level-item">
-                <AdvancedEditLink />
-            </div>
-            <div className="level-item">
-                <EditSeasonLink />
-            </div>
-            {/* <div className="level-item">
-                <ThemeSwitcher />  eventually this can be used for custom themes
-            </div> */}
-        </Box>
-    );
+export class Topbar extends React.Component<{ style?: any }, { tab: Screens }> {
+    private subs: Subscription[] = [];
+    constructor(props: Readonly<{ style?: any }>) {
+        super(props);
+        this.state = { tab: Screens.Other };
+    }
+    componentDidMount() {
+        this.subs.push(activeScreen$.subscribe((tab) => this.setState({ tab })));
+    }
+    componentWillUnmount() {
+        this.subs.forEach((sub) => sub.unsubscribe());
+    }
+
+    public render(): JSX.Element {
+        const style = { ...(this.props.style || {}) };
+        return (
+            <Box className="level is-mobile" style={style}>
+                <div className="level-item">
+                    <ChooseCastLink />
+                </div>
+                <div className="level-item">
+                    <CastingScreenLink />
+                </div>
+                <div className="level-item">
+                    <EditSeasonLink />
+                </div>
+            </Box>
+        );
+    }
 }

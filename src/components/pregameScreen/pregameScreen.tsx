@@ -3,9 +3,14 @@ import { PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { HasText } from "../layout/text";
 import { popularityMode } from "../../model/portraitDisplayMode";
-import { displayMode$, getCast, mainContentStream$, switchSceneRelative } from "../../subjects/subjects";
+import {
+    displayMode$,
+    mainContentStream$,
+    pushToMainContentStream,
+    switchSceneRelative,
+} from "../../subjects/subjects";
 import { selectedColor } from "../playerPortrait/houseguestPortraitController";
-import { TopbarLink } from "../topbar/topBar";
+import { Screens, TopbarLink } from "../topbar/topBar";
 import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 import { Centered, CenteredBold } from "../layout/centered";
 import { CastingScreen } from "../castingScreen/castingScreen";
@@ -37,7 +42,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                 <Centered>
                     <TopbarLink
                         onClick={() => {
-                            mainContentStream$.next(<DeckScreen />);
+                            pushToMainContentStream(<DeckScreen />, Screens.Deck);
                         }}
                     >
                         Choose characters
@@ -45,7 +50,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                     from 300+ collections, or{" "}
                     <TopbarLink
                         onClick={() => {
-                            mainContentStream$.next(<CastingScreen cast={[]} />);
+                            pushToMainContentStream(<CastingScreen cast={[]} />, Screens.Casting);
                         }}
                     >
                         upload your own
@@ -53,7 +58,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                     , then{" "}
                     <TopbarLink
                         onClick={() => {
-                            mainContentStream$.next(<SeasonEditorPage />);
+                            pushToMainContentStream(<SeasonEditorPage />, Screens.Season);
                         }}
                     >
                         add twists

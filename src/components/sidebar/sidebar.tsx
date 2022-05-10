@@ -3,13 +3,15 @@ import { SidebarController } from "./sidebarController";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { defaultJurySize, Episode, GameState, PlayerProfile } from "../../model";
 import { Scene } from "../episode/scenes/scene";
-import { cast$, mainContentStream$, newEpisode } from "../../subjects/subjects";
+import { cast$, newEpisode, pushToMainContentStream } from "../../subjects/subjects";
 import { Box } from "../layout/box";
 import { HasText } from "../layout/text";
 import { shuffle } from "lodash";
+import { Screens } from "../topbar/topBar";
 interface SidebarState {
     episodes: Episode[];
     selectedScene: number;
+    selectionsActive: boolean;
 }
 const baseUrl = "https://spaulmark.github.io/img/";
 
@@ -20,9 +22,10 @@ export class Sidebar extends React.Component<{}, SidebarState> {
     public constructor(props: {}) {
         super(props);
         this.controller = new SidebarController(this);
-        this.state = { episodes: [], selectedScene: 0 };
+        this.state = { episodes: [], selectedScene: 0, selectionsActive: true };
     }
     public async componentDidMount() {
+        // TODO: this gonna get totally rewritten into a precomputed whitelist.json, first thing next update
         document.addEventListener("keydown", this.controller.handleKeyDown);
         if (!firstLoad) {
             firstLoad = false;
@@ -49,7 +52,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
         );
         newEpisode(episode);
         cast$.next(allBBs);
-        mainContentStream$.next(episode.render);
+        pushToMainContentStream(episode.render, Screens.Other);
     }
 
     public componentWillUnmount() {
@@ -65,7 +68,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
     }
 
     private getHighlight(title: string, key: number) {
-        if (key === this.state.selectedScene) {
+        if (key === this.state.selectedScene && this.state.selectionsActive) {
             return <mark>{title}</mark>;
         }
         return title;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
-import { cast$, mainContentStream$, newEpisode, season$ } from "../../subjects/subjects";
+import { cast$, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
@@ -13,6 +13,7 @@ import { HasText } from "../layout/text";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
+import { Screens } from "../topbar/topBar";
 import { getEpisodeLibrary, SeasonEditorList } from "./seasonEditorList";
 import { TwistAdder } from "./twistAdder";
 
@@ -31,7 +32,7 @@ const submit = async (jury: number): Promise<void> => {
     season$.next(getEpisodeLibrary());
 
     // reset stuff and start a new game
-    mainContentStream$.next(<PregameScreen cast={cast$.value} />);
+    pushToMainContentStream(<PregameScreen cast={cast$.value} />, Screens.Other);
     selectPlayer(null);
     // vscode says the awaits are unnessecary here,
     // but if you remove them then bad things happen
