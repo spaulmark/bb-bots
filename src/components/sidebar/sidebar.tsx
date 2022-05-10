@@ -7,7 +7,7 @@ import { cast$, newEpisode, pushToMainContentStream } from "../../subjects/subje
 import { Box } from "../layout/box";
 import { HasText } from "../layout/text";
 import { shuffle } from "lodash";
-import { Screens } from "../topbar/topBar";
+import { activeScreen$, Screens } from "../topbar/topBar";
 interface SidebarState {
     episodes: Episode[];
     selectedScene: number;
@@ -52,7 +52,9 @@ export class Sidebar extends React.Component<{}, SidebarState> {
         );
         newEpisode(episode);
         cast$.next(allBBs);
-        pushToMainContentStream(episode.render, Screens.Other);
+        if (activeScreen$.value === Screens.Other) {
+            pushToMainContentStream(episode.render, Screens.Other);
+        }
     }
 
     public componentWillUnmount() {
