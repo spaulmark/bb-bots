@@ -6,9 +6,16 @@ import React from "react";
 import { PortraitDisplayMode, popularityMode } from "../model/portraitDisplayMode";
 import { ColorTheme } from "../theme/theme";
 import { EpisodeLibrary } from "../model/season";
+import { activeScreen$, Screens } from "../components/topbar/topBar";
 
 // What is currently being displayed.
 export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
+
+export function pushToMainContentStream(content: JSX.Element, tab?: Screens) {
+    tab && activeScreen$.next(tab);
+    mainContentStream$.next(content);
+}
+
 // Push episodes to this subject to add them to the sidebar. Null resets everything.
 export const episodes$ = new BehaviorSubject<Episode | null>(null);
 // Forcibly switches to an episode. Used when adding a new episode.

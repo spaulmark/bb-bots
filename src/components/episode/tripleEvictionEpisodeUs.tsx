@@ -2,6 +2,7 @@ import { Episode, EpisodeType, GameState } from "../../model";
 import React from "react";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Scene } from "./scenes/scene";
+import { GoldenVeto } from "./veto/veto";
 
 export const TripleEvictionUs: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
@@ -13,12 +14,12 @@ export const TripleEvictionUs: EpisodeType = {
 };
 
 export function generateTripleEvictionUs(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate);
+    const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
     let currentGameState = episode.gameState;
     const scenes: Scene[] = episode.scenes;
 
     currentGameState.incrementLogIndex();
-    const doubleEviction = generateBBVanillaScenes(currentGameState, true);
+    const doubleEviction = generateBBVanillaScenes(currentGameState, GoldenVeto, true);
     currentGameState = doubleEviction.gameState;
     scenes.push(
         new Scene({
@@ -28,7 +29,7 @@ export function generateTripleEvictionUs(initialGamestate: GameState): Episode {
         })
     );
     currentGameState.incrementLogIndex();
-    const tripleEviction = generateBBVanillaScenes(currentGameState, true);
+    const tripleEviction = generateBBVanillaScenes(currentGameState, GoldenVeto, true);
     currentGameState = tripleEviction.gameState;
     scenes.push(
         new Scene({

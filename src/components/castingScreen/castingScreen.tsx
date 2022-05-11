@@ -5,13 +5,14 @@ import { SetupPortrait } from "../playerPortrait/setupPortrait";
 import { shuffle } from "lodash";
 import { RandomButton } from "./randomXButton";
 import { selectCastPlayer } from "../playerPortrait/selectedPortrait";
-import { mainContentStream$, selectedCastPlayer$, updateCast } from "../../subjects/subjects";
+import { pushToMainContentStream, selectedCastPlayer$, updateCast } from "../../subjects/subjects";
 import { HasText, Input } from "../layout/text";
 import { Centered } from "../layout/centered";
 import { Subscription } from "rxjs";
 import _ from "lodash";
 import { HelpLink } from "../episode/allianceList";
 import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
+import { Screens } from "../topbar/topBar";
 
 interface CastingScreenProps {
     cast?: PlayerProfile[];
@@ -92,15 +93,9 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
         return <div className="columns is-gapless is-mobile is-multiline is-centered">{rows}</div>;
     }
 
-    private appendProfiles = (profiles: PlayerProfile[]) => {
-        const newState = { ...this.state };
-        profiles.forEach((profile) => newState.players.push(profile));
-        this.setState(newState);
-    };
-
     private submit = () => {
         updateCast(this.state.players);
-        mainContentStream$.next(<SeasonEditorPage />);
+        pushToMainContentStream(<SeasonEditorPage />, Screens.Season);
     };
 
     private random = (_amount: number) => {

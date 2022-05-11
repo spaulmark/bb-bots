@@ -2,13 +2,14 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import { HasText } from "../layout/text";
 import { shuffle, ceil, debounce } from "lodash";
-import { mainContentStream$, selectDeckSubject, selectedDecks$ } from "../../subjects/subjects";
+import { pushToMainContentStream, selectDeckSubject, selectedDecks$ } from "../../subjects/subjects";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import _ from "lodash";
 import styled from "styled-components";
 import { Subscription } from "rxjs";
 import { selectedColor } from "../playerPortrait/houseguestPortraitController";
 import { PlayerProfile } from "../../model";
+import { Screens } from "../topbar/topBar";
 
 interface DeckScreenProps {}
 
@@ -71,7 +72,7 @@ async function submitCasts(casts: Set<string>) {
         playerProfiles.push(...folderProfiles);
     }
 
-    mainContentStream$.next(<CastingScreen cast={playerProfiles} />);
+    pushToMainContentStream(<CastingScreen cast={playerProfiles} />, Screens.Casting);
 }
 
 function Deck(props: { deck: string; selected: boolean }): JSX.Element {

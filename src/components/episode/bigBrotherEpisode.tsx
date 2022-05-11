@@ -11,6 +11,7 @@ import { HasText } from "../layout/text";
 import styled from "styled-components";
 import { weekStartTab$ } from "../../subjects/subjects";
 import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
+import { GoldenVeto, Veto } from "./veto/veto";
 
 export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
@@ -70,7 +71,7 @@ export function defaultContent(initialGameState: GameState) {
 }
 
 export function generateBbVanilla(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate);
+    const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
     return new Episode({
         title: episode.title,
         scenes: episode.scenes,
@@ -82,6 +83,7 @@ export function generateBbVanilla(initialGamestate: GameState): Episode {
 
 export function generateBBVanillaScenes(
     initialGamestate: GameState,
+    veto: Veto | null,
     doubleEviction: boolean = false
 ): {
     gameState: GameState;
@@ -103,31 +105,36 @@ export function generateBBVanillaScenes(
     });
     scenes.push(nomCeremonyScene);
 
-    let vetoCompScene;
-    let povWinner: Houseguest;
-    [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
-        currentGameState,
-        hoh,
-        nominees,
-        doubleEviction
-    );
-    scenes.push(vetoCompScene);
-    let vetoCeremonyScene;
+    if (veto) {
+        let vetoCompScene;
+        let povWinner: Houseguest;
+        [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
+            currentGameState,
+            hoh,
+            nominees,
+            veto,
+            doubleEviction
+        );
+        scenes.push(vetoCompScene);
+        let vetoCeremonyScene;
 
-    [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
-        currentGameState,
-        hoh,
-        nominees,
-        povWinner,
-        { doubleEviction, finalNominees: 2 }
-    );
-    scenes.push(vetoCeremonyScene);
-
+        [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
+            currentGameState,
+            hoh,
+            nominees,
+            povWinner,
+            { doubleEviction, finalNominees: 2 }
+        );
+        scenes.push(vetoCeremonyScene);
+    }
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hoh, nominees, {
         doubleEviction,
         votingTo: "Evict",
     });
+    if (veto === null) {
+        currentGameState.currentLog.nominationsPostVeto = currentGameState.currentLog.nominationsPreVeto;
+    }
     scenes.push(evictionScene);
     const title = `Week ${currentGameState.phase}`;
     return { gameState: currentGameState, scenes, title };

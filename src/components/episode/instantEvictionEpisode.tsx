@@ -1,30 +1,32 @@
+import React from "react";
 import { GameState } from "../../model";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
-import { Episode, EpisodeType } from "./episodes";
-import React from "react";
+import { DoubleEviction } from "./doubleEvictionEpisode";
+import { EpisodeType, Episode } from "./episodes";
 import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
 
-export const DoubleEviction: EpisodeType = {
+export const InstantEviction: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
     eliminates: 2,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Double Eviction",
-    generate: generateDoubleEviction,
+    name: "Instant Eviction",
+    generate: generateInstantEviction,
 };
 
-function generateDoubleEviction(initialGamestate: GameState): Episode {
+function generateInstantEviction(initialGamestate: GameState): Episode {
     const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
     let currentGameState = episode.gameState;
     const scenes: Scene[] = episode.scenes;
 
     currentGameState.incrementLogIndex();
-    const doubleEviction = generateBBVanillaScenes(currentGameState, GoldenVeto, true);
+    const doubleEviction = generateBBVanillaScenes(currentGameState, null, true);
     currentGameState = doubleEviction.gameState;
+
     scenes.push(
         new Scene({
-            title: "Double Eviction",
+            title: "Instant Eviction",
             content: <div>{doubleEviction.scenes.map((scene) => scene.content)}</div>,
             gameState: doubleEviction.gameState,
         })

@@ -1,12 +1,20 @@
 import React from "react";
 import { PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
-import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
-import { ChooseCastLink } from "../topbar/topBar";
 import { HasText } from "../layout/text";
 import { popularityMode } from "../../model/portraitDisplayMode";
-import { displayMode$ } from "../../subjects/subjects";
+import {
+    displayMode$,
+    mainContentStream$,
+    pushToMainContentStream,
+    switchSceneRelative,
+} from "../../subjects/subjects";
 import { selectedColor } from "../playerPortrait/houseguestPortraitController";
+import { Screens, TopbarLink } from "../topbar/topBar";
+import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
+import { Centered, CenteredBold } from "../layout/centered";
+import { CastingScreen } from "../castingScreen/castingScreen";
+import { DeckScreen } from "../deckScreen/deckScreen";
 
 interface PregameScreenProps {
     cast: PlayerProfile[];
@@ -30,11 +38,48 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                 >
                     Big Brother Bots
                 </h2>
-                {props.cast.length === 0 ? "Loading..." : <MemoryWall houseguests={props.cast} />}
-                <p>
-                    <b> {"You can use the <- and -> arrow keys to move forwards and backwards."}</b>
-                </p>
-                <NextEpisodeButton />
+                <CenteredBold>Big Brother Bots is a simulator for the reality show Big Brother.</CenteredBold>
+                <Centered>
+                    <TopbarLink
+                        onClick={() => {
+                            pushToMainContentStream(<DeckScreen />, Screens.Deck);
+                        }}
+                    >
+                        Choose characters
+                    </TopbarLink>{" "}
+                    from 300+ collections, or{" "}
+                    <TopbarLink
+                        onClick={() => {
+                            pushToMainContentStream(<CastingScreen cast={[]} />, Screens.Casting);
+                        }}
+                    >
+                        upload your own
+                    </TopbarLink>
+                    , then{" "}
+                    <TopbarLink
+                        onClick={() => {
+                            pushToMainContentStream(<SeasonEditorPage />, Screens.Season);
+                        }}
+                    >
+                        add twists
+                    </TopbarLink>{" "}
+                    and watch as everyone votes each other out until one winner remains!{" "}
+                </Centered>
+                {props.cast.length === 0 ? "" : <MemoryWall houseguests={props.cast} />}
+                {props.cast.length === 0 ? (
+                    ""
+                ) : (
+                    <p>
+                        <b> {"You can use the ⬅️ and ➡️ arrow keys to move forwards and backwards."}</b>
+                    </p>
+                )}
+                {props.cast.length === 0 ? (
+                    ""
+                ) : (
+                    <button className="button is-success" onClick={() => switchSceneRelative(1)}>
+                        Start Game
+                    </button>
+                )}
             </HasText>
         );
     }

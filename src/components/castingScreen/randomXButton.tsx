@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Tooltip } from "../tooltip/tooltip";
 import { NumericInput } from "./numericInput";
 
 interface RandomButtonProps {
@@ -10,13 +11,15 @@ export function RandomButton(props: RandomButtonProps): JSX.Element {
     return (
         <div className="field has-addons" style={{ display: "flex" }}>
             <div className="control">
-                <button
-                    disabled={number === ""}
-                    className="button is-primary"
-                    onClick={() => props.random(parseInt(number))}
-                >
-                    Random
-                </button>
+                <Tooltip text={"Selected cast members will always be chosen."}>
+                    <button
+                        disabled={number === ""}
+                        className="button is-primary"
+                        onClick={() => props.random(parseInt(number))}
+                    >
+                        Random
+                    </button>
+                </Tooltip>
             </div>
             <div className="control">
                 <NumericInput value={number} onChange={setNumber} />

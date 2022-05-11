@@ -1,7 +1,3 @@
-import React, { useState } from "react";
-import { theme$ } from "../../subjects/subjects";
-import { darkTheme } from "../../theme/theme";
-
 // this class is temporarily unused, but in the future it will be used for custom themes
 // export function ThemeSwitcher() {
 //     const [theme, setTheme] = useState(
