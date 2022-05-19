@@ -3,12 +3,7 @@ import { PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { HasText } from "../layout/text";
 import { popularityMode } from "../../model/portraitDisplayMode";
-import {
-    displayMode$,
-    mainContentStream$,
-    pushToMainContentStream,
-    switchSceneRelative,
-} from "../../subjects/subjects";
+import { displayMode$, pushToMainContentStream, switchSceneRelative } from "../../subjects/subjects";
 import { selectedColor } from "../playerPortrait/houseguestPortraitController";
 import { Screens, TopbarLink } from "../topbar/topBar";
 import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
