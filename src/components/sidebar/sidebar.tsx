@@ -13,7 +13,6 @@ interface SidebarState {
     selectedScene: number;
     selectionsActive: boolean;
 }
-const baseUrl = "https://spaulmark.github.io/img/";
 
 let firstLoad = true;
 
@@ -25,28 +24,25 @@ export class Sidebar extends React.Component<{}, SidebarState> {
         this.state = { episodes: [], selectedScene: 0, selectionsActive: true };
     }
     public async componentDidMount() {
-        // TODO: this gonna get totally rewritten into a precomputed whitelist.json, first thing next update
         document.addEventListener("keydown", this.controller.handleKeyDown);
         if (!firstLoad) {
             firstLoad = false;
             return;
         }
-        const data = await (await fetch(`${baseUrl}dir.json`)).json();
-        const bb = data.decks.filter((file: string) => file.match("Big Brother"));
-        let allBBs: PlayerProfile[] = [];
-        for (const cast of bb) {
-            const bbPlayers = await (await fetch(`${baseUrl}${cast}/dir.json`)).json();
-            bbPlayers.files.forEach((player: string) => {
-                const name = player.substr(0, player.lastIndexOf(".")) || player;
-                if (name === "Julie") return;
-                allBBs.push({
-                    name,
-                    imageURL: `${baseUrl}${cast}/${player}`,
-                });
+        let data = await (
+            await fetch(`https://raw.githubusercontent.com/spaulmark/img/master/bb.json`)
+        ).json();
+        const allBBs: PlayerProfile[] = [];
+        data = shuffle(data).slice(0, 16);
+        for (const player of data) {
+            let name = player.substr(0, player.lastIndexOf(".")) || player;
+            name = name.substr(name.indexOf("/") + 1) || name;
+            allBBs.push({
+                name,
+                imageURL: `https://spaulmark.github.io/img/Big Brother ${player}`,
             });
         }
-        allBBs = shuffle(allBBs);
-        allBBs = allBBs.slice(0, 16);
+
         const episode: Episode = new PregameEpisode(
             new GameState({ players: allBBs, jury: defaultJurySize(allBBs.length) })
         );
