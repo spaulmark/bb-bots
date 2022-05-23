@@ -1,6 +1,5 @@
 import { GameState } from "../../model";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
-import { DoubleEviction } from "./doubleEvictionEpisode";
 import { EpisodeType, Episode } from "./episodes";
 
 export const NoVeto: EpisodeType = {
@@ -19,6 +18,6 @@ function generateNoVeto(initialGamestate: GameState): Episode {
         initialGamestate,
         title: episode.title,
         scenes: episode.scenes,
-        type: DoubleEviction,
+        type: NoVeto,
     });
 }
