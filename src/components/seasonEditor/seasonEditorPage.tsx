@@ -6,6 +6,7 @@ import { NumericInput } from "../castingScreen/numericInput";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
 import { InstantEviction } from "../episode/instantEvictionEpisode";
+import { NoVeto } from "../episode/noVetoEpisode";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { TripleEvictionCad } from "../episode/tripleEvictionEpisodeCad";
 import { TripleEvictionUs } from "../episode/tripleEvictionEpisodeUs";
@@ -26,7 +27,7 @@ export const Label = styled.label`
     color: #fff;
 `;
 
-const twists: EpisodeType[] = [DoubleEviction, TripleEvictionCad, TripleEvictionUs, InstantEviction];
+const twists: EpisodeType[] = [DoubleEviction, TripleEvictionCad, TripleEvictionUs, InstantEviction, NoVeto];
 
 const submit = async (jury: number): Promise<void> => {
     season$.next(getEpisodeLibrary());

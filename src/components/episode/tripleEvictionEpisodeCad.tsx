@@ -60,7 +60,7 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
         hoh,
         nominees,
         povWinner,
-        { doubleEviction: true, finalNominees: 3 }
+        true
     );
     tripleScenes.push(vetoCeremonyScene);
 

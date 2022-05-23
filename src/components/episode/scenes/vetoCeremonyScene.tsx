@@ -9,19 +9,13 @@ import { DividerBox } from "../../layout/box";
 import { listNames } from "../../../utils/listStrings";
 import _ from "lodash";
 
-interface VetoCeremonyOptions {
-    doubleEviction: boolean;
-    finalNominees: number; // TODO: this does nothing, replace with nameReplacement? / forceUse? idk.
-}
-
 export function generateVetoCeremonyScene(
     initialGameState: GameState,
     HoH: Houseguest,
     initialNominees: Houseguest[],
     povWinner: Houseguest,
-    options: VetoCeremonyOptions
+    doubleEviction: boolean
 ): [GameState, Scene, Houseguest[]] {
-    const doubleEviction = options.doubleEviction;
     let povTarget: Houseguest | null = null;
     let descisionText = "";
 
