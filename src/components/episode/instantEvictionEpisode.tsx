@@ -10,7 +10,7 @@ export const InstantEviction: EpisodeType = {
     eliminates: 2,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Instant Eviction",
+    name: "⚡ Instant Eviction",
     generate: generateInstantEviction,
 };
 

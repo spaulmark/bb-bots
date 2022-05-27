@@ -10,7 +10,7 @@ export const DoubleEviction: EpisodeType = {
     eliminates: 2,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Double Eviction",
+    name: "⏩ Double Eviction",
     generate: generateDoubleEviction,
 };
 

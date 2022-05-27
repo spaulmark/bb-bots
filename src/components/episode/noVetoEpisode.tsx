@@ -7,7 +7,7 @@ export const NoVeto: EpisodeType = {
     eliminates: 1,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "No Veto",
+    name: "🚫 No Veto",
     generate: generateNoVeto,
 };
 
