@@ -8,13 +8,15 @@ import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { listNames } from "../../../utils/listStrings";
 import _ from "lodash";
+import { DiamondVeto, Veto } from "../veto/veto";
 
 export function generateVetoCeremonyScene(
     initialGameState: GameState,
     HoH: Houseguest,
     initialNominees: Houseguest[],
     povWinner: Houseguest,
-    doubleEviction: boolean
+    doubleEviction: boolean,
+    veto: Veto
 ): [GameState, Scene, Houseguest[]] {
     let povTarget: Houseguest | null = null;
     let descisionText = "";
@@ -39,6 +41,7 @@ export function generateVetoCeremonyScene(
     let replacementSpeech = "";
     let nameAReplacement = "";
     let finalNominees: any[] = [...initialNominees];
+    const replacementNomineeNamer = veto === DiamondVeto ? povWinner : HoH;
     if (povTarget) {
         const HoHwonPoV = HoH.id === povWinner.id;
         nameAReplacement += HoHwonPoV
@@ -48,8 +51,12 @@ export function generateVetoCeremonyScene(
             ...getById(
                 initialGameState,
                 backdoorNPlayers(
-                    HoH,
-                    exclude(initialGameState.houseguests, [HoH, ...initialNominees, povWinner]),
+                    replacementNomineeNamer,
+                    exclude(initialGameState.houseguests, [
+                        replacementNomineeNamer,
+                        ...initialNominees,
+                        povWinner,
+                    ]),
                     initialGameState,
                     1
                 )[0].decision
@@ -87,7 +94,7 @@ export function generateVetoCeremonyScene(
                 <Portrait centered={true} houseguest={{ ...povWinner, tooltip: vetoChoice.reason }} />
                 <CenteredBold noMargin={true}>{descisionText}</CenteredBold>
                 <Centered>{nameAReplacement}</Centered>
-                {replacementSpeech && <Portrait centered={true} houseguest={HoH} />}
+                {replacementSpeech && <Portrait centered={true} houseguest={replacementNomineeNamer} />}
                 <CenteredBold>{replacementSpeech}</CenteredBold>
                 <div className="columns is-marginless is-centered">
                     {finalNominees.map((nom, i) => (

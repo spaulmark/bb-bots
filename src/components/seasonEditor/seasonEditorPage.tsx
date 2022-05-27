@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
 import { cast$, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
+import { DiamondVetoEpisode } from "../episode/diamondVetoEpisode";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
 import { InstantEviction } from "../episode/instantEvictionEpisode";
@@ -27,7 +28,16 @@ export const Label = styled.label`
     color: #fff;
 `;
 
-const twists: EpisodeType[] = [DoubleEviction, TripleEvictionCad, TripleEvictionUs, InstantEviction, NoVeto];
+// TODO: forced pov,
+
+const twists: EpisodeType[] = [
+    DoubleEviction,
+    TripleEvictionCad,
+    TripleEvictionUs,
+    InstantEviction,
+    NoVeto,
+    DiamondVetoEpisode,
+];
 
 const submit = async (jury: number): Promise<void> => {
     season$.next(getEpisodeLibrary());

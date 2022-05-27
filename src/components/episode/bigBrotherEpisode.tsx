@@ -123,7 +123,8 @@ export function generateBBVanillaScenes(
             hoh,
             nominees,
             povWinner,
-            doubleEviction
+            doubleEviction,
+            veto
         );
         scenes.push(vetoCeremonyScene);
     }
