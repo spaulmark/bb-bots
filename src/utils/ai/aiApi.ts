@@ -1,12 +1,11 @@
 import { Houseguest, GameState, inJury, exclude } from "../../model";
 import { rng } from "../BbRandomGenerator";
-import { relationship, lowestScore } from "./aiUtils";
 import {
     classifyRelationship,
     classifyTwoWayRelationship,
     RelationshipType as Relationship,
 } from "./classifyRelationship";
-import { getRelationshipSummary, isBetterTarget } from "./targets";
+import { getRelationshipSummary, isBetterTarget, isBetterTargetWithLogic } from "./targets";
 
 export interface NumberWithLogic {
     decision: number;
@@ -47,11 +46,17 @@ export function castEvictionVote(
     nominees: Houseguest[],
     gameState: GameState
 ): NumberWithLogic {
-    if (inJury(gameState)) {
-        return cutthroatVoteJury(hero, nominees, gameState);
-    } else {
-        return cutthroatVote(hero, nominees);
-    }
+    return isBetterTargetWithLogic(
+        getRelationshipSummary(hero, nominees[0]),
+        getRelationshipSummary(hero, nominees[1]),
+        hero,
+        gameState
+    );
+    // if (inJury(gameState)) {
+    //     return cutthroatVoteJury(hero, nominees, gameState);
+    // } else {
+    //     return cutthroatVote(hero, nominees);
+    // }
 }
 
 function winningOddsF3(hero: Houseguest, villain1: Houseguest, villain2: Houseguest): number {
@@ -123,79 +128,19 @@ function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: 
     }
     if (hero.powerRanking >= 0.45) {
         // with a high enough winrate, vote normally
-        return cutthroatVote(hero, nominees);
+        // return cutthroatVote(hero, nominees);
     } else if (hero.powerRanking <= 1 / 3) {
         // with a very low winrate, vote based on winrate
-        return voteBasedOnWinrate();
+        // return voteBasedOnWinrate();
     } else {
         // with a sort of low winrate, break ties with winrate
         const r0 = classifyTwoWayRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
         const r1 = classifyTwoWayRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
         return r0 === r1 ? voteBasedOnWinrate() : cutthroatVote(hero, nominees);
     }
-
-    function voteBasedOnWinrate() {
-        const heroBeatsnom0 = hero.powerRanking < hero.superiors[nom0.id];
-        const heroBeatsnom1 = hero.powerRanking < hero.superiors[nom1.id];
-
-        // if i am voting between 2 people who i can't beat, vote based on relationship
-        if (!heroBeatsnom0 && !heroBeatsnom1) {
-            return cutthroatVote(hero, nominees);
-        }
-        // otherwise, vote based on relationship
-
-        const decision = hero.superiors[nom0.id] < hero.superiors[nom1.id] ? 0 : 1;
-        return {
-            decision,
-            reason: `I can't beat ${nominees[decision].name} in the end.`,
-        };
-    }
 }
 
 // only works for 2 nominees
-function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogic {
-    const nom0 = nominees[0];
-    const nom1 = nominees[1];
-    const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
-    const r1 = classifyRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
-
-    const nom0isTarget = hero.targets[0] === nom0.id || hero.targets[1] === nom0.id;
-    const nom1isTarget = hero.targets[0] === nom1.id || hero.targets[1] === nom1.id;
-    // KILL TARGETS FIRST
-    if ((nom0isTarget && !nom1isTarget) || (nom1isTarget && !nom0isTarget)) {
-        const decision = nom0isTarget ? 0 : 1;
-        return {
-            decision,
-            reason: `I am targeting ${nominees[decision].name}.`,
-        };
-    }
-
-    if (r0 === Relationship.Enemy && r1 === Relationship.Enemy) {
-        const decision = hero.relationships[nom0.id] < hero.relationships[nom1.id] ? 0 : 1;
-        return {
-            decision,
-            reason: `I dislike ${nominees[decision].name} the most of these enemies.`,
-        };
-    } else if (
-        (r0 === Relationship.Enemy && r1 !== Relationship.Enemy) ||
-        (r1 === Relationship.Enemy && r0 !== Relationship.Enemy)
-    ) {
-        const vote = r0 === Relationship.Enemy ? 0 : 1;
-        return { decision: vote, reason: `${nominees[vote].name} is my enemy.` };
-    } else if (
-        (r0 !== Relationship.Friend && r1 === Relationship.Friend) ||
-        (r1 !== Relationship.Friend && r0 === Relationship.Friend)
-    ) {
-        const vote = r0 !== Relationship.Friend ? 0 : 1;
-        const nonVote = vote === 0 ? 1 : 0;
-        return { decision: vote, reason: `${nominees[nonVote].name} is my friend.` };
-    }
-    const vote = lowestScore(hero, nominees, relationship);
-    return {
-        decision: vote,
-        reason: `I like ${nominees[vote === 0 ? 1 : 0].name} the most of these friends.`,
-    };
-}
 
 export function backdoorNPlayers(
     hero: Houseguest,

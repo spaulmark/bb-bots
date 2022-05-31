@@ -18,7 +18,7 @@ export const DiamondVeto: Veto = {
 
 export const SpotlightVeto: Veto = {
     name: "Spotlight Power of Veto",
-    use: (hero: Houseguest, nominees: Houseguest[], gameState: GameState, HoH: number) => {
+    use: (_hero: Houseguest, _nominees: Houseguest[], _gameState: GameState, _HoH: number) => {
         throw new Error("Not implemented");
     },
 };

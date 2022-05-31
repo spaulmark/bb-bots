@@ -1,9 +1,9 @@
-import { Houseguest, GameState } from "../../model";
+import { Houseguest } from "../../model";
 import { pbincdf } from "../poissonbinomial";
 import { pJurorVotesForHero } from "./aiApi";
 import { classifyRelationship } from "./classifyRelationship";
 
-export const relationship = (hero: Houseguest, villain: Houseguest) => hero.relationships[villain.id];
+export const relationship = (hero: Houseguest, villain: { id: number }) => hero.relationships[villain.id];
 
 export const RelationshipTypeToNumber = { FRIEND: 10, ENEMY: -10, PAWN: 0, QUEEN: +5 };
 
@@ -39,11 +39,7 @@ function highestScore(
     });
     return highestIndex;
 }
-export function lowestScore(
-    hero: Houseguest,
-    options: Houseguest[],
-    callback: (hero: Houseguest, villain: Houseguest) => number
-) {
+export function lowestScore<H, V>(hero: H, options: V[], callback: (hero: H, villain: V) => number) {
     let lowestIndex = 0;
     let lowestScore = Infinity;
     options.forEach((villain, i) => {

@@ -1,6 +1,8 @@
 import _ from "lodash";
 import { GameState, getById, Houseguest } from "../../model";
-import { classifyRelationship, RelationshipType } from "./classifyRelationship";
+import { NumberWithLogic } from "./aiApi";
+import { lowestScore, relationship } from "./aiUtils";
+import { classifyRelationship, classifyTwoWayRelationship, RelationshipType } from "./classifyRelationship";
 
 interface RelationshipSummary {
     type: RelationshipType;
@@ -9,6 +11,7 @@ interface RelationshipSummary {
     id: number;
     pHeroWins: number;
     villainPopularity: number;
+    villianName: string;
 }
 
 const deadValue: RelationshipSummary = {
@@ -18,6 +21,7 @@ const deadValue: RelationshipSummary = {
     winrate: -1,
     relationship: 2,
     villainPopularity: 2,
+    villianName: "This is an error",
 };
 
 export function getRelationshipSummary(hero: Houseguest, villain: Houseguest): RelationshipSummary {
@@ -30,6 +34,7 @@ export function getRelationshipSummary(hero: Houseguest, villain: Houseguest): R
         winrate: hero.powerRanking,
         pHeroWins: doIWin,
         villainPopularity: villain.popularity,
+        villianName: villain.name,
     };
 }
 
@@ -59,7 +64,13 @@ export class Targets {
     }
 }
 
-// TODO: merge vote logic with nomination logic
+// TODO: merge vote logic with nomination logic, do this by making nomination logic take into account winrate.
+
+enum WinrateStrategy {
+    Low,
+    Medium,
+    High,
+}
 
 // Statusquo goes with the status quo, underdog tries to disrupt & go after big targets, MoR goes after his personal targets
 export enum TargetStrategy {
@@ -68,9 +79,32 @@ export enum TargetStrategy {
     MoR,
 }
 
+function determineWinrateStrategy(hero: Houseguest): WinrateStrategy {
+    if (hero.powerRanking >= 0.45) return WinrateStrategy.High;
+    if (hero.powerRanking <= 1 / 3) return WinrateStrategy.Low;
+    return WinrateStrategy.Medium;
+}
+
 function determineStrategy(hero: Houseguest): TargetStrategy {
     if (hero.friends === hero.enemies) return TargetStrategy.MoR;
     return hero.friends > hero.enemies ? TargetStrategy.StatusQuo : TargetStrategy.Underdog;
+}
+
+export function isBetterTargetWithLogic(
+    old: RelationshipSummary,
+    neww: RelationshipSummary,
+    hero: Houseguest,
+    gameState: GameState
+): NumberWithLogic {
+    const strategy = determineStrategy(hero);
+    const winrateStrategy = determineWinrateStrategy(hero);
+    if (strategy === TargetStrategy.StatusQuo)
+        return isBetterTargetStatusQuo(hero, old, neww, winrateStrategy);
+    else if (strategy === TargetStrategy.MoR) {
+        return isBetterTargetMoR(old, neww, gameState, hero);
+    } else {
+        return isBetterTargetUnderdog(old, neww, gameState, hero);
+    }
 }
 
 export function isBetterTarget(
@@ -81,7 +115,9 @@ export function isBetterTarget(
 ): boolean {
     if (old.relationship === 2) return true;
     const strategy = determineStrategy(hero);
-    if (strategy === TargetStrategy.StatusQuo) return isBetterTargetStatusQuo(old, neww);
+    const winrateStrategy = determineWinrateStrategy(hero);
+    if (strategy === TargetStrategy.StatusQuo)
+        return isBetterTargetStatusQuo(hero, old, neww, winrateStrategy).decision === 1;
     else if (strategy === TargetStrategy.MoR) {
         return isBetterTargetMoR(old, neww, gameState, hero);
     } else {
@@ -168,16 +204,96 @@ function computeLocalPopularity(
     return { oldPop, newPop };
 }
 
-function isBetterTargetStatusQuo(old: RelationshipSummary, neww: RelationshipSummary) {
-    const newRank = rankRelationshipSummaryStatusQuo(neww);
-    const oldRank = rankRelationshipSummaryStatusQuo(old);
-    if (newRank > oldRank) return false;
-    if (newRank < oldRank) return true;
-    return neww.relationship < old.relationship;
+function isBetterTargetStatusQuo(
+    hero: Houseguest,
+    old: RelationshipSummary,
+    neww: RelationshipSummary,
+    winrateStrategy: WinrateStrategy
+): NumberWithLogic {
+    if (winrateStrategy === WinrateStrategy.High) {
+        return voteBasedOnRelationship(hero, [old, neww]);
+    } else if (winrateStrategy === WinrateStrategy.Medium) {
+        // with a sort of low winrate, break ties with winrate
+        const r0 = classifyTwoWayRelationship(
+            hero.popularity,
+            old.villainPopularity,
+            hero.relationships[old.id]
+        );
+        const r1 = classifyTwoWayRelationship(
+            hero.popularity,
+            neww.villainPopularity,
+            hero.relationships[neww.id]
+        );
+        return r0 === r1 ? voteBasedonWinrate(hero, old, neww) : voteBasedOnRelationship(hero, [old, neww]);
+    } else {
+        return voteBasedonWinrate(hero, old, neww);
+    }
 }
 
-function rankRelationshipSummaryStatusQuo(r: RelationshipSummary): number {
-    if (r.type === RelationshipType.Enemy) return 1;
-    if (r.type === RelationshipType.Friend) return 3;
-    return 2;
+function voteBasedonWinrate(
+    hero: Houseguest,
+    nom0: RelationshipSummary,
+    nom1: RelationshipSummary
+): NumberWithLogic {
+    const heroBeatsnom0 = hero.powerRanking < hero.superiors[nom0.id];
+    const heroBeatsnom1 = hero.powerRanking < hero.superiors[nom1.id];
+    // if i am voting between 2 people who i can't beat, vote based on relationship
+    if (!heroBeatsnom0 && !heroBeatsnom1) {
+        return voteBasedOnRelationship(hero, [nom0, nom1]);
+    }
+    // otherwise, vote based on winrate
+    const decision = hero.superiors[nom0.id] < hero.superiors[nom1.id] ? 0 : 1;
+    return {
+        decision,
+        reason: `I can't beat ${[nom0, nom1][decision].villianName} in the end.`,
+    };
+}
+
+// returns the index (0 or 1) of the vote
+// formerly known as cutthroatVote
+function voteBasedOnRelationship(
+    hero: Houseguest,
+    nominees: [RelationshipSummary, RelationshipSummary]
+): NumberWithLogic {
+    const nom0 = nominees[0];
+    const nom1 = nominees[1];
+    const r0 = classifyRelationship(hero.popularity, nom0.villainPopularity, hero.relationships[nom0.id]);
+    const r1 = classifyRelationship(hero.popularity, nom1.villainPopularity, hero.relationships[nom1.id]);
+
+    const nom0isTarget = hero.targets[0] === nom0.id || hero.targets[1] === nom0.id;
+    const nom1isTarget = hero.targets[0] === nom1.id || hero.targets[1] === nom1.id;
+    // kill targets first
+    if ((nom0isTarget && !nom1isTarget) || (nom1isTarget && !nom0isTarget)) {
+        const decision = nom0isTarget ? 0 : 1;
+        return {
+            decision,
+            reason: `I am targeting ${nominees[decision].villianName}.`,
+        };
+    }
+
+    if (r0 === RelationshipType.Enemy && r1 === RelationshipType.Enemy) {
+        const decision = hero.relationships[nom0.id] < hero.relationships[nom1.id] ? 0 : 1;
+        return {
+            decision,
+            reason: `I dislike ${nominees[decision].villianName} the most of these enemies.`,
+        };
+    } else if (
+        (r0 === RelationshipType.Enemy && r1 !== RelationshipType.Enemy) ||
+        (r1 === RelationshipType.Enemy && r0 !== RelationshipType.Enemy)
+    ) {
+        const vote = r0 === RelationshipType.Enemy ? 0 : 1;
+        return { decision: vote, reason: `${nominees[vote].villianName} is my enemy.` };
+    } else if (
+        (r0 !== RelationshipType.Friend && r1 === RelationshipType.Friend) ||
+        (r1 !== RelationshipType.Friend && r0 === RelationshipType.Friend)
+    ) {
+        const vote = r0 !== RelationshipType.Friend ? 0 : 1;
+        const nonVote = vote === 0 ? 1 : 0;
+        return { decision: vote, reason: `${nominees[nonVote].villianName} is my friend.` };
+    }
+    const vote = lowestScore(hero, nominees, relationship);
+    return {
+        decision: vote,
+        reason: `I like ${nominees[vote === 0 ? 1 : 0].villianName} the most of these noms.`,
+    };
 }
