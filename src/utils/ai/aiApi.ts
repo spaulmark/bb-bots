@@ -13,7 +13,7 @@ export interface NumberWithLogic {
     reason: string;
 }
 
-interface HouseguestWithLogic {
+export interface HouseguestWithLogic {
     decision: Houseguest | null;
     reason: string;
 }
@@ -225,12 +225,7 @@ export function backdoorNPlayers(
     return result;
 }
 
-export function useGoldenVeto(
-    hero: Houseguest,
-    nominees: Houseguest[],
-    gameState: GameState,
-    HoH: number
-): HouseguestWithLogic {
+function basicVetoChecks(hero: Houseguest, nominees: Houseguest[], gameState: GameState, HoH: number) {
     if (hero.id === HoH) {
         return { decision: null, reason: "I support my original nominations." };
     }
@@ -244,7 +239,33 @@ export function useGoldenVeto(
             reason: "It doesn't make sense to use the veto here.",
         };
     }
+    return null;
+}
+
+export function useGoldenVeto(
+    hero: Houseguest,
+    nominees: Houseguest[],
+    gameState: GameState,
+    HoH: number
+): HouseguestWithLogic {
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+    if (checks) return checks;
+
     return useGoldenVetoPreJury(hero, nominees, gameState) || null;
+}
+
+export function useDiamondVeto(
+    hero: Houseguest,
+    nominees: Houseguest[],
+    gameState: GameState,
+    HoH: number
+): HouseguestWithLogic {
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+    if (checks) return checks; // TODO: we also need a nominee if you're using it on yourself.
+
+    // if a better target exists in the pool of options, replace the person i least want gone with the person i most want gone.
+    // TODO: just refactor the logic, it will be much easier
+    return { decision: null, reason: "TODO" };
 }
 
 function useGoldenVetoPreJury(

@@ -25,7 +25,8 @@ export function generateVetoCeremonyScene(
         return getById(initialGameState, nominee.id);
     });
     HoH = getById(initialGameState, HoH.id);
-    const vetoChoice = useGoldenVeto(povWinner, initialNominees, initialGameState, HoH.id);
+
+    const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, HoH.id);
 
     let nomineeWonPov = false;
     initialNominees.forEach((nom) => nom.id === povWinner.id && (nomineeWonPov = true));

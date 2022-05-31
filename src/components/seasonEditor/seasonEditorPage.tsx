@@ -6,6 +6,7 @@ import { NumericInput } from "../castingScreen/numericInput";
 import { DiamondVetoEpisode } from "../episode/diamondVetoEpisode";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
+import { ForcedVetoEpisode } from "../episode/forcedVetoEpisode";
 import { InstantEviction } from "../episode/instantEvictionEpisode";
 import { NoVeto } from "../episode/noVetoEpisode";
 import { PregameEpisode } from "../episode/pregameEpisode";
@@ -28,7 +29,7 @@ export const Label = styled.label`
     color: #fff;
 `;
 
-// TODO: forced pov,
+// TODO: boomerang veto, double veto.
 
 const twists: EpisodeType[] = [
     DoubleEviction,
@@ -37,6 +38,7 @@ const twists: EpisodeType[] = [
     InstantEviction,
     NoVeto,
     DiamondVetoEpisode,
+    ForcedVetoEpisode,
 ];
 
 const submit = async (jury: number): Promise<void> => {
