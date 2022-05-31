@@ -114,15 +114,7 @@ export function isBetterTarget(
     gameState: GameState
 ): boolean {
     if (old.relationship === 2) return true;
-    const strategy = determineStrategy(hero);
-    const winrateStrategy = determineWinrateStrategy(hero);
-    if (strategy === TargetStrategy.StatusQuo)
-        return isBetterTargetStatusQuo(hero, old, neww, winrateStrategy).decision === 1;
-    else if (strategy === TargetStrategy.MoR) {
-        return isBetterTargetMoR(old, neww, gameState, hero);
-    } else {
-        return isBetterTargetUnderdog(old, neww, gameState, hero);
-    }
+    return isBetterTargetWithLogic(old, neww, hero, gameState).decision === 1;
 }
 
 function isBetterTargetMoR(
@@ -130,7 +122,9 @@ function isBetterTargetMoR(
     neww: RelationshipSummary,
     gameState: GameState,
     hero: Houseguest
-): boolean {
+): NumberWithLogic {
+    // TODO: somehow we need to take winrates into account here :V
+
     // Is the old target a non-enemy? Then neww is a better target if he is an enemy, or if he's a worse non-enemy.
     if (old.type !== RelationshipType.Enemy) {
         return neww.type === RelationshipType.Enemy ? true : neww.relationship < old.relationship;
@@ -154,7 +148,7 @@ function isBetterTargetUnderdog(
     neww: RelationshipSummary,
     gameState: GameState,
     hero: Houseguest
-): boolean {
+): NumberWithLogic {
     // Is the old target a friend? Then neww is a better target if he is NOT a friend, or if he's a worse friend.
     if (old.type === RelationshipType.Friend) {
         return neww.type !== RelationshipType.Friend ? true : neww.relationship < old.relationship;
