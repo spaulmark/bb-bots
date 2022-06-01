@@ -103,42 +103,42 @@ function castF4vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest, HoH: H
     };
 }
 
-function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): NumberWithLogic {
-    const nom0 = nominees[0];
-    const nom1 = nominees[1];
-    // In the F3 vote, take the person who you have better odds against to F2
-    if (gameState.remainingPlayers === 3) {
-        return castF3Vote(hero, nom0, nom1);
-    }
-    // In the F4 vote, do some genius level mathematics to predict what gives you the best odds of winning given that the
-    // person who wins the F3 HoH will evict the person they have the worst odds against
-    if (gameState.remainingPlayers === 4) {
-        return castF4vote(
-            hero,
-            nom0,
-            nom1,
-            // all this work just to get the HoH...
-            exclude(
-                Array.from(gameState.nonEvictedHouseguests.values()).map(
-                    (id) => gameState.houseguestCache[id]
-                ),
-                [nom0, nom1, hero]
-            )[0]
-        );
-    }
-    if (hero.powerRanking >= 0.45) {
-        // with a high enough winrate, vote normally
-        // return cutthroatVote(hero, nominees);
-    } else if (hero.powerRanking <= 1 / 3) {
-        // with a very low winrate, vote based on winrate
-        // return voteBasedOnWinrate();
-    } else {
-        // with a sort of low winrate, break ties with winrate
-        const r0 = classifyTwoWayRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
-        const r1 = classifyTwoWayRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
-        return r0 === r1 ? voteBasedOnWinrate() : cutthroatVote(hero, nominees);
-    }
-}
+// function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): NumberWithLogic {
+//     const nom0 = nominees[0];
+//     const nom1 = nominees[1];
+//     // In the F3 vote, take the person who you have better odds against to F2
+//     if (gameState.remainingPlayers === 3) {
+//         return castF3Vote(hero, nom0, nom1);
+//     }
+//     // In the F4 vote, do some genius level mathematics to predict what gives you the best odds of winning given that the
+//     // person who wins the F3 HoH will evict the person they have the worst odds against
+//     if (gameState.remainingPlayers === 4) {
+//         return castF4vote(
+//             hero,
+//             nom0,
+//             nom1,
+//             // all this work just to get the HoH...
+//             exclude(
+//                 Array.from(gameState.nonEvictedHouseguests.values()).map(
+//                     (id) => gameState.houseguestCache[id]
+//                 ),
+//                 [nom0, nom1, hero]
+//             )[0]
+//         );
+//     }
+//     if (hero.powerRanking >= 0.45) {
+//         // with a high enough winrate, vote normally
+//         // return cutthroatVote(hero, nominees);
+//     } else if (hero.powerRanking <= 1 / 3) {
+//         // with a very low winrate, vote based on winrate
+//         // return voteBasedOnWinrate();
+//     } else {
+//         // with a sort of low winrate, break ties with winrate
+//         const r0 = classifyTwoWayRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
+//         const r1 = classifyTwoWayRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
+//         return r0 === r1 ? voteBasedOnWinrate() : cutthroatVote(hero, nominees);
+//     }
+// }
 
 // only works for 2 nominees
 

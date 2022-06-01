@@ -64,8 +64,6 @@ export class Targets {
     }
 }
 
-// TODO: merge vote logic with nomination logic, do this by making nomination logic take into account winrate.
-
 enum WinrateStrategy {
     Low,
     Medium,
@@ -90,6 +88,7 @@ function determineStrategy(hero: Houseguest): TargetStrategy {
     return hero.friends > hero.enemies ? TargetStrategy.StatusQuo : TargetStrategy.Underdog;
 }
 
+// TODO: i forgot to take into account jury.
 export function isBetterTargetWithLogic(
     old: RelationshipSummary,
     neww: RelationshipSummary,
@@ -101,7 +100,7 @@ export function isBetterTargetWithLogic(
     if (strategy === TargetStrategy.StatusQuo)
         return isBetterTargetStatusQuo(hero, old, neww, winrateStrategy);
     else if (strategy === TargetStrategy.MoR) {
-        return isBetterTargetMoR(old, neww, gameState, hero);
+        return isBetterTargetMoR(old, neww, gameState, hero, winrateStrategy);
     } else {
         return isBetterTargetUnderdog(old, neww, gameState, hero);
     }
@@ -121,26 +120,43 @@ function isBetterTargetMoR(
     old: RelationshipSummary,
     neww: RelationshipSummary,
     gameState: GameState,
-    hero: Houseguest
+    hero: Houseguest,
+    winrateStrategy: WinrateStrategy
 ): NumberWithLogic {
     // TODO: somehow we need to take winrates into account here :V
 
+    if (winrateStrategy === WinrateStrategy.High) {
+        // prioritize targeting central enemies, break ties based on enemy centrality
+    } else if (winrateStrategy === WinrateStrategy.Medium) {
+        // prioritize targeting central enemies, break ties based on winrate
+    } else {
+        // prioritize targeting high winrate players, break ties based on enemy centrality
+    }
+
     // Is the old target a non-enemy? Then neww is a better target if he is an enemy, or if he's a worse non-enemy.
     if (old.type !== RelationshipType.Enemy) {
-        return neww.type === RelationshipType.Enemy ? true : neww.relationship < old.relationship;
+        const decision = (neww.type === RelationshipType.Enemy ? true : neww.relationship < old.relationship)
+            ? 1
+            : 0;
+        return {
+            decision,
+            reason: `I like ${[old, neww][decision].villianName} the least of these noms.`,
+        };
     }
     // So, the old target is an enemy? Then neww must be an enemy to be a better target.
     // If they are both enemies, the more popular enemy is a better target.
-    if (neww.type !== RelationshipType.Enemy) return false;
-
-    let { oldPop, newPop }: { oldPop: number; newPop: number } = computeLocalPopularity(
-        gameState,
+    if (neww.type !== RelationshipType.Enemy)
+        return { decision: 0, reason: `${old.villianName} is my enemy.` };
+    const decision = isMoreCentral(
         hero,
         old,
         neww,
+        gameState,
         (x: RelationshipType) => x === RelationshipType.Enemy
-    );
-    return oldPop < newPop;
+    )
+        ? 1
+        : 0;
+    return { decision, reason: `${[old, neww][decision].villianName} is a bigger threat.` };
 }
 
 function isBetterTargetUnderdog(
@@ -149,22 +165,52 @@ function isBetterTargetUnderdog(
     gameState: GameState,
     hero: Houseguest
 ): NumberWithLogic {
+    // TODO: make this compliant with the winrate logic. very similar to MoR but it cares about targeting nonfriends, rather than just enemies.
+
     // Is the old target a friend? Then neww is a better target if he is NOT a friend, or if he's a worse friend.
     if (old.type === RelationshipType.Friend) {
-        return neww.type !== RelationshipType.Friend ? true : neww.relationship < old.relationship;
+        const decision = (neww.type !== RelationshipType.Friend ? true : neww.relationship < old.relationship)
+            ? 1
+            : 0;
+        return {
+            decision,
+            reason: `I like ${[old, neww][decision].villianName} the least of these noms.`,
+        };
     }
     // So, the old target isn't a friend? Then neww will never be a better target if he is a friend.
-    if (neww.type === RelationshipType.Friend) return false;
+    if (neww.type === RelationshipType.Friend)
+        return { decision: 0, reason: `${neww.villianName} is my friend.` };
     // But if neww isn't a friend, then the best target is the more central of the two non-friends.
+    const decision = isMoreCentral(
+        hero,
+        old,
+        neww,
+        gameState,
+        (x: RelationshipType) => x !== RelationshipType.Friend
+    )
+        ? 1
+        : 0;
+    return { decision, reason: `${[old, neww][decision].villianName} is a bigger threat.` };
+}
+
+// returns true if neww is more central than old
+function isMoreCentral(
+    hero: Houseguest,
+    old: RelationshipSummary,
+    neww: RelationshipSummary,
+    gameState: GameState,
+    condition: (x: RelationshipType) => boolean
+): boolean {
     let { oldPop, newPop }: { oldPop: number; newPop: number } = computeLocalPopularity(
         gameState,
         hero,
         old,
         neww,
-        (x: RelationshipType) => x !== RelationshipType.Friend
+        condition
     );
     return oldPop < newPop;
 }
+
 // computes the popularity of houseguests old and neww,
 // only taking into account houseguests that have relationship type x with hero
 // satisfying the boolean condition you pass in
@@ -232,6 +278,7 @@ function voteBasedonWinrate(
     const heroBeatsnom0 = hero.powerRanking < hero.superiors[nom0.id];
     const heroBeatsnom1 = hero.powerRanking < hero.superiors[nom1.id];
     // if i am voting between 2 people who i can't beat, vote based on relationship
+    // TODO: this should be a customizable callback that is either votebasedonrelationship or votebasedonenemycentrality
     if (!heroBeatsnom0 && !heroBeatsnom1) {
         return voteBasedOnRelationship(hero, [nom0, nom1]);
     }
