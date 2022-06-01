@@ -1,10 +1,6 @@
-import { Houseguest, GameState, inJury, exclude } from "../../model";
+import { Houseguest, GameState, exclude } from "../../model";
 import { rng } from "../BbRandomGenerator";
-import {
-    classifyRelationship,
-    classifyTwoWayRelationship,
-    RelationshipType as Relationship,
-} from "./classifyRelationship";
+import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
 import { getRelationshipSummary, isBetterTarget, isBetterTargetWithLogic } from "./targets";
 
 export interface NumberWithLogic {
@@ -46,17 +42,32 @@ export function castEvictionVote(
     nominees: Houseguest[],
     gameState: GameState
 ): NumberWithLogic {
+    // In the F3 vote, take the person who you have better odds against to F2
+    if (gameState.remainingPlayers === 3) {
+        return castF3Vote(hero, nominees[0], nominees[1]);
+    }
+    // In the F4 vote, do some genius level mathematics to predict what gives you the best odds of winning given that the
+    // person who wins the F3 HoH will evict the person they have the worst odds against
+    if (gameState.remainingPlayers === 4) {
+        return castF4vote(
+            hero,
+            nominees[0],
+            nominees[1],
+            // all this work just to get the HoH...
+            exclude(
+                Array.from(gameState.nonEvictedHouseguests.values()).map(
+                    (id) => gameState.houseguestCache[id]
+                ),
+                [nominees[0], nominees[1], hero]
+            )[0]
+        );
+    }
     return isBetterTargetWithLogic(
         getRelationshipSummary(hero, nominees[0]),
         getRelationshipSummary(hero, nominees[1]),
         hero,
         gameState
     );
-    // if (inJury(gameState)) {
-    //     return cutthroatVoteJury(hero, nominees, gameState);
-    // } else {
-    //     return cutthroatVote(hero, nominees);
-    // }
 }
 
 function winningOddsF3(hero: Houseguest, villain1: Houseguest, villain2: Houseguest): number {

@@ -16,7 +16,7 @@ interface RelationshipSummary {
 
 const deadValue: RelationshipSummary = {
     type: RelationshipType.Friend,
-    id: -1,
+    id: -123456789, // to make debugging easier :)
     pHeroWins: -1,
     winrate: -1,
     relationship: 2,
@@ -26,10 +26,10 @@ const deadValue: RelationshipSummary = {
 
 export function getRelationshipSummary(hero: Houseguest, villain: Houseguest): RelationshipSummary {
     const doIWin = hero.superiors[villain.id];
-    const type = classifyRelationship(hero.popularity, villain.popularity, hero.relationshipWith(villain));
+    const type = classifyRelationship(hero.popularity, villain.popularity, hero.relationships[villain.id]);
     return {
         id: villain.id,
-        relationship: villain.relationshipWith(hero),
+        relationship: villain.relationships[hero.id],
         type,
         winrate: hero.powerRanking,
         pHeroWins: doIWin,
@@ -88,13 +88,14 @@ function determineStrategy(hero: Houseguest): TargetStrategy {
     return hero.friends > hero.enemies ? TargetStrategy.StatusQuo : TargetStrategy.Underdog;
 }
 
-// TODO: i forgot to take into account jury.
 export function isBetterTargetWithLogic(
     old: RelationshipSummary,
     neww: RelationshipSummary,
     hero: Houseguest,
     gameState: GameState
 ): NumberWithLogic {
+    if (old.relationship === 2) return { decision: 1, reason: "remove debug value" };
+    if (neww.relationship === 2) return { decision: 0, reason: "remove debug value" };
     const strategy = determineStrategy(hero);
     const winrateStrategy = determineWinrateStrategy(hero);
     if (strategy === TargetStrategy.StatusQuo)
@@ -112,7 +113,6 @@ export function isBetterTarget(
     hero: Houseguest,
     gameState: GameState
 ): boolean {
-    if (old.relationship === 2) return true;
     return isBetterTargetWithLogic(old, neww, hero, gameState).decision === 1;
 }
 
@@ -156,7 +156,7 @@ function isBetterTargetMoR(
     )
         ? 1
         : 0;
-    return { decision, reason: `${[old, neww][decision].villianName} is a bigger threat.` };
+    return { decision, reason: `${[old, neww][decision].villianName} is a bigger threat to me.` };
 }
 
 function isBetterTargetUnderdog(
@@ -190,7 +190,7 @@ function isBetterTargetUnderdog(
     )
         ? 1
         : 0;
-    return { decision, reason: `${[old, neww][decision].villianName} is a bigger threat.` };
+    return { decision, reason: `${[old, neww][decision].villianName} is a bigger threat to me.` };
 }
 
 // returns true if neww is more central than old
