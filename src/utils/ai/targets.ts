@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { GameState, getById, Houseguest } from "../../model";
+import { GameState, getById, Houseguest, inJury } from "../../model";
 import { NumberWithLogic } from "./aiApi";
 import { lowestScore, relationship } from "./aiUtils";
 import { classifyRelationship, classifyTwoWayRelationship, RelationshipType } from "./classifyRelationship";
@@ -98,7 +98,7 @@ export function isBetterTargetWithLogic(
     const strategy = determineStrategy(hero);
     const winrateStrategy = determineWinrateStrategy(hero);
     if (strategy === TargetStrategy.StatusQuo)
-        return isBetterTargetStatusQuo(hero, old, neww, winrateStrategy);
+        return isBetterTargetStatusQuo(hero, old, neww, winrateStrategy, gameState);
     else if (strategy === TargetStrategy.MoR) {
         return isBetterTargetMoR(old, neww, gameState, hero, winrateStrategy);
     } else {
@@ -125,7 +125,7 @@ function isBetterTargetMoR(
 ): NumberWithLogic {
     // TODO: somehow we need to take winrates into account here :V
 
-    if (winrateStrategy === WinrateStrategy.High) {
+    if (winrateStrategy === WinrateStrategy.High || !inJury(gameState)) {
         // prioritize targeting central enemies, break ties based on enemy centrality
     } else if (winrateStrategy === WinrateStrategy.Medium) {
         // prioritize targeting central enemies, break ties based on winrate
@@ -248,9 +248,10 @@ function isBetterTargetStatusQuo(
     hero: Houseguest,
     old: RelationshipSummary,
     neww: RelationshipSummary,
-    winrateStrategy: WinrateStrategy
+    winrateStrategy: WinrateStrategy,
+    gameState: GameState
 ): NumberWithLogic {
-    if (winrateStrategy === WinrateStrategy.High) {
+    if (winrateStrategy === WinrateStrategy.High || !inJury(gameState)) {
         return voteBasedOnRelationship(hero, [old, neww]);
     } else if (winrateStrategy === WinrateStrategy.Medium) {
         // with a sort of low winrate, break ties with winrate
