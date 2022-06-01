@@ -302,16 +302,16 @@ function voteBasedOnRelationship(
     const r0 = classifyRelationship(hero.popularity, nom0.villainPopularity, hero.relationships[nom0.id]);
     const r1 = classifyRelationship(hero.popularity, nom1.villainPopularity, hero.relationships[nom1.id]);
 
-    const nom0isTarget = hero.targets[0] === nom0.id || hero.targets[1] === nom0.id;
-    const nom1isTarget = hero.targets[0] === nom1.id || hero.targets[1] === nom1.id;
-    // kill targets first
-    if ((nom0isTarget && !nom1isTarget) || (nom1isTarget && !nom0isTarget)) {
-        const decision = nom0isTarget ? 0 : 1;
-        return {
-            decision,
-            reason: `I am targeting ${nominees[decision].villianName}.`,
-        };
-    }
+    // const nom0isTarget = hero.targets[0] === nom0.id || hero.targets[1] === nom0.id;
+    // const nom1isTarget = hero.targets[0] === nom1.id || hero.targets[1] === nom1.id;
+    // // kill targets first
+    // if ((nom0isTarget && !nom1isTarget) || (nom1isTarget && !nom0isTarget)) {
+    //     const decision = nom0isTarget ? 0 : 1;
+    //     return {
+    //         decision,
+    //         reason: `I am targeting ${nominees[decision].villianName}.`,
+    //     };
+    // }
 
     if (r0 === RelationshipType.Enemy && r1 === RelationshipType.Enemy) {
         const decision = hero.relationships[nom0.id] < hero.relationships[nom1.id] ? 0 : 1;
