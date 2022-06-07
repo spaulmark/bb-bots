@@ -51,13 +51,9 @@ export function generateVetoCeremonyScene(
                   veto === DiamondVeto ? "I" : "you"
               } must name a replacement nominee.`;
         // if the exclusion yielded no options, you may be forced to name the veto winner as a replacement
-        let exclusion = exclude(initialGameState.houseguests, [
-            replacementNomineeNamer,
-            ...initialNominees,
-            povWinner,
-        ]);
+        let exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees, povWinner]);
         if (exclusion.length === 0) {
-            exclusion = exclude(initialGameState.houseguests, [replacementNomineeNamer, ...initialNominees]);
+            exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees]);
         }
         const replacementNom = {
             ...getById(
