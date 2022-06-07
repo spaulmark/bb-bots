@@ -1,4 +1,4 @@
-import { Houseguest, GameState, exclude } from "../../model";
+import { Houseguest, GameState, exclude, getById, nonEvictedHouseguests } from "../../model";
 import { rng } from "../BbRandomGenerator";
 import { classifyRelationship, RelationshipType as Relationship } from "./classifyRelationship";
 import { getRelationshipSummary, isBetterTarget, isBetterTargetWithLogic } from "./targets";
@@ -114,45 +114,9 @@ function castF4vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest, HoH: H
     };
 }
 
-// function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): NumberWithLogic {
-//     const nom0 = nominees[0];
-//     const nom1 = nominees[1];
-//     // In the F3 vote, take the person who you have better odds against to F2
-//     if (gameState.remainingPlayers === 3) {
-//         return castF3Vote(hero, nom0, nom1);
-//     }
-//     // In the F4 vote, do some genius level mathematics to predict what gives you the best odds of winning given that the
-//     // person who wins the F3 HoH will evict the person they have the worst odds against
-//     if (gameState.remainingPlayers === 4) {
-//         return castF4vote(
-//             hero,
-//             nom0,
-//             nom1,
-//             // all this work just to get the HoH...
-//             exclude(
-//                 Array.from(gameState.nonEvictedHouseguests.values()).map(
-//                     (id) => gameState.houseguestCache[id]
-//                 ),
-//                 [nom0, nom1, hero]
-//             )[0]
-//         );
-//     }
-//     if (hero.powerRanking >= 0.45) {
-//         // with a high enough winrate, vote normally
-//         // return cutthroatVote(hero, nominees);
-//     } else if (hero.powerRanking <= 1 / 3) {
-//         // with a very low winrate, vote based on winrate
-//         // return voteBasedOnWinrate();
-//     } else {
-//         // with a sort of low winrate, break ties with winrate
-//         const r0 = classifyTwoWayRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
-//         const r1 = classifyTwoWayRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
-//         return r0 === r1 ? voteBasedOnWinrate() : cutthroatVote(hero, nominees);
-//     }
-// }
-
 // only works for 2 nominees
 
+// returns the id of the houseguests you're backdooring
 export function backdoorNPlayers(
     hero: Houseguest,
     options: Houseguest[],
@@ -210,6 +174,7 @@ export function useGoldenVeto(
     return useGoldenVetoPreJury(hero, nominees, gameState) || null;
 }
 
+// only works with 2 nominees
 export function useDiamondVeto(
     hero: Houseguest,
     nominees: Houseguest[],
@@ -217,11 +182,35 @@ export function useDiamondVeto(
     HoH: number
 ): HouseguestWithLogic {
     const checks = basicVetoChecks(hero, nominees, gameState, HoH);
-    if (checks) return checks; // TODO: we also need a nominee if you're using it on yourself.
+    if (checks) return checks;
 
-    // if a better target exists in the pool of options, replace the person i least want gone with the person i most want gone.
-    // TODO: just refactor the logic, it will be much easier
-    return { decision: null, reason: "TODO" };
+    // get the 2 best targets out of the pool of all options
+    const idealTargets: NumberWithLogic[] = backdoorNPlayers(
+        hero,
+        exclude(nonEvictedHouseguests(gameState), [hero, getById(gameState, HoH)]),
+        gameState,
+        2
+    );
+    // if ideal targets is equal to nominees, do nothing
+    const ids1 = idealTargets.map((n) => n.decision);
+    const ids2 = nominees.map((n) => n.id);
+    if ((ids1[0] === ids2[0] && ids1[1] === ids2[1]) || (ids1[0] === ids2[1] && ids1[1] === ids2[0])) {
+        return {
+            decision: null,
+            reason: "These are my ideal nominations.",
+        };
+    }
+    // otherwise, replace the person i least want gone
+    const worseTarget: number = isBetterTarget(
+        getRelationshipSummary(hero, nominees[0]),
+        getRelationshipSummary(hero, nominees[1]),
+        hero,
+        gameState
+    )
+        ? 0
+        : 1;
+
+    return { decision: nominees[worseTarget], reason: "I would rather see someone else nominated." };
 }
 
 function useGoldenVetoPreJury(

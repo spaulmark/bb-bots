@@ -126,7 +126,7 @@ function voteBasedOnCentrality(
         const decision = isMoreCentral(hero, nominees[0], nominees[1], gameState, internalCallback) ? 1 : 0;
         return {
             decision,
-            reason: `${[nominees[0], nominees[1]][decision].villianName} is a bigger threat to me.`,
+            reason: `${[nominees[0], nominees[1]][decision].villianName} is more popular among my enemies.`,
         };
     };
 }

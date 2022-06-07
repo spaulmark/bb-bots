@@ -47,7 +47,9 @@ export function generateVetoCeremonyScene(
         const HoHwonPoV = HoH.id === povWinner.id;
         nameAReplacement += HoHwonPoV
             ? `Since I have just vetoed one of my nominations, I must name a replacement nominee.`
-            : `${HoH.name}, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
+            : `${HoH.name}, since I have just vetoed one of your nominations, ${
+                  veto === DiamondVeto ? "I" : "you"
+              } must name a replacement nominee.`;
         const replacementNom = {
             ...getById(
                 initialGameState,
