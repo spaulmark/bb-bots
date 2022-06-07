@@ -50,19 +50,19 @@ export function generateVetoCeremonyScene(
             : `${HoH.name}, since I have just vetoed one of your nominations, ${
                   veto === DiamondVeto ? "I" : "you"
               } must name a replacement nominee.`;
+        // if the exclusion yielded no options, you may be forced to name the veto winner as a replacement
+        let exclusion = exclude(initialGameState.houseguests, [
+            replacementNomineeNamer,
+            ...initialNominees,
+            povWinner,
+        ]);
+        if (exclusion.length === 0) {
+            exclusion = exclude(initialGameState.houseguests, [replacementNomineeNamer, ...initialNominees]);
+        }
         const replacementNom = {
             ...getById(
                 initialGameState,
-                backdoorNPlayers(
-                    replacementNomineeNamer,
-                    exclude(initialGameState.houseguests, [
-                        replacementNomineeNamer,
-                        ...initialNominees,
-                        povWinner,
-                    ]),
-                    initialGameState,
-                    1
-                )[0].decision
+                backdoorNPlayers(replacementNomineeNamer, exclusion, initialGameState, 1)[0].decision
             ),
         };
         const replacementIndex = initialNominees.findIndex((hg) => hg.id === vetoChoice.decision!.id);

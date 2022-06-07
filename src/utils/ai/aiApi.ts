@@ -147,7 +147,7 @@ export function backdoorNPlayers(
 
     while (result.length < n) {
         const decision = sortedOptions[result.length];
-        const reason = "I think you are ugly";
+        const reason = "";
         result.push({ decision: decision.id, reason });
     }
     return result;
