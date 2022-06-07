@@ -1,4 +1,4 @@
-import { Houseguest, GameState, exclude } from "../../model";
+import { Houseguest, GameState, exclude, inJury } from "../../model";
 import { rng } from "../BbRandomGenerator";
 import { getRelationshipSummary, isBetterTarget, isBetterTargetWithLogic } from "./targets";
 
@@ -48,6 +48,15 @@ export function castEvictionVote(
     // In the F4 vote, do some genius level mathematics to predict what gives you the best odds of winning given that the
     // person who wins the F3 HoH will evict the person they have the worst odds against
     if (gameState.remainingPlayers === 4) {
+        // prevents 4 player games from crashing LULW
+        if (!inJury(gameState)) {
+            return isBetterTargetWithLogic(
+                getRelationshipSummary(hero, nominees[0]),
+                getRelationshipSummary(hero, nominees[1]),
+                hero,
+                gameState
+            );
+        }
         return castF4vote(
             hero,
             nominees[0],
