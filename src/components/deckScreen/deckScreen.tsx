@@ -17,7 +17,9 @@ interface DeckScreenState {
     loading: boolean;
     decks: string[];
     i: number;
+    sortedDecks: string[];
     debouncedSearchText: string;
+    isSorted: boolean;
     searchText: string;
     selectedDecks: Set<string>;
 }
@@ -119,8 +121,10 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
         this.state = {
             loading: true,
             decks: [],
+            sortedDecks: [],
             selectedDecks: new Set<string>(),
             i: 0,
+            isSorted: false,
             debouncedSearchText: "",
             searchText: "",
         };
@@ -129,7 +133,12 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
         selectDeckSubject(null);
         this.subs.push(selectedDecks$.subscribe((selectedDecks) => this.setState({ selectedDecks })));
         const data = await (await fetch("https://spaulmark.github.io/img/dir.json")).json();
-        this.setState({ decks: shuffle(data.decks), selectedDecks: new Set<string>(), loading: false });
+        this.setState({
+            sortedDecks: data.decks,
+            decks: shuffle(data.decks),
+            selectedDecks: new Set<string>(),
+            loading: false,
+        });
     }
     componentWillUnmount() {
         this.subs.forEach((sub) => sub.unsubscribe());
@@ -150,7 +159,7 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
 
     render() {
         if (this.state.loading) return <div />;
-        const decks = this.state.decks.filter((deck) =>
+        const decks = (this.state.isSorted ? this.state.sortedDecks : this.state.decks).filter((deck) =>
             deck.toLowerCase().match(this.state.debouncedSearchText.toLowerCase())
         );
         return (
@@ -166,6 +175,15 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
                             value={this.state.searchText}
                         ></input>
                     </div>
+                    <div className="level-item">
+                        <button
+                            className={`button ${this.state.isSorted ? "is-danger" : "is-primary"}`}
+                            onClick={() => this.setState({ isSorted: !this.state.isSorted })}
+                        >
+                            A/Z
+                        </button>
+                    </div>
+
                     <div className="level-item">
                         <button
                             className="button is-warning"

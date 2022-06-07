@@ -1,6 +1,6 @@
 import { GameState, Houseguest, getById, exclude } from "../../../model";
 import { Scene } from "./scene";
-import { useGoldenVeto, backdoorNPlayers } from "../../../utils/ai/aiApi";
+import { backdoorNPlayers } from "../../../utils/ai/aiApi";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
@@ -8,20 +8,16 @@ import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { listNames } from "../../../utils/listStrings";
 import _ from "lodash";
-
-interface VetoCeremonyOptions {
-    doubleEviction: boolean;
-    finalNominees: number; // TODO: this does nothing, replace with nameReplacement? / forceUse? idk.
-}
+import { DiamondVeto, Veto } from "../veto/veto";
 
 export function generateVetoCeremonyScene(
     initialGameState: GameState,
     HoH: Houseguest,
     initialNominees: Houseguest[],
     povWinner: Houseguest,
-    options: VetoCeremonyOptions
+    doubleEviction: boolean,
+    veto: Veto
 ): [GameState, Scene, Houseguest[]] {
-    const doubleEviction = options.doubleEviction;
     let povTarget: Houseguest | null = null;
     let descisionText = "";
 
@@ -29,7 +25,8 @@ export function generateVetoCeremonyScene(
         return getById(initialGameState, nominee.id);
     });
     HoH = getById(initialGameState, HoH.id);
-    const vetoChoice = useGoldenVeto(povWinner, initialNominees, initialGameState, HoH.id);
+
+    const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, HoH.id);
 
     let nomineeWonPov = false;
     initialNominees.forEach((nom) => nom.id === povWinner.id && (nomineeWonPov = true));
@@ -45,20 +42,23 @@ export function generateVetoCeremonyScene(
     let replacementSpeech = "";
     let nameAReplacement = "";
     let finalNominees: any[] = [...initialNominees];
+    const replacementNomineeNamer = veto === DiamondVeto ? povWinner : HoH;
     if (povTarget) {
         const HoHwonPoV = HoH.id === povWinner.id;
         nameAReplacement += HoHwonPoV
             ? `Since I have just vetoed one of my nominations, I must name a replacement nominee.`
-            : `${HoH.name}, since I have just vetoed one of your nominations, you must name a replacement nominee.`;
+            : `${HoH.name}, since I have just vetoed one of your nominations, ${
+                  veto === DiamondVeto ? "I" : "you"
+              } must name a replacement nominee.`;
+        // if the exclusion yielded no options, you may be forced to name the veto winner as a replacement
+        let exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees, povWinner]);
+        if (exclusion.length === 0) {
+            exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees]);
+        }
         const replacementNom = {
             ...getById(
                 initialGameState,
-                backdoorNPlayers(
-                    HoH,
-                    exclude(initialGameState.houseguests, [HoH, ...initialNominees, povWinner]),
-                    initialGameState,
-                    1
-                )[0].decision
+                backdoorNPlayers(replacementNomineeNamer, exclusion, initialGameState, 1)[0].decision
             ),
         };
         const replacementIndex = initialNominees.findIndex((hg) => hg.id === vetoChoice.decision!.id);
@@ -93,7 +93,7 @@ export function generateVetoCeremonyScene(
                 <Portrait centered={true} houseguest={{ ...povWinner, tooltip: vetoChoice.reason }} />
                 <CenteredBold noMargin={true}>{descisionText}</CenteredBold>
                 <Centered>{nameAReplacement}</Centered>
-                {replacementSpeech && <Portrait centered={true} houseguest={HoH} />}
+                {replacementSpeech && <Portrait centered={true} houseguest={replacementNomineeNamer} />}
                 <CenteredBold>{replacementSpeech}</CenteredBold>
                 <div className="columns is-marginless is-centered">
                     {finalNominees.map((nom, i) => (

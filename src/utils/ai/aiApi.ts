@@ -1,19 +1,13 @@
-import { Houseguest, GameState, inJury, exclude } from "../../model";
+import { Houseguest, GameState, exclude, inJury } from "../../model";
 import { rng } from "../BbRandomGenerator";
-import { relationship, lowestScore } from "./aiUtils";
-import {
-    classifyRelationship,
-    classifyTwoWayRelationship,
-    RelationshipType as Relationship,
-} from "./classifyRelationship";
-import { getRelationshipSummary, isBetterTarget } from "./targets";
+import { getRelationshipSummary, isBetterTarget, isBetterTargetWithLogic } from "./targets";
 
 export interface NumberWithLogic {
     decision: number;
     reason: string;
 }
 
-interface HouseguestWithLogic {
+export interface HouseguestWithLogic {
     decision: Houseguest | null;
     reason: string;
 }
@@ -47,11 +41,41 @@ export function castEvictionVote(
     nominees: Houseguest[],
     gameState: GameState
 ): NumberWithLogic {
-    if (inJury(gameState)) {
-        return cutthroatVoteJury(hero, nominees, gameState);
-    } else {
-        return cutthroatVote(hero, nominees);
+    // In the F3 vote, take the person who you have better odds against to F2
+    if (gameState.remainingPlayers === 3) {
+        return castF3Vote(hero, nominees[0], nominees[1]);
     }
+    // In the F4 vote, do some genius level mathematics to predict what gives you the best odds of winning given that the
+    // person who wins the F3 HoH will evict the person they have the worst odds against
+    if (gameState.remainingPlayers === 4) {
+        // prevents 4 player games from crashing LULW
+        if (!inJury(gameState)) {
+            return isBetterTargetWithLogic(
+                getRelationshipSummary(hero, nominees[0]),
+                getRelationshipSummary(hero, nominees[1]),
+                hero,
+                gameState
+            );
+        }
+        return castF4vote(
+            hero,
+            nominees[0],
+            nominees[1],
+            // all this work just to get the HoH...
+            exclude(
+                Array.from(gameState.nonEvictedHouseguests.values()).map(
+                    (id) => gameState.houseguestCache[id]
+                ),
+                [nominees[0], nominees[1], hero]
+            )[0]
+        );
+    }
+    return isBetterTargetWithLogic(
+        getRelationshipSummary(hero, nominees[0]),
+        getRelationshipSummary(hero, nominees[1]),
+        hero,
+        gameState
+    );
 }
 
 function winningOddsF3(hero: Houseguest, villain1: Houseguest, villain2: Houseguest): number {
@@ -98,105 +122,9 @@ function castF4vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest, HoH: H
     };
 }
 
-function cutthroatVoteJury(hero: Houseguest, nominees: Houseguest[], gameState: GameState): NumberWithLogic {
-    const nom0 = nominees[0];
-    const nom1 = nominees[1];
-    // In the F3 vote, take the person who you have better odds against to F2
-    if (gameState.remainingPlayers === 3) {
-        return castF3Vote(hero, nom0, nom1);
-    }
-    // In the F4 vote, do some genius level mathematics to predict what gives you the best odds of winning given that the
-    // person who wins the F3 HoH will evict the person they have the worst odds against
-    if (gameState.remainingPlayers === 4) {
-        return castF4vote(
-            hero,
-            nom0,
-            nom1,
-            // all this work just to get the HoH...
-            exclude(
-                Array.from(gameState.nonEvictedHouseguests.values()).map(
-                    (id) => gameState.houseguestCache[id]
-                ),
-                [nom0, nom1, hero]
-            )[0]
-        );
-    }
-    if (hero.powerRanking >= 0.45) {
-        // with a high enough winrate, vote normally
-        return cutthroatVote(hero, nominees);
-    } else if (hero.powerRanking <= 1 / 3) {
-        // with a very low winrate, vote based on winrate
-        return voteBasedOnWinrate();
-    } else {
-        // with a sort of low winrate, break ties with winrate
-        const r0 = classifyTwoWayRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
-        const r1 = classifyTwoWayRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
-        return r0 === r1 ? voteBasedOnWinrate() : cutthroatVote(hero, nominees);
-    }
-
-    function voteBasedOnWinrate() {
-        const heroBeatsnom0 = hero.powerRanking < hero.superiors[nom0.id];
-        const heroBeatsnom1 = hero.powerRanking < hero.superiors[nom1.id];
-
-        // if i am voting between 2 people who i can't beat, vote based on relationship
-        if (!heroBeatsnom0 && !heroBeatsnom1) {
-            return cutthroatVote(hero, nominees);
-        }
-        // otherwise, vote based on relationship
-
-        const decision = hero.superiors[nom0.id] < hero.superiors[nom1.id] ? 0 : 1;
-        return {
-            decision,
-            reason: `I can't beat ${nominees[decision].name} in the end.`,
-        };
-    }
-}
-
 // only works for 2 nominees
-function cutthroatVote(hero: Houseguest, nominees: Houseguest[]): NumberWithLogic {
-    const nom0 = nominees[0];
-    const nom1 = nominees[1];
-    const r0 = classifyRelationship(hero.popularity, nom0.popularity, hero.relationships[nom0.id]);
-    const r1 = classifyRelationship(hero.popularity, nom1.popularity, hero.relationships[nom1.id]);
 
-    const nom0isTarget = hero.targets[0] === nom0.id || hero.targets[1] === nom0.id;
-    const nom1isTarget = hero.targets[0] === nom1.id || hero.targets[1] === nom1.id;
-    // KILL TARGETS FIRST
-    if ((nom0isTarget && !nom1isTarget) || (nom1isTarget && !nom0isTarget)) {
-        const decision = nom0isTarget ? 0 : 1;
-        return {
-            decision,
-            reason: `I am targeting ${nominees[decision].name}.`,
-        };
-    }
-
-    if (r0 === Relationship.Enemy && r1 === Relationship.Enemy) {
-        const decision = hero.relationships[nom0.id] < hero.relationships[nom1.id] ? 0 : 1;
-        return {
-            decision,
-            reason: `I dislike ${nominees[decision].name} the most of these enemies.`,
-        };
-    } else if (
-        (r0 === Relationship.Enemy && r1 !== Relationship.Enemy) ||
-        (r1 === Relationship.Enemy && r0 !== Relationship.Enemy)
-    ) {
-        const vote = r0 === Relationship.Enemy ? 0 : 1;
-        return { decision: vote, reason: `${nominees[vote].name} is my enemy.` };
-    } else if (
-        (r0 !== Relationship.Friend && r1 === Relationship.Friend) ||
-        (r1 !== Relationship.Friend && r0 === Relationship.Friend)
-    ) {
-        const vote = r0 !== Relationship.Friend ? 0 : 1;
-        const nonVote = vote === 0 ? 1 : 0;
-        return { decision: vote, reason: `${nominees[nonVote].name} is my friend.` };
-    }
-    const vote = lowestScore(hero, nominees, relationship);
-    return {
-        decision: vote,
-        reason: `I like ${nominees[vote === 0 ? 1 : 0].name} the most of these friends.`,
-    };
-}
-
+// returns the id of the houseguests you're backdooring
 export function backdoorNPlayers(
     hero: Houseguest,
     options: Houseguest[],
@@ -219,69 +147,10 @@ export function backdoorNPlayers(
 
     while (result.length < n) {
         const decision = sortedOptions[result.length];
-        const reason = "I think you are ugly";
+        const reason = "";
         result.push({ decision: decision.id, reason });
     }
     return result;
-}
-
-export function useGoldenVeto(
-    hero: Houseguest,
-    nominees: Houseguest[],
-    gameState: GameState,
-    HoH: number
-): HouseguestWithLogic {
-    if (hero.id === HoH) {
-        return { decision: null, reason: "I support my original nominations." };
-    }
-    for (const nom of nominees) {
-        if (hero.id === nom.id) return { decision: hero, reason: "I am going to save myself." };
-    }
-    // if you're not nominated, don't use the veto if you are the only replacement nominee
-    if (gameState.remainingPlayers - 1 - nominees.length === 1) {
-        return {
-            decision: null,
-            reason: "It doesn't make sense to use the veto here.",
-        };
-    }
-    return useGoldenVetoPreJury(hero, nominees, gameState) || null;
-}
-
-function useGoldenVetoPreJury(
-    hero: Houseguest,
-    nominees: Houseguest[],
-    gameState: GameState
-): HouseguestWithLogic {
-    let reason = "None of these nominees are my friends.";
-    let potentialSave: Houseguest | null = null;
-    let alwaysSave: Houseguest | null = null;
-    nominees.forEach((nominee) => {
-        // TODO: Save people who you can beat in the end if you are low winrate
-        const relationship = classifyRelationship(
-            hero.popularity,
-            nominee.popularity,
-            hero.relationshipWith(nominee)
-        );
-        if (relationship === Relationship.Friend) {
-            if (potentialSave) {
-                potentialSave =
-                    hero.relationshipWith(nominee) > hero.relationshipWith(potentialSave)
-                        ? nominee
-                        : potentialSave;
-                reason = `Of these noms, I like ${potentialSave.name} the most.`;
-            } else {
-                reason = `${nominee.name} is my friend.`;
-                potentialSave = nominee;
-            }
-        }
-    });
-    if (alwaysSave) {
-        return { decision: alwaysSave, reason };
-    } else if (potentialSave) {
-        return { decision: potentialSave, reason };
-    } else {
-        return { decision: null, reason };
-    }
 }
 
 export function pJurorVotesForHero(juror: Houseguest, hero: Houseguest, villain: Houseguest): number {

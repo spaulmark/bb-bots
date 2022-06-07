@@ -14,7 +14,7 @@ export const TripleEvictionCad: EpisodeType = {
     eliminates: 3,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Triple Eviction 🇨🇦",
+    name: "🇨🇦 Triple Eviction",
     generate: generateTripleEvictionCad,
 };
 
@@ -60,7 +60,8 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
         hoh,
         nominees,
         povWinner,
-        { doubleEviction: true, finalNominees: 3 }
+        true,
+        GoldenVeto
     );
     tripleScenes.push(vetoCeremonyScene);
 

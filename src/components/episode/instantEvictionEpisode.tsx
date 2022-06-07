@@ -1,7 +1,6 @@
 import React from "react";
 import { GameState } from "../../model";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
-import { DoubleEviction } from "./doubleEvictionEpisode";
 import { EpisodeType, Episode } from "./episodes";
 import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
@@ -11,7 +10,7 @@ export const InstantEviction: EpisodeType = {
     eliminates: 2,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "Instant Eviction",
+    name: "⚡ Instant Eviction",
     generate: generateInstantEviction,
 };
 
@@ -37,6 +36,6 @@ function generateInstantEviction(initialGamestate: GameState): Episode {
         initialGamestate,
         title: episode.title,
         scenes,
-        type: DoubleEviction,
+        type: InstantEviction,
     });
 }
