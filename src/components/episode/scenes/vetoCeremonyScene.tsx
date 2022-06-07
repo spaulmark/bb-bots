@@ -1,6 +1,6 @@
 import { GameState, Houseguest, getById, exclude } from "../../../model";
 import { Scene } from "./scene";
-import { useGoldenVeto, backdoorNPlayers } from "../../../utils/ai/aiApi";
+import { backdoorNPlayers } from "../../../utils/ai/aiApi";
 import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
