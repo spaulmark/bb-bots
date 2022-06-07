@@ -1,7 +1,7 @@
 import { Houseguest, GameState, exclude, getById, nonEvictedHouseguests } from "../../../model";
 import { backdoorNPlayers, HouseguestWithLogic, NumberWithLogic } from "../../../utils/ai/aiApi";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
-import { isBetterTarget, getRelationshipSummary } from "../../../utils/ai/targets";
+import { isBetterTarget, getRelationshipSummary, isBetterTargetWithLogic } from "../../../utils/ai/targets";
 
 export interface Veto {
     name: string;
@@ -20,10 +20,28 @@ export const DiamondVeto: Veto = {
 
 export const SpotlightVeto: Veto = {
     name: "Spotlight Power of Veto",
-    use: (_hero: Houseguest, _nominees: Houseguest[], _gameState: GameState, _HoH: number) => {
-        throw new Error("Not implemented");
-    },
+    use: useSpotlightVeto,
 };
+
+function useSpotlightVeto(
+    hero: Houseguest,
+    nominees: Houseguest[],
+    gameState: GameState,
+    HoH: number
+): HouseguestWithLogic {
+    // basically ya forced to use it
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+    if (checks && checks.decision !== null) return checks;
+    // use the veto on whoever is the worse target between the 2 nominees
+    const invertedDecision = isBetterTargetWithLogic(
+        getRelationshipSummary(hero, nominees[0]),
+        getRelationshipSummary(hero, nominees[1]),
+        hero,
+        gameState
+    );
+    const decision = invertedDecision.decision === 0 ? 1 : 0;
+    return { decision: nominees[decision], reason: invertedDecision.reason };
+}
 
 function useGoldenVetoPreJury(
     hero: Houseguest,

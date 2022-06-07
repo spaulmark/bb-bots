@@ -90,6 +90,7 @@ function determineStrategy(hero: Houseguest): TargetStrategy {
     return hero.friends > hero.enemies ? TargetStrategy.StatusQuo : TargetStrategy.Underdog;
 }
 
+// return the index of the better target
 export function isBetterTargetWithLogic(
     old: RelationshipSummary,
     neww: RelationshipSummary,
