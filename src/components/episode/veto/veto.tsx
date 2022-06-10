@@ -23,6 +23,13 @@ export const SpotlightVeto: Veto = {
     use: useSpotlightVeto,
 };
 
+export const BoomerangVeto: Veto = {
+    name: "Boomerang Power of Veto",
+    use: () => {
+        throw new Error("Boomerang veto is not implemented yet.");
+    },
+};
+
 function useSpotlightVeto(
     hero: Houseguest,
     nominees: Houseguest[],

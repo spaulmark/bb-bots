@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
 import { cast$, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
+import { BoomerangVetoEpisode } from "../episode/boomerangVetoEpisode";
 import { DiamondVetoEpisode } from "../episode/diamondVetoEpisode";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
@@ -29,7 +30,7 @@ export const Label = styled.label`
     color: #fff;
 `;
 
-// TODO: boomerang veto, double veto.
+// TODO: double veto.
 
 const twists: EpisodeType[] = [
     DoubleEviction,
@@ -39,6 +40,7 @@ const twists: EpisodeType[] = [
     NoVeto,
     DiamondVetoEpisode,
     ForcedVetoEpisode,
+    BoomerangVetoEpisode,
 ];
 
 const submit = async (jury: number): Promise<void> => {
@@ -56,7 +58,8 @@ const submit = async (jury: number): Promise<void> => {
 export function SeasonEditorPage(): JSX.Element {
     const castLength = cast$.value.length;
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
-    const validJurySize = validateJurySize(parseInt(jurySize), castLength);
+    const validJurySize = validateJurySize(parseInt(jurySize), castLength); // TODO: also validate the twist list
+    // TODO: probably using a usestate in here then callback and passit and bind(This) oh wait no its not cause its stastse.
     return (
         <div className="columns">
             <div className="column is-one-quarter">
