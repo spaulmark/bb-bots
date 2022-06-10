@@ -58,8 +58,8 @@ const submit = async (jury: number): Promise<void> => {
 export function SeasonEditorPage(): JSX.Element {
     const castLength = cast$.value.length;
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
-    const validJurySize = validateJurySize(parseInt(jurySize), castLength); // TODO: also validate the twist list
-    // TODO: probably using a usestate in here then callback and passit and bind(This) oh wait no its not cause its stastse.
+    const validJurySize = validateJurySize(parseInt(jurySize), castLength);
+    const [areTwistsValid, setTwistsValid] = useState(true);
     return (
         <div className="columns">
             <div className="column is-one-quarter">
@@ -68,7 +68,7 @@ export function SeasonEditorPage(): JSX.Element {
                 </HasText>
                 <hr />
                 <Noselect>
-                    <SeasonEditorList castSize={castLength} />
+                    <SeasonEditorList setTwistsValid={setTwistsValid} castSize={castLength} />
                 </Noselect>
             </div>
             <div className="column" style={{ padding: 20 }}>
@@ -120,7 +120,7 @@ export function SeasonEditorPage(): JSX.Element {
                     onClick={() => {
                         submit(parseInt(jurySize));
                     }}
-                    disabled={!validJurySize}
+                    disabled={!validJurySize || !areTwistsValid}
                 >
                     Submit
                 </button>

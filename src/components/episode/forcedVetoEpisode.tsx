@@ -4,7 +4,7 @@ import { EpisodeType, Episode } from "./episodes";
 import { SpotlightVeto } from "./veto/veto";
 
 export const ForcedVetoEpisode: EpisodeType = {
-    canPlayWith: (n: number) => n >= 4,
+    canPlayWith: (n: number) => n >= 5,
     eliminates: 1,
     arrowsEnabled: true,
     hasViewsbar: true,

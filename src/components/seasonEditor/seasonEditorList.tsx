@@ -9,7 +9,6 @@ import { twist$ } from "./twistAdder";
 import { min } from "lodash";
 import { removeFirstNMatching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
-import { Tooltip } from "../tooltip/tooltip";
 
 const common = `
 padding: 10px;
@@ -58,7 +57,7 @@ const ListItem = ({
     snapshot: any;
 }): JSX.Element => {
     const Item = item.isValid ? DragItem : InvalidDragItem;
-    const result = (
+    return (
         <Item
             ref={provided.innerRef}
             snapshot={snapshot}
@@ -70,17 +69,11 @@ const ListItem = ({
             }`}</span>
         </Item>
     );
-    return item.isValid ? (
-        result
-    ) : (
-        <Tooltip text={`Cannot play ${item.episode.name.slice(2)} with ${item.players} players.`}>
-            {result}
-        </Tooltip>
-    );
 };
 
 interface SeasonEditorListProps {
     castSize: number;
+    setTwistsValid: (valid: boolean) => void;
 }
 
 interface SeasonEditorListState {
@@ -89,7 +82,6 @@ interface SeasonEditorListState {
 
 interface SeasonEditorListItem {
     id: string;
-    players: number;
     weekText: string;
     episode: EpisodeType;
     isValid: boolean;
@@ -113,7 +105,6 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 weekText: `Week ${week}: F${i}`,
                 episode: BigBrotherVanilla,
                 isValid: true,
-                players: i,
             });
         }
         _items = elements;
@@ -148,7 +139,6 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 weekText: ``,
                 episode: twist.type,
                 isValid: true,
-                players: -1,
             });
             this.refreshItems(newItems);
         } else {
@@ -176,9 +166,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         for (const item of newItems) {
             const isValid = item.episode.canPlayWith(playerCount);
             week++;
-            item.weekText = `${isValid ? `Week ${week}: F${playerCount}` : "N/A"}`;
             item.weekText = `Week ${week}: F${playerCount}`;
-            item.players = playerCount;
             item.isValid = isValid;
             playerCount -= item.episode.eliminates;
             // delete all vanilla big brother episodes if player count is below 3
@@ -195,7 +183,6 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                     weekText: `Week ${week}: F${playerCount}`,
                     episode: BigBrotherVanilla,
                     isValid: true,
-                    players: playerCount,
                 });
                 playerCount--;
             }
@@ -203,6 +190,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         }
         _items = finalItems;
         this.setState({ items: finalItems });
+        this.props.setTwistsValid(finalItems.every((item) => item.isValid));
     }
     public render() {
         const onDragEnd = (result: any) => {
