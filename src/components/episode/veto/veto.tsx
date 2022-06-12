@@ -1,7 +1,13 @@
 import { Houseguest, GameState, exclude, getById, nonEvictedHouseguests } from "../../../model";
 import { backdoorNPlayers, HouseguestWithLogic, NumberWithLogic } from "../../../utils/ai/aiApi";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
-import { isBetterTarget, getRelationshipSummary, isBetterTargetWithLogic } from "../../../utils/ai/targets";
+import {
+    isBetterTarget,
+    getRelationshipSummary,
+    isBetterTargetWithLogic,
+    determineStrategy,
+    TargetStrategy,
+} from "../../../utils/ai/targets";
 
 export interface Veto {
     name: string;
@@ -25,10 +31,45 @@ export const SpotlightVeto: Veto = {
 
 export const BoomerangVeto: Veto = {
     name: "Boomerang Power of Veto",
-    use: () => {
-        throw new Error("Boomerang veto is not implemented yet.");
-    },
+    use: useBoomerangVeto,
 };
+
+// only works for 2 nominees
+function useBoomerangVeto(
+    hero: Houseguest,
+    nominees: Houseguest[],
+    gameState: GameState,
+    HoH: number
+): HouseguestWithLogic {
+    if (nominees.length !== 2) throw new Error("Boomerang veto only works for 2 nominees.");
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+    if (checks) return checks;
+    // Need an additional check for boomerang veto, since there are 2 replacement noms
+    if (gameState.remainingPlayers - 1 - nominees.length === 2) {
+        return {
+            decision: null,
+            reason: "It doesn't make sense to use the veto here.",
+        };
+    }
+
+    // if you wouldn't use gold veto on either of them, discard
+    const veto1 = useGoldenVeto(hero, [nominees[0]], gameState, HoH);
+    const veto2 = useGoldenVeto(hero, [nominees[1]], gameState, HoH);
+    if (veto1.decision === null && veto2.decision === null) {
+        return { decision: null, reason: "I don't want to save either of these noms." };
+    }
+    // if you would use gold veto on both of them, use
+    if (veto1.decision !== null && veto2.decision !== null) {
+        return { decision: nominees[0], reason: "I want to save both of these noms." };
+    }
+    // if you would only use it on one of them, only use it if you have low friend counts
+    const strategy = determineStrategy(hero);
+    if (strategy === TargetStrategy.StatusQuo) {
+        return { decision: null, reason: "I want to evict at least one of these noms." };
+    } else {
+        return { decision: nominees[0], reason: "I want to save at least one of these noms." };
+    }
+}
 
 function useSpotlightVeto(
     hero: Houseguest,
@@ -50,11 +91,14 @@ function useSpotlightVeto(
     return { decision: nominees[decision], reason: invertedDecision.reason };
 }
 
-function useGoldenVetoPreJury(
+function useGoldenVeto(
     hero: Houseguest,
     nominees: Houseguest[],
-    gameState: GameState
+    gameState: GameState,
+    HoH: number
 ): HouseguestWithLogic {
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+    if (checks) return checks;
     let reason = "None of these nominees are my friends.";
     let potentialSave: Houseguest | null = null;
     let alwaysSave: Houseguest | null = null;
@@ -85,17 +129,6 @@ function useGoldenVetoPreJury(
     } else {
         return { decision: null, reason };
     }
-}
-function useGoldenVeto(
-    hero: Houseguest,
-    nominees: Houseguest[],
-    gameState: GameState,
-    HoH: number
-): HouseguestWithLogic {
-    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
-    if (checks) return checks;
-
-    return useGoldenVetoPreJury(hero, nominees, gameState) || null;
 }
 
 // only works with 2 nominees
