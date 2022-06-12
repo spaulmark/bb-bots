@@ -20,17 +20,17 @@ export const GoldenVeto: Veto = {
 };
 
 export const DiamondVeto: Veto = {
-    name: "Diamond Power of Veto",
+    name: "💎 Diamond Power of Veto",
     use: useDiamondVeto,
 };
 
 export const SpotlightVeto: Veto = {
-    name: "Spotlight Power of Veto",
+    name: "🔦 Spotlight Power of Veto",
     use: useSpotlightVeto,
 };
 
 export const BoomerangVeto: Veto = {
-    name: "Boomerang Power of Veto",
+    name: "🪃 Boomerang Power of Veto",
     use: useBoomerangVeto,
 };
 

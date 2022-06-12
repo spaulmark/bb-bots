@@ -30,8 +30,6 @@ export const Label = styled.label`
     color: #fff;
 `;
 
-// TODO: double veto.
-
 const twists: EpisodeType[] = [
     DoubleEviction,
     TripleEvictionCad,
