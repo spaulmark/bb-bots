@@ -4,6 +4,7 @@ import { defaultJurySize, GameState, validateJurySize } from "../../model/gameSt
 import { cast$, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
 import { BoomerangVetoEpisode } from "../episode/boomerangVetoEpisode";
+import { CoHoH } from "../episode/coHoHEpisode";
 import { DiamondVetoEpisode } from "../episode/diamondVetoEpisode";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
@@ -39,6 +40,7 @@ const twists: EpisodeType[] = [
     DiamondVetoEpisode,
     ForcedVetoEpisode,
     BoomerangVetoEpisode,
+    CoHoH,
 ];
 
 const submit = async (jury: number): Promise<void> => {

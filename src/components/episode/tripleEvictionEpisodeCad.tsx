@@ -25,18 +25,19 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
 
     currentGameState.incrementLogIndex();
 
-    let hoh: Houseguest;
+    let hohArray: Houseguest[];
     let hohCompScene: Scene;
     const tripleScenes: Scene[] = [];
-    [currentGameState, hohCompScene, hoh] = generateHohCompScene(currentGameState, {
+    [currentGameState, hohCompScene, hohArray] = generateHohCompScene(currentGameState, {
         doubleEviction: true,
         customText: "Houseguests, please return to the living room. Tonight will be a triple eviction.",
     });
     tripleScenes.push(hohCompScene);
+    const hoh = hohArray[0];
 
     let nomCeremonyScene;
     let nominees: Houseguest[];
-    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hoh, {
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, [hoh], {
         doubleEviction: true,
         thirdNominee: true,
     });

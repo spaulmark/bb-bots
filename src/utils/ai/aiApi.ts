@@ -122,8 +122,6 @@ function castF4vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest, HoH: H
     };
 }
 
-// only works for 2 nominees
-
 // returns the id of the houseguests you're backdooring
 export function backdoorNPlayers(
     hero: Houseguest,

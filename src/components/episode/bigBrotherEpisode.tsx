@@ -90,21 +90,32 @@ export function generateBBVanillaScenes(
     scenes: Scene[];
     title: string;
 } {
-    let hoh: Houseguest;
+    let hohArray: Houseguest[];
     let currentGameState: GameState;
     let hohCompScene: Scene;
     const scenes: Scene[] = [];
 
-    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate, { doubleEviction });
+    [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, { doubleEviction });
+    const hoh = hohArray[0];
     scenes.push(hohCompScene);
 
     let nomCeremonyScene;
     let nominees: Houseguest[];
-    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hoh, {
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, [hoh], {
         doubleEviction,
     });
     scenes.push(nomCeremonyScene);
 
+    return generateVetoScenesOnwards(veto, currentGameState, hoh, nominees, doubleEviction, scenes);
+}
+export function generateVetoScenesOnwards(
+    veto: Veto | null,
+    currentGameState: GameState,
+    hoh: Houseguest,
+    nominees: Houseguest[],
+    doubleEviction: boolean,
+    scenes: Scene[]
+) {
     if (veto) {
         let vetoCompScene;
         let povWinner: Houseguest;

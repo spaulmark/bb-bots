@@ -15,12 +15,35 @@ interface NomCeremonyOptions {
 
 export function generateNomCeremonyScene(
     initialGameState: GameState,
-    HoH: Houseguest,
+    hohList: Houseguest[],
     options: NomCeremonyOptions
 ): [GameState, Scene, Houseguest[]] {
     const newGameState = new MutableGameState(initialGameState);
+    const HoH = hohList[0];
+    const coHoH = hohList.length > 1 ? hohList[1] : undefined;
     const doubleEviction = options.doubleEviction;
-    const [nom1, nom2] = [getById(newGameState, HoH.targets[0]), getById(newGameState, HoH.targets[1])];
+
+    const nom1: Houseguest = getById(
+        newGameState,
+        backdoorNPlayers(
+            HoH,
+            exclude(newGameState.houseguests, coHoH ? [HoH, coHoH] : [HoH]),
+            newGameState,
+            1
+        )[0].decision
+    );
+
+    const nom2 = coHoH
+        ? getById(
+              newGameState,
+              backdoorNPlayers(coHoH, exclude(newGameState.houseguests, [HoH, nom1]), newGameState, 1)[0]
+                  .decision
+          )
+        : getById(
+              newGameState,
+              backdoorNPlayers(HoH, exclude(newGameState.houseguests, [HoH, nom1]), newGameState, 1)[0]
+                  .decision
+          );
     nom1.nominations++;
     nom2.nominations++;
     newGameState.currentLog.nominationsPreVeto = [nom1.name, nom2.name];
