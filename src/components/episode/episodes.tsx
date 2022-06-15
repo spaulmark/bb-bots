@@ -3,6 +3,7 @@ import { GameState } from "../../model/gameState";
 import { Scene } from "./scenes/scene";
 import { ViewsBar } from "../viewsBar/viewBar";
 import { defaultContent } from "./bigBrotherEpisode";
+import { getEmoji } from "../seasonEditor/twistAdder";
 
 export interface InitEpisode {
     scenes: Scene[];
@@ -32,7 +33,7 @@ export class Episode {
 
     constructor(init: InitEpisode) {
         this.scenes = init.scenes;
-        this.title = init.title || `Week ${init.gameState.phase}`;
+        this.title = init.title || `Week ${init.gameState.phase} ${getEmoji(init.type)}`;
         this.content = init.content || defaultContent(init.initialGamestate || init.gameState);
         this.gameState = init.gameState;
         this.initialGameState = init.initialGamestate || init.gameState;
