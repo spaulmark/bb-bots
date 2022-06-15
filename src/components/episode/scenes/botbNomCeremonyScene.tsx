@@ -46,7 +46,14 @@ export function generateBotbNomCeremonyScene(
                     This is the nomination ceremony. It is our responsibility as Heads of Household to each
                     nominate two houseguests for eviction.
                 </Centered>
-                <Portraits centered={true} houseguests={[hoh1]} />
+                <div className="columns is-marginless is-centered is-mobile">
+                    <div className="column">
+                        <Portrait centered={true} houseguest={hoh1} />
+                    </div>
+                    <div className="column">
+                        <Portrait centered={true} houseguest={hoh2} />
+                    </div>
+                </div>
                 <div className="columns is-marginless is-centered">
                     <DividerBox className="column">
                         <Centered>{firstText}</Centered>
@@ -56,11 +63,6 @@ export function generateBotbNomCeremonyScene(
                         <Centered>{secondText}</Centered>
                         <Portrait centered={true} houseguest={noms1[1]} />
                     </DividerBox>
-                </div>
-                <CenteredBold>{finalStatement(noms1)}</CenteredBold>
-                <div style={{ marginTop: 50 }} />
-                <Portraits centered={true} houseguests={[hoh2]} />
-                <div className="columns is-marginless is-centered">
                     <DividerBox className="column">
                         <Centered>{firstText}</Centered>
                         <Portrait centered={true} houseguest={noms2[0]} />
@@ -70,7 +72,14 @@ export function generateBotbNomCeremonyScene(
                         <Portrait centered={true} houseguest={noms2[1]} />
                     </DividerBox>
                 </div>
-                <CenteredBold>{finalStatement(noms2)}</CenteredBold>
+                <div className="columns is-marginless is-centered is-mobile">
+                    <div className="column">
+                        <CenteredBold>{finalStatement(noms1)}</CenteredBold>
+                    </div>
+                    <div className="column">
+                        <CenteredBold>{finalStatement(noms2)}</CenteredBold>
+                    </div>
+                </div>
                 <br />
                 {<NextEpisodeButton />}
             </div>

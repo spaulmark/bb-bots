@@ -3,6 +3,9 @@ import { Episode, EpisodeType } from "./episodes";
 import { Scene } from "./scenes/scene";
 import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateBotbNomCeremonyScene } from "./scenes/botbNomCeremonyScene";
+import { generateVetoScenesOnwards } from "./bigBrotherEpisode";
+import { GoldenVeto } from "./veto/veto";
+import { generateBotbScene } from "./scenes/botbScene";
 
 export const BattleOfTheBlock: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
@@ -35,13 +38,31 @@ function generateBoB(initialGamestate: GameState): Episode {
     );
     scenes.push(nomCeremonyScene);
     // then battle of the block where one of the HoHs is dethroned
+    let botbscene;
+    let finalhoh;
+    let finalnoms;
+    [currentGameState, botbscene, finalhoh, finalnoms] = generateBotbScene(currentGameState, hohArray, [
+        ...nominees[0],
+        ...nominees[1],
+    ]);
+    scenes.push(botbscene);
+    // then veto onwards plays normally except
+    // TODO: the winning pair is somehow immune for the week: they can't be backdoored.
 
-    // then veto onwards plays normally
+    const vetostuff = generateVetoScenesOnwards(
+        GoldenVeto,
+        currentGameState,
+        finalhoh,
+        finalnoms,
+        false,
+        scenes
+    );
+    currentGameState = vetostuff.gameState;
 
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,
-        scenes,
+        scenes: vetostuff.scenes,
         type: BattleOfTheBlock,
     });
 }
