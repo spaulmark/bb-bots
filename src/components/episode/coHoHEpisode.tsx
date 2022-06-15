@@ -8,6 +8,7 @@ import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
 import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
+import { generateEvictionScene } from "./scenes/evictionScene";
 
 export const CoHoH: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
@@ -59,7 +60,12 @@ function generateCoHoH(initialGamestate: GameState): Episode {
     scenes.push(vetoCeremonyScene);
 
     // then eviction scene
-
+    let evictionScene;
+    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hohArray, nominees, {
+        votingTo: "Evict",
+        povWinner,
+    });
+    scenes.push(evictionScene);
     // currentGameState = doubleEviction.gameState;
     return new Episode({
         gameState: new GameState(currentGameState),

@@ -8,7 +8,7 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { CenteredBold, Centered } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
-import { NomineeVote, NormalVote, HoHVote, SaveVote } from "../../../model/logging/voteType";
+import { NomineeVote, NormalVote, HoHVote, SaveVote, PoVvote } from "../../../model/logging/voteType";
 import { evictHouseguest } from "../utilities/evictHouseguest";
 import { listNames, listVotes } from "../../../utils/listStrings";
 
@@ -25,16 +25,17 @@ function getHighestIndicies(numbers: number[]): number[] {
 
 interface EvictionSceneOptions {
     votingTo: "Save" | "Evict";
-    doubleEviction: boolean;
+    doubleEviction?: boolean;
+    povWinner?: Houseguest;
 }
 
 export function generateEvictionScene(
     initialGameState: GameState,
-    HoH: Houseguest,
+    hohArray: Houseguest[],
     nominees: Houseguest[],
     options: EvictionSceneOptions
 ): [GameState, Scene] {
-    const doubleEviction = options.doubleEviction;
+    const doubleEviction = options.doubleEviction || false;
     const castVote: (hero: Houseguest, noms: Houseguest[], gameState: GameState) => NumberWithLogic =
         options.votingTo === "Save" ? castVoteToSave : castEvictionVote;
     let newGameState = new MutableGameState(initialGameState);
@@ -44,7 +45,8 @@ export function generateEvictionScene(
     let lastVoter: Houseguest;
     let outOf = 0;
     const nonVoters = new Set<number>(nominees.map((hg) => hg.id));
-    nonVoters.add(HoH.id);
+    const coHoH = hohArray.length > 1;
+    hohArray.forEach((h) => nonVoters.add(h.id));
     nonEvictedHouseguests(newGameState).forEach((hg) => {
         if (!nonVoters.has(hg.id)) {
             const logic = castVote(hg, nominees, newGameState);
@@ -67,15 +69,18 @@ export function generateEvictionScene(
     }
     let tieVote = pluralities.length > 1;
     let tieBreaker = { decision: -1, reason: "" };
+    const tieBreakerHg = coHoH ? options.povWinner : hohArray[0];
     if (tieVote) {
         newGameState.currentLog.outOf++;
         tieBreaker = castVote(
-            HoH,
+            tieBreakerHg!,
             pluralities.map((p) => nominees[p]),
             newGameState
         );
-
-        newGameState.currentLog.votes[HoH.id] = new HoHVote(nominees[pluralities[tieBreaker.decision]].id);
+        const VoteType = coHoH ? PoVvote : HoHVote;
+        newGameState.currentLog.votes[tieBreakerHg!.id] = new VoteType(
+            nominees[pluralities[tieBreaker.decision]].id
+        );
     }
     let evictees: Houseguest[] = [];
 
@@ -134,7 +139,12 @@ export function generateEvictionScene(
         ? "By a unanimous vote..."
         : `By a vote of ${listVotes(voteCounts.map((v) => `${v}`))}...`;
 
-    const displayHoH: ProfileHouseguest = { ...HoH };
+    const compWinner = coHoH ? "Power of Veto winner" : "current Head of Household";
+    const soleVoteText = `${
+        tieBreakerHg!.name
+    }, as ${compWinner}, you must cast the sole vote to ${options.votingTo.toLowerCase()}.`;
+
+    const displayHoH: ProfileHouseguest = { ...tieBreakerHg! };
     displayHoH.tooltip = tieBreaker.reason;
     const margin = doubleEviction ? { marginTop: 200 } : {};
     const scene = new Scene({
@@ -153,9 +163,7 @@ export function generateEvictionScene(
                 {tieVote && (
                     <div>
                         <CenteredBold> We have a tie.</CenteredBold>
-                        <Centered>{`${
-                            HoH.name
-                        }, as current Head of Household, you must cast the sole vote to ${options.votingTo.toLowerCase()}.`}</Centered>
+                        <Centered>{soleVoteText}</Centered>
                         <Portraits houseguests={[displayHoH]} centered={true} />
                         <CenteredBold>
                             I vote to {options.votingTo.toLowerCase()}

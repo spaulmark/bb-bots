@@ -116,9 +116,9 @@ export function generateVetoScenesOnwards(
     doubleEviction: boolean,
     scenes: Scene[]
 ) {
+    let povWinner: Houseguest | undefined = undefined;
     if (veto) {
         let vetoCompScene;
-        let povWinner: Houseguest;
         [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
             currentGameState,
             [hoh],
@@ -140,8 +140,9 @@ export function generateVetoScenesOnwards(
         scenes.push(vetoCeremonyScene);
     }
     let evictionScene;
-    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hoh, nominees, {
+    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, [hoh], nominees, {
         doubleEviction,
+        povWinner,
         votingTo: "Evict",
     });
     if (veto === null) {

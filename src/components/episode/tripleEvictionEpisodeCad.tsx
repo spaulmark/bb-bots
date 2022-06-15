@@ -67,7 +67,7 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
     tripleScenes.push(vetoCeremonyScene);
 
     let evictionScene;
-    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hoh, nominees, {
+    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, [hoh], nominees, {
         doubleEviction: true,
         votingTo: "Save",
     });
