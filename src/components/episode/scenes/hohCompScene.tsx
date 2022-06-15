@@ -34,8 +34,8 @@ export function generateHohCompScene(
     (!coHoH || coHohIsFinal) && (newGameState.currentLog.votes[newHoH.id] = new HoHVote());
     coHoH && coHohIsFinal && (newGameState.currentLog.votes[newHoH2.id] = new HoHVote());
     // new hoh wins
-    (!coHoH || coHohIsFinal) && (newHoH.hohWins += 1);
-    coHoH && coHohIsFinal && (newHoH2.hohWins += 1);
+    newHoH.hohWins += 1;
+    coHoH && (newHoH2.hohWins += 1);
 
     const portraitLine = coHoH ? (
         <Portraits centered={true} houseguests={[newHoH, newHoH2]} />

@@ -1,7 +1,5 @@
 import { GameState, Houseguest, MutableGameState } from "../../model";
-import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Episode, EpisodeType } from "./episodes";
-import React from "react";
 import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
 import { generateHohCompScene } from "./scenes/hohCompScene";
@@ -66,7 +64,6 @@ function generateCoHoH(initialGamestate: GameState): Episode {
         povWinner,
     });
     scenes.push(evictionScene);
-    // currentGameState = doubleEviction.gameState;
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,
