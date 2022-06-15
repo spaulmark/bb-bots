@@ -7,6 +7,7 @@ import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { rng } from "../../../utils";
 import { listNames } from "../../../utils/listStrings";
+import { HoHVote } from "../../../model/logging/voteType";
 
 export function generateBotbScene(
     initialGameState: GameState,
@@ -17,6 +18,7 @@ export function generateBotbScene(
     const hoh0wins = rng().flipCoin();
     const hoh = hohArray[hoh0wins ? 0 : 1];
     newGameState.previousHOH = [hoh];
+    newGameState.currentLog.votes[hoh.id] = new HoHVote();
     const noms = hoh0wins ? [nomsArray[0], nomsArray[1]] : [nomsArray[2], nomsArray[3]];
     const winners = hoh0wins ? [nomsArray[2], nomsArray[3]] : [nomsArray[0], nomsArray[1]];
 
