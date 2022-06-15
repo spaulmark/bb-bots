@@ -20,34 +20,27 @@ export function generateBotbScene(
     const noms = hoh0wins ? [nomsArray[0], nomsArray[1]] : [nomsArray[2], nomsArray[3]];
     const winners = hoh0wins ? [nomsArray[2], nomsArray[3]] : [nomsArray[0], nomsArray[1]];
 
-    const block0 = (
-        <div className="column">
-            <div className="columns is-centered">
-                <div className="column">
-                    <Portrait centered={true} houseguest={hohArray[0]} />
+    const block = (hohIndex: number, nomIndex: number) => {
+        return (
+            <div className="column">
+                <div className="columns is-centered">
+                    <div className="column">
+                        <Portrait centered={true} houseguest={hohArray[hohIndex]} />
+                    </div>
+                </div>
+                <div className="columns is-centered">
+                    <DividerBox className={`column is-11`}>
+                        <Portraits
+                            centered={true}
+                            houseguests={[nomsArray[nomIndex], nomsArray[nomIndex + 1]]}
+                        />
+                    </DividerBox>
                 </div>
             </div>
-            <div className="columns is-centered">
-                <DividerBox className="column is-11">
-                    <Portraits centered={true} houseguests={[nomsArray[0], nomsArray[1]]} />
-                </DividerBox>
-            </div>
-        </div>
-    );
-    const block1 = (
-        <div className="column">
-            <div className="columns is-centered">
-                <div className="column">
-                    <Portrait centered={true} houseguest={hohArray[1]} />
-                </div>
-            </div>
-            <div className="columns is-centered">
-                <DividerBox className="column is-11">
-                    <Portraits centered={true} houseguests={[nomsArray[2], nomsArray[3]]} />
-                </DividerBox>
-            </div>
-        </div>
-    );
+        );
+    };
+    const block0 = block(0, 0);
+    const block1 = block(1, 2);
 
     const scene = new Scene({
         title: "Battle of the Block",
@@ -65,7 +58,23 @@ export function generateBotbScene(
                 <CenteredBold>
                     {`${listNames(winners.map((w) => w.name))} have won the Battle of the Block!`}
                 </CenteredBold>
-                {hoh0wins ? block0 : block1}
+
+                <div className="column">
+                    <div className="columns is-centered">
+                        <div className="column">
+                            <Portrait centered={true} houseguest={hoh} />
+                        </div>
+                    </div>
+                    <div className="columns is-centered">
+                        <DividerBox className="column is-5">
+                            <Portrait centered={true} houseguest={noms[0]} />
+                        </DividerBox>
+                        <DividerBox className="column is-5">
+                            <Portrait centered={true} houseguest={noms[1]} />
+                        </DividerBox>
+                    </div>
+                </div>
+
                 <CenteredBold>
                     {`${listNames([hoh.name])} will remain as HoH, with ${listNames(
                         noms.map((n) => n.name)

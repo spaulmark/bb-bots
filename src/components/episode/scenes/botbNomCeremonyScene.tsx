@@ -7,6 +7,7 @@ import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { backdoorNPlayers } from "../../../utils/ai/aiApi";
 import { listNames } from "../../../utils/listStrings";
+import { ProfileHouseguest } from "../../memoryWall";
 
 export function generateBotbNomCeremonyScene(
     initialGameState: GameState,
@@ -37,6 +38,34 @@ export function generateBotbNomCeremonyScene(
         `I have nominated you, ${listNames(noms.map((n) => n.name))} for eviction. `;
     const firstText = "My first nominee is...";
     const secondText = "My second nominee is...";
+
+    const block = (noms: Houseguest[], hoh: ProfileHouseguest) => {
+        return (
+            <div className="column">
+                <div className="column">
+                    <div className="columns is-centered">
+                        <div className="column">
+                            <Portrait centered={true} houseguest={hoh} />
+                        </div>
+                    </div>
+                    <div className="columns is-centered">
+                        <DividerBox className="column is-5">
+                            <Centered> {firstText}</Centered>
+                            <Portrait centered={true} houseguest={noms[0]} />
+                        </DividerBox>
+                        <DividerBox className="column is-5">
+                            <Centered> {secondText}</Centered>
+                            <Portrait centered={true} houseguest={noms[1]} />
+                        </DividerBox>
+                    </div>
+                </div>
+                <div className="column">
+                    <CenteredBold>{finalStatement(noms)}</CenteredBold>
+                </div>
+            </div>
+        );
+    };
+
     const scene = new Scene({
         title: "Nomination Ceremony",
         gameState: newGameState,
@@ -46,42 +75,12 @@ export function generateBotbNomCeremonyScene(
                     This is the nomination ceremony. It is our responsibility as Heads of Household to each
                     nominate two houseguests for eviction.
                 </Centered>
-                <div className="columns is-marginless is-centered is-mobile">
-                    <div className="column">
-                        <Portrait centered={true} houseguest={hoh1} />
-                    </div>
-                    <div className="column">
-                        <Portrait centered={true} houseguest={hoh2} />
-                    </div>
-                </div>
                 <div className="columns is-marginless is-centered">
-                    <DividerBox className="column">
-                        <Centered>{firstText}</Centered>
-                        <Portrait centered={true} houseguest={noms1[0]} />
-                    </DividerBox>
-                    <DividerBox className="column">
-                        <Centered>{secondText}</Centered>
-                        <Portrait centered={true} houseguest={noms1[1]} />
-                    </DividerBox>
-                    <DividerBox className="column">
-                        <Centered>{firstText}</Centered>
-                        <Portrait centered={true} houseguest={noms2[0]} />
-                    </DividerBox>
-                    <DividerBox className="column">
-                        <Centered>{secondText}</Centered>
-                        <Portrait centered={true} houseguest={noms2[1]} />
-                    </DividerBox>
-                </div>
-                <div className="columns is-marginless is-centered is-mobile">
-                    <div className="column">
-                        <CenteredBold>{finalStatement(noms1)}</CenteredBold>
-                    </div>
-                    <div className="column">
-                        <CenteredBold>{finalStatement(noms2)}</CenteredBold>
-                    </div>
+                    {block(noms1, hoh1)}
+                    {block(noms2, hoh2)}
                 </div>
                 <br />
-                {<NextEpisodeButton />}
+                <NextEpisodeButton />
             </div>
         ),
     });
