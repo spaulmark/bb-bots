@@ -16,7 +16,8 @@ export function generateVetoCeremonyScene(
     initialNominees: Houseguest[],
     povWinner: Houseguest,
     doubleEviction: boolean,
-    veto: Veto
+    veto: Veto,
+    immuneHgs: Houseguest[]
 ): [GameState, Scene, Houseguest[]] {
     let povTarget: Houseguest | null = null;
     let descisionText = "";
@@ -61,10 +62,11 @@ export function generateVetoCeremonyScene(
             HoH,
             ...initialNominees,
             povWinner,
+            ...immuneHgs,
             coHoH || HoH,
         ]);
         if (exclusion.length === 0) {
-            exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees]);
+            exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees, ...immuneHgs]);
         }
         const replacementCount = veto === BoomerangVeto ? 2 : 1;
         const replacementNoms = backdoorNPlayers(

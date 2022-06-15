@@ -105,7 +105,7 @@ export function generateBBVanillaScenes(
     });
     scenes.push(nomCeremonyScene);
 
-    return generateVetoScenesOnwards(veto, currentGameState, hoh, nominees, doubleEviction, scenes);
+    return generateVetoScenesOnwards(veto, currentGameState, hoh, nominees, doubleEviction, scenes, []);
 }
 export function generateVetoScenesOnwards(
     veto: Veto | null,
@@ -113,7 +113,8 @@ export function generateVetoScenesOnwards(
     hoh: Houseguest,
     nominees: Houseguest[],
     doubleEviction: boolean,
-    scenes: Scene[]
+    scenes: Scene[],
+    immuneHgs: Houseguest[]
 ) {
     let povWinner: Houseguest | undefined = undefined;
     if (veto) {
@@ -134,7 +135,8 @@ export function generateVetoScenesOnwards(
             nominees,
             povWinner,
             doubleEviction,
-            veto
+            veto,
+            immuneHgs
         );
         scenes.push(vetoCeremonyScene);
     }

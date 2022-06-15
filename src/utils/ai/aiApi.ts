@@ -129,6 +129,7 @@ export function backdoorNPlayers(
     gameState: GameState,
     n: number
 ): NumberWithLogic[] {
+    if (options.length < n) throw new Error(`Tried to backdoor ${n} players with ${options.length} options.`);
     const result: NumberWithLogic[] = [];
     const sortedOptions = [...options];
     // negative value if first is less than second

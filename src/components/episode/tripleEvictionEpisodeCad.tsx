@@ -63,7 +63,8 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
         nominees,
         povWinner,
         true,
-        GoldenVeto
+        GoldenVeto,
+        []
     );
     tripleScenes.push(vetoCeremonyScene);
 
