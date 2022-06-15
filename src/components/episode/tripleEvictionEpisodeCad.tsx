@@ -85,7 +85,6 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,
-        title: episode.title,
         scenes,
         type: TripleEvictionCad,
     });

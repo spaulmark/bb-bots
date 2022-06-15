@@ -6,7 +6,7 @@ import { defaultContent } from "./bigBrotherEpisode";
 
 export interface InitEpisode {
     scenes: Scene[];
-    title: string;
+    title?: string;
     content?: JSX.Element;
     gameState: GameState;
     initialGamestate?: GameState;
@@ -32,7 +32,7 @@ export class Episode {
 
     constructor(init: InitEpisode) {
         this.scenes = init.scenes;
-        this.title = init.title;
+        this.title = init.title || `Week ${init.gameState.phase}`;
         this.content = init.content || defaultContent(init.initialGamestate || init.gameState);
         this.gameState = init.gameState;
         this.initialGameState = init.initialGamestate || init.gameState;

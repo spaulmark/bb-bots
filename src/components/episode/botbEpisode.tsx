@@ -41,7 +41,6 @@ function generateBoB(initialGamestate: GameState): Episode {
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,
-        title: `Week ${currentGameState.phase}`,
         scenes,
         type: BattleOfTheBlock,
     });

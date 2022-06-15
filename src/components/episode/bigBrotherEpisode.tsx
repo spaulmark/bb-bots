@@ -74,7 +74,6 @@ export function defaultContent(initialGameState: GameState) {
 export function generateBbVanilla(initialGamestate: GameState): Episode {
     const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
     return new Episode({
-        title: episode.title,
         scenes: episode.scenes,
         gameState: new GameState(episode.gameState),
         initialGamestate,
@@ -89,7 +88,6 @@ export function generateBBVanillaScenes(
 ): {
     gameState: GameState;
     scenes: Scene[];
-    title: string;
 } {
     let hohArray: Houseguest[];
     let currentGameState: GameState;
@@ -150,6 +148,5 @@ export function generateVetoScenesOnwards(
         currentGameState.currentLog.nominationsPostVeto = currentGameState.currentLog.nominationsPreVeto;
     }
     scenes.push(evictionScene);
-    const title = `Week ${currentGameState.phase}`;
-    return { gameState: currentGameState, scenes, title };
+    return { gameState: currentGameState, scenes };
 }

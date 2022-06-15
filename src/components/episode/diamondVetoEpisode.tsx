@@ -18,7 +18,6 @@ function generateNoVeto(initialGamestate: GameState): Episode {
     return new Episode({
         gameState: new GameState(episode.gameState),
         initialGamestate,
-        title: episode.title,
         scenes: episode.scenes,
         type: DiamondVetoEpisode,
     });
