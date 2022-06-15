@@ -37,8 +37,12 @@ export function generateNomCeremonyScene(
     const nom2 = coHoH
         ? getById(
               newGameState,
-              backdoorNPlayers(coHoH, exclude(newGameState.houseguests, [HoH, nom1]), newGameState, 1)[0]
-                  .decision
+              backdoorNPlayers(
+                  coHoH,
+                  exclude(newGameState.houseguests, [HoH, coHoH, nom1]),
+                  newGameState,
+                  1
+              )[0].decision
           )
         : getById(
               newGameState,
