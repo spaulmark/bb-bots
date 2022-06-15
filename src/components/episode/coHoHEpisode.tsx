@@ -5,6 +5,7 @@ import React from "react";
 import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
 import { generateHohCompScene } from "./scenes/hohCompScene";
+import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 
 export const CoHoH: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
@@ -28,7 +29,10 @@ function generateCoHoH(initialGamestate: GameState): Episode {
     scenes.push(hohCompScene);
 
     // generate nominations scene
-
+    let nomCeremonyScene;
+    let nominees: Houseguest[];
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hohArray, {});
+    scenes.push(nomCeremonyScene);
     // veto replacement scene might be different because each hoh nominated one person, so whoever gets vetoed, that hoh replaces
     // veto scene is normal, but eviction scene the veto winner breaks the tie
     //
