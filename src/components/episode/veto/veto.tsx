@@ -174,7 +174,10 @@ function useDiamondVeto(
 
 function basicVetoChecks(hero: Houseguest, nominees: Houseguest[], gameState: GameState, HoH: number) {
     if (hero.id === HoH) {
-        return useDiamondVeto(hero, nominees, gameState, HoH, true);
+        return {
+            decision: null,
+            reason: "These are my ideal nominations.",
+        };
     }
     for (const nom of nominees) {
         if (hero.id === nom.id) return { decision: hero, reason: "I am going to save myself." };
