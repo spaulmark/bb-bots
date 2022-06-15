@@ -9,8 +9,9 @@ export const InstantEviction: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
     eliminates: 2,
     arrowsEnabled: true,
+    emoji: "⚡",
     hasViewsbar: true,
-    name: "⚡ Instant Eviction",
+    name: "Instant Eviction",
     generate: generateInstantEviction,
 };
 

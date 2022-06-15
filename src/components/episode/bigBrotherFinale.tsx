@@ -13,6 +13,7 @@ export const BigBrotherFinale: EpisodeType = {
     canPlayWith: (n: number) => n === 3,
     eliminates: 2,
     arrowsEnabled: true,
+    emoji: "",
     hasViewsbar: true,
     name: "Big Brother Finale",
     generate: generateBbFinale,

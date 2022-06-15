@@ -11,7 +11,6 @@ interface NumericInputProps {
 
 export const NumericInputStyle = styled.input`
     width: 3em;
-    marginleft: 5px;
 `;
 
 export function NumericInput(props: NumericInputProps) {

@@ -6,8 +6,9 @@ export const NoVeto: EpisodeType = {
     canPlayWith: (n: number) => n >= 4,
     eliminates: 1,
     arrowsEnabled: true,
+    emoji: "🚫",
     hasViewsbar: true,
-    name: "🚫 No Veto",
+    name: "No Veto",
     generate: generateNoVeto,
 };
 

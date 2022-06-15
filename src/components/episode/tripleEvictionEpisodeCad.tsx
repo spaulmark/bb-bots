@@ -13,8 +13,9 @@ export const TripleEvictionCad: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
     eliminates: 3,
     arrowsEnabled: true,
+    emoji: "🇨🇦",
     hasViewsbar: true,
-    name: "🇨🇦 Triple Eviction",
+    name: "Triple Eviction",
     generate: generateTripleEvictionCad,
 };
 

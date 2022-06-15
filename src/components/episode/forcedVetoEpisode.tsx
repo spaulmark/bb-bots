@@ -7,8 +7,9 @@ export const ForcedVetoEpisode: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
     eliminates: 1,
     arrowsEnabled: true,
+    emoji: "🔦",
     hasViewsbar: true,
-    name: "🔦 Forced Veto",
+    name: "Forced Veto",
     generate: generateForcedVeto,
 };
 

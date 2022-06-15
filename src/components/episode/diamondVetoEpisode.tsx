@@ -7,8 +7,9 @@ export const DiamondVetoEpisode: EpisodeType = {
     canPlayWith: (n: number) => n >= 4,
     eliminates: 1,
     arrowsEnabled: true,
+    emoji: "💎",
     hasViewsbar: true,
-    name: "💎 Diamond Veto",
+    name: "Diamond Veto",
     generate: generateNoVeto,
 };
 

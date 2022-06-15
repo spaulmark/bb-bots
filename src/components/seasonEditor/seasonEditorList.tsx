@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { EpisodeType } from "../episode/episodes";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 import { BehaviorSubject, Subscription } from "rxjs";
-import { twist$ } from "./twistAdder";
+import { getEmoji, twist$ } from "./twistAdder";
 import { min } from "lodash";
 import { removeFirstNMatching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
@@ -65,7 +65,7 @@ const ListItem = ({
             {...provided.dragHandleProps}
         >
             <span>{`${item.weekText}${
-                item.episode !== BigBrotherVanilla ? ` | ${item.episode.name}` : ""
+                item.episode !== BigBrotherVanilla ? ` | ${getEmoji(item.episode) + item.episode.name}` : ""
             }`}</span>
         </Item>
     );

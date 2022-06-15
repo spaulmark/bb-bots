@@ -9,6 +9,7 @@ const PregameEpisodeType: EpisodeType = {
         return n > 2;
     },
     arrowsEnabled: true,
+    emoji: "",
     hasViewsbar: false,
     name: "Pregame",
     generate: (gameState: GameState) => new PregameEpisode(gameState),

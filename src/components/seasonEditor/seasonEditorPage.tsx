@@ -77,7 +77,7 @@ export function SeasonEditorPage(): JSX.Element {
                 <Subheader>Add Twists</Subheader>
                 <div className="columns is-multiline is-centered">
                     {twists.map((type) => (
-                        <TwistAdder type={type} key={type.name} />
+                        <TwistAdder type={type} key={`${type.name}${type.emoji}`} />
                     ))}
                     <div
                         className="column is-4"
@@ -115,7 +115,7 @@ export function SeasonEditorPage(): JSX.Element {
                     </div>
                 </div>
             </div>
-            <div className="column is-narrow" style={{ padding: 40 }}>
+            <div className="column is-narrow" style={{ paddingTop: 20, paddingRight: 20 }}>
                 <button
                     className="button is-success"
                     style={{ float: "right" }}

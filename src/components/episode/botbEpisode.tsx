@@ -8,8 +8,9 @@ export const BattleOfTheBlock: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
     eliminates: 1,
     arrowsEnabled: true,
+    emoji: "⚔️",
     hasViewsbar: true,
-    name: "⚔️ Battle of the Block",
+    name: "Battle of the Block",
     generate: generateBoB,
 };
 

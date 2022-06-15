@@ -3,21 +3,21 @@ import { Episode, EpisodeType } from "./episodes";
 import { Scene } from "./scenes/scene";
 import { generateSafetyChainScene } from "./scenes/safetyChainScene";
 
-export const SafetyChain: EpisodeType = {
-    canPlayWith: (n: number) => n >= 3,
-    eliminates: 1,
-    arrowsEnabled: true,
-    hasViewsbar: true,
-    name: "Safety Chain",
-    generate: generateSafetyChain,
-};
+// export const SafetyChain: EpisodeType = {
+//     canPlayWith: (n: number) => n >= 3,
+//     eliminates: 1,
+//     arrowsEnabled: true,
+//     hasViewsbar: true,
+//     name: "Safety Chain",
+//     generate: generateSafetyChain,
+// };
 
-export function generateSafetyChain(initialGameState: GameState): Episode {
-    let currentGameState: GameState = initialGameState;
-    const title = `Safety Chain ${currentGameState.phase}`;
-    const scenes: Scene[] = [];
-    let safetyChainScene;
-    [currentGameState, safetyChainScene] = generateSafetyChainScene(initialGameState);
-    scenes.push(safetyChainScene);
-    return new Episode({ gameState: currentGameState, title, scenes, type: SafetyChain });
+export function generateSafetyChain(initialGameState: GameState): void {
+    // let currentGameState: GameState = initialGameState;
+    // const title = `Safety Chain ${currentGameState.phase}`;
+    // const scenes: Scene[] = [];
+    // let safetyChainScene;
+    // [currentGameState, safetyChainScene] = generateSafetyChainScene(initialGameState);
+    // scenes.push(safetyChainScene);
+    // return new Episode({ gameState: currentGameState, title, scenes, type: SafetyChain });
 }

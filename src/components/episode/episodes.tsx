@@ -20,7 +20,6 @@ export class Episode {
     readonly gameState: GameState;
     readonly initialGameState: GameState;
     readonly type: EpisodeType;
-    readonly arrowsEnabled: boolean = true;
     get render(): JSX.Element {
         const viewsBar = this.type.hasViewsbar ? <ViewsBar gameState={this.scenes[0].gameState} /> : null;
         return (
@@ -47,5 +46,6 @@ export interface EpisodeType {
     readonly arrowsEnabled: boolean;
     readonly hasViewsbar: boolean;
     readonly name: string;
+    readonly emoji: string;
     readonly generate: (gameState: GameState) => Episode;
 }

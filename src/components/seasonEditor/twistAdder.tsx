@@ -7,6 +7,10 @@ import { Label } from "./seasonEditorPage";
 
 export const twist$ = new Subject<{ type: EpisodeType; add: boolean }>();
 
+export function getEmoji(episode: EpisodeType): string {
+    return episode.emoji ? `${episode.emoji} ` : "";
+}
+
 interface TwistAdderProps {
     type: EpisodeType;
 }
@@ -35,7 +39,7 @@ export class TwistAdder extends React.Component<
         const twistCount = this.state.twistCount;
         return (
             <div
-                className="column is-narrow"
+                className="column is-5-desktop is-5-widescreen is-5-fullhd is-12-tablet"
                 style={{
                     border: "1px solid #808080",
                     borderRadius: "4px",
@@ -43,12 +47,12 @@ export class TwistAdder extends React.Component<
                     margin: "10px",
                 }}
             >
-                <div className="field has-addons has-addons-centered">
-                    <p
-                        className="field-label is-normal control"
-                        style={{ textAlign: "right", marginRight: "1em" }}
-                    >
-                        <Label className="label">{this.props.type.name}</Label>
+                <div className="field has-addons has-addons-centered" style={{ textAlign: "center" }}>
+                    <p className="field-label is-normal control">
+                        <Label className="label">
+                            {getEmoji(this.props.type)}
+                            {this.props.type.name}
+                        </Label>
                     </p>
                     <p className="control">
                         <button

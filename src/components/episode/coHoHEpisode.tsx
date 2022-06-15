@@ -13,7 +13,8 @@ export const CoHoH: EpisodeType = {
     eliminates: 1,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "👥 Co-HoH",
+    name: "Co-HoH",
+    emoji: "👥",
     generate: generateCoHoH,
 };
 

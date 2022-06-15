@@ -8,7 +8,8 @@ export const BoomerangVetoEpisode: EpisodeType = {
     eliminates: 1,
     arrowsEnabled: true,
     hasViewsbar: true,
-    name: "🪃 Boomerang Veto",
+    emoji: "🪃",
+    name: "Boomerang Veto",
     generate: generate,
 };
 
