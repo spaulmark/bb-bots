@@ -121,7 +121,7 @@ export function generateVetoScenesOnwards(
         let povWinner: Houseguest;
         [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
             currentGameState,
-            hoh,
+            [hoh],
             nominees,
             veto,
             doubleEviction
@@ -131,7 +131,7 @@ export function generateVetoScenesOnwards(
 
         [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
             currentGameState,
-            hoh,
+            [hoh],
             nominees,
             povWinner,
             doubleEviction,

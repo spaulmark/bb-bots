@@ -7,6 +7,7 @@ import { GoldenVeto } from "./veto/veto";
 import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
+import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
 
 export const CoHoH: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
@@ -39,23 +40,26 @@ function generateCoHoH(initialGamestate: GameState): Episode {
     let povWinner: Houseguest;
     [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
         currentGameState,
-        hohArray[0],
-        [hohArray[1], ...nominees],
-        GoldenVeto,
-        true
+        hohArray,
+        nominees,
+        GoldenVeto
     );
     scenes.push(vetoCompScene);
     // veto replacement scene might be different because each hoh nominated one person, so whoever gets vetoed, that hoh replaces
+    let vetoCeremonyScene;
 
-    // veto scene is normal, but eviction scene the veto winner breaks the tie
-    //
-    //
-    //
-    // const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
-    // let currentGameState = episode.gameState;
-    // const scenes: Scene[] = episode.scenes;
-    // currentGameState.incrementLogIndex();
-    // const doubleEviction = generateBBVanillaScenes(currentGameState, GoldenVeto, true);
+    [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
+        currentGameState,
+        hohArray,
+        nominees,
+        povWinner,
+        false,
+        GoldenVeto
+    );
+    scenes.push(vetoCeremonyScene);
+
+    // then eviction scene
+
     // currentGameState = doubleEviction.gameState;
     return new Episode({
         gameState: new GameState(currentGameState),

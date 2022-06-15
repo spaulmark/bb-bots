@@ -136,11 +136,13 @@ function useDiamondVeto(
     hero: Houseguest,
     nominees: Houseguest[],
     gameState: GameState,
-    HoH: number
+    HoH: number,
+    skipChecks: boolean = false
 ): HouseguestWithLogic {
-    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
-    if (checks) return checks;
-
+    if (!skipChecks) {
+        const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+        if (checks) return checks;
+    }
     // get the 2 best targets out of the pool of all options
     const idealTargets: NumberWithLogic[] = backdoorNPlayers(
         hero,
@@ -172,7 +174,7 @@ function useDiamondVeto(
 
 function basicVetoChecks(hero: Houseguest, nominees: Houseguest[], gameState: GameState, HoH: number) {
     if (hero.id === HoH) {
-        return { decision: null, reason: "I support my original nominations." };
+        return useDiamondVeto(hero, nominees, gameState, HoH, true);
     }
     for (const nom of nominees) {
         if (hero.id === nom.id) return { decision: hero, reason: "I am going to save myself." };

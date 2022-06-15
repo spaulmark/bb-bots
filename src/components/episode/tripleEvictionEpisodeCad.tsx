@@ -47,7 +47,7 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
     let povWinner: Houseguest;
     [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
         currentGameState,
-        hoh,
+        [hoh],
         nominees,
         GoldenVeto,
         true
@@ -58,7 +58,7 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
 
     [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
         currentGameState,
-        hoh,
+        [hoh],
         nominees,
         povWinner,
         true,

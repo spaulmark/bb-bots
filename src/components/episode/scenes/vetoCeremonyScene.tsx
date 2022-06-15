@@ -12,7 +12,7 @@ import { BoomerangVeto, DiamondVeto, Veto } from "../veto/veto";
 
 export function generateVetoCeremonyScene(
     initialGameState: GameState,
-    HoH: Houseguest,
+    hohArray: Houseguest[],
     initialNominees: Houseguest[],
     povWinner: Houseguest,
     doubleEviction: boolean,
@@ -24,7 +24,8 @@ export function generateVetoCeremonyScene(
     initialNominees = initialNominees.map((nominee) => {
         return getById(initialGameState, nominee.id);
     });
-    HoH = getById(initialGameState, HoH.id);
+    const HoH = hohArray[0];
+    const coHoH = hohArray.length > 1 ? hohArray[1] : undefined;
 
     const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, HoH.id);
 
@@ -32,29 +33,36 @@ export function generateVetoCeremonyScene(
     initialNominees.forEach((nom) => nom.id === povWinner.id && (nomineeWonPov = true));
 
     povTarget = vetoChoice.decision;
+    const tousethepov = "to use the power of veto";
     if (!povTarget) {
-        descisionText += "... not to use the power of veto.";
+        descisionText += `... not ${tousethepov}.`;
     } else if (veto === BoomerangVeto) {
-        descisionText += `... to use the power of veto.`;
+        descisionText += `... ${tousethepov}.`;
     } else if (nomineeWonPov) {
-        descisionText += "...to use the power of veto on myself.";
+        descisionText += `...${tousethepov} on myself.`;
     } else {
-        descisionText += `...to use the power of veto on ${povTarget.name}.`;
+        descisionText += `...${tousethepov} on ${povTarget.name}.`;
     }
     let replacementSpeech = "";
     let nameAReplacement = "";
     let finalNominees: any[] = [...initialNominees];
-    const replacementNomineeNamer = veto === DiamondVeto ? povWinner : HoH;
+    const HoHnamer = coHoH && povTarget ? (povTarget.id === initialNominees[1].id ? coHoH : HoH) : HoH;
+    const replacementNomineeNamer = veto === DiamondVeto ? povWinner : HoHnamer;
     if (povTarget) {
         const HoHwonPoV = HoH.id === povWinner.id;
         const aReplacementNominee = veto === BoomerangVeto ? "replacement nominees" : "a replacement nominee";
         nameAReplacement += HoHwonPoV
             ? `Since I have just vetoed one of my nominations, I must name ${aReplacementNominee}.`
-            : `${HoH.name}, since I have just vetoed ${
+            : `${HoHnamer.name}, since I have just vetoed ${
                   veto !== BoomerangVeto ? "one of " : ""
               }your nominations, ${veto === DiamondVeto ? "I" : "you"} must name ${aReplacementNominee}.`;
         // if the exclusion yielded no options, you may be forced to name the veto winner as a replacement
-        let exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees, povWinner]);
+        let exclusion = exclude(initialGameState.houseguests, [
+            HoH,
+            ...initialNominees,
+            povWinner,
+            coHoH || HoH,
+        ]);
         if (exclusion.length === 0) {
             exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees]);
         }
@@ -72,7 +80,6 @@ export function generateVetoCeremonyScene(
             const replacementIndex = initialNominees.findIndex((hg) => hg.id === vetoChoice.decision!.id);
             finalNominees[replacementIndex] = replacementNom;
             replacementNom.nominations++;
-            getById(initialGameState, replacementNom.id).nominations++;
             replacementSpeech = `My replacement nominee is ${replacementNom.name}.`;
         } else {
             finalNominees = replacementNoms;

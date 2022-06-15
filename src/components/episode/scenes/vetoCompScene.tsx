@@ -16,7 +16,7 @@ import { Veto } from "../veto/veto";
 
 export function generateVetoCompScene(
     initialGameState: GameState,
-    HoH: Houseguest,
+    HoHs: Houseguest[],
     nominees: Houseguest[],
     veto: Veto,
     doubleEviction: boolean = false
@@ -29,13 +29,13 @@ export function generateVetoCompScene(
     const everyoneWillPlay = choices.length <= 6;
 
     if (everyoneWillPlay) {
-        povPlayers.push({ ...HoH });
+        HoHs.forEach((hoh) => povPlayers.push({ ...hoh }));
         nominees.forEach((nominee) => povPlayers.push({ ...nominee }));
         while (povPlayers.length < choices.length) {
             povPlayers.push({ ...randomPlayer(choices, povPlayers) });
         }
     } else {
-        povPlayers.push({ ...HoH });
+        HoHs.forEach((hoh) => povPlayers.push({ ...hoh }));
         nominees.forEach((nominee) => povPlayers.push({ ...nominee }));
         while (povPlayers.length < 6) {
             povPlayers.push({ ...randomPlayer(choices, povPlayers) });
@@ -49,7 +49,7 @@ export function generateVetoCompScene(
     if (everyoneWillPlay) {
         introText = "Everyone left in the house will compete in this challenge.";
     } else {
-        introText = `${HoH.name}, as Head of Household, and ${listNames(
+        introText = `${listNames(HoHs.map((h) => h.name))}, as Head of Household, and ${listNames(
             nominees.map((nom) => nom.name)
         )} as nominees, will compete, as well as ${6 - 1 - nominees.length} others chosen by random draw.`; // this line assumes hoh plays in veto (-1)
     }
