@@ -1,3 +1,4 @@
+import { every } from "lodash";
 import { Houseguest, GameState, exclude, getById, nonEvictedHouseguests } from "../../../model";
 import { backdoorNPlayers, HouseguestWithLogic, NumberWithLogic } from "../../../utils/ai/aiApi";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
@@ -172,7 +173,13 @@ function useDiamondVeto(
     return { decision: nominees[worseTarget], reason: "I would rather see someone else nominated." };
 }
 
-function basicVetoChecks(hero: Houseguest, nominees: Houseguest[], gameState: GameState, HoH: number) {
+function basicVetoChecks(
+    hero: Houseguest,
+    nominees: Houseguest[],
+    gameState: GameState,
+    HoH: number,
+    immunePlayers: Houseguest[] = []
+): HouseguestWithLogic | null {
     if (hero.id === HoH) {
         return {
             decision: null,
@@ -182,8 +189,11 @@ function basicVetoChecks(hero: Houseguest, nominees: Houseguest[], gameState: Ga
     for (const nom of nominees) {
         if (hero.id === nom.id) return { decision: hero, reason: "I am going to save myself." };
     }
-    // if you're not nominated, don't use the veto if you are the only replacement nominee
-    if (gameState.remainingPlayers - 1 - nominees.length === 1) {
+    // if player is not immune, don't use the veto if you are the only replacement nominee
+    if (
+        every(immunePlayers, (player) => player.id !== hero.id) &&
+        gameState.remainingPlayers - 1 - immunePlayers.length - nominees.length === 1
+    ) {
         return {
             decision: null,
             reason: "It doesn't make sense to use the veto here.",
