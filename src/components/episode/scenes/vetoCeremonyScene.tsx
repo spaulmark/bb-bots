@@ -53,11 +53,10 @@ export function generateVetoCeremonyScene(
         const HoHwonPoV = HoH.id === povWinner.id && !coHoH;
         const aReplacementNominee = veto === BoomerangVeto ? "replacement nominees" : "a replacement nominee";
         const oneOf = veto !== BoomerangVeto ? "one of " : "";
+        const you = veto === DiamondVeto ? "I" : "you";
         nameAReplacement += HoHwonPoV
             ? `Since I have just vetoed one of my nominations, I must name ${aReplacementNominee}.`
-            : `${HoHnamer.name}, since I have just vetoed ${oneOf}your nominations, ${
-                  veto === DiamondVeto ? "I" : "you"
-              } must name ${aReplacementNominee}.`;
+            : `${HoHnamer.name}, since I have just vetoed ${oneOf}your nominations, ${you} must name ${aReplacementNominee}.`;
         // if the exclusion yielded no options, you may be forced to name the veto winner as a replacement
         let exclusion = exclude(initialGameState.houseguests, [
             HoH,
