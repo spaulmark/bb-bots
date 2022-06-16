@@ -16,6 +16,7 @@ export const BigBrotherFinale: EpisodeType = {
     emoji: "",
     hasViewsbar: true,
     name: "Big Brother Finale",
+    description: "",
     generate: generateBbFinale,
 };
 

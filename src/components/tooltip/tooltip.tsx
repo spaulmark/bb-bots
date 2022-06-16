@@ -2,18 +2,24 @@ import React from "react";
 import Popover from "react-tiny-popover";
 import styled from "styled-components";
 
+const common = `padding: 3px 8px;
+color: #fff;
+text-align: center;
+background-color: #000;
+border-radius: 4px;`;
+
 const Text = styled.p`
     max-width: 200px;
-    padding: 3px 8px;
-    color: #fff;
-    text-align: center;
-    background-color: #000;
-    border-radius: 4px;
+    ${common}
 `;
-
+const WideText = styled.p`
+    max-width: 800px;
+    ${common}
+`;
 interface TooltipProps {
     text: string;
     children: any;
+    wide?: boolean;
 }
 
 interface ToolTipState {
@@ -27,11 +33,12 @@ export class Tooltip extends React.Component<TooltipProps, ToolTipState> {
     }
 
     public render() {
+        const Txt = this.props.wide ? WideText : Text;
         return (
             <Popover
                 position={["top", "bottom"]}
                 isOpen={this.state.visible}
-                content={<Text>{this.props.text}</Text>}
+                content={<Txt>{this.props.text}</Txt>}
             >
                 <div
                     onMouseEnter={() => this.setState({ visible: true })}

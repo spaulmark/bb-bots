@@ -11,6 +11,7 @@ export const TripleEvictionUs: EpisodeType = {
     emoji: "🇺🇸",
     hasViewsbar: true,
     name: "Triple Eviction",
+    description: "Two back to back double evictions.",
     generate: generateTripleEvictionUs,
 };
 

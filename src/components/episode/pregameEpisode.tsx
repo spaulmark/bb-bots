@@ -12,6 +12,7 @@ const PregameEpisodeType: EpisodeType = {
     emoji: "",
     hasViewsbar: false,
     name: "Pregame",
+    description: "",
     generate: (gameState: GameState) => new PregameEpisode(gameState),
 };
 

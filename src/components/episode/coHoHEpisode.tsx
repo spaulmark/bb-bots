@@ -14,6 +14,8 @@ export const CoHoH: EpisodeType = {
     arrowsEnabled: true,
     hasViewsbar: true,
     name: "Co-HoH",
+    description:
+        "Two HoHs each name one nominee, and are responsible for replacing the person they nominated if the veto is used on them.",
     emoji: "👥",
     generate: generateCoHoH,
 };

@@ -16,6 +16,8 @@ export const TripleEvictionCad: EpisodeType = {
     emoji: "🇨🇦",
     hasViewsbar: true,
     name: "Triple Eviction",
+    description:
+        "A double eviction with three nominees. Houseguests vote to save one, and the other two are evicted.",
     generate: generateTripleEvictionCad,
 };
 

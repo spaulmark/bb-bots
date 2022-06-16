@@ -22,6 +22,7 @@ export const BigBrotherVanilla: EpisodeType = {
     hasViewsbar: true,
     name: "BigBrotherVanilla",
     emoji: "",
+    description: "",
     generate: generateBbVanilla,
 };
 

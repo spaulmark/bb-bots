@@ -14,6 +14,8 @@ export const BattleOfTheBlock: EpisodeType = {
     emoji: "⚔️",
     hasViewsbar: true,
     name: "Battle of the Block",
+    description:
+        "Two HoHs name a total of four nominees. The nominees compete in a competition, and the winners are safe for the week and dethrone the HoH who nominated them.",
     generate: generateBoB,
 };
 

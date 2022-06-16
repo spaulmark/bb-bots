@@ -10,6 +10,7 @@ export const ForcedVetoEpisode: EpisodeType = {
     emoji: "🔦",
     hasViewsbar: true,
     name: "Forced Veto",
+    description: "The veto winner must use the veto.",
     generate: generateForcedVeto,
 };
 

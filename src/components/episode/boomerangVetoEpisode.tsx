@@ -9,6 +9,7 @@ export const BoomerangVetoEpisode: EpisodeType = {
     arrowsEnabled: true,
     hasViewsbar: true,
     emoji: "🪃",
+    description: "A veto that must be discarded or used to save both nominees.",
     name: "Boomerang Veto",
     generate: generate,
 };

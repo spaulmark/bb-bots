@@ -10,6 +10,7 @@ export const DiamondVetoEpisode: EpisodeType = {
     emoji: "💎",
     hasViewsbar: true,
     name: "Diamond Veto",
+    description: "The veto winner has the right to name a replacement nominee.",
     generate: generateNoVeto,
 };
 

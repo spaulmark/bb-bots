@@ -12,6 +12,7 @@ export const InstantEviction: EpisodeType = {
     emoji: "⚡",
     hasViewsbar: true,
     name: "Instant Eviction",
+    description: "A double eviction without a veto.",
     generate: generateInstantEviction,
 };
 
