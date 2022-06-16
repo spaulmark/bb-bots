@@ -107,3 +107,18 @@ export function removeFirstNMatching(array: any[], n: number, match: (x: any) =>
     }
     return array;
 }
+
+// takes in an array, a number n, and a match function, then removes the last elements from the array for which the match function returns true
+// returns the index of the first element that does not match, or -1
+
+export function removeLast1Matching(array: any[], match: (x: any) => boolean): number {
+    let i = array.length - 1;
+    while (i >= 0) {
+        if (match(array[i])) {
+            array.splice(i, 1);
+            return i;
+        }
+        i--;
+    }
+    return -1;
+}

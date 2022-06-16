@@ -7,7 +7,7 @@ import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { getEmoji, twist$ } from "./twistAdder";
 import { min } from "lodash";
-import { removeFirstNMatching } from "../../utils";
+import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
 
 const common = `
@@ -142,10 +142,10 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             });
             this.refreshItems(newItems);
         } else {
-            // remove the first instance of the twist, and add X vanilla episodes
+            // remove the LAST instance of the twist, and add X vanilla episodes
             const newItems = Array.from(this.state.items);
-            removeFirstNMatching(newItems, 1, (item) => item.episode === twist.type);
-            this.refreshItems(newItems);
+            const i = removeLast1Matching(newItems, (item) => item.episode === twist.type);
+            this.refreshItems(newItems, i);
         }
     }
 
@@ -158,7 +158,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         this.subs.forEach((sub) => sub.unsubscribe());
     }
 
-    private refreshItems(newItems: SeasonEditorListItem[]) {
+    private refreshItems(newItems: SeasonEditorListItem[], addIndex?: number) {
         const finalItems = [];
         let week: number = 0;
         let playerCount: number = this.props.castSize;
@@ -178,12 +178,17 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         if (playerCount > 3) {
             while (playerCount > 3) {
                 week++;
-                finalItems.unshift({
+                const item = {
                     id: (this.id++).toString(),
                     weekText: `Week ${week}: F${playerCount}`,
                     episode: BigBrotherVanilla,
                     isValid: true,
-                });
+                };
+                if (addIndex !== undefined) {
+                    finalItems.splice(addIndex, 0, item);
+                } else {
+                    finalItems.unshift(item);
+                }
                 playerCount--;
             }
             this.refreshItems(finalItems);

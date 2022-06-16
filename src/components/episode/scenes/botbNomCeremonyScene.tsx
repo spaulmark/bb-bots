@@ -1,6 +1,6 @@
 import { GameState, Houseguest, MutableGameState, getById, exclude } from "../../../model";
 import { Scene } from "./scene";
-import { Portrait, Portraits } from "../../playerPortrait/portraits";
+import { Portrait } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
