@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
 import { cast$, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
+import { BattleOfTheBlock } from "../episode/botbEpisode";
+import { BoomerangVetoEpisode } from "../episode/boomerangVetoEpisode";
+import { CoHoH } from "../episode/coHoHEpisode";
 import { DiamondVetoEpisode } from "../episode/diamondVetoEpisode";
 import { DoubleEviction } from "../episode/doubleEvictionEpisode";
 import { EpisodeType } from "../episode/episodes";
@@ -29,8 +32,6 @@ export const Label = styled.label`
     color: #fff;
 `;
 
-// TODO: boomerang veto, double veto.
-
 const twists: EpisodeType[] = [
     DoubleEviction,
     TripleEvictionCad,
@@ -39,6 +40,9 @@ const twists: EpisodeType[] = [
     NoVeto,
     DiamondVetoEpisode,
     ForcedVetoEpisode,
+    BoomerangVetoEpisode,
+    CoHoH,
+    BattleOfTheBlock,
 ];
 
 const submit = async (jury: number): Promise<void> => {
@@ -57,6 +61,7 @@ export function SeasonEditorPage(): JSX.Element {
     const castLength = cast$.value.length;
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
     const validJurySize = validateJurySize(parseInt(jurySize), castLength);
+    const [areTwistsValid, setTwistsValid] = useState(true);
     return (
         <div className="columns">
             <div className="column is-one-quarter">
@@ -65,14 +70,14 @@ export function SeasonEditorPage(): JSX.Element {
                 </HasText>
                 <hr />
                 <Noselect>
-                    <SeasonEditorList castSize={castLength} />
+                    <SeasonEditorList setTwistsValid={setTwistsValid} castSize={castLength} />
                 </Noselect>
             </div>
             <div className="column" style={{ padding: 20 }}>
                 <Subheader>Add Twists</Subheader>
                 <div className="columns is-multiline is-centered">
                     {twists.map((type) => (
-                        <TwistAdder type={type} key={type.name} />
+                        <TwistAdder type={type} key={`${type.name}${type.emoji}`} />
                     ))}
                     <div
                         className="column is-4"
@@ -110,14 +115,14 @@ export function SeasonEditorPage(): JSX.Element {
                     </div>
                 </div>
             </div>
-            <div className="column is-narrow" style={{ padding: 40 }}>
+            <div className="column is-narrow" style={{ paddingTop: 20, paddingRight: 20 }}>
                 <button
                     className="button is-success"
                     style={{ float: "right" }}
                     onClick={() => {
                         submit(parseInt(jurySize));
                     }}
-                    disabled={!validJurySize}
+                    disabled={!validJurySize || !areTwistsValid}
                 >
                     Submit
                 </button>

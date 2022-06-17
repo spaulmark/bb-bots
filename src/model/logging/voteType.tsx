@@ -8,6 +8,7 @@ import {
     NomineeCell,
     HohCell,
     SaveCell,
+    PoVCell,
 } from "../../components/episode/scenes/votingTable";
 
 let voteKey = 0;
@@ -73,6 +74,20 @@ export class NomineeVote implements VoteType {
     );
     constructor(evicted: boolean) {
         this.evicted = evicted;
+    }
+}
+
+export class PoVvote implements VoteType {
+    id: number;
+    render = (state: GameState) => {
+        return (
+            <PoVCell key={getKey()}>
+                <CenteredItallic noMargin={true}>{getById(state, this.id).name}</CenteredItallic>
+            </PoVCell>
+        );
+    };
+    constructor(id: number) {
+        this.id = id;
     }
 }
 

@@ -49,6 +49,9 @@ export const NomineeCell = styled(EndgameTableCell)`
 export const HohCell = styled(EndgameTableCell)`
     background-color: ${({ theme }: { theme: ColorTheme }) => theme.hohCell};
 `;
+export const PoVCell = styled(EndgameTableCell)`
+    background-color: #78773f;
+`;
 
 const BlackRow = styled.tr`
     height: 0.4em;

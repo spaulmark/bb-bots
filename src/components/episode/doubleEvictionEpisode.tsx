@@ -9,8 +9,10 @@ export const DoubleEviction: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
     eliminates: 2,
     arrowsEnabled: true,
+    emoji: "⏩",
     hasViewsbar: true,
-    name: "⏩ Double Eviction",
+    name: "Double Eviction",
+    description: "A second round of Big Brother plays out in a single scene.",
     generate: generateDoubleEviction,
 };
 
@@ -33,7 +35,6 @@ function generateDoubleEviction(initialGamestate: GameState): Episode {
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,
-        title: episode.title,
         scenes,
         type: DoubleEviction,
     });

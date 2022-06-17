@@ -9,8 +9,10 @@ export const InstantEviction: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
     eliminates: 2,
     arrowsEnabled: true,
+    emoji: "⚡",
     hasViewsbar: true,
-    name: "⚡ Instant Eviction",
+    name: "Instant Eviction",
+    description: "A double eviction without a veto.",
     generate: generateInstantEviction,
 };
 
@@ -34,7 +36,6 @@ function generateInstantEviction(initialGamestate: GameState): Episode {
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,
-        title: episode.title,
         scenes,
         type: InstantEviction,
     });

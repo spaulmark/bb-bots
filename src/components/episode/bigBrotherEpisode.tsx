@@ -21,6 +21,8 @@ export const BigBrotherVanilla: EpisodeType = {
     arrowsEnabled: true,
     hasViewsbar: true,
     name: "BigBrotherVanilla",
+    emoji: "",
+    description: "",
     generate: generateBbVanilla,
 };
 
@@ -73,7 +75,6 @@ export function defaultContent(initialGameState: GameState) {
 export function generateBbVanilla(initialGamestate: GameState): Episode {
     const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
     return new Episode({
-        title: episode.title,
         scenes: episode.scenes,
         gameState: new GameState(episode.gameState),
         initialGamestate,
@@ -88,29 +89,40 @@ export function generateBBVanillaScenes(
 ): {
     gameState: GameState;
     scenes: Scene[];
-    title: string;
 } {
-    let hoh: Houseguest;
+    let hohArray: Houseguest[];
     let currentGameState: GameState;
     let hohCompScene: Scene;
     const scenes: Scene[] = [];
 
-    [currentGameState, hohCompScene, hoh] = generateHohCompScene(initialGamestate, { doubleEviction });
+    [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, { doubleEviction });
+    const hoh = hohArray[0];
     scenes.push(hohCompScene);
 
     let nomCeremonyScene;
     let nominees: Houseguest[];
-    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hoh, {
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, [hoh], {
         doubleEviction,
     });
     scenes.push(nomCeremonyScene);
 
+    return generateVetoScenesOnwards(veto, currentGameState, hoh, nominees, doubleEviction, scenes, []);
+}
+export function generateVetoScenesOnwards(
+    veto: Veto | null,
+    currentGameState: GameState,
+    hoh: Houseguest,
+    nominees: Houseguest[],
+    doubleEviction: boolean,
+    scenes: Scene[],
+    immuneHgs: Houseguest[]
+) {
+    let povWinner: Houseguest | undefined = undefined;
     if (veto) {
         let vetoCompScene;
-        let povWinner: Houseguest;
         [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
             currentGameState,
-            hoh,
+            [hoh],
             nominees,
             veto,
             doubleEviction
@@ -120,23 +132,24 @@ export function generateBBVanillaScenes(
 
         [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
             currentGameState,
-            hoh,
+            [hoh],
             nominees,
             povWinner,
             doubleEviction,
-            veto
+            veto,
+            immuneHgs
         );
         scenes.push(vetoCeremonyScene);
     }
     let evictionScene;
-    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hoh, nominees, {
+    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, [hoh], nominees, {
         doubleEviction,
+        povWinner,
         votingTo: "Evict",
     });
     if (veto === null) {
         currentGameState.currentLog.nominationsPostVeto = currentGameState.currentLog.nominationsPreVeto;
     }
     scenes.push(evictionScene);
-    const title = `Week ${currentGameState.phase}`;
-    return { gameState: currentGameState, scenes, title };
+    return { gameState: currentGameState, scenes };
 }

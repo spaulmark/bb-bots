@@ -85,7 +85,7 @@ function determineWinrateStrategy(hero: Houseguest): WinrateStrategy {
     return WinrateStrategy.Medium;
 }
 
-function determineStrategy(hero: Houseguest): TargetStrategy {
+export function determineStrategy(hero: Houseguest): TargetStrategy {
     if (hero.friends === hero.enemies) return TargetStrategy.MoR;
     return hero.friends > hero.enemies ? TargetStrategy.StatusQuo : TargetStrategy.Underdog;
 }

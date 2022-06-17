@@ -122,8 +122,6 @@ function castF4vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest, HoH: H
     };
 }
 
-// only works for 2 nominees
-
 // returns the id of the houseguests you're backdooring
 export function backdoorNPlayers(
     hero: Houseguest,
@@ -131,6 +129,7 @@ export function backdoorNPlayers(
     gameState: GameState,
     n: number
 ): NumberWithLogic[] {
+    if (options.length < n) throw new Error(`Tried to backdoor ${n} players with ${options.length} options.`);
     const result: NumberWithLogic[] = [];
     const sortedOptions = [...options];
     // negative value if first is less than second

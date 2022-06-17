@@ -9,6 +9,8 @@ export const GameOver: EpisodeType = {
     eliminates: 1,
     arrowsEnabled: false,
     hasViewsbar: false,
+    description: "",
+    emoji: "",
     name: "Game Over",
     generate: generateGameOver,
 };

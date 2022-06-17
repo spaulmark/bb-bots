@@ -6,8 +6,10 @@ export const NoVeto: EpisodeType = {
     canPlayWith: (n: number) => n >= 4,
     eliminates: 1,
     arrowsEnabled: true,
+    emoji: "🚫",
     hasViewsbar: true,
-    name: "🚫 No Veto",
+    name: "No Veto",
+    description: "A week without a veto.",
     generate: generateNoVeto,
 };
 
@@ -16,7 +18,6 @@ function generateNoVeto(initialGamestate: GameState): Episode {
     return new Episode({
         gameState: new GameState(episode.gameState),
         initialGamestate,
-        title: episode.title,
         scenes: episode.scenes,
         type: NoVeto,
     });

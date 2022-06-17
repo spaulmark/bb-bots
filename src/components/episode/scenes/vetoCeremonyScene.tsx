@@ -8,15 +8,16 @@ import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { listNames } from "../../../utils/listStrings";
 import _ from "lodash";
-import { DiamondVeto, Veto } from "../veto/veto";
+import { BoomerangVeto, DiamondVeto, Veto } from "../veto/veto";
 
 export function generateVetoCeremonyScene(
     initialGameState: GameState,
-    HoH: Houseguest,
+    hohArray: Houseguest[],
     initialNominees: Houseguest[],
     povWinner: Houseguest,
     doubleEviction: boolean,
-    veto: Veto
+    veto: Veto,
+    immuneHgs: Houseguest[]
 ): [GameState, Scene, Houseguest[]] {
     let povTarget: Houseguest | null = null;
     let descisionText = "";
@@ -24,48 +25,71 @@ export function generateVetoCeremonyScene(
     initialNominees = initialNominees.map((nominee) => {
         return getById(initialGameState, nominee.id);
     });
-    HoH = getById(initialGameState, HoH.id);
+    const HoH = hohArray[0];
+    const coHoH = hohArray.length > 1 ? hohArray[1] : undefined;
 
-    const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, HoH.id);
+    const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, coHoH ? -1 : HoH.id);
 
     let nomineeWonPov = false;
     initialNominees.forEach((nom) => nom.id === povWinner.id && (nomineeWonPov = true));
 
     povTarget = vetoChoice.decision;
+    const tousethepov = "to use the power of veto";
     if (!povTarget) {
-        descisionText += "... not to use the power of veto.";
+        descisionText += `... not ${tousethepov}.`;
+    } else if (veto === BoomerangVeto) {
+        descisionText += `... ${tousethepov}.`;
     } else if (nomineeWonPov) {
-        descisionText += "...to use the power of veto on myself.";
+        descisionText += `...${tousethepov} on myself.`;
     } else {
-        descisionText += `...to use the power of veto on ${povTarget.name}.`;
+        descisionText += `...${tousethepov} on ${povTarget.name}.`;
     }
     let replacementSpeech = "";
     let nameAReplacement = "";
     let finalNominees: any[] = [...initialNominees];
-    const replacementNomineeNamer = veto === DiamondVeto ? povWinner : HoH;
+    const HoHnamer = coHoH && povTarget ? (povTarget.id === initialNominees[1].id ? coHoH : HoH) : HoH;
+    const replacementNomineeNamer = veto === DiamondVeto ? povWinner : HoHnamer;
     if (povTarget) {
-        const HoHwonPoV = HoH.id === povWinner.id;
+        const HoHwonPoV = HoH.id === povWinner.id && !coHoH;
+        const aReplacementNominee = veto === BoomerangVeto ? "replacement nominees" : "a replacement nominee";
+        const oneOf = veto !== BoomerangVeto ? "one of " : "";
+        const you = veto === DiamondVeto ? "I" : "you";
         nameAReplacement += HoHwonPoV
-            ? `Since I have just vetoed one of my nominations, I must name a replacement nominee.`
-            : `${HoH.name}, since I have just vetoed one of your nominations, ${
-                  veto === DiamondVeto ? "I" : "you"
-              } must name a replacement nominee.`;
+            ? `Since I have just vetoed one of my nominations, I must name ${aReplacementNominee}.`
+            : `${HoHnamer.name}, since I have just vetoed ${oneOf}your nominations, ${you} must name ${aReplacementNominee}.`;
         // if the exclusion yielded no options, you may be forced to name the veto winner as a replacement
-        let exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees, povWinner]);
+        let exclusion = exclude(initialGameState.houseguests, [
+            HoH,
+            ...initialNominees,
+            povWinner,
+            ...immuneHgs,
+            coHoH || HoH,
+        ]);
         if (exclusion.length === 0) {
-            exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees]);
+            exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees, ...immuneHgs]);
         }
-        const replacementNom = {
-            ...getById(
-                initialGameState,
-                backdoorNPlayers(replacementNomineeNamer, exclusion, initialGameState, 1)[0].decision
-            ),
-        };
-        const replacementIndex = initialNominees.findIndex((hg) => hg.id === vetoChoice.decision!.id);
-        finalNominees[replacementIndex] = replacementNom;
-        replacementNom.nominations++;
-        getById(initialGameState, replacementNom.id).nominations++;
-        replacementSpeech = `My replacement nominee is ${replacementNom.name}.`;
+        const replacementCount = veto === BoomerangVeto ? 2 : 1;
+        const replacementNoms = backdoorNPlayers(
+            replacementNomineeNamer,
+            exclusion,
+            initialGameState,
+            replacementCount
+        ).map((v) => {
+            return getById(initialGameState, v.decision);
+        });
+        if (replacementNoms.length === 1) {
+            const replacementNom = replacementNoms[0];
+            const replacementIndex = initialNominees.findIndex((hg) => hg.id === vetoChoice.decision!.id);
+            finalNominees[replacementIndex] = replacementNom;
+            replacementNom.nominations++;
+            replacementSpeech = `My replacement nominee is ${replacementNom.name}.`;
+        } else {
+            finalNominees = replacementNoms;
+            finalNominees.forEach((nom) => nom.nominations++);
+            replacementSpeech = `My replacement nominees are ${listNames(
+                replacementNoms.map((n) => n.name)
+            )}.`;
+        }
     }
     const nomineeNames = initialNominees.map((nom) => nom.name);
     const scene = new Scene({

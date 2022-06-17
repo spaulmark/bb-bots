@@ -4,11 +4,13 @@ import { EpisodeType, Episode } from "./episodes";
 import { SpotlightVeto } from "./veto/veto";
 
 export const ForcedVetoEpisode: EpisodeType = {
-    canPlayWith: (n: number) => n >= 4,
+    canPlayWith: (n: number) => n >= 5,
     eliminates: 1,
     arrowsEnabled: true,
+    emoji: "🔦",
     hasViewsbar: true,
-    name: "🔦 Forced Veto",
+    name: "Forced Veto",
+    description: "The veto winner must use the veto.",
     generate: generateForcedVeto,
 };
 
@@ -17,7 +19,6 @@ function generateForcedVeto(initialGamestate: GameState): Episode {
     return new Episode({
         gameState: new GameState(episode.gameState),
         initialGamestate,
-        title: episode.title,
         scenes: episode.scenes,
         type: ForcedVetoEpisode,
     });

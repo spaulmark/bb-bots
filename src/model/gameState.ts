@@ -88,7 +88,7 @@ export class GameState extends _GameState {
     readonly nonEvictedHouseguests: Set<number> = new Set<number>();
     readonly remainingPlayers: number = 0;
     readonly phase: number = 0;
-    readonly previousHOH?: Houseguest;
+    readonly previousHOH?: Houseguest[];
     readonly log: EpisodeLog[][] = [];
     readonly cliques: Cliques[] = [];
 
@@ -136,7 +136,7 @@ export class MutableGameState extends _GameState {
     readonly nonEvictedHouseguests: Set<number> = new Set<number>();
     public remainingPlayers: number = 0;
     public phase: number = 0;
-    public previousHOH?: Houseguest;
+    public previousHOH?: Houseguest[];
     public cliques: Cliques[] = [];
     public log: EpisodeLog[][] = [];
 

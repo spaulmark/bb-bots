@@ -3,10 +3,11 @@ import { GameState } from "../../model/gameState";
 import { Scene } from "./scenes/scene";
 import { ViewsBar } from "../viewsBar/viewBar";
 import { defaultContent } from "./bigBrotherEpisode";
+import { getEmoji } from "../seasonEditor/twistAdder";
 
 export interface InitEpisode {
     scenes: Scene[];
-    title: string;
+    title?: string;
     content?: JSX.Element;
     gameState: GameState;
     initialGamestate?: GameState;
@@ -20,7 +21,6 @@ export class Episode {
     readonly gameState: GameState;
     readonly initialGameState: GameState;
     readonly type: EpisodeType;
-    readonly arrowsEnabled: boolean = true;
     get render(): JSX.Element {
         const viewsBar = this.type.hasViewsbar ? <ViewsBar gameState={this.scenes[0].gameState} /> : null;
         return (
@@ -33,7 +33,7 @@ export class Episode {
 
     constructor(init: InitEpisode) {
         this.scenes = init.scenes;
-        this.title = init.title;
+        this.title = init.title || `Week ${init.gameState.phase} ${getEmoji(init.type)}`;
         this.content = init.content || defaultContent(init.initialGamestate || init.gameState);
         this.gameState = init.gameState;
         this.initialGameState = init.initialGamestate || init.gameState;
@@ -47,5 +47,7 @@ export interface EpisodeType {
     readonly arrowsEnabled: boolean;
     readonly hasViewsbar: boolean;
     readonly name: string;
+    readonly emoji: string;
+    readonly description: string;
     readonly generate: (gameState: GameState) => Episode;
 }
