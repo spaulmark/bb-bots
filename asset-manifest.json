@@ -1,13 +1,13 @@
 {
   "main.css": "/bb-bots/static/css/main.7f40094f.chunk.css",
-  "main.js": "/bb-bots/static/js/main.1c91ee45.chunk.js",
-  "main.js.map": "/bb-bots/static/js/main.1c91ee45.chunk.js.map",
+  "main.js": "/bb-bots/static/js/main.cc6f5101.chunk.js",
+  "main.js.map": "/bb-bots/static/js/main.cc6f5101.chunk.js.map",
   "runtime~main.js": "/bb-bots/static/js/runtime~main.ee1276bc.js",
   "runtime~main.js.map": "/bb-bots/static/js/runtime~main.ee1276bc.js.map",
-  "static/js/2.d94d3f00.chunk.js": "/bb-bots/static/js/2.d94d3f00.chunk.js",
-  "static/js/2.d94d3f00.chunk.js.map": "/bb-bots/static/js/2.d94d3f00.chunk.js.map",
+  "static/js/2.5bae1b43.chunk.js": "/bb-bots/static/js/2.5bae1b43.chunk.js",
+  "static/js/2.5bae1b43.chunk.js.map": "/bb-bots/static/js/2.5bae1b43.chunk.js.map",
   "index.html": "/bb-bots/index.html",
-  "precache-manifest.56f79ed4f43a6e24f71ef5e048665991.js": "/bb-bots/precache-manifest.56f79ed4f43a6e24f71ef5e048665991.js",
+  "precache-manifest.6994456006fb88572f20c4769b799dc6.js": "/bb-bots/precache-manifest.6994456006fb88572f20c4769b799dc6.js",
   "service-worker.js": "/bb-bots/service-worker.js",
   "static/css/main.7f40094f.chunk.css.map": "/bb-bots/static/css/main.7f40094f.chunk.css.map"
 }
