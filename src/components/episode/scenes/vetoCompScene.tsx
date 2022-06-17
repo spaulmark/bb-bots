@@ -51,13 +51,15 @@ export function generateVetoCompScene(
     } else {
         introText = `${listNames(HoHs.map((h) => h.name))}, as Head of Household, and ${listNames(
             nominees.map((nom) => nom.name)
-        )} as nominees, will compete, as well as ${6 - 1 - nominees.length} others chosen by random draw.`; // this line assumes hoh plays in veto (-1)
+        )} as nominees, will compete, as well as ${
+            povPlayers.length - HoHs.length - nominees.length
+        } others chosen by random draw.`; // this line assumes hoh plays in veto (-1)
     }
-    const extras = nominees[2] ? [] : [povPlayers[3]];
-    const firstRow = [povPlayers[0], povPlayers[1], povPlayers[2]];
-    nominees[2] && firstRow.push(povPlayers[3]);
-    povPlayers[4] && extras.push(povPlayers[4]);
-    povPlayers[5] && extras.push(povPlayers[5]);
+    const firstRow = [...HoHs, ...nominees];
+    const extras = [];
+    for (let i = firstRow.length; i < povPlayers.length; i++) {
+        extras.push(povPlayers[i]);
+    }
     const scene = new Scene({
         title: "Veto Competition",
         gameState: initialGameState,
