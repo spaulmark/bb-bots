@@ -8,6 +8,7 @@ import { Box } from "../layout/box";
 import { HasText } from "../layout/text";
 import { shuffle } from "lodash";
 import { activeScreen$, Screens } from "../topbar/topBar";
+import { baseUrl } from "../deckScreen/deckScreen";
 interface SidebarState {
     episodes: Episode[];
     selectedScene: number;
@@ -29,9 +30,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
             firstLoad = false;
             return;
         }
-        let data = await (
-            await fetch(`https://raw.githubusercontent.com/spaulmark/img/master/bb.json`)
-        ).json();
+        let data = await (await fetch(`${baseUrl}/bb.json`)).json();
         const allBBs: PlayerProfile[] = [];
         data = shuffle(data).slice(0, 16);
         for (const player of data) {
@@ -39,7 +38,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
             name = name.substr(name.indexOf("/") + 1) || name;
             allBBs.push({
                 name,
-                imageURL: `https://spaulmark.github.io/img/Big Brother ${player}`,
+                imageURL: `${baseUrl}/Big Brother ${player}`,
             });
         }
 

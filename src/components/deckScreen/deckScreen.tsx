@@ -25,7 +25,7 @@ interface DeckScreenState {
 }
 
 const decksPerPage = 26;
-const baseUrl = "https://spaulmark.github.io/img/";
+export const baseUrl = "https://raw.githubusercontent.com/spaulmark/img/master/";
 
 const imageCache: { [id: string]: string } = {};
 
@@ -132,7 +132,7 @@ export class DeckScreen extends React.Component<DeckScreenProps, DeckScreenState
     async componentDidMount() {
         selectDeckSubject(null);
         this.subs.push(selectedDecks$.subscribe((selectedDecks) => this.setState({ selectedDecks })));
-        const data = await (await fetch("https://spaulmark.github.io/img/dir.json")).json();
+        const data = await (await fetch(`${baseUrl}/dir.json`)).json();
         this.setState({
             sortedDecks: data.decks,
             decks: shuffle(data.decks),
