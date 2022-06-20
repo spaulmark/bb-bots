@@ -12,7 +12,13 @@ import {
 
 export interface Veto {
     name: string;
-    use: (hero: Houseguest, nominees: Houseguest[], gameState: GameState, HoH: number) => HouseguestWithLogic;
+    use: (
+        hero: Houseguest,
+        nominees: Houseguest[],
+        gameState: GameState,
+        HoH: number,
+        exclusions: Houseguest[]
+    ) => HouseguestWithLogic;
 }
 
 export const GoldenVeto: Veto = {
@@ -40,10 +46,11 @@ function useBoomerangVeto(
     hero: Houseguest,
     nominees: Houseguest[],
     gameState: GameState,
-    HoH: number
+    HoH: number,
+    exclusions: Houseguest[]
 ): HouseguestWithLogic {
     if (nominees.length !== 2) throw new Error("Boomerang veto only works for 2 nominees.");
-    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
     if (checks) return checks;
     // Need an additional check for boomerang veto, since there are 2 replacement noms
     if (gameState.remainingPlayers - 1 - nominees.length === 2) {
@@ -54,8 +61,8 @@ function useBoomerangVeto(
     }
 
     // if you wouldn't use gold veto on either of them, discard
-    const veto1 = useGoldenVeto(hero, [nominees[0]], gameState, HoH);
-    const veto2 = useGoldenVeto(hero, [nominees[1]], gameState, HoH);
+    const veto1 = useGoldenVeto(hero, [nominees[0]], gameState, HoH, exclusions);
+    const veto2 = useGoldenVeto(hero, [nominees[1]], gameState, HoH, exclusions);
     if (veto1.decision === null && veto2.decision === null) {
         return { decision: null, reason: "I don't want to save either of these noms." };
     }
@@ -76,10 +83,11 @@ function useSpotlightVeto(
     hero: Houseguest,
     nominees: Houseguest[],
     gameState: GameState,
-    HoH: number
+    HoH: number,
+    exclusions: Houseguest[]
 ): HouseguestWithLogic {
     // basically ya forced to use it
-    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
     if (checks && checks.decision !== null) return checks;
     // use the veto on whoever is the worse target between the 2 nominees
     const invertedDecision = isBetterTargetWithLogic(
@@ -96,9 +104,10 @@ function useGoldenVeto(
     hero: Houseguest,
     nominees: Houseguest[],
     gameState: GameState,
-    HoH: number
+    HoH: number,
+    exclusions: Houseguest[]
 ): HouseguestWithLogic {
-    const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
     if (checks) return checks;
     let reason = "None of these nominees are my friends.";
     let potentialSave: Houseguest | null = null;
@@ -138,10 +147,11 @@ function useDiamondVeto(
     nominees: Houseguest[],
     gameState: GameState,
     HoH: number,
+    exclusions: Houseguest[],
     skipChecks: boolean = false
 ): HouseguestWithLogic {
     if (!skipChecks) {
-        const checks = basicVetoChecks(hero, nominees, gameState, HoH);
+        const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
         if (checks) return checks;
     }
     // get the 2 best targets out of the pool of all options

@@ -28,7 +28,7 @@ export function generateVetoCeremonyScene(
     const HoH = hohArray[0];
     const coHoH = hohArray.length > 1 ? hohArray[1] : undefined;
 
-    const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, coHoH ? -1 : HoH.id);
+    const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, coHoH ? -1 : HoH.id, immuneHgs);
 
     let nomineeWonPov = false;
     initialNominees.forEach((nom) => nom.id === povWinner.id && (nomineeWonPov = true));
