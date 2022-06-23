@@ -14,7 +14,6 @@ import { InstantEviction } from "../episode/instantEvictionEpisode";
 import { NoVeto } from "../episode/noVetoEpisode";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { TripleEvictionCad } from "../episode/tripleEvictionEpisodeCad";
-import { TripleEvictionUs } from "../episode/tripleEvictionEpisodeUs";
 import { HasText } from "../layout/text";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
@@ -35,7 +34,6 @@ export const Label = styled.label`
 const twists: EpisodeType[] = [
     DoubleEviction,
     TripleEvictionCad,
-    TripleEvictionUs,
     InstantEviction,
     NoVeto,
     DiamondVetoEpisode,

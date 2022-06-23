@@ -58,7 +58,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
 
     public render() {
         return (
-            <Box style={{ minWidth: 180 }}>
+            <Box style={{ minWidth: 180, maxWidth: 250 }}>
                 <HasText>{this.getEpisodes()}</HasText>
             </Box>
         );

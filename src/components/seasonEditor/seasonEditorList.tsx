@@ -2,13 +2,14 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Draggable } from "react-beautiful-dnd";
 import React from "react";
 import styled from "styled-components";
-import { EpisodeType } from "../episode/episodes";
+import { Episode, EpisodeType } from "../episode/episodes";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { getEmoji, twist$ } from "./twistAdder";
 import { min } from "lodash";
 import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
+import { GameState } from "../../model/gameState";
 
 const common = `
 padding: 10px;
@@ -36,13 +37,53 @@ let _items: SeasonEditorListItem[] = [];
 let _castSize: number = 0;
 
 export function getEpisodeLibrary(): EpisodeLibrary {
+    const episodes: EpisodeType[] = [];
+    for (const item of _items) {
+        // if not chainable, push to newItems
+        if (!item.episode.chainable) {
+            episodes.push(item.episode);
+        } else {
+            // if chainable, merge most recent newItems item
+            const oldEpisode = episodes[episodes.length - 1];
+            const newEpisode = item.episode;
+            const dynamicEpisodeType = {
+                arrowsEnabled: oldEpisode.arrowsEnabled && newEpisode.arrowsEnabled,
+                canPlayWith: () => true,
+                eliminates: oldEpisode.eliminates + newEpisode.eliminates,
+                hasViewsbar: oldEpisode.hasViewsbar && newEpisode.hasViewsbar,
+                name: "",
+                description: "",
+                emoji: `${oldEpisode.emoji} ${newEpisode.emoji}`,
+            };
+            const newItem: EpisodeType = {
+                ...dynamicEpisodeType,
+                generate: (initialGamestate) => {
+                    const firstEpisode = oldEpisode.generate(initialGamestate);
+                    const secondEpisode = newEpisode.generate(firstEpisode.gameState);
+                    return new Episode({
+                        gameState: new GameState(secondEpisode.gameState),
+                        initialGamestate,
+                        scenes: firstEpisode.scenes.concat(secondEpisode.scenes),
+                        type: {
+                            ...dynamicEpisodeType,
+                            generate: (_) => {
+                                throw "UNREACHABLE";
+                            },
+                        },
+                    });
+                },
+            };
+            episodes[episodes.length - 1] = newItem;
+        }
+    }
+
     const result: EpisodeLibrary = {};
     let playersRemaining = _castSize;
-    for (const item of _items) {
-        if (item.episode !== BigBrotherVanilla) {
-            result[playersRemaining] = item.episode;
+    for (const episode of episodes) {
+        if (episode !== BigBrotherVanilla) {
+            result[playersRemaining] = episode;
         }
-        playersRemaining -= item.episode.eliminates;
+        playersRemaining -= episode.eliminates;
     }
     return result;
 }
