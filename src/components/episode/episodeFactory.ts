@@ -1,7 +1,7 @@
 import { GameState, MutableGameState, nonEvictedHouseguests } from "../../model/gameState";
 import { Episode, Houseguest } from "../../model";
 import { EpisodeType } from "./episodes";
-import { angleBetween, rng, roundTwoDigits } from "../../utils";
+import { angleBetween, rng } from "../../utils";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
 import _ from "lodash";

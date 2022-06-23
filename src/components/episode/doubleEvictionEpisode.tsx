@@ -1,4 +1,4 @@
-import { GameState } from "../../model";
+import { GameState, MutableGameState } from "../../model";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Episode, EpisodeType } from "./episodes";
 import React from "react";
@@ -6,22 +6,22 @@ import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
 
 export const DoubleEviction: EpisodeType = {
-    canPlayWith: (n: number) => n >= 5,
-    eliminates: 2,
+    canPlayWith: (n: number) => n >= 4,
+    eliminates: 1,
     arrowsEnabled: true,
     emoji: "⏩",
     hasViewsbar: true,
+    chainable: true,
     name: "Double Eviction",
     description: "A second round of Big Brother plays out in a single scene.",
     generate: generateDoubleEviction,
 };
 
 function generateDoubleEviction(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
-    let currentGameState = episode.gameState;
-    const scenes: Scene[] = episode.scenes;
+    let currentGameState = new MutableGameState(initialGamestate);
+    const scenes: Scene[] = [];
 
-    currentGameState.incrementLogIndex();
+    currentGameState.incrementLogIndex(); // TODO: i have no idea if this works or not
     const doubleEviction = generateBBVanillaScenes(currentGameState, GoldenVeto, true);
     currentGameState = doubleEviction.gameState;
     scenes.push(

@@ -46,6 +46,7 @@ export interface EpisodeType {
     readonly eliminates: number;
     readonly arrowsEnabled: boolean;
     readonly hasViewsbar: boolean;
+    readonly chainable?: boolean;
     readonly name: string;
     readonly emoji: string;
     readonly description: string;

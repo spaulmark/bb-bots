@@ -164,8 +164,10 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         let playerCount: number = this.props.castSize;
 
         for (const item of newItems) {
-            const isValid = item.episode.canPlayWith(playerCount);
-            week++;
+            const chainable: boolean = !!item.episode.chainable; //&& week === 0;
+            const isValidChain: boolean = chainable ? week !== 0 : true;
+            const isValid = item.episode.canPlayWith(playerCount) && isValidChain;
+            !chainable && week++;
             item.weekText = `Week ${week}: F${playerCount}`;
             item.isValid = isValid;
             playerCount -= item.episode.eliminates;
