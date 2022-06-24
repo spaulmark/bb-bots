@@ -5,8 +5,8 @@ import { selectedColor } from "./houseguestPortraitController";
 const EditPortrait = styled.div`
     padding: 5px;
     margin: 5px;
-    border: 1px solid grey;
-    background-color: grey;
+    border: 1px solid #9d9d9d;
+    background-color: #9d9d9d;
     color: black;
     border-radius: 5px;
     font-weight: 600;
