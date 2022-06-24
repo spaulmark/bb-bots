@@ -7,6 +7,7 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
 import { Scene } from "./scene";
 import { evictHouseguest } from "../utilities/evictHouseguest";
+import { getWorstTarget } from "../../../utils/ai/aiApi";
 
 export function generateSafetyChainScene(initialGameState: GameState): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
@@ -21,7 +22,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     const sceneContent: JSX.Element[] = [];
     let first = true;
     while (chainOrder.length < safeSpots) {
-        const newSafeIndex = getBestFriend(currentChooser, options); // TODO: get smallest target
+        const newSafeIndex = options.indexOf(getWorstTarget(currentChooser, options, newGameState));
         chainOrder.push(options[newSafeIndex]);
         newGameState.currentLog.votes[currentChooser.id] = first
             ? new HoHVote(options[newSafeIndex].id)
@@ -31,11 +32,12 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         sceneContent.push(
             <Centered key={`safetychain-${newGameState.phase}-${chainOrder.length}`}>
                 {currentChooser.name} has chosen {chainOrder[chainOrder.length - 1].name}!
-                <Portraits
-                    houseguests={[currentChooser, chainOrder[chainOrder.length - 1]]}
-                    centered={true}
-                />
-            </Centered>
+            </Centered>,
+            <Portraits
+                houseguests={[currentChooser, chainOrder[chainOrder.length - 1]]}
+                key={`safetychain-${newGameState.phase}-${chainOrder.length}-2`}
+                centered={true}
+            />
         );
         currentChooser = chainOrder[chainOrder.length - 1];
     }
@@ -46,8 +48,12 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     sceneContent.push(
         <Centered key={`safetychain-final-${newGameState.phase}-${chainOrder.length}`}>
             {options[0].name} has been left out!
-            <Portrait houseguest={options[0]} centered={true} />
-        </Centered>
+        </Centered>,
+        <Portrait
+            houseguest={options[0]}
+            centered={true}
+            key={`safetychain-final-${newGameState.phase}-${chainOrder.length}-2`}
+        />
     );
     evictHouseguest(newGameState, options[0].id);
     const scene: Scene = new Scene({

@@ -122,6 +122,23 @@ function castF4vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest, HoH: H
     };
 }
 
+export function getWorstTarget(hero: Houseguest, options: Houseguest[], gameState: GameState): Houseguest {
+    const sortedOptions = [...options];
+    // worst target is in position 0
+    sortedOptions.sort((hg1, hg2) => {
+        return isBetterTarget(
+            getRelationshipSummary(hero, hg1),
+            getRelationshipSummary(hero, hg2),
+            hero,
+            gameState
+        )
+            ? -1
+            : 1;
+    });
+    if (sortedOptions.length === 0) throw "Tried to get a worst target from 0 options";
+    return sortedOptions[0];
+}
+
 // returns the id of the houseguests you're backdooring
 export function backdoorNPlayers(
     hero: Houseguest,
