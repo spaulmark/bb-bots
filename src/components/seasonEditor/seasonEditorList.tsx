@@ -10,6 +10,7 @@ import { min } from "lodash";
 import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
 import { GameState } from "../../model/gameState";
+import { TwoWayRelationshipType } from "../../utils/ai/classifyRelationship";
 
 const common = `
 padding: 10px;
@@ -173,14 +174,20 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             removeFirstNMatching(
                 newItems,
                 twist.type.eliminates,
-                (item) => item.episode === BigBrotherVanilla
+                (item) => item.episode === BigBrotherVanilla,
+                twist.type.chainable ? 1 : 0
             );
-            newItems.unshift({
+            // if chainable, add at index 1 instead
+            const insertAt = newItems.findIndex(
+                (value, index, obj) => index > 0 && value.episode === BigBrotherVanilla
+            );
+            const newItem = {
                 id: (this.id++).toString(),
                 weekText: ``,
                 episode: twist.type,
                 isValid: true,
-            });
+            };
+            twist.type.chainable ? newItems.splice(insertAt, 0, newItem) : newItems.unshift(newItem);
             this.refreshItems(newItems);
         } else {
             // remove the LAST instance of the twist, and add X vanilla episodes
@@ -205,7 +212,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         let playerCount: number = this.props.castSize;
 
         for (const item of newItems) {
-            const chainable: boolean = !!item.episode.chainable; //&& week === 0;
+            const chainable: boolean = !!item.episode.chainable;
             const isValidChain: boolean = chainable ? week !== 0 : true;
             const isValid = item.episode.canPlayWith(playerCount) && isValidChain;
             !chainable && week++;

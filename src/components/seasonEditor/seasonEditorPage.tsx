@@ -21,6 +21,7 @@ import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { Screens } from "../topbar/topBar";
 import { getEpisodeLibrary, SeasonEditorList } from "./seasonEditorList";
 import { TwistAdder } from "./twistAdder";
+import { SafetyChain } from "../episode/safetyChain";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -34,6 +35,7 @@ export const Label = styled.label`
 const twists: EpisodeType[] = [
     DoubleEviction,
     TripleEvictionCad,
+    SafetyChain,
     InstantEviction,
     NoVeto,
     DiamondVetoEpisode,
