@@ -25,13 +25,15 @@ export interface VoteType {
 
 export class SaveVote implements VoteType {
     id: number;
+    text: string = "";
     render = (state: GameState) => (
         <SaveCell key={getKey()}>
-            <Centered noMargin={true}>{getById(state, this.id).name}</Centered>
+            <Centered noMargin={true}>{this.text ? this.text : getById(state, this.id).name}</Centered>
         </SaveCell>
     );
-    constructor(id: number) {
+    constructor(id: number, text?: string) {
         this.id = id;
+        text !== undefined && (this.text = text);
     }
 }
 

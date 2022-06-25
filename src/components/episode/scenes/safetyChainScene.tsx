@@ -2,7 +2,6 @@ import React from "react";
 import { GameState, getById, Houseguest, nonEvictedHouseguests } from "../../../model";
 import { GrayVote, PoVvote, SaveVote } from "../../../model/logging/voteType";
 import { Centered, CenteredBold } from "../../layout/centered";
-import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import { Portraits } from "../../playerPortrait/portraits";
 import { Scene } from "./scene";
 import { getWorstTarget } from "../../../utils/ai/aiApi";
@@ -48,6 +47,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         );
         currentChooser = chainOrder[chainOrder.length - 1];
     }
+    newGameState.currentLog.votes[currentChooser.id] = new SaveVote(-1, "Not eligible");
 
     const leftOut = options.slice(0, 3);
 
@@ -65,7 +65,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     );
     let safetyComp2scene;
     let safeHg: Houseguest[];
-    [newGameState, safetyComp2scene, safeHg] = generateHohCompScene(initialGameState, {
+    [newGameState, safetyComp2scene, safeHg] = generateHohCompScene(newGameState, {
         doubleEviction: true,
         competitors: leftOut,
         customText: ``,
@@ -91,7 +91,9 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
             <div>
                 {HoHscene.content}
                 {sceneContent}
-                <div style={{ marginTop: 200 }}></div>
+                <div style={{ marginTop: 50 }}>
+                    <Centered> ...</Centered>
+                </div>
                 {safetyComp2scene.content}
                 {evictionScene.content}
             </div>
