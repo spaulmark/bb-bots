@@ -144,7 +144,6 @@ export function generateVetoScenesOnwards(
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, [hoh], nominees, {
         doubleEviction,
-        povWinner,
         votingTo: "Evict",
     });
     if (veto === null) {

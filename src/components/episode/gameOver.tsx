@@ -1,7 +1,7 @@
 import { Episode, EpisodeType } from "./episodes";
 import { Scene } from "./scenes/scene";
 import { GameState } from "../../model";
-import { generateVotingTable } from "./scenes/votingTable";
+import { generateVotingTable } from "../votingTable/votingTable";
 import { evictHouseguest } from "./utilities/evictHouseguest";
 
 export const GameOver: EpisodeType = {

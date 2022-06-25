@@ -23,10 +23,15 @@ function getHighestIndicies(numbers: number[]): number[] {
     return highestIndicies;
 }
 
+interface TieBreaker {
+    hg: Houseguest;
+    text: string;
+}
+
 interface EvictionSceneOptions {
     votingTo: "Save" | "Evict";
     doubleEviction?: boolean;
-    povWinner?: Houseguest;
+    tieBreaker?: TieBreaker;
 }
 
 export function generateEvictionScene(
@@ -69,7 +74,7 @@ export function generateEvictionScene(
     }
     let tieVote = pluralities.length > 1;
     let tieBreaker = { decision: -1, reason: "" };
-    const tieBreakerHg = coHoH ? options.povWinner : hohArray[0];
+    const tieBreakerHg = options.tieBreaker ? options.tieBreaker.hg : hohArray[0];
     if (tieVote) {
         newGameState.currentLog.outOf++;
         tieBreaker = castVote(
@@ -139,7 +144,7 @@ export function generateEvictionScene(
         ? "By a unanimous vote..."
         : `By a vote of ${listVotes(voteCounts.map((v) => `${v}`))}...`;
 
-    const compWinner = coHoH ? "Power of Veto winner" : "current Head of Household";
+    const compWinner = options.tieBreaker ? options.tieBreaker.text : "current Head of Household";
     const soleVoteText = `${
         tieBreakerHg!.name
     }, as ${compWinner}, you must cast the sole vote to ${options.votingTo.toLowerCase()}.`;

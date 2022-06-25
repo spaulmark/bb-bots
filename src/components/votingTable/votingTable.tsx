@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import { EpisodeLog } from "../../../model/logging/episodelog";
-import { CenteredBold, Centered, CenteredItallic } from "../../layout/centered";
-import { GameState, getById } from "../../../model";
-import { VoteType, WinnerVote, RunnerUpVote } from "../../../model/logging/voteType";
-import { FullscreenButton } from "../../mainPage/fullscreenButton";
-import { ColorTheme } from "../../../theme/theme";
+import { EpisodeLog } from "../../model/logging/episodelog";
+import { CenteredBold, Centered, CenteredItallic } from "../layout/centered";
+import { GameState, getById } from "../../model";
+import { VoteType, WinnerVote, RunnerUpVote } from "../../model/logging/voteType";
+import { FullscreenButton } from "../mainPage/fullscreenButton";
+import { ColorTheme } from "../../theme/theme";
 import _ from "lodash";
 
 export const EndgameTableCell = styled.td`
@@ -18,12 +18,16 @@ const EndgameTable = styled.table`
     border-collapse: collapse;
 `;
 
-const Gray = styled(EndgameTableCell)`
+const GrayCell = styled(EndgameTableCell)`
     background-color: ${({ theme }: { theme: ColorTheme }) => theme.grayCell};
 `;
 
 export const SaveCell = styled(EndgameTableCell)`
     background-color: ${({ theme }: { theme: ColorTheme }) => theme.saveCell};
+`;
+
+export const NotEligibleCell = styled(EndgameTableCell)`
+    background-color: #7d7d7d;
 `;
 
 const White = styled(EndgameTableCell)`
@@ -63,9 +67,9 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const houseguestCells: JSX.Element[][] = [];
     gameState.houseguests.forEach((hg, i) => {
         houseguestCells[hg.id] = [
-            <Gray key={`hg-name---${i}`}>
+            <GrayCell key={`hg-name---${i}`}>
                 <CenteredBold noMargin={true}>{hg.name}</CenteredBold>
-            </Gray>,
+            </GrayCell>,
         ];
     });
     const evictionOrder: [number, number][] = [];
@@ -198,9 +202,9 @@ function generateEvictedRow(
 ) {
     if (!log) {
         cells.push(
-            <Gray key={`evicted${i}--${anotherKey++}`} rowSpan={2}>
+            <GrayCell key={`evicted${i}--${anotherKey++}`} rowSpan={2}>
                 <CenteredBold noMargin={true}>Evicted</CenteredBold>
-            </Gray>
+            </GrayCell>
         );
         return;
     }
@@ -238,13 +242,13 @@ function generateEvictedRow(
 function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={`postVeto--${i}-${anotherKey++}`}>
+            <GrayCell key={`postVeto--${i}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
                     <small>(post-veto)</small>
                 </CenteredBold>
-            </Gray>
+            </GrayCell>
         );
         return;
     }
@@ -266,9 +270,9 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
 function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={`veto--${i}-${anotherKey++}`}>
+            <GrayCell key={`veto--${i}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>Veto Winner</CenteredBold>
-            </Gray>
+            </GrayCell>
         );
         return;
     }
@@ -289,13 +293,13 @@ function interleave<T>(arr: T[], thing: (key: number) => T, key: number): T[] {
 function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
     if (!log) {
         cells.push(
-            <Gray key={`preveto--${i}-${anotherKey++}`}>
+            <GrayCell key={`preveto--${i}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
                     <small>(pre-veto)</small>
                 </CenteredBold>
-            </Gray>
+            </GrayCell>
         );
         return;
     }
@@ -330,20 +334,20 @@ function generateTopRow(
     colspan: number
 ) {
     if (!log) {
-        cells.push(<Gray key={`toprow--${i}`} />);
+        cells.push(<GrayCell key={`toprow--${i}`} />);
         return;
     }
     if (i === max) {
         cells.push(
-            <Gray key={`toprow--${i}`} colSpan={2}>
+            <GrayCell key={`toprow--${i}`} colSpan={2}>
                 <CenteredBold noMargin={true}>Finale</CenteredBold>
-            </Gray>
+            </GrayCell>
         );
         return;
     }
     cells.push(
-        <Gray key={`toprow--${i}`} colSpan={colspan}>
+        <GrayCell key={`toprow--${i}`} colSpan={colspan}>
             <CenteredBold noMargin={true}>Week {i}</CenteredBold>
-        </Gray>
+        </GrayCell>
     );
 }

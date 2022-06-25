@@ -1,18 +1,18 @@
 import React from "react";
-import { GameState, Houseguest, nonEvictedHouseguests } from "../../../model";
-import { HoHVote, NomineeVote, NormalVote, SaveVote } from "../../../model/logging/voteType";
+import { GameState, getById, Houseguest, nonEvictedHouseguests } from "../../../model";
+import { GrayVote, PoVvote, SaveVote } from "../../../model/logging/voteType";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import { Portraits } from "../../playerPortrait/portraits";
 import { Scene } from "./scene";
-import { evictHouseguest } from "../utilities/evictHouseguest";
 import { getWorstTarget } from "../../../utils/ai/aiApi";
 import { listNames } from "../../../utils/listStrings";
 import { generateHohCompScene } from "./hohCompScene";
+import { generateEvictionScene } from "./evictionScene";
 
 export function generateSafetyChainScene(initialGameState: GameState): [GameState, Scene] {
     const chainOrder: Houseguest[] = [];
-    const [newGameState, HoHscene, HoHarray] = generateHohCompScene(initialGameState, {
+    let [newGameState, HoHscene, HoHarray] = generateHohCompScene(initialGameState, {
         doubleEviction: true,
         customText:
             "Houseguests, please return to the living room. It is time for a Safety Chain Special Eviction.",
@@ -32,7 +32,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         const newSafeIndex = options.indexOf(getWorstTarget(currentChooser, options, newGameState));
         chainOrder.push(options[newSafeIndex]);
         newGameState.currentLog.votes[currentChooser.id] = first
-            ? new HoHVote(options[newSafeIndex].id)
+            ? new PoVvote(options[newSafeIndex].id)
             : new SaveVote(options[newSafeIndex].id);
         first = false;
         options.splice(newSafeIndex, 1);
@@ -51,9 +51,8 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
 
     const leftOut = options.slice(0, 3);
 
-    newGameState.currentLog.votes[chainOrder[chainOrder.length - 1].id] = new NomineeVote(false);
-    newGameState.currentLog.votes[options[0].id] = new NomineeVote(true);
-    newGameState.currentLog.nominationsPostVeto = [options[0].name, chainOrder[chainOrder.length - 1].name];
+    leftOut.forEach((hg) => (newGameState.currentLog.votes[hg.id] = new GrayVote("Not eligible")));
+
     sceneContent.push(
         <CenteredBold key={`safetychain-final-${newGameState.phase}-${chainOrder.length}`}>
             {listNames(leftOut.map((h) => h.name))} compete in a second safety competition.
@@ -64,7 +63,26 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
             key={`safetychain-final-${newGameState.phase}-${chainOrder.length}-2`}
         />
     );
-    evictHouseguest(newGameState, options[0].id);
+    let safetyComp2scene;
+    let safeHg: Houseguest[];
+    [newGameState, safetyComp2scene, safeHg] = generateHohCompScene(initialGameState, {
+        doubleEviction: true,
+        competitors: leftOut,
+        customText: ``,
+        skipHoHWin: true,
+        bottomText: "has won the safety competition!",
+    });
+    newGameState.incrementLogIndex();
+    const noms = leftOut.filter((hg) => hg.id !== safeHg[0].id).map((hg) => getById(newGameState, hg.id));
+
+    newGameState.currentLog.nominationsPostVeto = noms.map((n) => n.name);
+    let evictionScene;
+    noms.forEach((nom) => nom.nominations++);
+    [newGameState, evictionScene] = generateEvictionScene(newGameState, [], noms, {
+        votingTo: "Evict",
+        doubleEviction: true,
+        tieBreaker: { hg: chainStarter, text: "Safety Competition winner" },
+    });
 
     const scene: Scene = new Scene({
         title: "Chain Ceremony",
@@ -73,7 +91,9 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
             <div>
                 {HoHscene.content}
                 {sceneContent}
-                <NextEpisodeButton />
+                <div style={{ marginTop: 200 }}></div>
+                {safetyComp2scene.content}
+                {evictionScene.content}
             </div>
         ),
     });

@@ -65,7 +65,7 @@ function generateCoHoH(initialGamestate: GameState): Episode {
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hohArray, nominees, {
         votingTo: "Evict",
-        povWinner,
+        tieBreaker: { hg: povWinner, text: "Power of Veto winner" },
     });
     scenes.push(evictionScene);
     return new Episode({

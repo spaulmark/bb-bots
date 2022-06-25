@@ -9,7 +9,8 @@ import {
     HohCell,
     SaveCell,
     PoVCell,
-} from "../../components/episode/scenes/votingTable";
+    NotEligibleCell,
+} from "../../components/votingTable/votingTable";
 
 let voteKey = 0;
 
@@ -88,6 +89,21 @@ export class PoVvote implements VoteType {
     };
     constructor(id: number) {
         this.id = id;
+    }
+}
+
+export class GrayVote implements VoteType {
+    id: number = -1;
+    text: string = "";
+    render = (state: GameState) => {
+        return (
+            <NotEligibleCell key={getKey()}>
+                <CenteredItallic noMargin={true}>{this.text} </CenteredItallic>
+            </NotEligibleCell>
+        );
+    };
+    constructor(text: string) {
+        this.text = text;
     }
 }
 
