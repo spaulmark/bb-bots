@@ -14,13 +14,15 @@ const EditPortrait = styled.div`
     word-wrap: break-word;
 `;
 
+export const unselectable = `   -webkit-touch-callout: none;
+-webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;`;
+
 export const Noselect = styled.div`
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    ${unselectable}
 `;
 
 const XButton = styled(Noselect)`
