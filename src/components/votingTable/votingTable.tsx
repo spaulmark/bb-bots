@@ -271,6 +271,7 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
         );
         return;
     }
+    if (log.nominationsPostVeto.length === 0) return;
     cells.push(
         <White key={`preveto--${i}-${anotherKey++}`}>
             <Centered noMargin={true}>
@@ -322,7 +323,18 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
         );
         return;
     }
-    if (log.nominationsPreVeto.length === 0 || log.vetoWinner === undefined) {
+    const noNomsPreVeto = log.nominationsPreVeto.length === 0;
+    const noVetoWinner = log.vetoWinner === undefined;
+    const noNomsPostveto = log.nominationsPostVeto.length === 0;
+    if (noNomsPreVeto && noVetoWinner && noNomsPostveto) {
+        cells.push(
+            <White key={`preveto--${i}-${anotherKey++}`} rowSpan={3}>
+                <CenteredItallic noMargin={true}>(none)</CenteredItallic>
+            </White>
+        );
+        return;
+    }
+    if (noNomsPreVeto || noVetoWinner) {
         cells.push(
             <White key={`preveto--${i}-${anotherKey++}`} rowSpan={2}>
                 <CenteredItallic noMargin={true}>(none)</CenteredItallic>
