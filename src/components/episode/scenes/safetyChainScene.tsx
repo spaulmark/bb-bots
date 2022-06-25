@@ -52,6 +52,8 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     const leftOut = options.slice(0, 3);
 
     leftOut.forEach((hg) => (newGameState.currentLog.votes[hg.id] = new GrayVote("Not eligible")));
+    newGameState.currentLog.customEvictedText = "not selected for safety";
+    newGameState.currentLog.customEvicted = leftOut.map((hg) => hg.id);
 
     sceneContent.push(
         <CenteredBold key={`safetychain-final-${newGameState.phase}-${chainOrder.length}`}>
@@ -72,6 +74,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         skipHoHWin: true,
         bottomText: "has won the safety competition!",
     });
+
     newGameState.incrementLogIndex();
     const noms = leftOut.filter((hg) => hg.id !== safeHg[0].id).map((hg) => getById(newGameState, hg.id));
 

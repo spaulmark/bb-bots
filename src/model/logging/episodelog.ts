@@ -7,6 +7,8 @@ export class EpisodeLog {
     public runnerUp?: number;
     public nominationsPostVeto: string[] = [];
     public evicted: number[] = [];
+    public customEvicted: number[] = [];
+    public customEvictedText: string = "";
     public votes: { [id: string]: VoteType } = {};
     public votesInMajority: number = -1;
     public outOf: number = -1;

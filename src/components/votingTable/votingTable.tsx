@@ -211,6 +211,25 @@ function generateEvictedRow(
     const saveOrEvict =
         log.soleVoter !== undefined ? "evict" : (log.votingTo && log.votingTo.toLowerCase()) || "evict";
 
+    if (log.customEvicted.length > 0) {
+        const names = log.customEvicted.map((hg) => [
+            <b key={`ev-name-${anotherKey++}`}>{getById(gameState, hg).name}</b>,
+            <br key={`ev-name-${anotherKey++}`} />,
+        ]);
+
+        const content = (
+            <NotEligibleCell key={`evicted${i}--${anotherKey++}`} rowSpan={2}>
+                <Centered noMargin={true}>
+                    {names}
+                    <small>{log.customEvictedText}</small>
+                </Centered>
+            </NotEligibleCell>
+        );
+        cells.push(content);
+
+        return;
+    }
+
     const rowSpan = log.evicted.length === 1 ? 2 : 1;
     log.evicted.forEach((evicted, i) => {
         const voteTextLine1 =
