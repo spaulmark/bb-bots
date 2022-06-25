@@ -1,22 +1,23 @@
 import React from "react";
 import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests, randomPlayer } from "../../../model";
-import { HoHVote, NomineeVote, NormalVote } from "../../../model/logging/voteType";
+import { HoHVote, NomineeVote, NormalVote, SaveVote } from "../../../model/logging/voteType";
 import { Centered } from "../../layout/centered";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
-import { Portrait, Portraits } from "../../playerPortrait/portraits";
+import { Portraits } from "../../playerPortrait/portraits";
 import { Scene } from "./scene";
 import { evictHouseguest } from "../utilities/evictHouseguest";
 import { getWorstTarget } from "../../../utils/ai/aiApi";
+import { listNames } from "../../../utils/listStrings";
 
 export function generateSafetyChainScene(initialGameState: GameState): [GameState, Scene] {
     const newGameState = new MutableGameState(initialGameState);
     const chainOrder: Houseguest[] = [];
-    const chainStarter: Houseguest = randomPlayer(newGameState.houseguests);
+    const chainStarter: Houseguest = randomPlayer(newGameState.houseguests, newGameState.previousHOH);
     const options: Houseguest[] = nonEvictedHouseguests(newGameState).filter(
         (hg) => hg.id !== chainStarter.id
     );
     chainOrder.push(chainStarter);
-    const safeSpots = newGameState.nonEvictedHouseguests.size - 1;
+    const safeSpots = newGameState.nonEvictedHouseguests.size - 3;
     let currentChooser: Houseguest = chainStarter;
     const sceneContent: JSX.Element[] = [];
     let first = true;
@@ -25,7 +26,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         chainOrder.push(options[newSafeIndex]);
         newGameState.currentLog.votes[currentChooser.id] = first
             ? new HoHVote(options[newSafeIndex].id)
-            : new NormalVote(options[newSafeIndex].id);
+            : new SaveVote(options[newSafeIndex].id);
         first = false;
         options.splice(newSafeIndex, 1);
         sceneContent.push(
@@ -40,16 +41,19 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
         );
         currentChooser = chainOrder[chainOrder.length - 1];
     }
-    newGameState.currentLog.soleVoter = chainOrder[chainOrder.length - 2].name;
+
+    const leftOut = options.slice(0, 3);
+
+    // newGameState.currentLog.soleVoter = chainOrder[chainOrder.length - 2].name;
     newGameState.currentLog.votes[chainOrder[chainOrder.length - 1].id] = new NomineeVote(false);
     newGameState.currentLog.votes[options[0].id] = new NomineeVote(true);
     newGameState.currentLog.nominationsPostVeto = [options[0].name, chainOrder[chainOrder.length - 1].name];
     sceneContent.push(
         <Centered key={`safetychain-final-${newGameState.phase}-${chainOrder.length}`}>
-            {options[0].name} has been left out!
+            {listNames(leftOut.map((h) => h.name))} go compete in safety comp!
         </Centered>,
-        <Portrait
-            houseguest={options[0]}
+        <Portraits
+            houseguests={leftOut}
             centered={true}
             key={`safetychain-final-${newGameState.phase}-${chainOrder.length}-2`}
         />
