@@ -1,7 +1,6 @@
 import React from "react";
 import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests, randomPlayer } from "../../../model";
 import { HoHVote, NomineeVote, NormalVote } from "../../../model/logging/voteType";
-import { getBestFriend } from "../../../utils/ai/aiUtils";
 import { Centered } from "../../layout/centered";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
