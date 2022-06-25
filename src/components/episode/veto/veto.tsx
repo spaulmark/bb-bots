@@ -113,7 +113,6 @@ function useGoldenVeto(
     let potentialSave: Houseguest | null = null;
     let alwaysSave: Houseguest | null = null;
     nominees.forEach((nominee) => {
-        // TODO: Save people who you can beat in the end if you are low winrate
         const relationship = classifyRelationship(
             hero.popularity,
             nominee.popularity,

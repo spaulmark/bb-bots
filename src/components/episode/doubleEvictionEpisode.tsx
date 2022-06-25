@@ -21,7 +21,7 @@ function generateDoubleEviction(initialGamestate: GameState): Episode {
     let currentGameState = new MutableGameState(initialGamestate);
     const scenes: Scene[] = [];
 
-    currentGameState.incrementLogIndex(); // TODO: i have no idea if this works or not
+    currentGameState.incrementLogIndex();
     const doubleEviction = generateBBVanillaScenes(currentGameState, GoldenVeto, true);
     currentGameState = doubleEviction.gameState;
     scenes.push(
