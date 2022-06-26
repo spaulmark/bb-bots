@@ -140,7 +140,7 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const postVetoRow = <tr>{postVetoCells}</tr>;
     const blackRow = (
         <BlackRow>
-            <td colSpan={gameState.houseguests.length} />
+            <td colSpan={evictedCells.length} />
         </BlackRow>
     );
     const houseguestRows: JSX.Element[] = [];
