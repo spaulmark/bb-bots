@@ -14,7 +14,6 @@ import { InstantEviction } from "../episode/instantEvictionEpisode";
 import { NoVeto } from "../episode/noVetoEpisode";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { TripleEvictionCad } from "../episode/tripleEvictionEpisodeCad";
-import { TripleEvictionUs } from "../episode/tripleEvictionEpisodeUs";
 import { HasText } from "../layout/text";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
@@ -22,6 +21,7 @@ import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { Screens } from "../topbar/topBar";
 import { getEpisodeLibrary, SeasonEditorList } from "./seasonEditorList";
 import { TwistAdder } from "./twistAdder";
+import { SafetyChain } from "../episode/safetyChain";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -35,7 +35,7 @@ export const Label = styled.label`
 const twists: EpisodeType[] = [
     DoubleEviction,
     TripleEvictionCad,
-    TripleEvictionUs,
+    SafetyChain,
     InstantEviction,
     NoVeto,
     DiamondVetoEpisode,

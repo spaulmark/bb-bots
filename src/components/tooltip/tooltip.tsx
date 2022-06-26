@@ -1,8 +1,11 @@
 import React from "react";
 import Popover from "react-tiny-popover";
 import styled from "styled-components";
+import { unselectable } from "../playerPortrait/setupPortrait";
 
-const common = `padding: 3px 8px;
+const common = `
+${unselectable}
+padding: 3px 8px;
 color: #fff;
 text-align: center;
 background-color: #000;

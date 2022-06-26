@@ -1,64 +1,110 @@
 import React from "react";
-import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests, randomPlayer } from "../../../model";
-import { HoHVote, NomineeVote, NormalVote } from "../../../model/logging/voteType";
-import { getBestFriend } from "../../../utils/ai/aiUtils";
-import { Centered } from "../../layout/centered";
-import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
-import { Portrait, Portraits } from "../../playerPortrait/portraits";
+import { GameState, getById, Houseguest, nonEvictedHouseguests } from "../../../model";
+import { GrayVote, PoVvote, SaveVote } from "../../../model/logging/voteType";
+import { Centered, CenteredBold } from "../../layout/centered";
+import { Portraits } from "../../playerPortrait/portraits";
 import { Scene } from "./scene";
-import { evictHouseguest } from "../utilities/evictHouseguest";
+import { getWorstTarget } from "../../../utils/ai/aiApi";
+import { listNames } from "../../../utils/listStrings";
+import { generateHohCompScene } from "./hohCompScene";
+import { generateEvictionScene } from "./evictionScene";
 
-export function generateSafetyChainScene(initialGameState: GameState): void {
-    // const newGameState = new MutableGameState(initialGameState);
-    // const chainOrder: Houseguest[] = [];
-    // const chainStarter: Houseguest = randomPlayer(newGameState.houseguests);
-    // const options: Houseguest[] = nonEvictedHouseguests(newGameState).filter(
-    //     (hg) => hg.id !== chainStarter.id
-    // );
-    // chainOrder.push(chainStarter);
-    // const safeSpots = newGameState.nonEvictedHouseguests.size - 1;
-    // let currentChooser: Houseguest = chainStarter;
-    // const sceneContent: JSX.Element[] = [];
-    // let first = true;
-    // while (chainOrder.length < safeSpots) {
-    //     const newSafeIndex = getBestFriend(currentChooser, options);
-    //     chainOrder.push(options[newSafeIndex]);
-    //     newGameState.currentLog.votes[currentChooser.id] = first
-    //         ? new HoHVote(options[newSafeIndex].id)
-    //         : new NormalVote(options[newSafeIndex].id);
-    //     first = false;
-    //     options.splice(newSafeIndex, 1);
-    //     sceneContent.push(
-    //         <Centered key={`safetychain-${newGameState.phase}-${chainOrder.length}`}>
-    //             {currentChooser.name} has chosen {chainOrder[chainOrder.length - 1].name}!
-    //             <Portraits
-    //                 houseguests={[currentChooser, chainOrder[chainOrder.length - 1]]}
-    //                 centered={true}
-    //             />
-    //         </Centered>
-    //     );
-    //     currentChooser = chainOrder[chainOrder.length - 1];
-    // }
-    // newGameState.currentLog.soleVoter = chainOrder[chainOrder.length - 2].name;
-    // newGameState.currentLog.votes[chainOrder[chainOrder.length - 1].id] = new NomineeVote(false);
-    // newGameState.currentLog.votes[options[0].id] = new NomineeVote(true);
-    // newGameState.currentLog.nominationsPostVeto = [options[0].name, chainOrder[chainOrder.length - 1].name];
-    // sceneContent.push(
-    //     <Centered key={`safetychain-final-${newGameState.phase}-${chainOrder.length}`}>
-    //         {options[0].name} has been left out!
-    //         <Portrait houseguest={options[0]} centered={true} />
-    //     </Centered>
-    // );
-    // evictHouseguest(newGameState, options[0].id); // TODO: newGameState = evicthouseguest...
-    // const scene: Scene = new Scene({
-    //     title: "Chain Ceremony",
-    //     gameState: initialGameState,
-    //     content: (
-    //         <div>
-    //             {sceneContent}
-    //             <NextEpisodeButton />
-    //         </div>
-    //     ),
-    // });
-    // return [newGameState, scene];
+export function generateSafetyChainScene(initialGameState: GameState): [GameState, Scene] {
+    const chainOrder: Houseguest[] = [];
+    let [newGameState, HoHscene, HoHarray] = generateHohCompScene(initialGameState, {
+        doubleEviction: true,
+        customText:
+            "Houseguests, please return to the living room. It is time for a Safety Chain Special Eviction.",
+        skipHoHWin: true,
+        bottomText: "has won the safety competition!",
+    });
+    const chainStarter: Houseguest = HoHarray[0];
+    const options: Houseguest[] = nonEvictedHouseguests(newGameState).filter(
+        (hg) => hg.id !== chainStarter.id
+    );
+    chainOrder.push(chainStarter);
+    const safeSpots = newGameState.nonEvictedHouseguests.size - 3;
+    let currentChooser: Houseguest = chainStarter;
+    const sceneContent: JSX.Element[] = [];
+    let first = true;
+    while (chainOrder.length < safeSpots) {
+        const newSafeIndex = options.indexOf(getWorstTarget(currentChooser, options, newGameState));
+        chainOrder.push(options[newSafeIndex]);
+        newGameState.currentLog.votes[currentChooser.id] = first
+            ? new PoVvote(options[newSafeIndex].id)
+            : new SaveVote(options[newSafeIndex].id);
+        first = false;
+        options.splice(newSafeIndex, 1);
+        sceneContent.push(
+            <Centered key={`safetychain-${newGameState.phase}-${chainOrder.length}`}>
+                {currentChooser.name} has chosen {chainOrder[chainOrder.length - 1].name}!
+            </Centered>,
+            <Portraits
+                houseguests={[currentChooser, chainOrder[chainOrder.length - 1]]}
+                key={`safetychain-${newGameState.phase}-${chainOrder.length}-2`}
+                centered={true}
+            />
+        );
+        currentChooser = chainOrder[chainOrder.length - 1];
+    }
+    newGameState.currentLog.votes[currentChooser.id] = new SaveVote(-1, "Not eligible");
+
+    const leftOut = options.slice(0, 3);
+
+    leftOut.forEach((hg) => (newGameState.currentLog.votes[hg.id] = new GrayVote("Not eligible")));
+    newGameState.currentLog.customEvictedText = "not selected for safety";
+    newGameState.currentLog.customEvicted = leftOut.map((hg) => hg.id);
+
+    sceneContent.push(
+        <CenteredBold key={`safetychain-final-${newGameState.phase}-${chainOrder.length}`}>
+            {listNames(leftOut.map((h) => h.name))} compete in a second safety competition.
+        </CenteredBold>,
+        <Portraits
+            houseguests={leftOut}
+            centered={true}
+            key={`safetychain-final-${newGameState.phase}-${chainOrder.length}-2`}
+        />
+    );
+    let safetyComp2scene;
+    let safeHg: Houseguest[];
+    [newGameState, safetyComp2scene, safeHg] = generateHohCompScene(newGameState, {
+        doubleEviction: true,
+        competitors: leftOut,
+        customText: ``,
+        skipHoHWin: true,
+        bottomText: "has won the safety competition!",
+    });
+
+    newGameState.incrementLogIndex();
+    const noms = leftOut.filter((hg) => hg.id !== safeHg[0].id).map((hg) => getById(newGameState, hg.id));
+
+    newGameState.currentLog.nominationsPostVeto = noms.map((n) => n.name);
+    let evictionScene;
+    noms.forEach((nom) => nom.nominations++);
+    [newGameState, evictionScene] = generateEvictionScene(newGameState, [], noms, {
+        votingTo: "Evict",
+        doubleEviction: true,
+        tieBreaker: {
+            hg: chainStarter,
+            text: "Safety Competition winner",
+            voteType: (id) => new PoVvote(id),
+        },
+    });
+
+    const scene: Scene = new Scene({
+        title: "Chain Ceremony",
+        gameState: initialGameState,
+        content: (
+            <div>
+                {HoHscene.content}
+                {sceneContent}
+                <div style={{ marginTop: 50 }}>
+                    <Centered> ...</Centered>
+                </div>
+                {safetyComp2scene.content}
+                {evictionScene.content}
+            </div>
+        ),
+    });
+    return [newGameState, scene];
 }

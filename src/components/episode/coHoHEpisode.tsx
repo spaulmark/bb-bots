@@ -7,6 +7,7 @@ import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
 import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
 import { generateEvictionScene } from "./scenes/evictionScene";
+import { PoVvote } from "../../model/logging/voteType";
 
 export const CoHoH: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
@@ -65,7 +66,7 @@ function generateCoHoH(initialGamestate: GameState): Episode {
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hohArray, nominees, {
         votingTo: "Evict",
-        povWinner,
+        tieBreaker: { hg: povWinner, text: "Power of Veto winner", voteType: (id) => new PoVvote(id) },
     });
     scenes.push(evictionScene);
     return new Episode({

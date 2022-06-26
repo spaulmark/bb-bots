@@ -5,8 +5,8 @@ import { selectedColor } from "./houseguestPortraitController";
 const EditPortrait = styled.div`
     padding: 5px;
     margin: 5px;
-    border: 1px solid grey;
-    background-color: grey;
+    border: 1px solid #9d9d9d;
+    background-color: #9d9d9d;
     color: black;
     border-radius: 5px;
     font-weight: 600;
@@ -14,13 +14,15 @@ const EditPortrait = styled.div`
     word-wrap: break-word;
 `;
 
+export const unselectable = `   -webkit-touch-callout: none;
+-webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;`;
+
 export const Noselect = styled.div`
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    ${unselectable}
 `;
 
 const XButton = styled(Noselect)`

@@ -38,6 +38,10 @@ export class TwistAdder extends React.Component<
 
     public render(): JSX.Element {
         const twistCount = this.state.twistCount;
+        const overCapacity = this.state.twistCapacity < this.props.type.eliminates;
+        const atCapacity = this.state.twistCapacity <= this.props.type.eliminates;
+        // chainables disable one early b/c they can't be the first episode
+        const isDisabled = this.props.type.chainable ? atCapacity : overCapacity;
         return (
             <div
                 className="column is-5-desktop is-5-widescreen is-5-fullhd is-12-tablet"
@@ -78,7 +82,7 @@ export class TwistAdder extends React.Component<
                                     twist$.next({ type: this.props.type, add: true });
                                     this.setState({ twistCount: twistCount + 1 });
                                 }}
-                                disabled={this.state.twistCapacity < this.props.type.eliminates}
+                                disabled={isDisabled}
                             >
                                 +
                             </button>

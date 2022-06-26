@@ -1,4 +1,4 @@
-import { GameState, Houseguest, MutableGameState, randomPlayer } from "../../../model";
+import { exclude, GameState, Houseguest, MutableGameState, randomPlayer } from "../../../model";
 import { Scene } from "./scene";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
@@ -12,6 +12,10 @@ interface HohCompOptions {
     customText?: string;
     coHoH?: boolean;
     coHohIsFinal?: boolean;
+    skipHoHWin?: boolean;
+    compName?: string;
+    bottomText?: string;
+    competitors?: Houseguest[];
 }
 
 export function generateHohCompScene(
@@ -23,35 +27,37 @@ export function generateHohCompScene(
     const coHohIsFinal = options.coHohIsFinal || false;
     const doubleEviction: boolean = options.doubleEviction || false;
     const previousHoh = initialGameState.previousHOH ? initialGameState.previousHOH : [];
-    const newHoH: Houseguest = randomPlayer(newGameState.houseguests, previousHoh);
-    const newHoH2: Houseguest = options.coHoH
-        ? randomPlayer(newGameState.houseguests, [newHoH, ...previousHoh])
-        : newHoH;
+    const competitors = options.competitors || exclude(newGameState.houseguests, previousHoh);
+    const newHoH: Houseguest = randomPlayer(competitors);
+    const newHoH2: Houseguest = options.coHoH ? randomPlayer(competitors, [newHoH, ...previousHoh]) : newHoH;
     // set previous hoh
-    (!coHoH || coHohIsFinal) && (newGameState.previousHOH = [newHoH]);
-    coHoH && coHohIsFinal && (newGameState.previousHOH = [newHoH, newHoH2]);
-    // add hoh vote in whatever
-    (!coHoH || coHohIsFinal) && (newGameState.currentLog.votes[newHoH.id] = new HoHVote());
-    coHoH && coHohIsFinal && (newGameState.currentLog.votes[newHoH2.id] = new HoHVote());
-    // new hoh wins
-    newHoH.hohWins += 1;
-    coHoH && (newHoH2.hohWins += 1);
-
+    if (!options.skipHoHWin) {
+        (!coHoH || coHohIsFinal) && (newGameState.previousHOH = [newHoH]);
+        coHoH && coHohIsFinal && (newGameState.previousHOH = [newHoH, newHoH2]);
+        // add hoh vote in whatever
+        (!coHoH || coHohIsFinal) && (newGameState.currentLog.votes[newHoH.id] = new HoHVote());
+        coHoH && coHohIsFinal && (newGameState.currentLog.votes[newHoH2.id] = new HoHVote());
+        // new hoh wins
+        newHoH.hohWins += 1;
+        coHoH && (newHoH2.hohWins += 1);
+    }
     const portraitLine = coHoH ? (
         <Portraits centered={true} houseguests={[newHoH, newHoH2]} />
     ) : (
         <Portrait centered={true} houseguest={newHoH} />
     );
-    const wonText = `${coHoH ? listNames([newHoH.name, newHoH2.name]) : newHoH.name} ${
-        coHoH ? "have" : "has"
-    } won Head of Household!`;
+    const wonText = options.bottomText
+        ? `${listNames([newHoH.name])} ${options.bottomText}`
+        : `${coHoH ? listNames([newHoH.name, newHoH2.name]) : newHoH.name} ${
+              coHoH ? "have" : "has"
+          } won Head of Household!`;
 
     const scene = new Scene({
         title: "HoH Competition",
         gameState: initialGameState,
         content: (
             <div>
-                {options.customText ? (
+                {options.customText !== undefined ? (
                     <CenteredBold>{options.customText}</CenteredBold>
                 ) : (
                     previousHoh.length > 0 &&

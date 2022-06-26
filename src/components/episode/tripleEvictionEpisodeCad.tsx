@@ -1,6 +1,5 @@
-import { Episode, EpisodeType, GameState, Houseguest } from "../../model";
+import { Episode, EpisodeType, GameState, Houseguest, MutableGameState } from "../../model";
 import React from "react";
-import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Scene } from "./scenes/scene";
 import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
@@ -10,10 +9,11 @@ import { generateEvictionScene } from "./scenes/evictionScene";
 import { GoldenVeto } from "./veto/veto";
 
 export const TripleEvictionCad: EpisodeType = {
-    canPlayWith: (n: number) => n >= 6,
-    eliminates: 3,
+    canPlayWith: (n: number) => n >= 5,
+    eliminates: 2,
     arrowsEnabled: true,
     emoji: "🇨🇦",
+    chainable: true,
     hasViewsbar: true,
     name: "Triple Eviction",
     description:
@@ -22,9 +22,8 @@ export const TripleEvictionCad: EpisodeType = {
 };
 
 export function generateTripleEvictionCad(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
-    let currentGameState = episode.gameState;
-    const scenes: Scene[] = episode.scenes;
+    let currentGameState = new MutableGameState(initialGamestate);
+    const scenes: Scene[] = [];
 
     currentGameState.incrementLogIndex();
 

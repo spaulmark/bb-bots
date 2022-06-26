@@ -18,7 +18,7 @@ export class Episode {
     readonly scenes: Scene[];
     readonly title: string;
     readonly content: JSX.Element;
-    readonly gameState: GameState;
+    readonly gameState: GameState; // State of the game after a phase.
     readonly initialGameState: GameState;
     readonly type: EpisodeType;
     get render(): JSX.Element {
@@ -46,6 +46,7 @@ export interface EpisodeType {
     readonly eliminates: number;
     readonly arrowsEnabled: boolean;
     readonly hasViewsbar: boolean;
+    readonly chainable?: boolean;
     readonly name: string;
     readonly emoji: string;
     readonly description: string;

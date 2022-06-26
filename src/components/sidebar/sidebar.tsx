@@ -38,7 +38,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
             name = name.substr(name.indexOf("/") + 1) || name;
             allBBs.push({
                 name,
-                imageURL: `${baseUrl}/Big Brother ${player}`,
+                imageURL: `${baseUrl}/Big Brother ${player}.png`,
             });
         }
 
@@ -58,7 +58,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
 
     public render() {
         return (
-            <Box style={{ minWidth: 180 }}>
+            <Box style={{ minWidth: 180, maxWidth: 250 }}>
                 <HasText>{this.getEpisodes()}</HasText>
             </Box>
         );

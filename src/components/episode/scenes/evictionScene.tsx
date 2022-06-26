@@ -8,7 +8,14 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { CenteredBold, Centered } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
-import { NomineeVote, NormalVote, HoHVote, SaveVote, PoVvote } from "../../../model/logging/voteType";
+import {
+    NomineeVote,
+    NormalVote,
+    HoHVote,
+    SaveVote,
+    PoVvote,
+    VoteType,
+} from "../../../model/logging/voteType";
 import { evictHouseguest } from "../utilities/evictHouseguest";
 import { listNames, listVotes } from "../../../utils/listStrings";
 
@@ -23,10 +30,16 @@ function getHighestIndicies(numbers: number[]): number[] {
     return highestIndicies;
 }
 
+interface TieBreaker {
+    hg: Houseguest;
+    text: string;
+    voteType: (id: number) => VoteType;
+}
+
 interface EvictionSceneOptions {
     votingTo: "Save" | "Evict";
     doubleEviction?: boolean;
-    povWinner?: Houseguest;
+    tieBreaker?: TieBreaker;
 }
 
 export function generateEvictionScene(
@@ -69,7 +82,7 @@ export function generateEvictionScene(
     }
     let tieVote = pluralities.length > 1;
     let tieBreaker = { decision: -1, reason: "" };
-    const tieBreakerHg = coHoH ? options.povWinner : hohArray[0];
+    const tieBreakerHg = options.tieBreaker ? options.tieBreaker.hg : hohArray[0];
     if (tieVote) {
         newGameState.currentLog.outOf++;
         tieBreaker = castVote(
@@ -77,10 +90,10 @@ export function generateEvictionScene(
             pluralities.map((p) => nominees[p]),
             newGameState
         );
-        const VoteType = coHoH ? PoVvote : HoHVote;
-        newGameState.currentLog.votes[tieBreakerHg!.id] = new VoteType(
-            nominees[pluralities[tieBreaker.decision]].id
-        );
+        const tiebreakerDecision = nominees[pluralities[tieBreaker.decision]].id;
+        newGameState.currentLog.votes[tieBreakerHg!.id] = options.tieBreaker
+            ? options.tieBreaker.voteType(tiebreakerDecision)
+            : new HoHVote(tiebreakerDecision);
     }
     let evictees: Houseguest[] = [];
 
@@ -139,7 +152,7 @@ export function generateEvictionScene(
         ? "By a unanimous vote..."
         : `By a vote of ${listVotes(voteCounts.map((v) => `${v}`))}...`;
 
-    const compWinner = coHoH ? "Power of Veto winner" : "current Head of Household";
+    const compWinner = options.tieBreaker ? options.tieBreaker.text : "current Head of Household";
     const soleVoteText = `${
         tieBreakerHg!.name
     }, as ${compWinner}, you must cast the sole vote to ${options.votingTo.toLowerCase()}.`;
