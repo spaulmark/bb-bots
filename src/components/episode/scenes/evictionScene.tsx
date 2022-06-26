@@ -8,7 +8,14 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { CenteredBold, Centered } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
-import { NomineeVote, NormalVote, HoHVote, SaveVote, PoVvote } from "../../../model/logging/voteType";
+import {
+    NomineeVote,
+    NormalVote,
+    HoHVote,
+    SaveVote,
+    PoVvote,
+    VoteType,
+} from "../../../model/logging/voteType";
 import { evictHouseguest } from "../utilities/evictHouseguest";
 import { listNames, listVotes } from "../../../utils/listStrings";
 
@@ -26,6 +33,7 @@ function getHighestIndicies(numbers: number[]): number[] {
 interface TieBreaker {
     hg: Houseguest;
     text: string;
+    voteType: (id: number) => VoteType;
 }
 
 interface EvictionSceneOptions {
@@ -82,10 +90,10 @@ export function generateEvictionScene(
             pluralities.map((p) => nominees[p]),
             newGameState
         );
-        const VoteType = coHoH ? PoVvote : HoHVote;
-        newGameState.currentLog.votes[tieBreakerHg!.id] = new VoteType(
-            nominees[pluralities[tieBreaker.decision]].id
-        );
+        const tiebreakerDecision = nominees[pluralities[tieBreaker.decision]].id;
+        newGameState.currentLog.votes[tieBreakerHg!.id] = options.tieBreaker
+            ? options.tieBreaker.voteType(tiebreakerDecision)
+            : new HoHVote(tiebreakerDecision);
     }
     let evictees: Houseguest[] = [];
 

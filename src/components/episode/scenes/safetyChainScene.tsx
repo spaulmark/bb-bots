@@ -84,7 +84,11 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     [newGameState, evictionScene] = generateEvictionScene(newGameState, [], noms, {
         votingTo: "Evict",
         doubleEviction: true,
-        tieBreaker: { hg: chainStarter, text: "Safety Competition winner" },
+        tieBreaker: {
+            hg: chainStarter,
+            text: "Safety Competition winner",
+            voteType: (id) => new PoVvote(id),
+        },
     });
 
     const scene: Scene = new Scene({
