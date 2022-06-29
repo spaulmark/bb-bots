@@ -1,11 +1,13 @@
 import React from "react";
 import { selectPlayer } from "./selectedPortrait";
-import { isNotWellDefined, RelationshipMap } from "../../utils";
+import { isNotWellDefined, RelationshipMap, rng } from "../../utils";
 import _ from "lodash";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
 import styled from "styled-components";
 import { ColorTheme } from "../../theme/theme";
+import { Tribe } from "../../model/tribe";
+import { textColor } from "../../model/color";
 
 const Subtitle = styled.small`
     font-weight: 100;
@@ -76,6 +78,7 @@ export interface PortraitProps {
     enemies?: number;
     targetingMe?: number;
     targets?: number[];
+    tribe?: Tribe;
 }
 
 export interface PortraitState {
@@ -133,6 +136,13 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         } else if (props.isEvicted) {
             Portrait = Evicted;
         }
+        const tribe = props.tribe ? (
+            <TribeStyle style={{ backgroundColor: props.tribe.color, color: textColor(props.tribe.color) }}>
+                <small>{props.tribe.name}</small>
+            </TribeStyle>
+        ) : undefined;
+        const imageStyle: any = { height: 100, width: "-moz-available" };
+        if (props.tribe) imageStyle["display"] = "block";
         return (
             <Portrait
                 onClick={() => this.onClick()}
@@ -140,8 +150,8 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
                     backgroundColor: this.controller.backgroundColor(props),
                 }}
             >
-                <Img src={props.imageURL} style={{ height: 100, width: "-moz-available" }} />
-                <br />
+                <Img src={props.imageURL} style={imageStyle} />
+                {tribe}
                 {props.name}
                 <br />
                 {<Subtitle>{subtitle}</Subtitle>}
@@ -149,6 +159,17 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         );
     }
 }
+
+const TribeStyle = styled.div`
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    overflow: clip;
+    display: block;
+    font-weight: normal;
+`;
 
 function getImageClass(props: PortraitProps) {
     let imageClass = props.isEvicted ? Grayscale : Normal;

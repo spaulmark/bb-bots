@@ -2,6 +2,7 @@ import React from "react";
 import { PlayerProfile } from "../../model";
 import { Portraits } from "../playerPortrait/portraits";
 import { RelationshipMap } from "../../utils";
+import { Tribe } from "../../model/tribe";
 export interface IMemoryWallProps {
     readonly houseguests: ProfileHouseguest[];
 }
@@ -20,6 +21,7 @@ export interface ProfileHouseguest extends PlayerProfile {
     friends?: number;
     enemies?: number;
     targetingMe?: number;
+    tribe?: Tribe;
 }
 
 export function MemoryWall(props: IMemoryWallProps): JSX.Element {
