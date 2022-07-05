@@ -8,14 +8,7 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { CenteredBold, Centered } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
-import {
-    NomineeVote,
-    NormalVote,
-    HoHVote,
-    SaveVote,
-    PoVvote,
-    VoteType,
-} from "../../../model/logging/voteType";
+import { NomineeVote, NormalVote, HoHVote, SaveVote, VoteType } from "../../../model/logging/voteType";
 import { evictHouseguest } from "../utilities/evictHouseguest";
 import { listNames, listVotes } from "../../../utils/listStrings";
 

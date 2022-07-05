@@ -44,9 +44,10 @@ export class Episode {
 export interface EpisodeType {
     readonly canPlayWith: (n: number) => boolean;
     readonly eliminates: number;
-    readonly arrowsEnabled: boolean;
-    readonly hasViewsbar: boolean;
+    readonly arrowsEnabled?: boolean;
+    readonly hasViewsbar?: boolean;
     readonly chainable?: boolean;
+    readonly pseudo?: boolean;
     readonly name: string;
     readonly emoji: string;
     readonly description: string;

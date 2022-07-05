@@ -10,7 +10,6 @@ import { min } from "lodash";
 import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
 import { GameState } from "../../model/gameState";
-import { TwoWayRelationshipType } from "../../utils/ai/classifyRelationship";
 
 const common = `
 padding: 10px;
@@ -210,19 +209,21 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         const finalItems = [];
         let week: number = 0;
         let playerCount: number = this.props.castSize;
-
+        let i = 0;
         for (const item of newItems) {
+            const doNotIncrement = i - 1 > 0 && !!newItems[i - 1].episode.pseudo;
             const chainable: boolean = !!item.episode.chainable;
             const isValidChain: boolean = chainable ? week !== 0 : true;
             const isValid = item.episode.canPlayWith(playerCount) && isValidChain;
-            !chainable && week++;
-            item.weekText = `Week ${week}: F${playerCount}`;
+            !chainable && !doNotIncrement && week++;
+            item.weekText = `Week ${week || 1}: F${playerCount}`;
             item.isValid = isValid;
             playerCount -= item.episode.eliminates;
             // delete all vanilla big brother episodes if player count is below 3
             if (isValid || item.episode !== BigBrotherVanilla) {
                 finalItems.push(item);
             }
+            i++;
         }
         // if we have to add new vanilla episodes b/c we dont have enough to get to F4, add them
         if (playerCount > 3) {
@@ -230,7 +231,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 week++;
                 const item = {
                     id: (this.id++).toString(),
-                    weekText: `Week ${week}: F${playerCount}`,
+                    weekText: `Week ${week || 1}: F${playerCount}`,
                     episode: BigBrotherVanilla,
                     isValid: true,
                 };

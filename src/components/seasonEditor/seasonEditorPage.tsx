@@ -22,6 +22,7 @@ import { Screens } from "../topbar/topBar";
 import { getEpisodeLibrary, SeasonEditorList } from "./seasonEditorList";
 import { TwistAdder } from "./twistAdder";
 import { SafetyChain } from "../episode/safetyChain";
+import { Teams } from "../episode/teamsEpisode";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -43,6 +44,7 @@ const twists: EpisodeType[] = [
     BoomerangVetoEpisode,
     CoHoH,
     BattleOfTheBlock,
+    Teams,
 ];
 
 const submit = async (jury: number): Promise<void> => {
