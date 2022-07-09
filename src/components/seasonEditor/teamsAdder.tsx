@@ -4,10 +4,12 @@ import { NumericInput } from "../castingScreen/numericInput";
 import { CenteredBold } from "../layout/centered";
 import { Label } from "./seasonEditorPage";
 
+let id = 0;
+
 function Team(props: { tribe: Tribe }) {
     const tribe = props.tribe;
     return (
-        <div className="field has-addons" style={{ textAlign: "center" }}>
+        <div className="field has-addons" style={{ textAlign: "center" }} key={id++}>
             <p className="field-label is-normal control">
                 <Label className="label">Name:</Label>
             </p>
@@ -58,8 +60,8 @@ export class TeamsAdder extends React.Component<TeamAdderProps, {}> {
                 key={this.props.id}
             >
                 <CenteredBold>Team Phase {this.props.id}</CenteredBold>
-                {this.props.Teams.map((tribe) => (
-                    <Team tribe={tribe} />
+                {this.props.Teams.map((tribe, i) => (
+                    <Team tribe={tribe} key={i} />
                 ))}
                 <button className="button is-primary">Add Team</button>
                 <div className="field has-addons" style={{ textAlign: "center" }}>

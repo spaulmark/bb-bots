@@ -20,8 +20,8 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
 
         return (
             <div>
-                {Object.values(items).map((item) => (
-                    <TeamsAdder {...item} />
+                {Object.values(items).map((item, i) => (
+                    <TeamsAdder {...item} key={i} />
                 ))}
                 <button
                     className="button is-primary"
