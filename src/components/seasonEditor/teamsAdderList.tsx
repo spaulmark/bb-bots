@@ -1,8 +1,9 @@
 import React from "react";
-import { TeamAdderProps, TeamsAdder } from "./teamsAdder";
+import { getTribe, Tribe } from "../../model/tribe";
+import { ChangableTeam, TeamAdderProps, TeamsAdder } from "./teamsAdder";
 
-// TODO: subscribe to twist$ and see when a twist is added -- if its teams you add one, else subtract one
-// keep track of id, it goes up and down.
+// TODO: push to twist$ when a team is added
+// remove a specific twist by id when a twist is removed by id
 
 interface TeamsAdderListState {
     items: { [id: number]: TeamAdderProps };
@@ -27,16 +28,40 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                     className="button is-primary"
                     onClick={() => {
                         const newItems = { ...items };
-                        newItems[this.state.id] = {
-                            id: this.state.id,
-                            Teams: [
-                                { name: "Team 1", color: "#000000" },
-                                { name: "Team 2", color: "#ffffff" },
-                            ],
+                        const id = this.state.id;
+                        const tribe1: Tribe = getTribe("Team 1", "#ff0000");
+                        const tribe2: Tribe = getTribe("Team 2", "#0000ff");
+                        const Teams: { [id: number]: ChangableTeam } = {};
+                        for (let x of [tribe1, tribe2]) {
+                            const tribeId = x.tribeId;
+                            Teams[tribeId] = {
+                                ...x,
+                                onChangeName: ((name: string) => {
+                                    const newState = this.state;
+                                    newState.items[id].Teams[tribeId].name = name;
+                                    this.setState(newState);
+                                }).bind(this),
+                                onChangeColor: ((color: string) => {
+                                    const newState = this.state;
+                                    newItems[id].Teams[tribeId].color = color;
+                                    this.setState(newState);
+                                }).bind(this),
+                            };
+                        }
+
+                        newItems[id] = {
+                            id,
+                            endsWhen: "2",
+                            onChangeNumber: ((n: string) => {
+                                const newState = this.state;
+                                newState.items[id].endsWhen = n;
+                                this.setState(newState);
+                            }).bind(this),
+                            Teams,
                         };
                         this.setState({
                             items: newItems,
-                            id: this.state.id + 1,
+                            id: id + 1,
                         });
                     }}
                 >

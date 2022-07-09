@@ -22,8 +22,6 @@ import { Screens } from "../topbar/topBar";
 import { getEpisodeLibrary, SeasonEditorList } from "./seasonEditorList";
 import { TwistAdder } from "./twistAdder";
 import { SafetyChain } from "../episode/safetyChain";
-import { TeamsAdder } from "./teamsAdder";
-import { Teams } from "../episode/teamsEpisode";
 import { TeamsAdderList } from "./teamsAdderList";
 
 const Subheader = styled.h3`

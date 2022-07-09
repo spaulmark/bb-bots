@@ -4,26 +4,34 @@ import { NumericInput } from "../castingScreen/numericInput";
 import { CenteredBold } from "../layout/centered";
 import { Label } from "./seasonEditorPage";
 
-let id = 0;
-
-function Team(props: { tribe: Tribe }) {
+function Team(props: { tribe: ChangableTeam; disabled: boolean }) {
     const tribe = props.tribe;
     return (
-        <div className="field has-addons" style={{ textAlign: "center" }} key={id++}>
+        <div className="field has-addons" style={{ textAlign: "center" }} key={tribe.tribeId}>
             <p className="field-label is-normal control">
                 <Label className="label">Name:</Label>
             </p>
             <p className="control">
-                <input className="input" value={tribe.name} />
+                <input
+                    className="input"
+                    value={tribe.name}
+                    onChange={(event) => props.tribe.onChangeName(event.target.value)}
+                />
             </p>
             <p className="field-label is-normal control">
                 <Label className="label">Color</Label>
             </p>
             <p className="control">
-                <input type="color" value={tribe.color} />
+                <input
+                    type="color"
+                    value={tribe.color}
+                    onChange={(event) => props.tribe.onChangeColor(event.target.value)}
+                />
             </p>
             <p className="control">
-                <button className="button is-danger">X</button>
+                <button className="button is-danger" disabled={props.disabled}>
+                    X
+                </button>
             </p>
         </div>
     );
@@ -41,13 +49,21 @@ function Team(props: { tribe: Tribe }) {
 // TODO: it would be really nice if there was an id or something corresponding to each teams phase
 // so when we hit submit it generated all the information we needed or something -_- UGH this is so hard
 
+export interface ChangableTeam extends Tribe {
+    onChangeName: (name: string) => void;
+    onChangeColor: (color: string) => void;
+}
+
 export interface TeamAdderProps {
     id: number;
-    Teams: Tribe[];
+    Teams: { [id: number]: ChangableTeam };
+    endsWhen: string;
+    onChangeNumber: (n: string) => void;
 }
 
 export class TeamsAdder extends React.Component<TeamAdderProps, {}> {
     public render() {
+        const teams = Object.values(this.props.Teams);
         return (
             <div
                 className="column is-12-desktop is-12-widescreen is-12-fullhd is-12-tablet"
@@ -60,8 +76,8 @@ export class TeamsAdder extends React.Component<TeamAdderProps, {}> {
                 key={this.props.id}
             >
                 <CenteredBold>Team Phase {this.props.id}</CenteredBold>
-                {this.props.Teams.map((tribe, i) => (
-                    <Team tribe={tribe} key={i} />
+                {teams.map((tribe, i) => (
+                    <Team tribe={tribe} key={i} disabled={teams.length <= 2} />
                 ))}
                 <button className="button is-primary">Add Team</button>
                 <div className="field has-addons" style={{ textAlign: "center" }}>
@@ -69,7 +85,11 @@ export class TeamsAdder extends React.Component<TeamAdderProps, {}> {
                         <Label className="label">Ends when</Label>
                     </p>
                     <p className="control">
-                        <NumericInput className="input" value={"2"} onChange={() => {}} />
+                        <NumericInput
+                            className="input"
+                            value={this.props.endsWhen}
+                            onChange={this.props.onChangeNumber}
+                        />
                     </p>
                     <p className="field-label is-normal control">
                         <Label className="label">houseguests remain</Label>
