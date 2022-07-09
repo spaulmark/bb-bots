@@ -22,7 +22,9 @@ import { Screens } from "../topbar/topBar";
 import { getEpisodeLibrary, SeasonEditorList } from "./seasonEditorList";
 import { TwistAdder } from "./twistAdder";
 import { SafetyChain } from "../episode/safetyChain";
+import { TeamsAdder } from "./teamsAdder";
 import { Teams } from "../episode/teamsEpisode";
+import { TeamsAdderList } from "./teamsAdderList";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -44,8 +46,9 @@ const twists: EpisodeType[] = [
     BoomerangVetoEpisode,
     CoHoH,
     BattleOfTheBlock,
-    Teams,
 ];
+
+// TODO: maybe have a teams[] subject or global variable that gets reset in the submit function
 
 const submit = async (jury: number): Promise<void> => {
     season$.next(getEpisodeLibrary());
@@ -116,6 +119,8 @@ export function SeasonEditorPage(): JSX.Element {
                         </HasText>
                     </div>
                 </div>
+                <Subheader>Add Teams</Subheader>
+                <TeamsAdderList />
             </div>
             <div className="column is-narrow" style={{ paddingTop: 20, paddingRight: 20 }}>
                 <button

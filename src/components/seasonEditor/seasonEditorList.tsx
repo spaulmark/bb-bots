@@ -38,7 +38,18 @@ let _castSize: number = 0;
 
 export function getEpisodeLibrary(): EpisodeLibrary {
     const episodes: EpisodeType[] = [];
+    let previousItem: EpisodeType;
+
+    // TODO: maybe if it is a teams episode it reads additional missing data
+    // so we don't have to update live every time
+
     for (const item of _items) {
+        // TODO: a pseudo episode chains to the episode that comes after it.
+        // there will always be something to chain to, because they will always be unplayable at F3.
+
+        // then from the episode type, we need to grab the exit condition, and add it to a set of exit conditions
+        // and on every loop, check each exit condition and apply it if true, then remove it from the set.
+
         // if not chainable, push to newItems
         if (!item.episode.chainable) {
             episodes.push(item.episode);
@@ -74,6 +85,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 },
             };
             episodes[episodes.length - 1] = newItem;
+            previousItem = newItem;
         }
     }
 
