@@ -4,18 +4,18 @@ import { NumericInput } from "../castingScreen/numericInput";
 import { CenteredBold } from "../layout/centered";
 import { Label } from "./seasonEditorPage";
 
-function Team(props: { tribe: ChangableTeam; disabled: boolean }) {
-    const tribe = props.tribe;
+function Team(props: { team: ChangableTeam; disabled: boolean }) {
+    const data = props.team;
     return (
-        <div className="field has-addons" style={{ textAlign: "center" }} key={tribe.tribeId}>
+        <div className="field has-addons" style={{ textAlign: "center" }} key={data.tribeId}>
             <p className="field-label is-normal control">
                 <Label className="label">Name:</Label>
             </p>
             <p className="control">
                 <input
                     className="input"
-                    value={tribe.name}
-                    onChange={(event) => props.tribe.onChangeName(event.target.value)}
+                    value={data.name}
+                    onChange={(event) => props.team.onChangeName(event.target.value)}
                 />
             </p>
             <p className="field-label is-normal control">
@@ -24,12 +24,12 @@ function Team(props: { tribe: ChangableTeam; disabled: boolean }) {
             <p className="control">
                 <input
                     type="color"
-                    value={tribe.color}
-                    onChange={(event) => props.tribe.onChangeColor(event.target.value)}
+                    value={data.color}
+                    onChange={(event) => props.team.onChangeColor(event.target.value)}
                 />
             </p>
             <p className="control">
-                <button className="button is-danger" disabled={props.disabled}>
+                <button className="button is-danger" disabled={props.disabled} onClick={data.removeTeam}>
                     X
                 </button>
             </p>
@@ -52,6 +52,7 @@ function Team(props: { tribe: ChangableTeam; disabled: boolean }) {
 export interface ChangableTeam extends Tribe {
     onChangeName: (name: string) => void;
     onChangeColor: (color: string) => void;
+    removeTeam: () => void;
 }
 
 export interface TeamAdderProps {
@@ -78,7 +79,7 @@ export class TeamsAdder extends React.Component<TeamAdderProps, {}> {
             >
                 <CenteredBold>Team Phase {this.props.id}</CenteredBold>
                 {teams.map((tribe, i) => (
-                    <Team tribe={tribe} key={i} disabled={teams.length <= 2} />
+                    <Team team={tribe} key={i} disabled={teams.length <= 2} />
                 ))}
                 <button className="button is-primary" onClick={this.props.addTeam}>
                     Add Team

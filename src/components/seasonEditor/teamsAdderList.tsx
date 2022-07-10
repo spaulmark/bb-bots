@@ -30,6 +30,13 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
             this.setState(newState);
         }).bind(this);
     }
+    private getOnDelete(id: number, tribeId: number): () => void {
+        return (() => {
+            const newState = this.state;
+            delete newState.items[id].Teams[tribeId];
+            this.setState(newState);
+        }).bind(this);
+    }
 
     public render(): JSX.Element {
         const items = this.state.items;
@@ -53,9 +60,9 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                                 ...tribe,
                                 onChangeName: this.getOnChangeName(id, tribeId),
                                 onChangeColor: this.getOnChangeColor(id, tribeId),
+                                removeTeam: this.getOnDelete(id, tribeId),
                             };
                         }
-
                         newItems[id] = {
                             id,
                             endsWhen: "2",
@@ -73,6 +80,7 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                                     ...newTeam,
                                     onChangeName: this.getOnChangeName(id, tribeId),
                                     onChangeColor: this.getOnChangeColor(id, tribeId),
+                                    removeTeam: this.getOnDelete(id, tribeId),
                                 };
                                 newState.id = id + 1;
                                 this.setState(newState);
