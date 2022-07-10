@@ -168,6 +168,7 @@ const TribeStyle = styled.div`
     border-bottom: 1px solid black;
     overflow: clip;
     display: block;
+    min-height: 21px;
     font-weight: normal;
 `;
 
