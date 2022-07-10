@@ -140,12 +140,23 @@ export function getWorstTarget(hero: Houseguest, options: Houseguest[], gameStat
 }
 
 // returns the id of the houseguests you're backdooring
+// SHOULD ONLY BE USED for nominations, because it excludes teammates
 export function backdoorNPlayers(
     hero: Houseguest,
     options: Houseguest[],
     gameState: GameState,
     n: number
 ): NumberWithLogic[] {
+    // exclude teammates in options[], but if that gives an empty list never mind lol
+    if (hero.tribe !== undefined) {
+        const teammates = gameState.houseguests.filter((hg) => {
+            if (hg.tribe === undefined) return false;
+            return hg.tribe.tribeId === hero.tribe!.tribeId;
+        });
+        const nonTeammates = exclude(options, teammates);
+        nonTeammates.length > 0 && (options = nonTeammates);
+    }
+
     if (options.length < n) throw new Error(`Tried to backdoor ${n} players with ${options.length} options.`);
     const result: NumberWithLogic[] = [];
     const sortedOptions = [...options];

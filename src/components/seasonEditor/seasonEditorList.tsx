@@ -11,7 +11,6 @@ import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
 import { GameState, getById, MutableGameState } from "../../model/gameState";
 import { getTeamsListContents } from "./teamsAdderList";
-import { isTemplateExpression } from "typescript";
 
 const common = `
 padding: 10px;
