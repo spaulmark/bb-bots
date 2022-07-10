@@ -59,6 +59,7 @@ export interface TeamAdderProps {
     Teams: { [id: number]: ChangableTeam };
     endsWhen: string;
     onChangeNumber: (n: string) => void;
+    addTeam: () => void;
 }
 
 export class TeamsAdder extends React.Component<TeamAdderProps, {}> {
@@ -79,7 +80,9 @@ export class TeamsAdder extends React.Component<TeamAdderProps, {}> {
                 {teams.map((tribe, i) => (
                     <Team tribe={tribe} key={i} disabled={teams.length <= 2} />
                 ))}
-                <button className="button is-primary">Add Team</button>
+                <button className="button is-primary" onClick={this.props.addTeam}>
+                    Add Team
+                </button>
                 <div className="field has-addons" style={{ textAlign: "center" }}>
                     <p className="field-label is-normal control">
                         <Label className="label">Ends when</Label>

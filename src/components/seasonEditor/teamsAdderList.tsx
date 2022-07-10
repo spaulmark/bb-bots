@@ -16,6 +16,21 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
         this.state = { items: {}, id: 1 };
         // TODO: maybe a global variable that binds to this state or something and a subject idk idk idk idk!
     }
+    private getOnChangeName(id: number, tribeId: number): (name: string) => void {
+        return ((name: string) => {
+            const newState = this.state;
+            newState.items[id].Teams[tribeId].name = name;
+            this.setState(newState);
+        }).bind(this);
+    }
+    private getOnChangeColor(id: number, tribeId: number): (name: string) => void {
+        return ((color: string) => {
+            const newState = this.state;
+            newState.items[id].Teams[tribeId].color = color;
+            this.setState(newState);
+        }).bind(this);
+    }
+
     public render(): JSX.Element {
         const items = this.state.items;
 
@@ -32,20 +47,12 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                         const tribe1: Tribe = getTribe("Team 1", "#ff0000");
                         const tribe2: Tribe = getTribe("Team 2", "#0000ff");
                         const Teams: { [id: number]: ChangableTeam } = {};
-                        for (let x of [tribe1, tribe2]) {
-                            const tribeId = x.tribeId;
+                        for (let tribe of [tribe1, tribe2]) {
+                            const tribeId = tribe.tribeId;
                             Teams[tribeId] = {
-                                ...x,
-                                onChangeName: ((name: string) => {
-                                    const newState = this.state;
-                                    newState.items[id].Teams[tribeId].name = name;
-                                    this.setState(newState);
-                                }).bind(this),
-                                onChangeColor: ((color: string) => {
-                                    const newState = this.state;
-                                    newItems[id].Teams[tribeId].color = color;
-                                    this.setState(newState);
-                                }).bind(this),
+                                ...tribe,
+                                onChangeName: this.getOnChangeName(id, tribeId),
+                                onChangeColor: this.getOnChangeColor(id, tribeId),
                             };
                         }
 
@@ -53,11 +60,23 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                             id,
                             endsWhen: "2",
                             onChangeNumber: ((n: string) => {
-                                const newState = this.state;
+                                const newState = { ...this.state };
                                 newState.items[id].endsWhen = n;
                                 this.setState(newState);
                             }).bind(this),
                             Teams,
+                            addTeam: () => {
+                                const newState = { ...this.state };
+                                const newTeam = getTribe("New Team", "#ff0000");
+                                const tribeId = newTeam.tribeId;
+                                newState.items[id].Teams[tribeId] = {
+                                    ...newTeam,
+                                    onChangeName: this.getOnChangeName(id, tribeId),
+                                    onChangeColor: this.getOnChangeColor(id, tribeId),
+                                };
+                                newState.id = id + 1;
+                                this.setState(newState);
+                            },
                         };
                         this.setState({
                             items: newItems,
@@ -65,7 +84,7 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                         });
                     }}
                 >
-                    Add teams
+                    Add Teams Twist
                 </button>
             </div>
         );
