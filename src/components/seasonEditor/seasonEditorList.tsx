@@ -6,10 +6,11 @@ import { Episode, EpisodeType } from "../episode/episodes";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { getEmoji, twist$ } from "./twistAdder";
-import { min } from "lodash";
+import { min, shuffle } from "lodash";
 import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
-import { GameState } from "../../model/gameState";
+import { GameState, getById, MutableGameState } from "../../model/gameState";
+import { getTeamsListContents } from "./teamsAdderList";
 
 const common = `
 padding: 10px;
@@ -36,19 +37,130 @@ const DragItem = styled.div`
 let _items: SeasonEditorListItem[] = [];
 let _castSize: number = 0;
 
+function deleteTeams(gameState: GameState, toDelete: Set<number>): void {
+    gameState.nonEvictedHouseguests.forEach((hgid) => {
+        const hg = getById(gameState, hgid);
+        const tribe = hg.tribe;
+        if (!tribe) return;
+        if (toDelete.has(tribe.tribeId)) {
+            hg.tribe = undefined;
+        }
+    });
+}
+
 export function getEpisodeLibrary(): EpisodeLibrary {
     const episodes: EpisodeType[] = [];
-    let previousItem: EpisodeType;
+    const teamListContents = getTeamsListContents();
+    Object.values(teamListContents).forEach((item) => {
+        const endsAt: number = parseInt(item.endsWhen);
+        const teams: number[] = Object.keys(item.Teams).map((key) => parseInt(key));
+        const dynamicEpisodeType = {
+            pseudo: true,
+            canPlayWith: () => true,
+            eliminates: 0,
+        };
+        const endTeamsEpisodeType: EpisodeType = {
+            ...dynamicEpisodeType,
+            generate: (initialGamestate: GameState): Episode => {
+                let currentGameState = new MutableGameState(initialGamestate);
+                deleteTeams(currentGameState, new Set<number>(teams));
+                return new Episode({
+                    gameState: new GameState(currentGameState),
+                    initialGamestate,
+                    scenes: [],
+                    type: {
+                        ...dynamicEpisodeType,
+                        generate: (_) => {
+                            throw "UNREACHABLE";
+                        },
+                    },
+                });
+            },
+        };
+        // TODO: now insert it somehow ;_; using the endsAt value
+    });
 
-    // TODO: maybe if it is a teams episode it reads additional missing data
-    // so we don't have to update live every time
+    // generate teams
 
-    for (const item of _items) {
-        // TODO: a pseudo episode chains to the episode that comes after it.
-        // there will always be something to chain to, because they will always be unplayable at F3.
+    const mappedItems = _items.map((item) => {
+        if (item.episode.teamsLookupId !== undefined) {
+            const dynamicEpisodeType = {
+                canPlayWith: (n: number) => n > 3,
+                eliminates: 0,
+                pseudo: true,
+                emoji: "🎌",
+                teamsLookupId: item.episode.teamsLookupId,
+            };
+            item.episode = {
+                ...dynamicEpisodeType,
+                generate: (initialGamestate: GameState) => {
+                    let currentGameState = new MutableGameState(initialGamestate);
+                    const teams = Object.values(teamListContents[item.episode.teamsLookupId!].Teams);
+                    const nonEvictedHouseguests: number[] = shuffle(
+                        Array.from(currentGameState.nonEvictedHouseguests)
+                    );
+                    // now assign them to teams using the modulo operator
+                    nonEvictedHouseguests.forEach((hgid, i) => {
+                        const hg = getById(currentGameState, hgid);
+                        hg.tribe = teams[i % teams.length];
+                    });
+                    return new Episode({
+                        gameState: new GameState(currentGameState),
+                        initialGamestate: new GameState(currentGameState), // note that this is usually initialgamestate
+                        scenes: [],
+                        type: {
+                            ...dynamicEpisodeType,
+                            generate: (_) => {
+                                throw "UNREACHABLE";
+                            },
+                        },
+                    });
+                },
+            };
+        }
+        return item;
+    });
 
-        // then from the episode type, we need to grab the exit condition, and add it to a set of exit conditions
-        // and on every loop, check each exit condition and apply it if true, then remove it from the set.
+    let previousItem: EpisodeType | undefined = undefined;
+    for (const item of mappedItems) {
+        if (item.episode.pseudo) {
+            previousItem = item.episode;
+            continue;
+        }
+
+        // if previous item is pseudo, chain it to the current one then continue running code
+        if (previousItem && previousItem.pseudo) {
+            // so basically the exact same thing as item, but emojis are chained,
+            const pseudoItem = previousItem;
+            const newItem = item.episode;
+
+            item.episode = {
+                canPlayWith: () => true,
+                eliminates: pseudoItem.eliminates + newItem.eliminates,
+                emoji: `${pseudoItem.emoji} ${newItem.emoji}`,
+                generate: (initialGamestate) => {
+                    const firstEpisode = pseudoItem.generate(initialGamestate);
+                    const secondEpisode = newItem.generate(firstEpisode.gameState);
+                    return new Episode({
+                        gameState: new GameState(secondEpisode.gameState),
+                        initialGamestate: new GameState(firstEpisode.gameState), // IMPORTANT, b/c teams happen before pregame
+                        scenes: secondEpisode.scenes,
+                        type: {
+                            ...newItem,
+                            generate: (_) => {
+                                throw "UNREACHABLE";
+                            },
+                        },
+                    });
+                },
+            };
+            previousItem = undefined;
+        }
+
+        // TODO: then from the episode type, we need to grab the exit condition, and add it to a set of exit conditions
+        // TODO: and on every loop, check each exit condition and apply it if true, then remove it from the set.
+
+        // TODO: btw pseudo ignores stuff like hasviewsbar so dont bother checking
 
         // if not chainable, push to newItems
         if (!item.episode.chainable) {
@@ -62,8 +174,6 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 canPlayWith: () => true,
                 eliminates: oldEpisode.eliminates + newEpisode.eliminates,
                 hasViewsbar: oldEpisode.hasViewsbar && newEpisode.hasViewsbar,
-                name: "",
-                description: "",
                 emoji: `${oldEpisode.emoji} ${newEpisode.emoji}`,
             };
             const newItem: EpisodeType = {
@@ -85,7 +195,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 },
             };
             episodes[episodes.length - 1] = newItem;
-            previousItem = newItem;
+            previousItem = newItem; // this line may not be required
         }
     }
 

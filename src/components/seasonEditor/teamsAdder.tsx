@@ -37,18 +37,6 @@ function Team(props: { team: ChangableTeam; disabled: boolean }) {
     );
 }
 
-// TODO: adding a team adds two types of episodes,
-
-// a visible an an invisible one. first is the team start, which is visible
-// then the team ending, which is an invisible pseudo episode.
-
-// the team ending doesn't appear in the list of episodes
-
-// maybe in EpisodeType: add a function when does team end or something
-
-// TODO: it would be really nice if there was an id or something corresponding to each teams phase
-// so when we hit submit it generated all the information we needed or something -_- UGH this is so hard
-
 export interface ChangableTeam extends Tribe {
     onChangeName: (name: string) => void;
     onChangeColor: (color: string) => void;

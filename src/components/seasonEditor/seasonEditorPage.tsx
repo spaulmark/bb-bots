@@ -46,8 +46,6 @@ const twists: EpisodeType[] = [
     BattleOfTheBlock,
 ];
 
-// TODO: maybe have a teams[] subject or global variable that gets reset in the submit function
-
 const submit = async (jury: number): Promise<void> => {
     season$.next(getEpisodeLibrary());
 

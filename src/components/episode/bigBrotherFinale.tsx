@@ -1,6 +1,5 @@
 import React from "react";
-import { EpisodeType, Episode, InitEpisode } from "./episodes";
-import { Scene } from "./scenes/scene";
+import { EpisodeType, Episode } from "./episodes";
 import { GameState } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
@@ -13,10 +12,7 @@ export const BigBrotherFinale: EpisodeType = {
     canPlayWith: (n: number) => n === 3,
     eliminates: 2,
     arrowsEnabled: true,
-    emoji: "",
     hasViewsbar: true,
-    name: "Big Brother Finale",
-    description: "",
     generate: generateBbFinale,
 };
 

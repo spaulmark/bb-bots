@@ -3,7 +3,7 @@ import { PlayerProfile } from "../../model";
 import { Portraits } from "../playerPortrait/portraits";
 import { RelationshipMap } from "../../utils";
 import { Tribe } from "../../model/tribe";
-export interface IMemoryWallProps {
+export interface MemoryWallProps {
     readonly houseguests: ProfileHouseguest[];
 }
 
@@ -24,7 +24,7 @@ export interface ProfileHouseguest extends PlayerProfile {
     tribe?: Tribe;
 }
 
-export function MemoryWall(props: IMemoryWallProps): JSX.Element {
+export function MemoryWall(props: MemoryWallProps): JSX.Element {
     if (!props.houseguests || props.houseguests.length === 0) {
         return <div />;
     }

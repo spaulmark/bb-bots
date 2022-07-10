@@ -1,21 +1,32 @@
 import React from "react";
 import { getTribe, Tribe } from "../../model/tribe";
 import { ChangableTeam, TeamAdderProps, TeamsAdder } from "./teamsAdder";
+import { twist$ } from "./twistAdder";
 
-// TODO: push to twist$ when a team is added
-// remove a specific twist by id when a twist is removed by id
+// TODO: remove a specific teams twist by id when a twist is removed by id
 
 interface TeamsAdderListState {
     items: { [id: number]: TeamAdderProps };
     id: number;
 }
 
+let _teams: { [id: number]: TeamAdderProps } = {};
+
+export function getTeamsListContents(): { [id: number]: TeamAdderProps } {
+    return { ..._teams };
+}
+
 export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
     public constructor(props: {}) {
         super(props);
+        _teams = {};
         this.state = { items: {}, id: 1 };
-        // TODO: maybe a global variable that binds to this state or something and a subject idk idk idk idk!
     }
+
+    public componentDidUpdate(): void {
+        _teams = { ...this.state.items };
+    }
+
     private getOnChangeName(id: number, tribeId: number): (name: string) => void {
         return ((name: string) => {
             const newState = this.state;
@@ -51,8 +62,8 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                     onClick={() => {
                         const newItems = { ...items };
                         const id = this.state.id;
-                        const tribe1: Tribe = getTribe("Team 1", "#ff0000");
-                        const tribe2: Tribe = getTribe("Team 2", "#0000ff");
+                        const tribe1: Tribe = getTribe("", "#ff0000"); // TODO: random colors
+                        const tribe2: Tribe = getTribe("", "#0000ff");
                         const Teams: { [id: number]: ChangableTeam } = {};
                         for (let tribe of [tribe1, tribe2]) {
                             const tribeId = tribe.tribeId;
@@ -74,7 +85,7 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                             Teams,
                             addTeam: () => {
                                 const newState = { ...this.state };
-                                const newTeam = getTribe("New Team", "#ff0000");
+                                const newTeam = getTribe("", "#ff0000");
                                 const tribeId = newTeam.tribeId;
                                 newState.items[id].Teams[tribeId] = {
                                     ...newTeam,
@@ -86,6 +97,20 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                                 this.setState(newState);
                             },
                         };
+                        twist$.next({
+                            add: true,
+                            type: {
+                                canPlayWith: (n: number) => n > 3,
+                                eliminates: 0,
+                                pseudo: true,
+                                teamsLookupId: id,
+                                name: `Team Phase ${id}`,
+                                emoji: "🎌",
+                                generate: (_) => {
+                                    throw "UNREACHABLE";
+                                },
+                            },
+                        });
                         this.setState({
                             items: newItems,
                             id: id + 1,

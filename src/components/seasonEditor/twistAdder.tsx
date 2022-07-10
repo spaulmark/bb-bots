@@ -52,7 +52,7 @@ export class TwistAdder extends React.Component<
                     margin: "10px",
                 }}
             >
-                <Tooltip wide={true} text={this.props.type.description}>
+                <Tooltip wide={true} text={this.props.type.description || ""}>
                     <div className="field has-addons has-addons-centered" style={{ textAlign: "center" }}>
                         <p className="field-label is-normal control">
                             <Label className="label">
