@@ -129,20 +129,25 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         const Img = getImageClass(props);
         let subtitle: any[] = [];
         subtitle = this.state.displayMode.generateSubtitle(this.props, this.state, !!props.detailed);
-
+        let tribeStyle: any = props.tribe
+            ? { backgroundColor: props.tribe.color, color: textColor(props.tribe.color) }
+            : {};
         let Portrait = MemoryWallPortrait;
         if (props.isJury) {
             Portrait = Jury;
+            tribeStyle = {
+                backgroundColor: "#5d5340",
+                color: "#c3ae88",
+                borderTop: "1px solid #5d5340",
+                borderBottom: "1px solid #5d5340",
+            };
         } else if (props.isEvicted) {
             Portrait = Evicted;
+            tribeStyle = { backgroundColor: "#111111", color: "grey" };
         }
+
         const tribe = props.tribe ? (
-            <TribeStyle
-                style={{
-                    backgroundColor: props.isEvicted ? "#111111" : props.tribe.color,
-                    color: props.isEvicted ? "grey" : textColor(props.tribe.color),
-                }}
-            >
+            <TribeStyle style={tribeStyle}>
                 <small>{props.tribe.name}</small>
             </TribeStyle>
         ) : undefined;

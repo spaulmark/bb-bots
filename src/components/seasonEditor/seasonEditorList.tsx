@@ -127,17 +127,18 @@ export function getEpisodeLibrary(): EpisodeLibrary {
             previousItem = item.episode;
             continue;
         }
-
         // if previous item is pseudo, chain it to the current one then continue running code
         if (previousItem && previousItem.pseudo) {
-            // so basically the exact same thing as item, but emojis are chained,
+            // so basically the exact same thing as item, but emojis are chained
             const pseudoItem = previousItem;
             const newItem = item.episode;
-
-            item.episode = {
+            const common = {
                 canPlayWith: () => true,
                 eliminates: pseudoItem.eliminates + newItem.eliminates,
                 emoji: `${pseudoItem.emoji} ${newItem.emoji}`,
+            };
+            item.episode = {
+                ...common,
                 generate: (initialGamestate) => {
                     const firstEpisode = pseudoItem.generate(initialGamestate);
                     const secondEpisode = newItem.generate(firstEpisode.gameState);
@@ -147,6 +148,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                         scenes: secondEpisode.scenes,
                         type: {
                             ...newItem,
+                            ...common,
                             generate: (_) => {
                                 throw "UNREACHABLE";
                             },

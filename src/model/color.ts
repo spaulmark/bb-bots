@@ -20,6 +20,17 @@ export class Rgb {
     }
 }
 
+export function getRandomColor(): Rgb {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return new Rgb(r, g, b);
+}
+
+export function invertColor(color: Rgb): Rgb {
+    return new Rgb(255 - color.r, 255 - color.g, 255 - color.b);
+}
+
 export function interpolateColor(min: Rgb, max: Rgb, percent: number): string {
     return new Rgb(
         min.r + percent * (max.r - min.r),

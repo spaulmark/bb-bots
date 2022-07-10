@@ -1,4 +1,5 @@
 import React from "react";
+import { getRandomColor, invertColor } from "../../model/color";
 import { getTribe, Tribe } from "../../model/tribe";
 import { ChangableTeam, TeamAdderProps, TeamsAdder } from "./teamsAdder";
 import { twist$ } from "./twistAdder";
@@ -62,8 +63,9 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                     onClick={() => {
                         const newItems = { ...items };
                         const id = this.state.id;
-                        const tribe1: Tribe = getTribe("", "#ff0000"); // TODO: random colors
-                        const tribe2: Tribe = getTribe("", "#0000ff");
+                        const color = getRandomColor();
+                        const tribe1: Tribe = getTribe("", color.toHex());
+                        const tribe2: Tribe = getTribe("", invertColor(color).toHex());
                         const Teams: { [id: number]: ChangableTeam } = {};
                         for (let tribe of [tribe1, tribe2]) {
                             const tribeId = tribe.tribeId;
@@ -85,7 +87,7 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                             Teams,
                             addTeam: () => {
                                 const newState = { ...this.state };
-                                const newTeam = getTribe("", "#ff0000");
+                                const newTeam = getTribe("", getRandomColor().toHex());
                                 const tribeId = newTeam.tribeId;
                                 newState.items[id].Teams[tribeId] = {
                                     ...newTeam,
