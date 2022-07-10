@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { GameState, getById, Houseguest, inJury } from "../../model";
-import { NumberWithLogic } from "./aiApi";
+import { backdoorNPlayers, NumberWithLogic } from "./aiApi";
 import { lowestScore, relationship } from "./aiUtils";
 import { classifyRelationship, classifyTwoWayRelationship, RelationshipType } from "./classifyRelationship";
 
@@ -52,17 +52,15 @@ export class Targets {
     public getTargets(): [number, number] {
         return [this.firstTarget.id, this.secondTarget.id];
     }
-    public addTarget(newTarget: RelationshipSummary, gameState: GameState) {
-        if (
-            !(
-                isBetterTarget(this.firstTarget, newTarget, this.hg, gameState) ||
-                isBetterTarget(this.secondTarget, newTarget, this.hg, gameState)
-            )
-        )
-            return;
-        isBetterTarget(this.firstTarget, this.secondTarget, this.hg, gameState)
-            ? (this.firstTarget = newTarget)
-            : (this.secondTarget = newTarget);
+    public refreshTargets(gameState: GameState) {
+        const choices = backdoorNPlayers(
+            this.hg,
+            Array.from(gameState.nonEvictedHouseguests).map((id) => getById(gameState, id)),
+            gameState,
+            2
+        );
+        this.firstTarget = getRelationshipSummary(this.hg, getById(gameState, choices[0].decision));
+        this.secondTarget = getRelationshipSummary(this.hg, getById(gameState, choices[1].decision));
     }
 }
 
