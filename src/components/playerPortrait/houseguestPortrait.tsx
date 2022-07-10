@@ -137,7 +137,12 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
             Portrait = Evicted;
         }
         const tribe = props.tribe ? (
-            <TribeStyle style={{ backgroundColor: props.tribe.color, color: textColor(props.tribe.color) }}>
+            <TribeStyle
+                style={{
+                    backgroundColor: props.isEvicted ? "#111111" : props.tribe.color,
+                    color: props.isEvicted ? "grey" : textColor(props.tribe.color),
+                }}
+            >
                 <small>{props.tribe.name}</small>
             </TribeStyle>
         ) : undefined;
