@@ -49,6 +49,7 @@ export interface TeamAdderProps {
     endsWhen: string;
     onChangeNumber: (n: string) => void;
     addTeam: () => void;
+    deleteSelf: () => void;
 }
 
 export class TeamsAdder extends React.Component<TeamAdderProps, {}> {
@@ -69,23 +70,23 @@ export class TeamsAdder extends React.Component<TeamAdderProps, {}> {
                 {teams.map((tribe, i) => (
                     <Team team={tribe} key={i} disabled={teams.length <= 2} />
                 ))}
-                <button className="button is-primary" onClick={this.props.addTeam}>
-                    Add Team
-                </button>
-                <div className="field has-addons" style={{ textAlign: "center" }}>
-                    <p className="field-label is-normal control">
-                        <Label className="label">Ends when</Label>
-                    </p>
-                    <p className="control">
-                        <NumericInput
-                            className="input"
-                            value={this.props.endsWhen}
-                            onChange={this.props.onChangeNumber}
-                        />
-                    </p>
-                    <p className="field-label is-normal control">
-                        <Label className="label">houseguests remain</Label>
-                    </p>
+                <div className="level is-marginless">
+                    <div className="level-item">
+                        <button className="button is-primary" onClick={this.props.addTeam}>
+                            Add Team
+                        </button>
+                    </div>
+                </div>
+                <div className="level">
+                    <Label className="label">🏁 Ends at Final</Label>
+                    <NumericInput
+                        className="input"
+                        value={this.props.endsWhen}
+                        onChange={this.props.onChangeNumber}
+                    />
+                    <button className="button is-danger" onClick={this.props.deleteSelf}>
+                        Delete Team Phase
+                    </button>
                 </div>
             </div>
         );

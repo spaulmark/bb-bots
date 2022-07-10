@@ -1,10 +1,9 @@
 import React from "react";
 import { getRandomColor, invertColor } from "../../model/color";
 import { getTribe, Tribe } from "../../model/tribe";
+import { EpisodeType } from "../episode/episodes";
 import { ChangableTeam, TeamAdderProps, TeamsAdder } from "./teamsAdder";
 import { twist$ } from "./twistAdder";
-
-// TODO: remove a specific teams twist by id when a twist is removed by id
 
 interface TeamsAdderListState {
     items: { [id: number]: TeamAdderProps };
@@ -50,6 +49,28 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
         }).bind(this);
     }
 
+    private getTwist(id: number): EpisodeType {
+        return {
+            canPlayWith: (n: number) => n > 3,
+            eliminates: 0,
+            pseudo: true,
+            teamsLookupId: id,
+            name: `Team Phase ${id}`,
+            emoji: "🎌",
+            generate: (_) => {
+                throw "UNREACHABLE";
+            },
+        };
+    }
+
+    private getOnDeleteSelf(id: number): () => void {
+        return (() => {
+            const newState = this.state;
+            twist$.next({ type: this.getTwist(id), add: false });
+            delete newState.items[id];
+            this.setState(newState);
+        }).bind(this);
+    }
     public render(): JSX.Element {
         const items = this.state.items;
 
@@ -85,6 +106,7 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                                 this.setState(newState);
                             }).bind(this),
                             Teams,
+                            deleteSelf: this.getOnDeleteSelf(id),
                             addTeam: () => {
                                 const newState = { ...this.state };
                                 const newTeam = getTribe("", getRandomColor().toHex());
@@ -101,17 +123,7 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                         };
                         twist$.next({
                             add: true,
-                            type: {
-                                canPlayWith: (n: number) => n > 3,
-                                eliminates: 0,
-                                pseudo: true,
-                                teamsLookupId: id,
-                                name: `Team Phase ${id}`,
-                                emoji: "🎌",
-                                generate: (_) => {
-                                    throw "UNREACHABLE";
-                                },
-                            },
+                            type: this.getTwist(id),
                         });
                         this.setState({
                             items: newItems,
@@ -119,7 +131,7 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                         });
                     }}
                 >
-                    Add Teams Twist
+                    🎌 Add Teams Twist
                 </button>
             </div>
         );

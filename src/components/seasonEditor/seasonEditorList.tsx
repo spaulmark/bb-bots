@@ -11,6 +11,7 @@ import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
 import { GameState, getById, MutableGameState } from "../../model/gameState";
 import { getTeamsListContents } from "./teamsAdderList";
+import { isTemplateExpression } from "typescript";
 
 const common = `
 padding: 10px;
@@ -77,7 +78,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 });
             },
         };
-        // TODO: now insert it somehow ;_; using the endsAt value
+        // TODO: now insert it somehow ;_; using the endsAt value -- btw the emoji is 🏁
     });
 
     // generate teams
@@ -161,8 +162,6 @@ export function getEpisodeLibrary(): EpisodeLibrary {
 
         // TODO: then from the episode type, we need to grab the exit condition, and add it to a set of exit conditions
         // TODO: and on every loop, check each exit condition and apply it if true, then remove it from the set.
-
-        // TODO: btw pseudo ignores stuff like hasviewsbar so dont bother checking
 
         // if not chainable, push to newItems
         if (!item.episode.chainable) {
@@ -315,7 +314,12 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         } else {
             // remove the LAST instance of the twist, and add X vanilla episodes
             const newItems = Array.from(this.state.items);
-            const i = removeLast1Matching(newItems, (item) => item.episode === twist.type);
+            const i = removeLast1Matching(newItems, (item) => {
+                const equalTeamsLookupIds = twist.type.teamsLookupId
+                    ? twist.type.teamsLookupId === item.episode.teamsLookupId
+                    : false;
+                return item.episode === twist.type || equalTeamsLookupIds;
+            });
             this.refreshItems(newItems, i);
         }
     }
