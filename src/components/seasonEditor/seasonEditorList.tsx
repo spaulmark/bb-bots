@@ -6,7 +6,7 @@ import { Episode, EpisodeType } from "../episode/episodes";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { getEmoji, twist$ } from "./twistAdder";
-import { min, shuffle } from "lodash";
+import { min, shuffle, sum } from "lodash";
 import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
 import { GameState, getById, MutableGameState } from "../../model/gameState";
@@ -34,7 +34,7 @@ const DragItem = styled.div`
     color: #fff;
 `;
 
-let _items: SeasonEditorListItem[] = [];
+let _items: { episode: EpisodeType }[] = [];
 let _castSize: number = 0;
 
 function deleteTeams(gameState: GameState, toDelete: Set<number>): void {
@@ -51,35 +51,6 @@ function deleteTeams(gameState: GameState, toDelete: Set<number>): void {
 export function getEpisodeLibrary(): EpisodeLibrary {
     const episodes: EpisodeType[] = [];
     const teamListContents = getTeamsListContents();
-    Object.values(teamListContents).forEach((item) => {
-        const endsAt: number = parseInt(item.endsWhen);
-        const teams: number[] = Object.keys(item.Teams).map((key) => parseInt(key));
-        const dynamicEpisodeType = {
-            pseudo: true,
-            canPlayWith: () => true,
-            eliminates: 0,
-        };
-        const endTeamsEpisodeType: EpisodeType = {
-            ...dynamicEpisodeType,
-            generate: (initialGamestate: GameState): Episode => {
-                let currentGameState = new MutableGameState(initialGamestate);
-                deleteTeams(currentGameState, new Set<number>(teams));
-                return new Episode({
-                    gameState: new GameState(currentGameState),
-                    initialGamestate,
-                    scenes: [],
-                    type: {
-                        ...dynamicEpisodeType,
-                        generate: (_) => {
-                            throw "UNREACHABLE";
-                        },
-                    },
-                });
-            },
-        };
-        // TODO: now insert it somehow ;_; using the endsAt value -- btw the emoji is 🏁
-    });
-
     // generate teams
 
     const mappedItems = _items.map((item) => {
@@ -120,6 +91,45 @@ export function getEpisodeLibrary(): EpisodeLibrary {
         }
         return item;
     });
+    // 3 is a magic number because you can't have twists after F4
+    // this may need to change in the future if we add final 3 endgames
+    const totalPlayers = sum(mappedItems.map((item) => item.episode.eliminates)) + 3;
+
+    Object.values(teamListContents).forEach((item) => {
+        const endsAt: number = parseInt(item.endsWhen);
+        const teams: number[] = Object.keys(item.Teams).map((key) => parseInt(key));
+        const dynamicEpisodeType = {
+            pseudo: true,
+            canPlayWith: () => true,
+            eliminates: 0,
+            emoji: "🏁",
+        };
+        const endTeamsEpisodeType: EpisodeType = {
+            ...dynamicEpisodeType,
+            generate: (initialGamestate: GameState): Episode => {
+                let currentGameState = new MutableGameState(initialGamestate);
+                deleteTeams(currentGameState, new Set<number>(teams));
+                return new Episode({
+                    gameState: new GameState(currentGameState),
+                    initialGamestate,
+                    scenes: [],
+                    type: {
+                        ...dynamicEpisodeType,
+                        generate: (_) => {
+                            throw "UNREACHABLE";
+                        },
+                    },
+                });
+            },
+        };
+        let i = 0;
+        let playersRemaining = totalPlayers;
+        while (endsAt < playersRemaining && endsAt > 3) {
+            playersRemaining -= mappedItems[i].episode.eliminates;
+            i++;
+        }
+        mappedItems.splice(i, 0, { episode: endTeamsEpisodeType });
+    });
 
     let previousItem: EpisodeType | undefined = undefined;
     for (const item of mappedItems) {
@@ -158,10 +168,6 @@ export function getEpisodeLibrary(): EpisodeLibrary {
             };
             previousItem = undefined;
         }
-
-        // TODO: then from the episode type, we need to grab the exit condition, and add it to a set of exit conditions
-        // TODO: and on every loop, check each exit condition and apply it if true, then remove it from the set.
-
         // if not chainable, push to newItems
         if (!item.episode.chainable) {
             episodes.push(item.episode);
@@ -170,10 +176,10 @@ export function getEpisodeLibrary(): EpisodeLibrary {
             const oldEpisode = episodes[episodes.length - 1];
             const newEpisode = item.episode;
             const dynamicEpisodeType = {
-                arrowsEnabled: oldEpisode.arrowsEnabled && newEpisode.arrowsEnabled,
+                arrowsEnabled: oldEpisode.arrowsEnabled || newEpisode.arrowsEnabled,
                 canPlayWith: () => true,
                 eliminates: oldEpisode.eliminates + newEpisode.eliminates,
-                hasViewsbar: oldEpisode.hasViewsbar && newEpisode.hasViewsbar,
+                hasViewsbar: oldEpisode.hasViewsbar || newEpisode.hasViewsbar,
                 emoji: `${oldEpisode.emoji} ${newEpisode.emoji}`,
             };
             const newItem: EpisodeType = {
