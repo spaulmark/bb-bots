@@ -122,6 +122,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 });
             },
         };
+        if (endsAt < 3) return; // no point in ending teams that never end
         let i = 0;
         let playersRemaining = totalPlayers;
         while (endsAt < playersRemaining && endsAt > 3) {
@@ -347,7 +348,9 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         for (const item of newItems) {
             const doNotIncrement = i - 1 > 0 && !!newItems[i - 1].episode.pseudo;
             const chainable: boolean = !!item.episode.chainable;
-            const isValidChain: boolean = chainable ? week !== 0 : true;
+            // FIXME: playerCount !== this.props.castSize // may become invalid when we do battlebacks
+            // because you could have a battleback to maxplayers immediately into a double eviction
+            const isValidChain: boolean = chainable ? playerCount !== this.props.castSize : true;
             const isValid = item.episode.canPlayWith(playerCount) && isValidChain;
             !chainable && !doNotIncrement && week++;
             item.weekText = `Week ${week || 1}: F${playerCount}`;
