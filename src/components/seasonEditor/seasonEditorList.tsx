@@ -149,6 +149,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
             };
             item.episode = {
                 ...common,
+                chainable: !!newItem.chainable,
                 generate: (initialGamestate) => {
                     const firstEpisode = pseudoItem.generate(initialGamestate);
                     const secondEpisode = newItem.generate(firstEpisode.gameState);
