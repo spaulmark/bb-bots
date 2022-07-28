@@ -384,7 +384,10 @@ function generatePreVetoRow(
         <White key={`preveto--${week}-${anotherKey++}`} colSpan={colspan}>
             <Centered noMargin={true}>
                 {interleave(
-                    log.nominationsPreVeto as any,
+                    [
+                        ...log.nominationsPreVeto,
+                        ...log.strikethroughNominees.map((txt) => <del>{txt}</del>),
+                    ] as any,
                     (key) => (
                         <br key={`preveto--br--${week}-${key++}`} />
                     ),

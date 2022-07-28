@@ -15,7 +15,7 @@ export class EpisodeLog {
     public soleVoter?: string;
     public votingTo?: string;
     public pseudo?: boolean = false;
-    // TODO: strikethrough nominees: string[] = [];
+    public strikethroughNominees: string[] = [];
 }
 
 export function hasLogBeenModified(log: EpisodeLog): boolean {
