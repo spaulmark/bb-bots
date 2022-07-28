@@ -11,6 +11,8 @@ import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { EpisodeLibrary } from "../../model/season";
 import { GameState, getById, MutableGameState } from "../../model/gameState";
 import { getTeamsListContents } from "./teamsAdderList";
+import { TeamVote } from "../../model/logging/voteType";
+import { hasLogBeenModified } from "../../model/logging/episodelog";
 
 const common = `
 padding: 10px;
@@ -70,11 +72,20 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                     const nonEvictedHouseguests: number[] = shuffle(
                         Array.from(currentGameState.nonEvictedHouseguests)
                     );
+                    // if we are in a log that has been modified, increment log index to make a new one for teams //
+                    if (hasLogBeenModified(currentGameState.currentLog)) {
+                        currentGameState.incrementLogIndex();
+                    }
                     // now assign them to teams using the modulo operator
                     nonEvictedHouseguests.forEach((hgid, i) => {
                         const hg = getById(currentGameState, hgid);
-                        hg.tribe = teams[i % teams.length];
+                        const team = teams[i % teams.length];
+                        hg.tribe = team;
+                        currentGameState.currentLog.votes[hg.id] = new TeamVote(team.color);
                     });
+                    currentGameState.currentLog.pseudo = true;
+                    currentGameState.incrementLogIndex();
+                    // add all the teams as team votes
                     return new Episode({
                         gameState: new GameState(currentGameState),
                         initialGamestate: new GameState(currentGameState), // note that this is usually initialgamestate
@@ -203,7 +214,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 },
             };
             episodes[episodes.length - 1] = newItem;
-            previousItem = newItem; // this line may not be required
+            previousItem = newItem;
         }
     }
 
@@ -300,6 +311,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         if (twist.add) {
             // remove X vanilla episodes, then add the twist
             const newItems = Array.from(this.state.items);
+            // TODO: add the new epsiode at the index that the vanilla was removed
             removeFirstNMatching(
                 newItems,
                 twist.type.eliminates,

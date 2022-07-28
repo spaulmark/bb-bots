@@ -79,26 +79,30 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const postVetoCells: JSX.Element[] = [];
     const evictedCells: JSX.Element[] = [];
     const winnerCells: JSX.Element[] = [];
-    masterLog.forEach((logs: EpisodeLog[] | undefined, i) => {
+    masterLog.forEach((logs: EpisodeLog[] | undefined, week) => {
         // multiple entries (ie. a double eviction) will all share the same toprow
         generateTopRow(
             logs ? logs[0] : undefined,
-            i,
+            week,
             topRowCells,
             masterLog.length - 1,
             logs ? logs.length : -1 // -1 doesn't matter because its unread
         );
         const iterateLogs = logs ? logs : [undefined]; // this is incredibly dank
+        let pseudoCount = 0;
         iterateLogs.forEach((log: EpisodeLog | undefined) => {
-            generatePreVetoRow(log, i, preVetoCells);
-            generateVetoRow(log, i, vetoCells);
-            generatePostVetoRow(log, i, postVetoCells);
-            generateEvictedRow(log, i, evictedCells, winnerCells, gameState);
+            // either no log (table headers) or a nonpseudo log
+            if (!log || !log.pseudo) {
+                generatePreVetoRow(log, week, preVetoCells, pseudoCount);
+                generateVetoRow(log, week, vetoCells, pseudoCount);
+                generatePostVetoRow(log, week, postVetoCells, pseudoCount);
+                generateEvictedRow(log, week, evictedCells, winnerCells, gameState, pseudoCount);
+            }
             if (!log) return;
-            log.evicted.forEach((evicted) => evictionOrder.push([evicted, i]));
+            log.evicted.forEach((evicted) => evictionOrder.push([evicted, week]));
 
-            if (log.runnerUp !== undefined) evictionOrder.push([log.runnerUp, i]);
-            if (log.winner !== undefined) evictionOrder.push([log.winner, i]);
+            if (log.runnerUp !== undefined) evictionOrder.push([log.runnerUp, week]);
+            if (log.winner !== undefined) evictionOrder.push([log.winner, week]);
             // add each of the votes to the houseguest cells
             for (const [key, value] of Object.entries(log.votes)) {
                 // typescript for .. in loops kinda suck so i need to do a sketchy type conversion
@@ -126,6 +130,11 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
                     </WinnerCell>
                 );
             }
+            if (log.pseudo) {
+                pseudoCount++;
+            } else {
+                pseudoCount = 0;
+            }
         });
     });
     preVetoCells.push(
@@ -138,11 +147,8 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const preVetoRow = <tr>{preVetoCells}</tr>;
     const vetoRow = <tr>{vetoCells}</tr>;
     const postVetoRow = <tr>{postVetoCells}</tr>;
-    const blackRow = (
-        <BlackRow>
-            <td colSpan={evictedCells.length} />
-        </BlackRow>
-    );
+    // TODO: evictedcells length no longer accurately respents the length of the table
+
     const houseguestRows: JSX.Element[] = [];
     const evictedRow = <tr>{evictedCells}</tr>;
     let desiredLength = -1;
@@ -172,7 +178,12 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
         }
         houseguestRows.push(<tr key={`hgrow--${id}--${anotherKey++}`}>{houseguestCells[id]}</tr>);
     });
-
+    // hey if it works it works
+    const blackRow = (
+        <BlackRow>
+            <td colSpan={Number.MAX_SAFE_INTEGER} />
+        </BlackRow>
+    );
     return (
         <div>
             <FullscreenButton />
@@ -195,22 +206,27 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
 
 function generateEvictedRow(
     log: EpisodeLog | undefined,
-    i: number,
+    week: number,
     cells: JSX.Element[],
     winnerCells: JSX.Element[],
-    gameState: GameState
+    gameState: GameState,
+    pseudoCount: number
 ) {
     if (!log) {
         cells.push(
-            <GrayCell key={`evicted${i}--${anotherKey++}`} rowSpan={2}>
+            <GrayCell key={`evicted${week}--${anotherKey++}`} rowSpan={2}>
                 <CenteredBold noMargin={true}>Evicted</CenteredBold>
             </GrayCell>
         );
         return;
     }
+    if (log.pseudo) return; // no evicted row for a pseudoepisode
+
     const saveOrEvict =
         log.soleVoter !== undefined ? "evict" : (log.votingTo && log.votingTo.toLowerCase()) || "evict";
 
+    const colspan = 1 + pseudoCount;
+    // for stuff like safety chain
     if (log.customEvicted.length > 0) {
         const names = log.customEvicted.map((hg) => [
             <b key={`ev-name-${anotherKey++}`}>{getById(gameState, hg).name}</b>,
@@ -218,7 +234,7 @@ function generateEvictedRow(
         ]);
 
         const content = (
-            <NotEligibleCell key={`evicted${i}--${anotherKey++}`} rowSpan={2}>
+            <NotEligibleCell key={`evicted${week}--${anotherKey++}`} rowSpan={2} colSpan={colspan}>
                 <Centered noMargin={true}>
                     {names}
                     <small>{log.customEvictedText}</small>
@@ -242,7 +258,7 @@ function generateEvictedRow(
                   } of ${log.outOf} votes`;
 
         const content = (
-            <Evicted key={`evicted${i}--${anotherKey++}`} rowSpan={rowSpan}>
+            <Evicted key={`evicted${i}--${anotherKey++}`} rowSpan={rowSpan} colSpan={colspan}>
                 <Centered noMargin={true}>
                     <b>{getById(gameState, evicted).name}</b>
                     <br />
@@ -258,10 +274,16 @@ function generateEvictedRow(
     });
 }
 
-function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
+function generatePostVetoRow(
+    log: EpisodeLog | undefined,
+    week: number,
+    cells: JSX.Element[],
+    pseudoCount: number
+) {
+    const colspan = 1 + pseudoCount;
     if (!log) {
         cells.push(
-            <GrayCell key={`postVeto--${i}-${anotherKey++}`}>
+            <GrayCell key={`postVeto--${week}-${anotherKey++}`} colSpan={colspan}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
@@ -273,12 +295,12 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
     }
     if (log.nominationsPostVeto.length === 0) return;
     cells.push(
-        <White key={`preveto--${i}-${anotherKey++}`}>
+        <White key={`preveto--${week}-${anotherKey++}`} colSpan={colspan}>
             <Centered noMargin={true}>
                 {interleave(
                     log.nominationsPostVeto as any,
                     (key) => (
-                        <br key={`preveto--br--${i}-${key++}`} />
+                        <br key={`preveto--br--${week}-${key++}`} />
                     ),
                     anotherKey
                 )}
@@ -287,10 +309,17 @@ function generatePostVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.
     );
 }
 
-function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
+function generateVetoRow(
+    log: EpisodeLog | undefined,
+    week: number,
+    cells: JSX.Element[],
+    pseudoCount: number
+) {
+    const colspan = 1 + pseudoCount;
+
     if (!log) {
         cells.push(
-            <GrayCell key={`veto--${i}-${anotherKey++}`}>
+            <GrayCell key={`veto--${week}-${anotherKey++}`} colSpan={colspan}>
                 <CenteredBold noMargin={true}>Veto Winner</CenteredBold>
             </GrayCell>
         );
@@ -299,7 +328,7 @@ function generateVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Elem
     if (log.vetoWinner === undefined) return;
 
     cells.push(
-        <White key={`veto--${i}-${anotherKey++}`}>
+        <White key={`veto--${week}-${anotherKey++}`} colSpan={colspan}>
             <Centered noMargin={true}>{log.vetoWinner}</Centered>
         </White>
     );
@@ -310,10 +339,15 @@ function interleave<T>(arr: T[], thing: (key: number) => T, key: number): T[] {
     return ([] as T[]).concat(...arr.map((n: T) => [n, thing(key++)])).slice(0, -1);
 }
 
-function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.Element[]) {
+function generatePreVetoRow(
+    log: EpisodeLog | undefined,
+    week: number,
+    cells: JSX.Element[],
+    pseudoCount: number
+) {
     if (!log) {
         cells.push(
-            <GrayCell key={`preveto--${i}-${anotherKey++}`}>
+            <GrayCell key={`preveto--${week}-${anotherKey++}`}>
                 <CenteredBold noMargin={true}>
                     Nominations
                     <br />
@@ -326,9 +360,13 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
     const noNomsPreVeto = log.nominationsPreVeto.length === 0;
     const noVetoWinner = log.vetoWinner === undefined;
     const noNomsPostveto = log.nominationsPostVeto.length === 0;
+    const colspan = 1 + pseudoCount;
+
+    // TODO: to fix this, keep a pseudocount running and skip unnessecary cells while a pseudo episode is active.
+    // when a nonpseudo episode is seen, pseudocount goes back to 0.
     if (noNomsPreVeto && noVetoWinner && noNomsPostveto) {
         cells.push(
-            <White key={`preveto--${i}-${anotherKey++}`} rowSpan={3}>
+            <White key={`preveto--${week}-${anotherKey++}`} rowSpan={3} colSpan={colspan}>
                 <CenteredItallic noMargin={true}>(none)</CenteredItallic>
             </White>
         );
@@ -336,19 +374,19 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
     }
     if (noNomsPreVeto || noVetoWinner) {
         cells.push(
-            <White key={`preveto--${i}-${anotherKey++}`} rowSpan={2}>
+            <White key={`preveto--${week}-${anotherKey++}`} rowSpan={2} colSpan={colspan}>
                 <CenteredItallic noMargin={true}>(none)</CenteredItallic>
             </White>
         );
         return;
     }
     cells.push(
-        <White key={`preveto--${i}-${anotherKey++}`}>
+        <White key={`preveto--${week}-${anotherKey++}`} colSpan={colspan}>
             <Centered noMargin={true}>
                 {interleave(
                     log.nominationsPreVeto as any,
                     (key) => (
-                        <br key={`preveto--br--${i}-${key++}`} />
+                        <br key={`preveto--br--${week}-${key++}`} />
                     ),
                     anotherKey
                 )}
@@ -359,26 +397,26 @@ function generatePreVetoRow(log: EpisodeLog | undefined, i: number, cells: JSX.E
 
 function generateTopRow(
     log: EpisodeLog | undefined,
-    i: number,
+    week: number,
     cells: JSX.Element[],
     max: number,
     colspan: number
 ) {
     if (!log) {
-        cells.push(<GrayCell key={`toprow--${i}`} />);
+        cells.push(<GrayCell key={`toprow--${week}`} />);
         return;
     }
-    if (i === max) {
+    if (week === max) {
         cells.push(
-            <GrayCell key={`toprow--${i}`} colSpan={2}>
+            <GrayCell key={`toprow--${week}`} colSpan={2}>
                 <CenteredBold noMargin={true}>Finale</CenteredBold>
             </GrayCell>
         );
         return;
     }
     cells.push(
-        <GrayCell key={`toprow--${i}`} colSpan={colspan}>
-            <CenteredBold noMargin={true}>Week {i}</CenteredBold>
+        <GrayCell key={`toprow--${week}`} colSpan={colspan}>
+            <CenteredBold noMargin={true}>Week {week}</CenteredBold>
         </GrayCell>
     );
 }

@@ -51,7 +51,6 @@ export function generateEvictionScene(
     let lastVoter: Houseguest;
     let outOf = 0;
     const nonVoters = new Set<number>(nominees.map((hg) => hg.id));
-    const coHoH = hohArray.length > 1;
     hohArray.forEach((h) => nonVoters.add(h.id));
     nonEvictedHouseguests(newGameState).forEach((hg) => {
         if (!nonVoters.has(hg.id)) {

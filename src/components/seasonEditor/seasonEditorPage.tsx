@@ -115,7 +115,7 @@ export function SeasonEditorPage(): JSX.Element {
                         </HasText>
                     </div>
                 </div>
-                <Subheader>Add Teams</Subheader>
+                <Subheader>🎌 Add Teams</Subheader>
                 <TeamsAdderList />
             </div>
             <div className="column is-narrow" style={{ paddingTop: 20, paddingRight: 20 }}>

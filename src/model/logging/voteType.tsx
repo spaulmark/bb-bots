@@ -133,3 +133,14 @@ export class HoHVote implements VoteType {
         this.id = id === undefined ? -1 : id;
     }
 }
+
+export class TeamVote implements VoteType {
+    public id: number = -1;
+    private color: string;
+    render = (_: GameState): JSX.Element => {
+        return <EndgameTableCell key={getKey()} style={{ backgroundColor: this.color }} />;
+    };
+    constructor(color: string) {
+        this.color = color;
+    }
+}
