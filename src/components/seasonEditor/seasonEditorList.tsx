@@ -73,9 +73,10 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                         Array.from(currentGameState.nonEvictedHouseguests)
                     );
                     // if we are in a log that has been modified, increment log index to make a new one for teams //
-                    if (hasLogBeenModified(currentGameState.currentLog)) {
-                        currentGameState.incrementLogIndex();
-                    }
+                    const wasModified = hasLogBeenModified(currentGameState.currentLog);
+                    // if the log was modified, jump to a new one for teams //
+                    wasModified && currentGameState.incrementLogIndex();
+
                     // now assign them to teams using the modulo operator
                     nonEvictedHouseguests.forEach((hgid, i) => {
                         const hg = getById(currentGameState, hgid);
@@ -84,7 +85,8 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                         currentGameState.currentLog.votes[hg.id] = new TeamVote(team.color);
                     });
                     currentGameState.currentLog.pseudo = true;
-                    currentGameState.incrementLogIndex();
+                    // if the log was not modified earlier, make a new one so we will have something to write to //
+                    !wasModified && currentGameState.incrementLogIndex();
                     // add all the teams as team votes
                     return new Episode({
                         gameState: new GameState(currentGameState),
