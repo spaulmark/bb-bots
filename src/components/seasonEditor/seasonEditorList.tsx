@@ -137,7 +137,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             );
             // if chainable, add at index 1 instead
             const insertAt = newItems.findIndex(
-                (value, index, obj) => index > 0 && value.episode === BigBrotherVanilla
+                (value, index, _) => index > 0 && value.episode === BigBrotherVanilla
             );
             const newItem = {
                 id: (this.id++).toString(),

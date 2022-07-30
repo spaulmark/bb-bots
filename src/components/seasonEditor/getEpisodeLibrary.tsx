@@ -8,9 +8,7 @@ import { TeamVote } from "../../model/logging/voteType";
 import { hasLogBeenModified } from "../../model/logging/episodelog";
 import { TeamAdderProps } from "./teamsAdder";
 import { _items, deleteTeams, _castSize } from "./seasonEditorList";
-import { isNotWellDefined, isWellDefined } from "../../utils";
-
-isWellDefined;
+import { isNotWellDefined } from "../../utils";
 
 export function getEpisodeLibrary(): EpisodeLibrary {
     const generate = (_: any) => {
@@ -174,7 +172,8 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                     const secondEpisode = newEpisode.generate(firstEpisode.gameState);
                     return new Episode({
                         gameState: new GameState(secondEpisode.gameState),
-                        initialGamestate,
+                        // extremely important: pseudo stuff like teams happens in the initial gamestate
+                        initialGamestate: firstEpisode.initialGameState,
                         scenes: firstEpisode.scenes.concat(secondEpisode.scenes),
                         type: {
                             ...dynamicEpisodeType,
