@@ -2,17 +2,13 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Draggable } from "react-beautiful-dnd";
 import React from "react";
 import styled from "styled-components";
-import { Episode, EpisodeType } from "../episode/episodes";
+import { EpisodeType } from "../episode/episodes";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { getEmoji, twist$ } from "./twistAdder";
-import { min, shuffle, sum } from "lodash";
+import { min } from "lodash";
 import { removeFirstNMatching, removeLast1Matching } from "../../utils";
-import { EpisodeLibrary } from "../../model/season";
-import { GameState, getById, MutableGameState } from "../../model/gameState";
-import { getTeamsListContents } from "./teamsAdderList";
-import { TeamVote } from "../../model/logging/voteType";
-import { hasLogBeenModified } from "../../model/logging/episodelog";
+import { GameState, getById } from "../../model/gameState";
 
 const common = `
 padding: 10px;
@@ -36,10 +32,10 @@ const DragItem = styled.div`
     color: #fff;
 `;
 
-let _items: { episode: EpisodeType }[] = [];
-let _castSize: number = 0;
+export let _items: { episode: EpisodeType }[] = [];
+export let _castSize: number = 0;
 
-function deleteTeams(gameState: GameState, toDelete: Set<number>): void {
+export function deleteTeams(gameState: GameState, toDelete: Set<number>): void {
     gameState.nonEvictedHouseguests.forEach((hgid) => {
         const hg = getById(gameState, hgid);
         const tribe = hg.tribe;
@@ -48,187 +44,6 @@ function deleteTeams(gameState: GameState, toDelete: Set<number>): void {
             hg.tribe = undefined;
         }
     });
-}
-
-export function getEpisodeLibrary(): EpisodeLibrary {
-    const episodes: EpisodeType[] = [];
-    const teamListContents = getTeamsListContents();
-    // generate teams
-
-    const mappedItems = _items.map((item) => {
-        if (item.episode.teamsLookupId !== undefined) {
-            const dynamicEpisodeType = {
-                canPlayWith: (n: number) => n > 3,
-                eliminates: 0,
-                pseudo: true,
-                emoji: "🎌",
-                teamsLookupId: item.episode.teamsLookupId,
-            };
-            item.episode = {
-                ...dynamicEpisodeType,
-                generate: (initialGamestate: GameState) => {
-                    let currentGameState = new MutableGameState(initialGamestate);
-                    const teams = Object.values(teamListContents[item.episode.teamsLookupId!].Teams);
-                    const nonEvictedHouseguests: number[] = shuffle(
-                        Array.from(currentGameState.nonEvictedHouseguests)
-                    );
-                    // if we are in a log that has been modified, increment log index to make a new one for teams //
-                    const wasModified = hasLogBeenModified(currentGameState.currentLog);
-                    // if the log was modified, jump to a new one for teams //
-                    wasModified && currentGameState.incrementLogIndex();
-
-                    // now assign them to teams using the modulo operator
-                    nonEvictedHouseguests.forEach((hgid, i) => {
-                        const hg = getById(currentGameState, hgid);
-                        const team = teams[i % teams.length];
-                        hg.tribe = team;
-                        currentGameState.currentLog.votes[hg.id] = new TeamVote(team.color);
-                    });
-                    currentGameState.currentLog.pseudo = true;
-                    // if the log was not modified earlier, make a new one so we will have something to write to //
-                    !wasModified && currentGameState.incrementLogIndex();
-                    // add all the teams as team votes
-                    return new Episode({
-                        gameState: new GameState(currentGameState),
-                        initialGamestate: new GameState(currentGameState), // note that this is usually initialgamestate
-                        scenes: [],
-                        type: {
-                            ...dynamicEpisodeType,
-                            generate: (_) => {
-                                throw "UNREACHABLE";
-                            },
-                        },
-                    });
-                },
-            };
-        }
-        return item;
-    });
-    // 3 is a magic number because you can't have twists after F4
-    // this may need to change in the future if we add final 3 endgames
-    const totalPlayers = sum(mappedItems.map((item) => item.episode.eliminates)) + 3;
-
-    Object.values(teamListContents).forEach((item) => {
-        const endsAt: number = parseInt(item.endsWhen);
-        const teams: number[] = Object.keys(item.Teams).map((key) => parseInt(key));
-        const dynamicEpisodeType = {
-            pseudo: true,
-            canPlayWith: () => true,
-            eliminates: 0,
-            emoji: "🏁",
-        };
-        const endTeamsEpisodeType: EpisodeType = {
-            ...dynamicEpisodeType,
-            generate: (initialGamestate: GameState): Episode => {
-                let currentGameState = new MutableGameState(initialGamestate);
-                deleteTeams(currentGameState, new Set<number>(teams));
-                return new Episode({
-                    gameState: new GameState(currentGameState),
-                    initialGamestate,
-                    scenes: [],
-                    type: {
-                        ...dynamicEpisodeType,
-                        generate: (_) => {
-                            throw "UNREACHABLE";
-                        },
-                    },
-                });
-            },
-        };
-        if (endsAt < 3) return; // no point in ending teams that never end
-        let i = 0;
-        let playersRemaining = totalPlayers;
-        while (endsAt < playersRemaining && endsAt > 3) {
-            playersRemaining -= mappedItems[i].episode.eliminates;
-            i++;
-        }
-        mappedItems.splice(i, 0, { episode: endTeamsEpisodeType });
-    });
-
-    let previousItem: EpisodeType | undefined = undefined;
-    for (const item of mappedItems) {
-        if (item.episode.pseudo) {
-            previousItem = item.episode;
-            continue;
-        }
-        // if previous item is pseudo, chain it to the current one then continue running code
-        if (previousItem && previousItem.pseudo) {
-            // so basically the exact same thing as item, but emojis are chained
-            const pseudoItem = previousItem;
-            const newItem = item.episode;
-            const common = {
-                canPlayWith: () => true,
-                eliminates: pseudoItem.eliminates + newItem.eliminates,
-                emoji: `${pseudoItem.emoji} ${newItem.emoji}`,
-            };
-            item.episode = {
-                ...common,
-                chainable: !!newItem.chainable,
-                generate: (initialGamestate) => {
-                    const firstEpisode = pseudoItem.generate(initialGamestate);
-                    const secondEpisode = newItem.generate(firstEpisode.gameState);
-                    return new Episode({
-                        gameState: new GameState(secondEpisode.gameState),
-                        initialGamestate: new GameState(firstEpisode.gameState), // IMPORTANT, b/c teams happen before pregame
-                        scenes: secondEpisode.scenes,
-                        type: {
-                            ...newItem,
-                            ...common,
-                            generate: (_) => {
-                                throw "UNREACHABLE";
-                            },
-                        },
-                    });
-                },
-            };
-            previousItem = undefined;
-        }
-        // if not chainable, push to newItems
-        if (!item.episode.chainable) {
-            episodes.push(item.episode);
-        } else {
-            // if chainable, merge most recent newItems item
-            const oldEpisode = episodes[episodes.length - 1];
-            const newEpisode = item.episode;
-            const dynamicEpisodeType = {
-                arrowsEnabled: oldEpisode.arrowsEnabled || newEpisode.arrowsEnabled,
-                canPlayWith: () => true,
-                eliminates: oldEpisode.eliminates + newEpisode.eliminates,
-                hasViewsbar: oldEpisode.hasViewsbar || newEpisode.hasViewsbar,
-                emoji: `${oldEpisode.emoji} ${newEpisode.emoji}`,
-            };
-            const newItem: EpisodeType = {
-                ...dynamicEpisodeType,
-                generate: (initialGamestate) => {
-                    const firstEpisode = oldEpisode.generate(initialGamestate);
-                    const secondEpisode = newEpisode.generate(firstEpisode.gameState);
-                    return new Episode({
-                        gameState: new GameState(secondEpisode.gameState),
-                        initialGamestate,
-                        scenes: firstEpisode.scenes.concat(secondEpisode.scenes),
-                        type: {
-                            ...dynamicEpisodeType,
-                            generate: (_) => {
-                                throw "UNREACHABLE";
-                            },
-                        },
-                    });
-                },
-            };
-            episodes[episodes.length - 1] = newItem;
-            previousItem = newItem;
-        }
-    }
-
-    const result: EpisodeLibrary = {};
-    let playersRemaining = _castSize;
-    for (const episode of episodes) {
-        if (episode !== BigBrotherVanilla) {
-            result[playersRemaining] = episode;
-        }
-        playersRemaining -= episode.eliminates;
-    }
-    return result;
 }
 
 const ListItem = ({
