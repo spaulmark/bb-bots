@@ -10,6 +10,7 @@ import {
     SaveCell,
     PoVCell,
     NotEligibleCell,
+    PaddedCell,
 } from "../../components/votingTable/votingTable";
 
 let voteKey = 0;
@@ -139,6 +140,21 @@ export class TeamVote implements VoteType {
     private color: string;
     render = (_: GameState): JSX.Element => {
         return <EndgameTableCell key={getKey()} style={{ backgroundColor: this.color }} />;
+    };
+    constructor(color: string) {
+        this.color = color;
+    }
+}
+
+export class EndTeamVote implements VoteType {
+    public id: number = -1;
+    private color: string;
+    render = (_: GameState): JSX.Element => {
+        return (
+            <PaddedCell key={getKey()} style={{ backgroundColor: this.color }}>
+                🏁
+            </PaddedCell>
+        );
     };
     constructor(color: string) {
         this.color = color;

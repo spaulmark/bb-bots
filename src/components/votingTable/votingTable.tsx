@@ -8,8 +8,11 @@ import { FullscreenButton } from "../mainPage/fullscreenButton";
 import { ColorTheme } from "../../theme/theme";
 import _ from "lodash";
 
-export const EndgameTableCell = styled.td`
+export const PaddedCell = styled.td`
     padding: 0.1em 0.4em;
+`;
+
+export const EndgameTableCell = styled(PaddedCell)`
     border: 1px solid ${({ theme }: { theme: ColorTheme }) => theme.tableCellBorder};
 `;
 
@@ -147,7 +150,6 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
     const preVetoRow = <tr>{preVetoCells}</tr>;
     const vetoRow = <tr>{vetoCells}</tr>;
     const postVetoRow = <tr>{postVetoCells}</tr>;
-    // TODO: evictedcells length no longer accurately respents the length of the table
 
     const houseguestRows: JSX.Element[] = [];
     const evictedRow = <tr>{evictedCells}</tr>;
@@ -362,8 +364,6 @@ function generatePreVetoRow(
     const noNomsPostveto = log.nominationsPostVeto.length === 0;
     const colspan = 1 + pseudoCount;
 
-    // TODO: to fix this, keep a pseudocount running and skip unnessecary cells while a pseudo episode is active.
-    // when a nonpseudo episode is seen, pseudocount goes back to 0.
     if (noNomsPreVeto && noVetoWinner && noNomsPostveto) {
         cells.push(
             <White key={`preveto--${week}-${anotherKey++}`} rowSpan={3} colSpan={colspan}>

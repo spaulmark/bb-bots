@@ -4,7 +4,7 @@ import { shuffle, sum } from "lodash";
 import { EpisodeLibrary } from "../../model/season";
 import { GameState, getById, MutableGameState } from "../../model/gameState";
 import { getTeamsListContents } from "./teamsAdderList";
-import { TeamVote } from "../../model/logging/voteType";
+import { EndTeamVote, TeamVote } from "../../model/logging/voteType";
 import { hasLogBeenModified } from "../../model/logging/episodelog";
 import { TeamAdderProps } from "./teamsAdder";
 import { _items, deleteTeams, _castSize } from "./seasonEditorList";
@@ -80,8 +80,20 @@ export function getEpisodeLibrary(): EpisodeLibrary {
 
     Object.values(teamListContents).forEach((item: TeamAdderProps) => {
         const endsAt: number = parseInt(item.endsWhen);
-        // find startsAt, and if endsAt < startsAt, don't bother  //
-        if (endsAt >= teamIdtoFinalX.get(item.id)!) return;
+        const startsAt = teamIdtoFinalX.get(item.id)!;
+        // find startsAt, and if endsAt was before startsAt, don't bother ending
+        if (endsAt >= startsAt) return;
+        // similarly, if there is another team phase between startsAt and endsAt, also don't bother
+        // FIXME: this will break SO HARD when we do returnees
+        let invalid = false;
+        teamIdtoFinalX.forEach((finalX, teamId) => {
+            if (invalid) return;
+            if (teamId !== item.id && startsAt > finalX && endsAt < finalX) {
+                invalid = true;
+            }
+        });
+        if (invalid) return;
+
         const teams: number[] = Object.keys(item.Teams).map((key) => parseInt(key));
         const dynamicEpisodeType = {
             pseudo: true,
@@ -94,6 +106,22 @@ export function getEpisodeLibrary(): EpisodeLibrary {
             generate: (initialGamestate: GameState): Episode => {
                 let currentGameState = new MutableGameState(initialGamestate);
                 deleteTeams(currentGameState, new Set<number>(teams));
+
+                // if we are in a log that has been modified, increment log index to make a new one for teams //
+                const logWasModified = hasLogBeenModified(currentGameState.currentLog);
+                // if the log was modified, jump to a new one for teams //
+                logWasModified && currentGameState.incrementLogIndex();
+
+                // now assign them to teams using the modulo operator
+                currentGameState.nonEvictedHouseguests.forEach((hgid, i) => {
+                    const hg = getById(currentGameState, hgid);
+                    currentGameState.currentLog.votes[hg.id] = new EndTeamVote("black");
+                });
+                currentGameState.currentLog.pseudo = true;
+                // if the log was not modified earlier, make a new one so we will have something to write to
+                // for the upcoming episode
+                !logWasModified && currentGameState.incrementLogIndex();
+
                 return new Episode({
                     gameState: new GameState(currentGameState),
                     initialGamestate,
