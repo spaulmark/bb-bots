@@ -1,11 +1,13 @@
 import React from "react";
 import { selectPlayer } from "./selectedPortrait";
-import { isNotWellDefined, RelationshipMap } from "../../utils";
+import { isNotWellDefined, RelationshipMap, rng } from "../../utils";
 import _ from "lodash";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
 import styled from "styled-components";
 import { ColorTheme } from "../../theme/theme";
+import { Tribe } from "../../model/tribe";
+import { textColor } from "../../model/color";
 
 const Subtitle = styled.small`
     font-weight: 100;
@@ -43,9 +45,9 @@ const Jury = styled(MemoryWallPortrait)`
 const Normal = styled.img`
     min-width: 100px;
     width: 100%;
-    width: -moz-available; /* For Mozzila */
-    width: -webkit-fill-available; /* For Chrome */
-    width: stretch; /* Unprefixed */
+    width: -moz-available;
+    width: -webkit-fill-available;
+    width: stretch;
     -webkit-transition-property: none;
     -moz-transition-property: none;
     -o-transition-property: none;
@@ -76,6 +78,7 @@ export interface PortraitProps {
     enemies?: number;
     targetingMe?: number;
     targets?: number[];
+    tribe?: Tribe;
 }
 
 export interface PortraitState {
@@ -126,13 +129,30 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         const Img = getImageClass(props);
         let subtitle: any[] = [];
         subtitle = this.state.displayMode.generateSubtitle(this.props, this.state, !!props.detailed);
-
+        let tribeStyle: any = props.tribe
+            ? { backgroundColor: props.tribe.color, color: textColor(props.tribe.color) }
+            : {};
         let Portrait = MemoryWallPortrait;
         if (props.isJury) {
             Portrait = Jury;
+            tribeStyle = {
+                backgroundColor: "#5d5340",
+                color: "#c3ae88",
+                borderTop: "1px solid #5d5340",
+                borderBottom: "1px solid #5d5340",
+            };
         } else if (props.isEvicted) {
             Portrait = Evicted;
+            tribeStyle = { backgroundColor: "#111111", color: "grey" };
         }
+
+        const tribe = props.tribe ? (
+            <TribeStyle style={tribeStyle}>
+                <small>{props.tribe.name}</small>
+            </TribeStyle>
+        ) : undefined;
+        const imageStyle: any = { height: 100, width: "-moz-available" };
+        if (props.tribe) imageStyle["display"] = "block";
         return (
             <Portrait
                 onClick={() => this.onClick()}
@@ -140,8 +160,8 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
                     backgroundColor: this.controller.backgroundColor(props),
                 }}
             >
-                <Img src={props.imageURL} style={{ height: 100, width: "-moz-available" }} />
-                <br />
+                <Img src={props.imageURL} style={imageStyle} />
+                {tribe}
                 {props.name}
                 <br />
                 {<Subtitle>{subtitle}</Subtitle>}
@@ -149,6 +169,18 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         );
     }
 }
+
+const TribeStyle = styled.div`
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    overflow: clip;
+    display: block;
+    min-height: 21px;
+    font-weight: normal;
+`;
 
 function getImageClass(props: PortraitProps) {
     let imageClass = props.isEvicted ? Grayscale : Normal;

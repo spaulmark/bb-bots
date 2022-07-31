@@ -14,4 +14,22 @@ export class EpisodeLog {
     public outOf: number = -1;
     public soleVoter?: string;
     public votingTo?: string;
+    public pseudo?: boolean = false;
+    public strikethroughNominees: string[] = [];
+}
+
+export function hasLogBeenModified(log: EpisodeLog): boolean {
+    return (
+        log.nominationsPreVeto.length > 0 ||
+        log.nominationsPostVeto.length > 0 ||
+        log.evicted.length > 0 ||
+        log.customEvicted.length > 0 ||
+        log.customEvictedText.length > 0 ||
+        Object.keys(log.votes).length > 0 ||
+        log.votesInMajority !== -1 ||
+        log.outOf !== -1 ||
+        log.soleVoter !== undefined ||
+        log.votingTo !== undefined ||
+        !!log.pseudo
+    );
 }

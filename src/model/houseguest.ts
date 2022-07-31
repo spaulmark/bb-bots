@@ -1,5 +1,6 @@
 import { PlayerProfile } from "./playerProfile";
 import { RelationshipMap } from "../utils";
+import { Tribe } from "./tribe";
 
 interface HouseguestInit extends PlayerProfile {
     id: number;
@@ -9,7 +10,7 @@ interface HouseguestInit extends PlayerProfile {
 export class Houseguest extends PlayerProfile {
     public isEvicted: boolean = false;
     public isJury: boolean = false;
-
+    public tribe?: Tribe;
     readonly id: number = 0;
 
     public nominations: number = 0;

@@ -41,9 +41,9 @@ export function nextEpisode(gameState: GameState, episodeType: EpisodeType): Epi
     if (gameState.phase === 0) {
         firstImpressions(newState.houseguests);
     }
-    newState.phase++;
-    newState.resetLogIndex();
-    if (gameState.remainingPlayers > 2) {
+    !episodeType.pseudo && newState.phase++;
+    !episodeType.pseudo && newState.resetLogIndex();
+    if (gameState.remainingPlayers > 2 && !episodeType.pseudo) {
         newState.log[newState.phase] = [new EpisodeLog()];
     }
     refreshHgStats(newState, true);

@@ -92,10 +92,7 @@ function updateFriendCounts(gameState: GameState) {
         });
         hero.friends = friends;
         hero.enemies = enemies;
-        houseguests.forEach((villain) => {
-            if (hero.id === villain.id) return;
-            targets.addTarget(getRelationshipSummary(hero, villain), gameState);
-        });
+        targets.refreshTargets(gameState);
         hero.targets = targets.getTargets();
         hero.targets.forEach((target) => {
             getById(gameState, target).targetingMe++;

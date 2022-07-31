@@ -19,9 +19,11 @@ import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { Screens } from "../topbar/topBar";
-import { getEpisodeLibrary, SeasonEditorList } from "./seasonEditorList";
+import { SeasonEditorList } from "./seasonEditorList";
+import { getEpisodeLibrary } from "./getEpisodeLibrary";
 import { TwistAdder } from "./twistAdder";
 import { SafetyChain } from "../episode/safetyChain";
+import { TeamsAdderList } from "./teamsAdderList";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -114,6 +116,8 @@ export function SeasonEditorPage(): JSX.Element {
                         </HasText>
                     </div>
                 </div>
+                <Subheader>🎌 Add Teams</Subheader>
+                <TeamsAdderList />
             </div>
             <div className="column is-narrow" style={{ paddingTop: 20, paddingRight: 20 }}>
                 <button

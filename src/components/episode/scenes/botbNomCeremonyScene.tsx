@@ -29,11 +29,7 @@ export function generateBotbNomCeremonyScene(
         i % 2 === 0 ? noms1.push(nextNom) : noms2.push(nextNom);
     }
     [noms1, noms2].forEach((arr) => arr.forEach((nom) => nom.nominations++));
-    newGameState.currentLog.nominationsPreVeto = [...noms1, ...noms2].map((nom) => nom.name);
 
-    newGameState.currentLog.nominationsPreVeto = require("alphanum-sort")(
-        newGameState.currentLog.nominationsPreVeto
-    );
     const finalStatement = (noms: Houseguest[]) =>
         `I have nominated you, ${listNames(noms.map((n) => n.name))} for eviction. `;
     const firstText = "My first nominee is...";

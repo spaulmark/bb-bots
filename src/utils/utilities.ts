@@ -57,8 +57,8 @@ export function average(x: number[]): number {
     return sum / x.length;
 }
 
-export function isWellDefined(x: any) {
-    return x !== null && x !== undefined;
+export function isWellDefined(x: any): boolean {
+    return !isNotWellDefined(x);
 }
 
 export function isNotWellDefined(x: any): x is null | undefined {

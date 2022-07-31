@@ -2,15 +2,13 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Draggable } from "react-beautiful-dnd";
 import React from "react";
 import styled from "styled-components";
-import { Episode, EpisodeType } from "../episode/episodes";
+import { EpisodeType } from "../episode/episodes";
 import { BigBrotherVanilla } from "../episode/bigBrotherEpisode";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { getEmoji, twist$ } from "./twistAdder";
 import { min } from "lodash";
 import { removeFirstNMatching, removeLast1Matching } from "../../utils";
-import { EpisodeLibrary } from "../../model/season";
-import { GameState } from "../../model/gameState";
-import { TwoWayRelationshipType } from "../../utils/ai/classifyRelationship";
+import { GameState, getById } from "../../model/gameState";
 
 const common = `
 padding: 10px;
@@ -34,59 +32,18 @@ const DragItem = styled.div`
     color: #fff;
 `;
 
-let _items: SeasonEditorListItem[] = [];
-let _castSize: number = 0;
+export let _items: { episode: EpisodeType }[] = [];
+export let _castSize: number = 0;
 
-export function getEpisodeLibrary(): EpisodeLibrary {
-    const episodes: EpisodeType[] = [];
-    for (const item of _items) {
-        // if not chainable, push to newItems
-        if (!item.episode.chainable) {
-            episodes.push(item.episode);
-        } else {
-            // if chainable, merge most recent newItems item
-            const oldEpisode = episodes[episodes.length - 1];
-            const newEpisode = item.episode;
-            const dynamicEpisodeType = {
-                arrowsEnabled: oldEpisode.arrowsEnabled && newEpisode.arrowsEnabled,
-                canPlayWith: () => true,
-                eliminates: oldEpisode.eliminates + newEpisode.eliminates,
-                hasViewsbar: oldEpisode.hasViewsbar && newEpisode.hasViewsbar,
-                name: "",
-                description: "",
-                emoji: `${oldEpisode.emoji} ${newEpisode.emoji}`,
-            };
-            const newItem: EpisodeType = {
-                ...dynamicEpisodeType,
-                generate: (initialGamestate) => {
-                    const firstEpisode = oldEpisode.generate(initialGamestate);
-                    const secondEpisode = newEpisode.generate(firstEpisode.gameState);
-                    return new Episode({
-                        gameState: new GameState(secondEpisode.gameState),
-                        initialGamestate,
-                        scenes: firstEpisode.scenes.concat(secondEpisode.scenes),
-                        type: {
-                            ...dynamicEpisodeType,
-                            generate: (_) => {
-                                throw "UNREACHABLE";
-                            },
-                        },
-                    });
-                },
-            };
-            episodes[episodes.length - 1] = newItem;
+export function deleteTeams(gameState: GameState, toDelete: Set<number>): void {
+    gameState.nonEvictedHouseguests.forEach((hgid) => {
+        const hg = getById(gameState, hgid);
+        const tribe = hg.tribe;
+        if (!tribe) return;
+        if (toDelete.has(tribe.tribeId)) {
+            hg.tribe = undefined;
         }
-    }
-
-    const result: EpisodeLibrary = {};
-    let playersRemaining = _castSize;
-    for (const episode of episodes) {
-        if (episode !== BigBrotherVanilla) {
-            result[playersRemaining] = episode;
-        }
-        playersRemaining -= episode.eliminates;
-    }
-    return result;
+    });
 }
 
 const ListItem = ({
@@ -171,6 +128,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         if (twist.add) {
             // remove X vanilla episodes, then add the twist
             const newItems = Array.from(this.state.items);
+            // TODO: add the new epsiode at the index that the vanilla was removed
             removeFirstNMatching(
                 newItems,
                 twist.type.eliminates,
@@ -179,7 +137,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             );
             // if chainable, add at index 1 instead
             const insertAt = newItems.findIndex(
-                (value, index, obj) => index > 0 && value.episode === BigBrotherVanilla
+                (value, index, _) => index > 0 && value.episode === BigBrotherVanilla
             );
             const newItem = {
                 id: (this.id++).toString(),
@@ -192,7 +150,12 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         } else {
             // remove the LAST instance of the twist, and add X vanilla episodes
             const newItems = Array.from(this.state.items);
-            const i = removeLast1Matching(newItems, (item) => item.episode === twist.type);
+            const i = removeLast1Matching(newItems, (item) => {
+                const equalTeamsLookupIds = twist.type.teamsLookupId
+                    ? twist.type.teamsLookupId === item.episode.teamsLookupId
+                    : false;
+                return item.episode === twist.type || equalTeamsLookupIds;
+            });
             this.refreshItems(newItems, i);
         }
     }
@@ -210,19 +173,23 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         const finalItems = [];
         let week: number = 0;
         let playerCount: number = this.props.castSize;
-
+        let i = 0;
         for (const item of newItems) {
+            const doNotIncrement = i - 1 > 0 && !!newItems[i - 1].episode.pseudo;
             const chainable: boolean = !!item.episode.chainable;
-            const isValidChain: boolean = chainable ? week !== 0 : true;
+            // FIXME: playerCount !== this.props.castSize // may become invalid when we do battlebacks
+            // because you could have a battleback to maxplayers immediately into a double eviction
+            const isValidChain: boolean = chainable ? playerCount !== this.props.castSize : true;
             const isValid = item.episode.canPlayWith(playerCount) && isValidChain;
-            !chainable && week++;
-            item.weekText = `Week ${week}: F${playerCount}`;
+            !chainable && !doNotIncrement && week++;
+            item.weekText = `Week ${week || 1}: F${playerCount}`;
             item.isValid = isValid;
             playerCount -= item.episode.eliminates;
             // delete all vanilla big brother episodes if player count is below 3
             if (isValid || item.episode !== BigBrotherVanilla) {
                 finalItems.push(item);
             }
+            i++;
         }
         // if we have to add new vanilla episodes b/c we dont have enough to get to F4, add them
         if (playerCount > 3) {
@@ -230,7 +197,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 week++;
                 const item = {
                     id: (this.id++).toString(),
-                    weekText: `Week ${week}: F${playerCount}`,
+                    weekText: `Week ${week || 1}: F${playerCount}`,
                     episode: BigBrotherVanilla,
                     isValid: true,
                 };
