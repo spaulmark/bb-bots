@@ -128,15 +128,14 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         if (twist.add) {
             // remove X vanilla episodes, then add the twist
             const newItems = Array.from(this.state.items);
-            // TODO: add the new epsiode at the index that the vanilla was removed
-            removeFirstNMatching(
+            const nonChainableInsertAt = removeFirstNMatching(
                 newItems,
                 twist.type.eliminates,
                 (item) => item.episode === BigBrotherVanilla,
                 twist.type.chainable ? 1 : 0
             );
             // if chainable, add at index 1 instead
-            const insertAt = newItems.findIndex(
+            const chainableInsertAt = newItems.findIndex(
                 (value, index, _) => index > 0 && value.episode === BigBrotherVanilla
             );
             const newItem = {
@@ -145,7 +144,8 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 episode: twist.type,
                 isValid: true,
             };
-            twist.type.chainable ? newItems.splice(insertAt, 0, newItem) : newItems.unshift(newItem);
+
+            newItems.splice(twist.type.chainable ? chainableInsertAt : nonChainableInsertAt, 0, newItem);
             this.refreshItems(newItems);
         } else {
             // remove the LAST instance of the twist, and add X vanilla episodes

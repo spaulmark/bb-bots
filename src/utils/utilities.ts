@@ -94,13 +94,13 @@ export function angleBetween(x: number[], y: number[]): number {
 }
 
 // takes in an array, a number n, and a match function, then removes the first n elements from the array for which the match function returns true
-
+// returns the index for which something was removed
 export function removeFirstNMatching(
     array: any[],
     n: number,
     match: (x: any) => boolean,
     startAt?: number
-): any[] {
+): number {
     let i = startAt || 0;
     while (i < array.length && n > 0) {
         if (match(array[i])) {
@@ -110,7 +110,7 @@ export function removeFirstNMatching(
         }
         i++;
     }
-    return array;
+    return i;
 }
 
 // takes in an array, a number n, and a match function, then removes the last elements from the array for which the match function returns true
