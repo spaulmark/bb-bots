@@ -175,7 +175,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         let playerCount: number = this.props.castSize;
         let i = 0;
         for (const item of newItems) {
-            const doNotIncrement = i - 1 > 0 && !!newItems[i - 1].episode.pseudo;
+            const doNotIncrement = i - 1 > -1 && !!newItems[i - 1].episode.pseudo;
             const chainable: boolean = !!item.episode.chainable;
             // FIXME: playerCount !== this.props.castSize // may become invalid when we do battlebacks
             // because you could have a battleback to maxplayers immediately into a double eviction
