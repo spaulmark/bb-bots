@@ -88,6 +88,25 @@ interface SeasonEditorListItem {
 
 export const twistCapacity$ = new BehaviorSubject<number>(0);
 
+function shouldIncrement(items: SeasonEditorListItem[], i: number): boolean {
+    if (i + 1 >= items.length) return false; // there is no current item (or next item), so who cares
+    const item = items[i];
+    if (item.episode.pseudo) return false;
+    const nextItem = items[i + 1];
+    if (nextItem.episode.chainable) return false; // next is chainable
+    if (!nextItem.episode.pseudo) return true; // next is normal episode
+    // next is pseudo, so we need to check if there is a next next item until we find a non-pseudo
+    for (let j = i + 2; j < items.length; j++) {
+        const nextNextItem = items[j];
+        const notPseudo = !nextNextItem.episode.pseudo;
+        if (notPseudo) {
+            // false for chainable, true for normal
+            return !nextNextItem.episode.chainable;
+        }
+    }
+    return false; // exhausted the list, return false
+}
+
 export class SeasonEditorList extends React.Component<SeasonEditorListProps, SeasonEditorListState> {
     private id: number = 0;
     private subs: Subscription[] = [];
@@ -171,24 +190,24 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
 
     private refreshItems(newItems: SeasonEditorListItem[], addIndex?: number) {
         const finalItems = [];
-        let week: number = 0;
+        let week: number = 1;
         let playerCount: number = this.props.castSize;
         let i = 0;
         for (const item of newItems) {
-            const doNotIncrement = i - 1 > -1 && !!newItems[i - 1].episode.pseudo;
+            const increment = shouldIncrement(newItems, i);
             const chainable: boolean = !!item.episode.chainable;
             // FIXME: playerCount !== this.props.castSize // may become invalid when we do battlebacks
             // because you could have a battleback to maxplayers immediately into a double eviction
             const isValidChain: boolean = chainable ? playerCount !== this.props.castSize : true;
             const isValid = item.episode.canPlayWith(playerCount) && isValidChain;
-            !chainable && !doNotIncrement && week++;
-            item.weekText = `Week ${week || 1}: F${playerCount}`;
+            item.weekText = `Week ${week}: F${playerCount}`;
             item.isValid = isValid;
             playerCount -= item.episode.eliminates;
             // delete all vanilla big brother episodes if player count is below 3
             if (isValid || item.episode !== BigBrotherVanilla) {
                 finalItems.push(item);
             }
+            increment && week++;
             i++;
         }
         // if we have to add new vanilla episodes b/c we dont have enough to get to F4, add them
