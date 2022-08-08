@@ -11,10 +11,10 @@ export const DiamondVetoEpisode: EpisodeType = {
     hasViewsbar: true,
     name: "Diamond Veto",
     description: "The veto winner has the right to name a replacement nominee.",
-    generate: generateNoVeto,
+    generate,
 };
 
-function generateNoVeto(initialGamestate: GameState): Episode {
+function generate(initialGamestate: GameState): Episode {
     const episode = generateBBVanillaScenes(initialGamestate, DiamondVeto);
     return new Episode({
         gameState: new GameState(episode.gameState),

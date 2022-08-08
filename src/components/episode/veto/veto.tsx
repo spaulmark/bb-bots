@@ -12,6 +12,7 @@ import {
 
 export interface Veto {
     name: string;
+    emoji: string;
     use: (
         hero: Houseguest,
         nominees: Houseguest[],
@@ -23,21 +24,25 @@ export interface Veto {
 
 export const GoldenVeto: Veto = {
     name: "Golden Power of Veto",
+    emoji: "",
     use: useGoldenVeto,
 };
 
 export const DiamondVeto: Veto = {
-    name: "💎 Diamond Power of Veto",
+    name: "Diamond Power of Veto",
+    emoji: "💎",
     use: useDiamondVeto,
 };
 
 export const SpotlightVeto: Veto = {
-    name: "🔦 Spotlight Power of Veto",
+    name: "Spotlight Power of Veto",
+    emoji: "🔦",
     use: useSpotlightVeto,
 };
 
 export const BoomerangVeto: Veto = {
-    name: "🪃 Boomerang Power of Veto",
+    name: "Boomerang Power of Veto",
+    emoji: "🪃",
     use: useBoomerangVeto,
 };
 

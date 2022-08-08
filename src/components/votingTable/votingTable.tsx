@@ -331,7 +331,9 @@ function generateVetoRow(
 
     cells.push(
         <White key={`veto--${week}-${anotherKey++}`} colSpan={colspan}>
-            <Centered noMargin={true}>{log.vetoWinner}</Centered>
+            <Centered noMargin={true}>
+                {log.vetoWinner} {log.vetoEmoji || ""}
+            </Centered>
         </White>
     );
 }

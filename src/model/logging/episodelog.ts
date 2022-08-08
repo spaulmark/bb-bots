@@ -15,6 +15,7 @@ export class EpisodeLog {
     public soleVoter?: string;
     public votingTo?: string;
     public pseudo?: boolean = false;
+    public vetoEmoji?: string;
     public strikethroughNominees: string[] = [];
 }
 

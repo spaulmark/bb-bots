@@ -45,6 +45,7 @@ export function generateVetoCompScene(
     povWinner = getById(newGameState, povWinner.id);
     povWinner.povWins++;
     newGameState.currentLog.vetoWinner = povWinner.name;
+    newGameState.currentLog.vetoEmoji = veto.emoji;
     let introText: string;
     if (everyoneWillPlay) {
         introText = "Everyone left in the house will compete in this challenge.";
@@ -60,6 +61,7 @@ export function generateVetoCompScene(
     for (let i = firstRow.length; i < povPlayers.length; i++) {
         extras.push(povPlayers[i]);
     }
+    const vetoEmoji = veto.emoji ? `${veto.emoji} ` : "";
     const scene = new Scene({
         title: "Veto Competition",
         gameState: initialGameState,
@@ -75,7 +77,7 @@ export function generateVetoCompScene(
                 <Portraits centered={true} houseguests={extras} />
                 <Centered>...</Centered>
                 <Portraits centered={true} houseguests={[povWinner]} />
-                <CenteredBold>{`${povWinner.name} has won the ${veto.name}!`}</CenteredBold>
+                <CenteredBold>{`${povWinner.name} has won the ${vetoEmoji}${veto.name}!`}</CenteredBold>
                 {!doubleEviction && <NextEpisodeButton />}
             </div>
         ),
