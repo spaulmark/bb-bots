@@ -1,4 +1,4 @@
-import { PortraitProps, HouseguestPortrait, PortraitState } from "../memoryWall";
+import { PortraitProps, HouseguestPortrait } from "../memoryWall";
 import { Subscription } from "rxjs";
 import { selectedPlayer$, displayMode$, getSelectedPlayer } from "../../subjects/subjects";
 import { SelectedPlayerData } from "./selectedPortrait";

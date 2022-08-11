@@ -58,7 +58,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                     >
                         add twists
                     </TopbarLink>{" "}
-                    and watch as everyone votes each other out until one winner remains!{" "}
+                    and watch as everyone votes each other out until one winner remains!
                 </Centered>
                 {props.cast.length === 0 ? "" : <MemoryWall houseguests={props.cast} />}
                 {props.cast.length === 0 ? (
