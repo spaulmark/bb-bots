@@ -203,10 +203,10 @@ function basicVetoChecks(
     for (const nom of nominees) {
         if (hero.id === nom.id) return { decision: hero, reason: "I am going to save myself." };
     }
-    // if player is not immune, don't use the veto if you are the only replacement nominee
     if (
+        // note that immunePlayers contains the HoH(s)
         every(immunePlayers, (player) => player.id !== hero.id) &&
-        gameState.remainingPlayers - 1 - immunePlayers.length - nominees.length === 1
+        gameState.remainingPlayers - immunePlayers.length - nominees.length <= 1
     ) {
         return {
             decision: null,
