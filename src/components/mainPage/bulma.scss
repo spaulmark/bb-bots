@@ -17,6 +17,10 @@ $tabs-link-color: hsl(0, 0%, 86%);
 @import "../../../node_modules/bulma/sass/form/_all.sass";
 @import "../../../node_modules/bulma/sass/form/tools.sass";
 
+.button {
+    color: black !important; // stupid css
+}
+
 .box {
     margin-left: 3px;
     margin-right: 3px;

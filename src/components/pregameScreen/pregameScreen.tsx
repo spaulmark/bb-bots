@@ -68,13 +68,22 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                         <b> {"You can use the ⬅️ and ➡️ arrow keys to move forwards and backwards."}</b>
                     </p>
                 )}
-                {props.cast.length === 0 ? (
-                    ""
-                ) : (
-                    <button className="button is-success" onClick={() => switchSceneRelative(1)}>
-                        Start Game
-                    </button>
-                )}
+                <div style={{ justifyContent: "space-between", display: "flex" }}>
+                    {props.cast.length === 0 ? (
+                        ""
+                    ) : (
+                        <button className="button is-success" onClick={() => switchSceneRelative(1)}>
+                            Start Game
+                        </button>
+                    )}
+                    {props.cast.length === 0 ? (
+                        ""
+                    ) : (
+                        <button className="button is-primary" onClick={() => switchSceneRelative(1)}>
+                            Edit Relationships
+                        </button>
+                    )}
+                </div>
             </HasText>
         );
     }
