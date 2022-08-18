@@ -25,7 +25,16 @@ export class HouseguestPortraitController {
 
     public backgroundColor(props: PortraitProps): undefined | string {
         if (heroIsPregame(props)) {
-            return "";
+            return shuffle([
+                "#ca9389",
+                "#cab389",
+                "#c0ca89",
+                "#cabb89",
+                "#c0ca89",
+                "#cabb89",
+                "#b9ca89",
+                "#98ca89",
+            ])[0];
         }
         const selectedPlayer = getSelectedPlayer();
         if (selectedPlayer !== null && selectedPlayer.id === props.id) {

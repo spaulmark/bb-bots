@@ -8,7 +8,6 @@ import styled from "styled-components";
 import { ColorTheme } from "../../theme/theme";
 import { Tribe } from "../../model/tribe";
 import { textColor } from "../../model/color";
-import { heroIsPregame } from "./subtitle";
 
 const Subtitle = styled.small`
     font-weight: 100;
@@ -157,11 +156,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         return (
             <Portrait
                 onClick={() => this.onClick()}
-                className={heroIsPregame(props) ? "rainbow" : ""}
                 style={{
-                    animationDelay: `${-(rng().randomFloat() * 3)}s`,
-                    animationDirection: `${rng().flipCoin() ? "normal" : "reverse"}`,
-
                     backgroundColor: this.controller.backgroundColor(props),
                 }}
             >
