@@ -17,6 +17,48 @@ $tabs-link-color: hsl(0, 0%, 86%);
 @import "../../../node_modules/bulma/sass/form/_all.sass";
 @import "../../../node_modules/bulma/sass/form/tools.sass";
 
+.rainbow {
+    background: linear-gradient(314deg, #fc8989, #89fc89);
+    background-size: 400% 400%;
+
+    -webkit-animation: a 3s ease infinite;
+    -moz-animation: a 3s ease infinite;
+    animation: a 3s ease infinite;
+}
+
+@-webkit-keyframes a {
+    0% {
+        background-position: 1% 0%;
+    }
+    50% {
+        background-position: 99% 100%;
+    }
+    100% {
+        background-position: 1% 0%;
+    }
+}
+@-moz-keyframes a {
+    0% {
+        background-position: 1% 0%;
+    }
+    50% {
+        background-position: 99% 100%;
+    }
+    100% {
+        background-position: 1% 0%;
+    }
+}
+@keyframes a {
+    0% {
+        background-position: 1% 0%;
+    }
+    50% {
+        background-position: 99% 100%;
+    }
+    100% {
+        background-position: 1% 0%;
+    }
+}
 .box {
     margin-left: 3px;
     margin-right: 3px;
