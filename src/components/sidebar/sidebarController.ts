@@ -37,7 +37,7 @@ export class SidebarController {
         this.view = view;
         this.subscriptions.push(
             activeScreen$.subscribe((screen) => {
-                this.view.setState({ selectionsActive: screen === Screens.Other });
+                this.view.setState({ selectionsActive: screen === Screens.Ingame });
             })
         );
         this.subscriptions.push(
@@ -68,7 +68,7 @@ export class SidebarController {
     }
 
     public async switchToScene(id: number) {
-        pushToMainContentStream(this.scenes[id].scene.render, Screens.Other);
+        pushToMainContentStream(this.scenes[id].scene.render, Screens.Ingame);
         this.selectedEpisode = this.scenes[id].index;
         await this.view.setState({ selectedScene: id });
         if (getSelectedPlayer() !== null) {
@@ -109,7 +109,7 @@ export class SidebarController {
         if (
             state.episodes[this.selectedEpisode] === undefined ||
             !state.episodes[this.selectedEpisode].type.arrowsEnabled ||
-            activeScreen$.value !== Screens.Other
+            activeScreen$.value !== Screens.Ingame
         ) {
             return;
         }

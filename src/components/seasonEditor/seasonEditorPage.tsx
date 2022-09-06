@@ -51,7 +51,7 @@ const submit = async (jury: number): Promise<void> => {
     season$.next(getEpisodeLibrary());
 
     // reset stuff and start a new game
-    pushToMainContentStream(<PregameScreen cast={cast$.value} />, Screens.Other);
+    pushToMainContentStream(<PregameScreen cast={cast$.value} />, Screens.Ingame);
     selectPlayer(null);
     // vscode says the awaits are unnessecary here,
     // but if you remove them then bad things happen

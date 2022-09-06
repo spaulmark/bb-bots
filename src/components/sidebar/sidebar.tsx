@@ -31,24 +31,24 @@ export class Sidebar extends React.Component<{}, SidebarState> {
             return;
         }
         let data = await (await fetch(`${baseUrl}/bb.json`)).json();
-        const allBBs: PlayerProfile[] = [];
+        const cast: PlayerProfile[] = [];
         data = shuffle(data).slice(0, 16);
         for (const player of data) {
             let name = player.substr(0, player.lastIndexOf(".")) || player;
             name = name.substr(name.indexOf("/") + 1) || name;
-            allBBs.push({
+            cast.push({
                 name,
                 imageURL: `${baseUrl}/Big Brother ${player}.png`,
             });
         }
 
         const episode: Episode = new PregameEpisode(
-            new GameState({ players: allBBs, jury: defaultJurySize(allBBs.length) })
+            new GameState({ players: cast, jury: defaultJurySize(cast.length) })
         );
         newEpisode(episode);
-        cast$.next(allBBs);
-        if (activeScreen$.value === Screens.Other) {
-            pushToMainContentStream(episode.render, Screens.Other);
+        cast$.next(cast);
+        if (activeScreen$.value === Screens.Ingame) {
+            pushToMainContentStream(episode.render, Screens.Ingame);
         }
     }
 

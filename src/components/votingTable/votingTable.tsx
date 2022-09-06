@@ -98,7 +98,6 @@ export function generateVotingTable(gameState: GameState): JSX.Element {
             if (!log || !log.pseudo) {
                 generatePreVetoRow(log, week, preVetoCells, pseudoCount);
                 generateVetoRow(log, week, vetoCells, pseudoCount);
-                generatePostVetoRow(log, week, postVetoCells, pseudoCount);
                 generateEvictedRow(log, week, evictedCells, winnerCells, gameState, pseudoCount);
             }
             if (!log) return;
@@ -276,41 +275,6 @@ function generateEvictedRow(
     });
 }
 
-function generatePostVetoRow(
-    log: EpisodeLog | undefined,
-    week: number,
-    cells: JSX.Element[],
-    pseudoCount: number
-) {
-    const colspan = 1 + pseudoCount;
-    if (!log) {
-        cells.push(
-            <GrayCell key={`postVeto--${week}-${anotherKey++}`} colSpan={colspan}>
-                <CenteredBold noMargin={true}>
-                    Nominations
-                    <br />
-                    <small>(post-veto)</small>
-                </CenteredBold>
-            </GrayCell>
-        );
-        return;
-    }
-    if (log.nominationsPostVeto.length === 0) return;
-    cells.push(
-        <White key={`preveto--${week}-${anotherKey++}`} colSpan={colspan}>
-            <Centered noMargin={true}>
-                {interleave(
-                    log.nominationsPostVeto as any,
-                    (key) => (
-                        <br key={`preveto--br--${week}-${key++}`} />
-                    ),
-                    anotherKey
-                )}
-            </Centered>
-        </White>
-    );
-}
-
 function generateVetoRow(
     log: EpisodeLog | undefined,
     week: number,
@@ -363,10 +327,9 @@ function generatePreVetoRow(
     }
     const noNomsPreVeto = log.nominationsPreVeto.length === 0;
     const noVetoWinner = log.vetoWinner === undefined;
-    const noNomsPostveto = log.nominationsPostVeto.length === 0;
     const colspan = 1 + pseudoCount;
 
-    if (noNomsPreVeto && noVetoWinner && noNomsPostveto) {
+    if (noNomsPreVeto && noVetoWinner) {
         cells.push(
             <White key={`preveto--${week}-${anotherKey++}`} rowSpan={3} colSpan={colspan}>
                 <CenteredItallic noMargin={true}>(none)</CenteredItallic>

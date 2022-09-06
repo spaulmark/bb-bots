@@ -78,7 +78,6 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     newGameState.incrementLogIndex();
     const noms = leftOut.filter((hg) => hg.id !== safeHg[0].id).map((hg) => getById(newGameState, hg.id));
 
-    newGameState.currentLog.nominationsPostVeto = noms.map((n) => n.name);
     let evictionScene;
     noms.forEach((nom) => nom.nominations++);
     [newGameState, evictionScene] = generateEvictionScene(newGameState, [], noms, {

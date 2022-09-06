@@ -10,6 +10,7 @@ import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 import { Centered, CenteredBold } from "../layout/centered";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import { DeckScreen } from "../deckScreen/deckScreen";
+import { EditRelationshipsScreen } from "../editRelationshipsScreen/editRelationshipScreen";
 
 interface PregameScreenProps {
     cast: PlayerProfile[];
@@ -79,7 +80,15 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                     {props.cast.length === 0 ? (
                         ""
                     ) : (
-                        <button className="button is-primary" onClick={() => switchSceneRelative(1)}>
+                        <button
+                            className="button is-primary"
+                            onClick={() =>
+                                pushToMainContentStream(
+                                    <EditRelationshipsScreen cast={props.cast} />,
+                                    Screens.EditRelationships
+                                )
+                            }
+                        >
                             Edit Relationships
                         </button>
                     )}

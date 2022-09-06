@@ -131,8 +131,6 @@ export function generateVetoCeremonyScene(
             </div>
         ),
     });
-    initialGameState.currentLog.nominationsPostVeto = require("alphanum-sort")(
-        finalNominees.map((nom) => nom.name)
-    );
+
     return [initialGameState, scene, finalNominees];
 }
