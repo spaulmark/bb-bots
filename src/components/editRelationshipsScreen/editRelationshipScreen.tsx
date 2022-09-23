@@ -12,6 +12,7 @@ import { Screens } from "../topbar/topBar";
 interface RelationshipScreenProps {
     profiles: PlayerProfile[];
     initialTribes?: Tribe[];
+    currentTribes?: { [id: number]: Tribe };
     relationships?: { [id: number]: { [id: number]: number } }; // hero -> villain -> relationship
 }
 
@@ -20,9 +21,6 @@ interface RelationshipScreenState {
     relationships: { [id: number]: { [id: number]: number } }; // hero -> villain -> relationship
     currentTribes: { [id: number]: Tribe };
 }
-
-// TODO: a state with houseguests and relationships
-// oh wow and we also have to update all the popularities and stuff hahaha
 
 export class EditRelationshipsScreen extends React.Component<
     RelationshipScreenProps,
@@ -39,37 +37,7 @@ export class EditRelationshipsScreen extends React.Component<
 
     public render() {
         const props = this.props;
-        const _profiles = this.state.cast.map((profile, i) => {
-            const myRelationships = Object.values(this.state.relationships[i]);
-            const popularity = myRelationships.reduce((a, b) => a + b, 0) / myRelationships.length;
-            return {
-                ...profile,
-                popularity,
-                id: i,
-            };
-        });
-        const profiles = _profiles.map((hero, i) => {
-            const myRelationships = this.state.relationships[i];
-            let friends = 0;
-            let enemies = 0;
-            Object.entries(myRelationships).forEach(([villain, relationship]) => {
-                const type = classifyRelationship(
-                    hero.popularity,
-                    _profiles[parseInt(villain)].popularity,
-                    relationship
-                );
-                if (type === RelationshipType.Friend) {
-                    friends++;
-                } else if (type === RelationshipType.Enemy) {
-                    enemies++;
-                }
-            });
-            return {
-                ...hero,
-                friends,
-                enemies,
-            };
-        });
+        const profiles = getProfiles(this.state.cast, this.state.relationships);
         // TODO: selecting HGs, and then selecting their relationships
         return (
             <HasText>
@@ -98,4 +66,41 @@ export class EditRelationshipsScreen extends React.Component<
             </HasText>
         );
     }
+}
+export function getProfiles(
+    cast: PlayerProfile[],
+    relationships: { [id: number]: { [id: number]: number } }
+) {
+    const _profiles = cast.map((profile, i) => {
+        const myRelationships = Object.values(relationships[i]);
+        const popularity = myRelationships.reduce((a, b) => a + b, 0) / myRelationships.length;
+        return {
+            ...profile,
+            popularity,
+            id: i,
+        };
+    });
+    const profiles = _profiles.map((hero, i) => {
+        const myRelationships = relationships[i];
+        let friends = 0;
+        let enemies = 0;
+        Object.entries(myRelationships).forEach(([villain, relationship]) => {
+            const type = classifyRelationship(
+                hero.popularity,
+                _profiles[parseInt(villain)].popularity,
+                relationship
+            );
+            if (type === RelationshipType.Friend) {
+                friends++;
+            } else if (type === RelationshipType.Enemy) {
+                enemies++;
+            }
+        });
+        return {
+            ...hero,
+            friends,
+            enemies,
+        };
+    });
+    return profiles;
 }

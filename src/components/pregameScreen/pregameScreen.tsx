@@ -10,7 +10,7 @@ import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 import { Centered, CenteredBold } from "../layout/centered";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import { DeckScreen } from "../deckScreen/deckScreen";
-import { EditRelationshipsScreen } from "../editRelationshipsScreen/editRelationshipScreen";
+import { EditRelationshipsScreen, getProfiles } from "../editRelationshipsScreen/editRelationshipScreen";
 import { Tribe } from "../../model/tribe";
 
 interface PregameScreenOptions {
@@ -31,6 +31,9 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
 
     public render() {
         const props = this.props;
+        const profiles = props.options?.relationships
+            ? getProfiles(props.cast, props.options.relationships)
+            : props.cast;
         return (
             <HasText>
                 <h2
@@ -69,7 +72,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                     </TopbarLink>{" "}
                     and watch as everyone votes each other out until one winner remains!
                 </Centered>
-                {props.cast.length === 0 ? "" : <MemoryWall houseguests={props.cast} />}
+                {props.cast.length === 0 ? "" : <MemoryWall houseguests={profiles} />}
                 {props.cast.length === 0 ? (
                     ""
                 ) : (
