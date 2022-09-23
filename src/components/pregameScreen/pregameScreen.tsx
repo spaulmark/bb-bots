@@ -96,7 +96,8 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                                 pushToMainContentStream(
                                     <EditRelationshipsScreen
                                         profiles={props.cast}
-                                        // tribes={props.options?.tribes}
+                                        tribes={props.options?.tribes}
+                                        relationships={props.options?.relationships}
                                     />,
                                     Screens.EditRelationships
                                 )
