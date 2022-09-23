@@ -90,7 +90,7 @@ function Deck(props: { deck: string; selected: boolean }): JSX.Element {
     const style = props.selected ? { backgroundColor: selectedColor.toHex(), color: "black" } : {};
     return (
         <DeckStyle className="column is-6" onClick={() => selectDeckSubject(props.deck)} style={style}>
-            <img src={img} style={{ width: 50, height: 50 }} />
+            <img src={img} style={{ width: 50, height: 50 }} alt="" />
             <DeckText>{deck}</DeckText>
         </DeckStyle>
     );

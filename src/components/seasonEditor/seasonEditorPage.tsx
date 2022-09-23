@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
-import { cast$, getCast, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
+import { getCast, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
 import { BattleOfTheBlock } from "../episode/botbEpisode";
 import { BoomerangVetoEpisode } from "../episode/boomerangVetoEpisode";

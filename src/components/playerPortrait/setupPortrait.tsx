@@ -97,7 +97,7 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
                             ✎
                         </EditButton>
                     </div>
-                    <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
+                    <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} alt="" />
                     <br />
                     <p>{this.state.name}</p>
                 </div>

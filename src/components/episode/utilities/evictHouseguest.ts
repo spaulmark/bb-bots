@@ -13,7 +13,7 @@ import { getFinalists } from "../../../model/season";
 import { average, roundTwoDigits } from "../../../utils";
 import { pHeroWinsTheFinale } from "../../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
-import { Targets, getRelationshipSummary } from "../../../utils/ai/targets";
+import { Targets } from "../../../utils/ai/targets";
 
 export function evictHouseguest(gameState: MutableGameState, id: number): GameState {
     const evictee = getById(gameState, id);

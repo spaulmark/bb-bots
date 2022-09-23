@@ -4,7 +4,6 @@ import { EpisodeType } from "./episodes";
 import { angleBetween, rng } from "../../utils";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
-import _ from "lodash";
 import { refreshHgStats } from "./utilities/evictHouseguest";
 
 export function canDisplayCliques(newState: GameState): boolean {

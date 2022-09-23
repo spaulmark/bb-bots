@@ -14,7 +14,7 @@ export function finalEvictionScene(initialGameState: GameState, HoH: Houseguest)
     const nominees = nonEvictedHouseguests(newGameState).filter((hg) => hg.id !== HoH.id);
     const { decision: vote, reason } = castEvictionVote(HoH, nominees, newGameState);
     const evictee = nominees[vote];
-    const survivor = nominees[vote == 1 ? 0 : 1];
+    const survivor = nominees[vote === 1 ? 0 : 1];
     newGameState.currentLog.soleVoter = HoH.name;
     newGameState.currentLog.votes[survivor.id] = new NomineeVote(false);
     newGameState.currentLog.votes[HoH.id] = new HoHVote(evictee.id);

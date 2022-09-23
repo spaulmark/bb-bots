@@ -22,7 +22,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
     const _mappedItems = _items.map((item) => {
         if (item.episode.teamsLookupId !== undefined) {
             // if a team ends when it starts, don't use it
-            if (parseInt(teamListContents[item.episode.teamsLookupId!].endsWhen) == finalX) return;
+            if (parseInt(teamListContents[item.episode.teamsLookupId!].endsWhen) === finalX) return;
             teamIdtoFinalX.set(item.episode.teamsLookupId, finalX);
             const dynamicEpisodeType = {
                 canPlayWith: (n: number) => n > 3,

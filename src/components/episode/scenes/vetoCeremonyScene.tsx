@@ -7,7 +7,6 @@ import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { listNames } from "../../../utils/listStrings";
-import _ from "lodash";
 import { BoomerangVeto, DiamondVeto, Veto } from "../veto/veto";
 
 export function generateVetoCeremonyScene(
