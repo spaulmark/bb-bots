@@ -28,25 +28,25 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
     }
 
     private getOnChangeName(id: number, tribeId: number): (name: string) => void {
-        return ((name: string) => {
+        return (name: string) => {
             const newState = this.state;
             newState.items[id].Teams[tribeId].name = name;
             this.setState(newState);
-        }).bind(this);
+        };
     }
     private getOnChangeColor(id: number, tribeId: number): (name: string) => void {
-        return ((color: string) => {
+        return (color: string) => {
             const newState = this.state;
             newState.items[id].Teams[tribeId].color = color;
             this.setState(newState);
-        }).bind(this);
+        };
     }
     private getOnDelete(id: number, tribeId: number): () => void {
-        return (() => {
+        return () => {
             const newState = this.state;
             delete newState.items[id].Teams[tribeId];
             this.setState(newState);
-        }).bind(this);
+        };
     }
 
     private getTwist(id: number): EpisodeType {
@@ -64,12 +64,12 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
     }
 
     private getOnDeleteSelf(id: number): () => void {
-        return (() => {
+        return () => {
             const newState = this.state;
             twist$.next({ type: this.getTwist(id), add: false });
             delete newState.items[id];
             this.setState(newState);
-        }).bind(this);
+        };
     }
     public render(): JSX.Element {
         const items = this.state.items;
@@ -100,11 +100,11 @@ export class TeamsAdderList extends React.Component<{}, TeamsAdderListState> {
                         newItems[id] = {
                             id,
                             endsWhen: "2",
-                            onChangeNumber: ((n: string) => {
+                            onChangeNumber: (n: string) => {
                                 const newState = { ...this.state };
                                 newState.items[id].endsWhen = n;
                                 this.setState(newState);
-                            }).bind(this),
+                            },
                             Teams,
                             deleteSelf: this.getOnDeleteSelf(id),
                             addTeam: () => {
