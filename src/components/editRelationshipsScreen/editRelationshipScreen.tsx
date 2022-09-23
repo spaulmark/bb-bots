@@ -1,13 +1,16 @@
 import React from "react";
-import { firstImpressionsMap, PlayerProfile } from "../../model";
+import { firstImpressionsMap, GameState, PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { HasText } from "../layout/text";
 import { CenteredBold } from "../layout/centered";
 import { Tribe } from "../../model/tribe";
 import { classifyRelationship, RelationshipType } from "../../utils/ai/classifyRelationship";
-import { overwriteCast, pushToMainContentStream } from "../../subjects/subjects";
+import { getCast, newEpisode, overwriteCast, pushToMainContentStream } from "../../subjects/subjects";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { Screens } from "../topbar/topBar";
+import { PregameEpisode } from "../episode/pregameEpisode";
+import { selectPlayer } from "../playerPortrait/selectedPortrait";
+import { getLastJurySize } from "../seasonEditor/seasonEditorPage";
 
 interface RelationshipScreenProps {
     profiles: PlayerProfile[];
@@ -48,12 +51,21 @@ export class EditRelationshipsScreen extends React.Component<
                 ) : (
                     <button
                         className="button is-success"
-                        onClick={() => {
+                        onClick={async () => {
                             overwriteCast(this.state.cast, {
                                 relationships: this.state.relationships,
                                 initialTribes: this.props.initialTribes,
                                 currentTribes: this.state.currentTribes,
                             });
+                            selectPlayer(null);
+                            // vscode says the awaits are unnessecary here,
+                            // but if you remove them then bad things happen
+                            await newEpisode(null);
+                            await newEpisode(
+                                new PregameEpisode(
+                                    new GameState({ players: getCast(), jury: getLastJurySize() })
+                                )
+                            );
                             pushToMainContentStream(
                                 <PregameScreen cast={this.state.cast} options={this.state} />,
                                 Screens.Ingame

@@ -47,7 +47,14 @@ const twists: EpisodeType[] = [
     BattleOfTheBlock,
 ];
 
+let lastJurySize = defaultJurySize(16);
+
+export function getLastJurySize(): number {
+    return lastJurySize;
+}
+
 const submit = async (jury: number): Promise<void> => {
+    lastJurySize = jury;
     season$.next(getEpisodeLibrary());
 
     // reset stuff and start a new game
