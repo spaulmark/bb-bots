@@ -5,7 +5,7 @@ import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
-import { rng } from "../../../utils";
+import { rng, sortAlphaNum } from "../../../utils";
 import { listNames } from "../../../utils/listStrings";
 import { HoHVote } from "../../../model/logging/voteType";
 
@@ -22,8 +22,8 @@ export function generateBotbScene(
     const noms = hoh0wins ? [nomsArray[0], nomsArray[1]] : [nomsArray[2], nomsArray[3]];
     const winners = hoh0wins ? [nomsArray[2], nomsArray[3]] : [nomsArray[0], nomsArray[1]];
 
-    newGameState.currentLog.nominationsPreVeto = require("alphanum-sort")(noms.map((nom) => nom.name));
-    newGameState.currentLog.strikethroughNominees = require("alphanum-sort")(winners.map((nom) => nom.name));
+    newGameState.currentLog.nominationsPreVeto = sortAlphaNum(noms.map((nom) => nom.name));
+    newGameState.currentLog.strikethroughNominees = sortAlphaNum(winners.map((nom) => nom.name));
 
     const block = (hohIndex: number, nomIndex: number) => {
         return (

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
-import { cast$, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
+import { cast$, getCast, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
 import { BattleOfTheBlock } from "../episode/botbEpisode";
 import { BoomerangVetoEpisode } from "../episode/boomerangVetoEpisode";
@@ -51,16 +51,16 @@ const submit = async (jury: number): Promise<void> => {
     season$.next(getEpisodeLibrary());
 
     // reset stuff and start a new game
-    pushToMainContentStream(<PregameScreen cast={cast$.value} />, Screens.Ingame);
+    pushToMainContentStream(<PregameScreen cast={getCast()} />, Screens.Ingame);
     selectPlayer(null);
     // vscode says the awaits are unnessecary here,
     // but if you remove them then bad things happen
     await newEpisode(null);
-    await newEpisode(new PregameEpisode(new GameState({ players: cast$.value, jury })));
+    await newEpisode(new PregameEpisode(new GameState({ players: getCast(), jury })));
 };
 
 export function SeasonEditorPage(): JSX.Element {
-    const castLength = cast$.value.length;
+    const castLength = getCast().length;
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
     const validJurySize = validateJurySize(parseInt(jurySize), castLength);
     const [areTwistsValid, setTwistsValid] = useState(true);

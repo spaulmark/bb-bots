@@ -36,11 +36,9 @@ export default function generateGraph(gameState: GameState): Graph {
     const nodes: number[] = [];
     const edges: EdgeMap = new EdgeMap();
     players.forEach((player) => {
-        let friendCount = 0;
         _.forEach(player.relationships, (relationship, stringId) => {
             const villainId = parseInt(stringId);
-            const [edge, friends] = generateEdge(player, getById(gameState, villainId), relationship);
-            friendCount += friends;
+            const edge = generateEdge(player, getById(gameState, villainId), relationship)[0];
             if (villainId > player.id) {
                 if (edge) {
                     edges.add(player.id, villainId);

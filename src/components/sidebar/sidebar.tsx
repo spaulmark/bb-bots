@@ -3,7 +3,7 @@ import { SidebarController } from "./sidebarController";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { defaultJurySize, Episode, GameState, PlayerProfile } from "../../model";
 import { Scene } from "../episode/scenes/scene";
-import { cast$, newEpisode, pushToMainContentStream } from "../../subjects/subjects";
+import { newEpisode, overwriteCast, pushToMainContentStream } from "../../subjects/subjects";
 import { Box } from "../layout/box";
 import { HasText } from "../layout/text";
 import { shuffle } from "lodash";
@@ -46,7 +46,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
             new GameState({ players: cast, jury: defaultJurySize(cast.length) })
         );
         newEpisode(episode);
-        cast$.next(cast);
+        overwriteCast(cast);
         if (activeScreen$.value === Screens.Ingame) {
             pushToMainContentStream(episode.render, Screens.Ingame);
         }

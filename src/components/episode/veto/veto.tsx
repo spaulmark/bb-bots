@@ -55,6 +55,9 @@ function useBoomerangVeto(
     exclusions: Houseguest[]
 ): HouseguestWithLogic {
     if (nominees.length !== 2) throw new Error("Boomerang veto only works for 2 nominees.");
+    // if you wouldn't use gold veto on either of them, discard
+    const veto1 = useGoldenVeto(hero, [nominees[0]], gameState, HoH, exclusions);
+    const veto2 = useGoldenVeto(hero, [nominees[1]], gameState, HoH, exclusions);
     const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
     if (checks) return checks;
     // Need an additional check for boomerang veto, since there are 2 replacement noms
@@ -65,9 +68,6 @@ function useBoomerangVeto(
         };
     }
 
-    // if you wouldn't use gold veto on either of them, discard
-    const veto1 = useGoldenVeto(hero, [nominees[0]], gameState, HoH, exclusions);
-    const veto2 = useGoldenVeto(hero, [nominees[1]], gameState, HoH, exclusions);
     if (veto1.decision === null && veto2.decision === null) {
         return { decision: null, reason: "I don't want to save either of these noms." };
     }

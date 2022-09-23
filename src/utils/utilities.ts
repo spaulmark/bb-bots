@@ -127,3 +127,7 @@ export function removeLast1Matching(array: any[], match: (x: any) => boolean): n
     }
     return -1;
 }
+
+export function sortAlphaNum(array: string[]) {
+    return array.sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+}

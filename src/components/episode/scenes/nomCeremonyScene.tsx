@@ -8,6 +8,7 @@ import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { backdoorNPlayers } from "../../../utils/ai/aiApi";
 import { listNames } from "../../../utils/listStrings";
+import { sortAlphaNum } from "../../../utils";
 
 interface NomCeremonyOptions {
     doubleEviction?: boolean;
@@ -62,9 +63,7 @@ export function generateNomCeremonyScene(
         nom3.nominations++;
         newGameState.currentLog.nominationsPreVeto.push(nom3.name);
     }
-    newGameState.currentLog.nominationsPreVeto = require("alphanum-sort")(
-        newGameState.currentLog.nominationsPreVeto
-    );
+    newGameState.currentLog.nominationsPreVeto = sortAlphaNum(newGameState.currentLog.nominationsPreVeto);
     const shuffleOrDont = coHoH ? (a: Houseguest[]): Houseguest[] => a : shuffle;
     const noms = nom3 ? shuffleOrDont([nom1, nom2, nom3]) : shuffleOrDont([nom1, nom2]);
     const weI = coHoH ? "We" : "I";

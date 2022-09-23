@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from "rxjs";
-import { PregameScreen } from "../components/pregameScreen/pregameScreen";
+import { PregameScreen, PregameScreenProps } from "../components/pregameScreen/pregameScreen";
 import { Episode, PlayerProfile } from "../model";
 import { SelectedPlayerData } from "../components/playerPortrait/selectedPortrait";
 import React from "react";
@@ -9,7 +9,7 @@ import { EpisodeLibrary } from "../model/season";
 import { activeScreen$, Screens } from "../components/topbar/topBar";
 
 // What is currently being displayed.
-export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} />);
+export const mainContentStream$ = new BehaviorSubject(<PregameScreen cast={[]} options={{}} />);
 
 export function pushToMainContentStream(content: JSX.Element, tab?: Screens) {
     tab && activeScreen$.next(tab);
@@ -31,12 +31,14 @@ export function switchSceneRelative(n: number) {
 export const season$ = new Subject<EpisodeLibrary>();
 
 // the list of players in the game
-export const cast$ = new BehaviorSubject<PlayerProfile[]>([]);
-export function updateCast(newCast: PlayerProfile[]) {
-    cast$.next(newCast);
+export const cast$ = new BehaviorSubject<PregameScreenProps>({ cast: [] });
+
+// note this function overwrites everything
+export function overwriteCast(newCast: PlayerProfile[]) {
+    cast$.next({ cast: newCast });
 }
 export function getCast(): PlayerProfile[] {
-    return cast$.value;
+    return cast$.value.cast;
 }
 // The player that the user has clicked on.
 export const selectedPlayer$ = new BehaviorSubject<SelectedPlayerData | null>(null);

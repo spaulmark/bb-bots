@@ -43,7 +43,7 @@ const rng$ = new BehaviorSubject(new BbRandomGenerator(0));
 const castSub = cast$.subscribe({
     next: (cast) => {
         let castNames = "";
-        cast.forEach((houseguest) => (castNames += houseguest.name));
+        cast.cast.forEach((houseguest) => (castNames += houseguest.name));
         rng$.next(new BbRandomGenerator(hashcode(castNames)));
     },
 });

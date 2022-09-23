@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { GameState, getById, Houseguest, inJury } from "../../model";
 import { backdoorNPlayers, NumberWithLogic } from "./aiApi";
 import { lowestScore, relationship } from "./aiUtils";

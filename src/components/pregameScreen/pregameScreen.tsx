@@ -11,9 +11,16 @@ import { Centered, CenteredBold } from "../layout/centered";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import { DeckScreen } from "../deckScreen/deckScreen";
 import { EditRelationshipsScreen } from "../editRelationshipsScreen/editRelationshipScreen";
+import { Tribe } from "../../model/tribe";
 
-interface PregameScreenProps {
+interface PregameScreenOptions {
+    tribes?: Tribe[];
+    relationships?: { [id: number]: { [id: number]: number } }; // hero -> villain -> relationship
+}
+
+export interface PregameScreenProps {
     cast: PlayerProfile[];
+    options?: PregameScreenOptions;
 }
 
 export class PregameScreen extends React.Component<PregameScreenProps, {}> {
@@ -82,9 +89,15 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                     ) : (
                         <button
                             className="button is-primary"
+                            // TODO: pass in:
+                            // - relationships (if they exist)
+                            // - initial teams (if they exist)
                             onClick={() =>
                                 pushToMainContentStream(
-                                    <EditRelationshipsScreen cast={props.cast} />,
+                                    <EditRelationshipsScreen
+                                        profiles={props.cast}
+                                        // tribes={props.options?.tribes}
+                                    />,
                                     Screens.EditRelationships
                                 )
                             }
