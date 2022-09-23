@@ -38,6 +38,8 @@ export class PregameScreen extends React.Component<PregameScreenProps, PregameSc
     public render() {
         const props = this.props;
         const relationships = this.state.relationships || props.options?.relationships;
+        const initialTribes = this.state.initialTribes || props.options?.initialTribes;
+        const currentTribes = this.state.currentTribes || props.options?.currentTribes;
         const profiles = relationships ? getProfiles(props.cast, relationships) : props.cast;
         return (
             <HasText>
@@ -102,8 +104,9 @@ export class PregameScreen extends React.Component<PregameScreenProps, PregameSc
                                 pushToMainContentStream(
                                     <EditRelationshipsScreen
                                         profiles={props.cast}
-                                        initialTribes={props.options?.initialTribes}
-                                        relationships={props.options?.relationships}
+                                        initialTribes={initialTribes}
+                                        currentTribes={currentTribes}
+                                        relationships={relationships}
                                     />,
                                     Screens.EditRelationships
                                 )
