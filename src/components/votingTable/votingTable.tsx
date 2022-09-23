@@ -6,7 +6,6 @@ import { GameState, getById } from "../../model";
 import { VoteType, WinnerVote, RunnerUpVote } from "../../model/logging/voteType";
 import { FullscreenButton } from "../mainPage/fullscreenButton";
 import { ColorTheme } from "../../theme/theme";
-import _ from "lodash";
 
 export const PaddedCell = styled.td`
     padding: 0.1em 0.4em;

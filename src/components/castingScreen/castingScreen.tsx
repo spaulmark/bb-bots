@@ -9,7 +9,6 @@ import { pushToMainContentStream, selectedCastPlayer$, overwriteCast } from "../
 import { HasText, Input } from "../layout/text";
 import { Centered } from "../layout/centered";
 import { Subscription } from "rxjs";
-import _ from "lodash";
 import { HelpLink } from "../episode/allianceList";
 import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 import { Screens } from "../topbar/topBar";

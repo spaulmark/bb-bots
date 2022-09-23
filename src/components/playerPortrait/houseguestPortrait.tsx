@@ -1,7 +1,6 @@
 import React from "react";
 import { selectPlayer } from "./selectedPortrait";
-import { isNotWellDefined, RelationshipMap, rng } from "../../utils";
-import _ from "lodash";
+import { isNotWellDefined, RelationshipMap } from "../../utils";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
 import styled from "styled-components";

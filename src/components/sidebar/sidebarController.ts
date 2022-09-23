@@ -4,7 +4,6 @@ import { EpisodeLibrary, Season } from "../../model/season";
 import { Episode, nonEvictedHouseguests, getById } from "../../model";
 import { Scene } from "../episode/scenes/scene";
 import {
-    mainContentStream$,
     episodes$,
     switchEpisode$,
     newEpisode,
