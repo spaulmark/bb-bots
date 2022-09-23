@@ -80,8 +80,5 @@ export const weekStartTab$ = new BehaviorSubject<number>(0);
 // The display mode selected by the viewsbar.
 export const displayMode$ = new BehaviorSubject<PortraitDisplayMode>(popularityMode);
 
-// If the screen is fullscreen or not.
+// If the screen is fullscreen or not. (ie. from the voting table)
 export const isFullscreen$ = new BehaviorSubject<boolean>(false);
-
-// dark or light mode.
-export const theme$ = new Subject<ColorTheme>();
