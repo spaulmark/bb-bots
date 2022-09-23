@@ -4,6 +4,7 @@ import { MemoryWall } from "../memoryWall";
 import { HasText } from "../layout/text";
 import { CenteredBold } from "../layout/centered";
 import { Tribe } from "../../model/tribe";
+import { classifyRelationship, RelationshipType } from "../../utils/ai/classifyRelationship";
 
 interface RelationshipScreenProps {
     profiles: PlayerProfile[];
@@ -33,14 +34,35 @@ export class EditRelationshipsScreen extends React.Component<
 
     public render() {
         const props = this.props;
-
-        const profiles = this.state.cast.map((profile, i) => {
+        const _profiles = this.state.cast.map((profile, i) => {
+            const myRelationships = Object.values(this.state.relationships[i]);
+            const popularity = myRelationships.reduce((a, b) => a + b, 0) / myRelationships.length;
             return {
                 ...profile,
-                popularity:
-                    Object.values(this.state.relationships[i]).reduce((a, b) => a + b, 0) /
-                    Object.values(this.state.relationships[i]).length,
+                popularity,
                 id: i,
+            };
+        });
+        const profiles = _profiles.map((hero, i) => {
+            const myRelationships = this.state.relationships[i];
+            let friends = 0;
+            let enemies = 0;
+            Object.entries(myRelationships).forEach(([villain, relationship]) => {
+                const type = classifyRelationship(
+                    hero.popularity,
+                    _profiles[parseInt(villain)].popularity,
+                    relationship
+                );
+                if (type === RelationshipType.Friend) {
+                    friends++;
+                } else if (type === RelationshipType.Enemy) {
+                    enemies++;
+                }
+            });
+            return {
+                ...hero,
+                friends,
+                enemies,
             };
         });
 
