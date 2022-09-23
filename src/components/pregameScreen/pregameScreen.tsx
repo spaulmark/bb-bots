@@ -3,7 +3,7 @@ import { PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { HasText } from "../layout/text";
 import { popularityMode } from "../../model/portraitDisplayMode";
-import { displayMode$, pushToMainContentStream, switchSceneRelative } from "../../subjects/subjects";
+import { cast$, displayMode$, pushToMainContentStream, switchSceneRelative } from "../../subjects/subjects";
 import { selectedColor } from "../playerPortrait/houseguestPortraitController";
 import { Screens, TopbarLink } from "../topbar/topBar";
 import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
@@ -24,16 +24,21 @@ export interface PregameScreenProps {
     options?: PregameScreenOptions;
 }
 
-export class PregameScreen extends React.Component<PregameScreenProps, {}> {
+export class PregameScreen extends React.Component<PregameScreenProps, PregameScreenOptions> {
+    constructor(props: PregameScreenProps) {
+        super(props);
+        this.state = cast$.value.options ? { ...cast$.value.options } : {};
+    }
+
     public componentDidMount() {
-        displayMode$.next(popularityMode);
+        displayMode$.next(popularityMode); // TODO: pull from the latest options and use those instead of props. lmao. use state i guess.
+        this.setState({ ...cast$.value.options });
     }
 
     public render() {
         const props = this.props;
-        const profiles = props.options?.relationships
-            ? getProfiles(props.cast, props.options.relationships)
-            : props.cast;
+        const relationships = this.state.relationships || props.options?.relationships;
+        const profiles = relationships ? getProfiles(props.cast, relationships) : props.cast;
         return (
             <HasText>
                 <h2

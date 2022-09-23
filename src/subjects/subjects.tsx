@@ -4,7 +4,6 @@ import { Episode, PlayerProfile } from "../model";
 import { SelectedPlayerData } from "../components/playerPortrait/selectedPortrait";
 import React from "react";
 import { PortraitDisplayMode, popularityMode } from "../model/portraitDisplayMode";
-import { ColorTheme } from "../theme/theme";
 import { EpisodeLibrary } from "../model/season";
 import { activeScreen$, Screens } from "../components/topbar/topBar";
 
@@ -35,7 +34,7 @@ export const cast$ = new BehaviorSubject<PregameScreenProps>({ cast: [] });
 
 // note this function overwrites everything
 export function overwriteCast(newCast: PlayerProfile[], options?: PregameScreenProps["options"]) {
-    cast$.next({ cast: newCast });
+    cast$.next({ cast: newCast, options });
 }
 
 export function getCast(): PlayerProfile[] {
