@@ -1,5 +1,5 @@
 import React from "react";
-import { PlayerProfile } from "../../model";
+import { firstImpressionsMap, PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { HasText } from "../layout/text";
 import { CenteredBold } from "../layout/centered";
@@ -13,6 +13,7 @@ interface RelationshipScreenProps {
 
 interface RelationshipScreenState {
     cast: PlayerProfile[];
+    relationships: { [id: number]: { [id: number]: number } }; // hero -> villain -> relationship
 }
 
 // TODO: a state with houseguests and relationships
@@ -24,17 +25,28 @@ export class EditRelationshipsScreen extends React.Component<
 > {
     public constructor(props: RelationshipScreenProps) {
         super(props);
-    }
-
-    public componentDidMount() {
-        // TODO: generate initial relationships if none exist
+        this.state = {
+            cast: props.profiles,
+            relationships: props.relationships || firstImpressionsMap(props.profiles.length),
+        };
     }
 
     public render() {
         const props = this.props;
+
+        const profiles = this.state.cast.map((profile, i) => {
+            return {
+                ...profile,
+                popularity:
+                    Object.values(this.state.relationships[i]).reduce((a, b) => a + b, 0) /
+                    Object.values(this.state.relationships[i]).length,
+                id: i,
+            };
+        });
+
         return (
             <HasText>
-                <MemoryWall houseguests={props.profiles} />
+                <MemoryWall houseguests={profiles} />
                 <CenteredBold> {"Select a houseguest to edit their relationships."}</CenteredBold>
                 {props.profiles.length === 0 ? (
                     ""
