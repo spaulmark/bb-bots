@@ -40,6 +40,7 @@ export function rng() {
 
 const rng$ = new BehaviorSubject(new BbRandomGenerator(0));
 
+// eslint-disable-next-line
 const castSub = cast$.subscribe({
     next: (cast) => {
         let castNames = "";

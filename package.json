@@ -39,7 +39,8 @@
     "eslintConfig": {
         "extends": "react-app",
         "rules": {
-            "no-throw-literal": 0
+            "no-throw-literal": 0,
+            "jsx-a11y/anchor-is-valid": 0
         }
     },
     "browserslist": [
