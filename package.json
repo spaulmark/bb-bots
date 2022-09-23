@@ -39,7 +39,7 @@
     "eslintConfig": {
         "extends": "react-app",
         "rules": {
-            "@typescript-eslint/no-throw-literal": "off"
+            "no-throw-literal": 0
         }
     },
     "browserslist": [
