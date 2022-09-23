@@ -67,10 +67,6 @@ export class SidebarController {
     }
 
     public async switchToScene(id: number) {
-        // don't switch to the same scene you are already on
-        if (id === this.getSelectedEpisode() && activeScreen$.value === Screens.Ingame) {
-            return;
-        }
         pushToMainContentStream(this.scenes[id].scene.render, Screens.Ingame);
         this.selectedEpisode = this.scenes[id].index;
         await this.view.setState({ selectedScene: id });

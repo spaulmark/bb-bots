@@ -5,6 +5,7 @@ import { angleBetween, rng } from "../../utils";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
 import { refreshHgStats } from "./utilities/evictHouseguest";
+import { cast$ } from "../../subjects/subjects";
 
 export function canDisplayCliques(newState: GameState): boolean {
     return newState.remainingPlayers <= 30;
@@ -39,7 +40,7 @@ export function firstImpressionsMap(hgs: number): { [id: number]: { [id: number]
 }
 
 function firstImpressions(houseguests: Houseguest[]) {
-    const map = firstImpressionsMap(houseguests.length);
+    const map = cast$.value.options?.relationships || firstImpressionsMap(houseguests.length);
     for (let i = 0; i < houseguests.length; i++) {
         for (let j = i + 1; j < houseguests.length; j++) {
             houseguests[i].relationships[houseguests[j].id] = map[i][j];
