@@ -31,7 +31,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, PregameSc
     }
 
     public componentDidMount() {
-        displayMode$.next(popularityMode); // TODO: pull from the latest options and use those instead of props. lmao. use state i guess.
+        displayMode$.next(popularityMode);
         this.setState({ ...cast$.value.options });
     }
 
@@ -40,7 +40,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, PregameSc
         const relationships = this.state.relationships || props.options?.relationships;
         const initialTribes = this.state.initialTribes || props.options?.initialTribes;
         const currentTribes = this.state.currentTribes || props.options?.currentTribes;
-        const profiles = relationships ? getProfiles(props.cast, relationships) : props.cast;
+        const profiles = relationships ? getProfiles(props.cast, relationships, false) : props.cast;
         return (
             <HasText>
                 <h2

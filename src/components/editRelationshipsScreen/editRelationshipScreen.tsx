@@ -40,7 +40,7 @@ export class EditRelationshipsScreen extends React.Component<
 
     public render() {
         const props = this.props;
-        const profiles = getProfiles(this.state.cast, this.state.relationships);
+        const profiles = getProfiles(this.state.cast, this.state.relationships, true);
         // TODO: selecting HGs, and then selecting their relationships
         return (
             <HasText>
@@ -81,7 +81,8 @@ export class EditRelationshipsScreen extends React.Component<
 }
 export function getProfiles(
     cast: PlayerProfile[],
-    relationships: { [id: number]: { [id: number]: number } }
+    relationships: { [id: number]: { [id: number]: number } },
+    editable: boolean
 ) {
     const _profiles = cast.map((profile, i) => {
         const myRelationships = Object.values(relationships[i]);
@@ -89,6 +90,7 @@ export function getProfiles(
         return {
             ...profile,
             popularity,
+            editable,
             id: i,
         };
     });
@@ -112,6 +114,7 @@ export function getProfiles(
             ...hero,
             friends,
             enemies,
+            relationships: myRelationships,
         };
     });
     return profiles;

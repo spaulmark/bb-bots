@@ -78,6 +78,7 @@ export interface PortraitProps {
     targetingMe?: number;
     targets?: number[];
     tribe?: Tribe;
+    editable?: boolean;
 }
 
 export interface PortraitState {
@@ -107,7 +108,10 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
 
     private onClick(): void {
         if (
-            (this.props.targets && this.props.targets[0] === 0 && this.props.targets[1] === 0) ||
+            (!this.props.editable &&
+                this.props.targets &&
+                this.props.targets[0] === 0 &&
+                this.props.targets[1] === 0) ||
             isNotWellDefined(this.props.id) ||
             !this.props.relationships
         ) {
