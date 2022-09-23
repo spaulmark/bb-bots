@@ -10,27 +10,40 @@ export function canDisplayCliques(newState: GameState): boolean {
     return newState.remainingPlayers <= 30;
 }
 
-function firstImpressions(houseguests: Houseguest[]) {
+export function firstImpressionsMap(hgs: number): { [id: number]: { [id: number]: number } } {
     const sin = Math.sin;
     const cos = Math.cos;
-    houseguests.forEach((hg) => {
+    const compatibilityMap: { [id: number]: [number, number, number] } = {};
+    const map: { [id: number]: { [id: number]: number } } = {};
+
+    for (let i = 0; i < hgs; i++) {
+        map[i] = {};
         // generate random spherical co-ordinates on the unit sphere
         const u = rng().randomFloat();
         const v = Math.abs(rng().randomFloat());
         const θ = 2 * Math.PI * u;
         const φ = Math.acos(2 * v - 1);
         // convert spherical co-ords to cartesian co-ords
-        hg.compatibility = [sin(θ) * cos(φ), sin(θ) * sin(φ), cos(θ)];
-    });
-    for (let i = 0; i < houseguests.length; i++) {
-        const iMap = houseguests[i].relationships;
-        for (let j = i + 1; j < houseguests.length; j++) {
+        compatibilityMap[i] = [sin(θ) * cos(φ), sin(θ) * sin(φ), cos(θ)];
+    }
+
+    for (let i = 0; i < hgs; i++) {
+        for (let j = i + 1; j < hgs; j++) {
             // creates a bunch of mutual relationships based on points on a sphere
-            const jMap = houseguests[j].relationships;
-            const impression =
-                1 - (2 * angleBetween(houseguests[i].compatibility, houseguests[j].compatibility)) / Math.PI;
-            jMap[i] = impression;
-            iMap[j] = impression;
+            const impression = 1 - (2 * angleBetween(compatibilityMap[i], compatibilityMap[j])) / Math.PI;
+            map[i][j] = impression;
+            map[j][i] = impression;
+        }
+    }
+    return map;
+}
+
+function firstImpressions(houseguests: Houseguest[]) {
+    const map = firstImpressionsMap(houseguests.length);
+    for (let i = 0; i < houseguests.length; i++) {
+        for (let j = i + 1; j < houseguests.length; j++) {
+            houseguests[i].relationships[houseguests[j].id] = map[i][j];
+            houseguests[j].relationships[houseguests[i].id] = map[i][j];
         }
     }
 }

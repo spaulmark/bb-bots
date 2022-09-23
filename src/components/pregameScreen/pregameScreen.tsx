@@ -89,9 +89,6 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                     ) : (
                         <button
                             className="button is-primary"
-                            // TODO: pass in:
-                            // - relationships (if they exist)
-                            // - initial teams (if they exist)
                             onClick={() =>
                                 pushToMainContentStream(
                                     <EditRelationshipsScreen
