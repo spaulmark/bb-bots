@@ -34,9 +34,10 @@ export const season$ = new Subject<EpisodeLibrary>();
 export const cast$ = new BehaviorSubject<PregameScreenProps>({ cast: [] });
 
 // note this function overwrites everything
-export function overwriteCast(newCast: PlayerProfile[]) {
+export function overwriteCast(newCast: PlayerProfile[], options?: PregameScreenProps["options"]) {
     cast$.next({ cast: newCast });
 }
+
 export function getCast(): PlayerProfile[] {
     return cast$.value.cast;
 }

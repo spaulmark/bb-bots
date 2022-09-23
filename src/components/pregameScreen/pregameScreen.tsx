@@ -14,7 +14,8 @@ import { EditRelationshipsScreen } from "../editRelationshipsScreen/editRelation
 import { Tribe } from "../../model/tribe";
 
 interface PregameScreenOptions {
-    tribes?: Tribe[];
+    initialTribes?: Tribe[];
+    currentTribes?: { [id: number]: Tribe };
     relationships?: { [id: number]: { [id: number]: number } }; // hero -> villain -> relationship
 }
 
@@ -93,7 +94,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                                 pushToMainContentStream(
                                     <EditRelationshipsScreen
                                         profiles={props.cast}
-                                        tribes={props.options?.tribes}
+                                        initialTribes={props.options?.initialTribes}
                                         relationships={props.options?.relationships}
                                     />,
                                     Screens.EditRelationships
