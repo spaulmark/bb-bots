@@ -18,6 +18,7 @@ import { PregameEpisode } from "../episode/pregameEpisode";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { getLastJurySize } from "../seasonEditor/seasonEditorPage";
 import { Subscription } from "rxjs";
+import { isWellDefined } from "../../utils";
 
 interface RelationshipScreenProps {
     profiles: PlayerProfile[];
@@ -30,7 +31,7 @@ interface RelationshipScreenState {
     cast: PlayerProfile[];
     relationships: { [id: number]: { [id: number]: number } }; // hero -> villain -> relationship
     currentTribes: { [id: number]: Tribe };
-    isPlayerSelected: boolean;
+    selectedPlayer: number | undefined;
     swapButtonActive: boolean;
 }
 
@@ -45,7 +46,7 @@ export class EditRelationshipsScreen extends React.Component<
             cast: props.profiles,
             relationships: props.relationships || firstImpressionsMap(props.profiles.length),
             currentTribes: {}, // TODO: randomly assign tribes if there are no preset tribes
-            isPlayerSelected: false,
+            selectedPlayer: undefined,
             swapButtonActive: false,
         };
     }
@@ -54,8 +55,26 @@ export class EditRelationshipsScreen extends React.Component<
         this.subs.push(
             selectedPlayer$.subscribe({
                 next: (player) => {
+                    if (
+                        this.state.swapButtonActive &&
+                        isWellDefined(player) &&
+                        isWellDefined(this.state.selectedPlayer) // probably redundant but it's only one boolean
+                    ) {
+                        const state = { ...this.state };
+                        const hero = state.cast[this.state.selectedPlayer || 0]; // its never 0
+                        const villain = state.cast[player!.id];
+                        const tempImage = hero.imageURL;
+                        const tempName = hero.name;
+                        hero.imageURL = villain.imageURL;
+                        hero.name = villain.name;
+                        villain.imageURL = tempImage;
+                        villain.name = tempName;
+                        selectPlayer(null);
+                        return;
+                    }
+
                     const swapButtonActive = false;
-                    this.setState({ isPlayerSelected: !!player, swapButtonActive });
+                    this.setState({ selectedPlayer: player?.id, swapButtonActive });
                 },
             })
         );
@@ -63,14 +82,13 @@ export class EditRelationshipsScreen extends React.Component<
     public render() {
         const props = this.props;
         const profiles = getProfiles(this.state.cast, this.state.relationships, true);
-        // TODO: selecting HGs, and then selecting their relationships
         return (
             <HasText>
                 <MemoryWall houseguests={profiles} />
                 <Centered>
                     <button
                         className={`button is-primary ${this.state.swapButtonActive ? `is-light` : ``}`}
-                        disabled={!this.state.isPlayerSelected}
+                        disabled={!isWellDefined(this.state.selectedPlayer)}
                         onClick={() => {
                             this.setState({ swapButtonActive: !this.state.swapButtonActive });
                         }}
