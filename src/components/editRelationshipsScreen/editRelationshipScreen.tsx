@@ -2,15 +2,22 @@ import React from "react";
 import { firstImpressionsMap, GameState, PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { HasText } from "../layout/text";
-import { CenteredBold } from "../layout/centered";
+import { Centered, CenteredBold } from "../layout/centered";
 import { Tribe } from "../../model/tribe";
 import { classifyRelationship, RelationshipType } from "../../utils/ai/classifyRelationship";
-import { getCast, newEpisode, overwriteCast, pushToMainContentStream } from "../../subjects/subjects";
+import {
+    getCast,
+    newEpisode,
+    overwriteCast,
+    pushToMainContentStream,
+    selectedPlayer$,
+} from "../../subjects/subjects";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { Screens } from "../topbar/topBar";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { getLastJurySize } from "../seasonEditor/seasonEditorPage";
+import { Subscription } from "rxjs";
 
 interface RelationshipScreenProps {
     profiles: PlayerProfile[];
@@ -23,21 +30,36 @@ interface RelationshipScreenState {
     cast: PlayerProfile[];
     relationships: { [id: number]: { [id: number]: number } }; // hero -> villain -> relationship
     currentTribes: { [id: number]: Tribe };
+    isPlayerSelected: boolean;
+    swapButtonActive: boolean;
 }
 
 export class EditRelationshipsScreen extends React.Component<
     RelationshipScreenProps,
     RelationshipScreenState
 > {
+    private subs: Subscription[] = [];
     public constructor(props: RelationshipScreenProps) {
         super(props);
         this.state = {
             cast: props.profiles,
             relationships: props.relationships || firstImpressionsMap(props.profiles.length),
             currentTribes: {}, // TODO: randomly assign tribes if there are no preset tribes
+            isPlayerSelected: false,
+            swapButtonActive: false,
         };
     }
 
+    public componentDidMount() {
+        this.subs.push(
+            selectedPlayer$.subscribe({
+                next: (player) => {
+                    const swapButtonActive = false;
+                    this.setState({ isPlayerSelected: !!player, swapButtonActive });
+                },
+            })
+        );
+    }
     public render() {
         const props = this.props;
         const profiles = getProfiles(this.state.cast, this.state.relationships, true);
@@ -45,6 +67,17 @@ export class EditRelationshipsScreen extends React.Component<
         return (
             <HasText>
                 <MemoryWall houseguests={profiles} />
+                <Centered>
+                    <button
+                        className={`button is-primary ${this.state.swapButtonActive ? `is-light` : ``}`}
+                        disabled={!this.state.isPlayerSelected}
+                        onClick={() => {
+                            this.setState({ swapButtonActive: !this.state.swapButtonActive });
+                        }}
+                    >
+                        {this.state.swapButtonActive ? "Cancel" : "Swap"}
+                    </button>
+                </Centered>
                 <CenteredBold> {"Select a houseguest to edit their relationships."}</CenteredBold>
                 {props.profiles.length === 0 ? (
                     ""
