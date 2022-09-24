@@ -79,6 +79,7 @@ export interface PortraitProps {
     targets?: number[];
     tribe?: Tribe;
     editable?: boolean;
+    ignoreSelected?: boolean;
 }
 
 export interface PortraitState {

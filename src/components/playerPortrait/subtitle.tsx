@@ -66,7 +66,7 @@ function addFriendshipCountTitles(hero: PortraitProps, subtitle: any[], key: num
     }
     if (!hero.isEvicted) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
-        if (data && data.id !== hero.id) {
+        if (data && data.id !== hero.id && !hero.ignoreSelected) {
             const titles = friendOrEnemyTitle(hero, data);
             subtitle = subtitle.concat(titles.map((txt) => <div key={key++}>{txt}</div>));
         } else {

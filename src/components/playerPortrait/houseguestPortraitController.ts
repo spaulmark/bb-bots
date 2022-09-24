@@ -70,16 +70,17 @@ export class HouseguestPortraitController {
     }
 
     private refreshData = (data: SelectedPlayerData | null) => {
-        if (!data) {
+        const playerIsSelected = data && data.id === this.view.props.id;
+        if (!data || (!playerIsSelected && this.view.props.ignoreSelected)) {
             this.view.setState(this.defaultState);
         } else {
-            if (data.id !== this.view.props.id) {
+            if (playerIsSelected) {
+                this.view.setState({ popularity: 2, powerRanking: 2 });
+            } else {
                 this.view.setState({
                     popularity: data.relationships[this.view.props.id!],
                     powerRanking: this.comparePowerRankings(data),
                 });
-            } else {
-                this.view.setState({ popularity: 2, powerRanking: 2 });
             }
         }
     };

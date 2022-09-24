@@ -79,9 +79,19 @@ export class EditRelationshipsScreen extends React.Component<
             })
         );
     }
+
+    public componentWillUnmount() {
+        this.subs.forEach((sub) => sub.unsubscribe());
+    }
+
     public render() {
         const props = this.props;
-        const profiles = getProfiles(this.state.cast, this.state.relationships, true);
+        const profiles = getProfiles(
+            this.state.cast,
+            this.state.relationships,
+            true,
+            this.state.swapButtonActive
+        );
         return (
             <HasText>
                 <MemoryWall houseguests={profiles} />
@@ -133,7 +143,8 @@ export class EditRelationshipsScreen extends React.Component<
 export function getProfiles(
     cast: PlayerProfile[],
     relationships: { [id: number]: { [id: number]: number } },
-    editable: boolean
+    editable: boolean,
+    ignoreSelected: boolean
 ) {
     const _profiles = cast.map((profile, i) => {
         const myRelationships = Object.values(relationships[i]);
@@ -165,6 +176,7 @@ export function getProfiles(
             ...hero,
             friends,
             enemies,
+            ignoreSelected,
             relationships: myRelationships,
         };
     });
