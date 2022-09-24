@@ -106,7 +106,11 @@ export class EditRelationshipsScreen extends React.Component<
                         {this.state.swapButtonActive ? "Cancel" : "Swap"}
                     </button>
                 </Centered>
-                <CenteredBold> {"Select a houseguest to edit their relationships."}</CenteredBold>
+                <CenteredBold>
+                    {this.state.swapButtonActive
+                        ? "Select a houseguest to swap with."
+                        : "Select a houseguest to edit their relationships."}
+                </CenteredBold>
                 {props.profiles.length === 0 ? (
                     ""
                 ) : (
