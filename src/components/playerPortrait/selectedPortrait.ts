@@ -23,8 +23,8 @@ export function selectPlayer(player: SelectedPlayerData | null) {
         return;
     }
     if (
-        !player.superiors ||
-        (displayMode$.value === powerMode && Object.keys(player.superiors).length === 0)
+        displayMode$.value === powerMode &&
+        (!player.superiors || Object.keys(player.superiors).length === 0)
     ) {
         selectedPlayer$.next(null);
         return;
