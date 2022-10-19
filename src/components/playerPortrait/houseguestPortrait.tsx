@@ -1,5 +1,5 @@
 import React from "react";
-import { selectPlayer } from "./selectedPortrait";
+import { isSomeoneElseSelected, selectPlayer } from "./selectedPortrait";
 import { isNotWellDefined, RelationshipMap } from "../../utils";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { ColorTheme } from "../../theme/theme";
 import { Tribe } from "../../model/tribe";
 import { textColor } from "../../model/color";
+import { getSelectedPlayer } from "../../subjects/subjects";
 
 const Subtitle = styled.small`
     font-weight: 100;
@@ -61,6 +62,14 @@ const Sepia = styled(Normal)`
     filter: sepia(100%);
 `;
 
+// this is a css moment !important;
+const Editable = styled(MemoryWallPortrait)`
+    :hover {
+        color: orange;
+        background-color: #fff6e1 !important;
+    }
+`;
+
 export interface PortraitProps {
     imageURL: string;
     name: string;
@@ -79,7 +88,7 @@ export interface PortraitProps {
     targets?: number[];
     tribe?: Tribe;
     editable?: boolean;
-    ignoreSelected?: boolean;
+    ignoreSelected?: boolean; // ie. is swap button active?
 }
 
 export interface PortraitState {
@@ -108,6 +117,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
     }
 
     private onClick(): void {
+        // this honestly makes me want to throw up
         if (
             (!this.props.editable &&
                 this.props.targets &&
@@ -124,6 +134,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
             isEvicted: !!this.props.isEvicted,
             popularity: this.props.popularity || 0,
             superiors: this.props.superiors,
+            name: this.props.name,
         };
         selectPlayer(data);
     }
@@ -148,6 +159,12 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         } else if (props.isEvicted) {
             Portrait = Evicted;
             tribeStyle = { backgroundColor: "#111111", color: "grey" };
+        } else if (
+            props.editable &&
+            !props.ignoreSelected &&
+            isSomeoneElseSelected(getSelectedPlayer(), props)
+        ) {
+            Portrait = Editable;
         }
 
         const tribe = props.tribe ? (

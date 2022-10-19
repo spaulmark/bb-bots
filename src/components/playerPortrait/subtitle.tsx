@@ -1,13 +1,15 @@
 import React from "react";
 import { isWellDefined, roundTwoDigits } from "../../utils";
 import { ProfileHouseguest, PortraitProps, PortraitState } from "../memoryWall";
-import { SelectedPlayerData } from "./selectedPortrait";
+import { isSomeoneElseSelected, SelectedPlayerData } from "./selectedPortrait";
 import {
     RelationshipTypeToSymbol,
     RelationshipType as Relationship,
     classifyRelationship,
 } from "../../utils/ai/classifyRelationship";
 import { getSelectedPlayer } from "../../subjects/subjects";
+import { Noselect } from "./setupPortrait";
+import styled from "styled-components";
 
 export function heroIsPregame(hero: PortraitProps): boolean {
     const heroIsZero =
@@ -26,7 +28,7 @@ export function generatePowerSubtitle(
     key = addCompsLine(hero, subtitle, key);
     if (!hero.isEvicted && state.powerRanking !== undefined) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
-        if (data && data.id !== hero.id) {
+        if (isSomeoneElseSelected(data, hero)) {
             subtitle.push(<div key={key++}>{`WIN ${roundTwoDigits(state.powerRanking!)}%`}</div>);
         } else if (data && data.id === hero.id) {
             subtitle.push(<div key={key++}>I WOULD</div>);
@@ -66,8 +68,8 @@ function addFriendshipCountTitles(hero: PortraitProps, subtitle: any[], key: num
     }
     if (!hero.isEvicted) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
-        if (data && data.id !== hero.id && !hero.ignoreSelected) {
-            const titles = friendOrEnemyTitle(hero, data);
+        if (isSomeoneElseSelected(data, hero) && !hero.ignoreSelected) {
+            const titles = friendOrEnemyTitle(hero, data!);
             subtitle = subtitle.concat(titles.map((txt) => <div key={key++}>{txt}</div>));
         } else {
             const titles = friendEnemyCountTitle(hero);
@@ -102,7 +104,31 @@ function addPopularityLine(
     return key;
 }
 
+const EditRelationshipsButton = styled(Noselect)`
+    color: #300808;
+    width: 100%;
+`;
+
 function addCompsLine(hero: PortraitProps, subtitle: any[], key: number) {
+    const data = getSelectedPlayer() as SelectedPlayerData | null;
+    if (hero.editable && isSomeoneElseSelected(data, hero)) {
+        subtitle.push(
+            <EditRelationshipsButton
+                key={key++}
+                onClick={(event) => {
+                    event.stopPropagation();
+                    window.prompt(
+                        `Enter new relationship for ${data?.name} and ${hero.name}`,
+                        `${roundTwoDigits(hero.relationships![data!.id])}`
+                    );
+                    // TODO: delete all this i guess
+                }}
+            >
+                EDIT
+            </EditRelationshipsButton>
+        );
+        return key;
+    }
     if (compWins(hero)) {
         subtitle.push(<div key={key++}>{`${compWins(hero)}`}</div>);
     } else {

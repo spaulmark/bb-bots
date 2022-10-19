@@ -8,15 +8,20 @@ import {
     selectedPlayer$,
 } from "../../subjects/subjects";
 import { powerMode } from "../../model/portraitDisplayMode";
+import { PortraitProps } from "./houseguestPortrait";
 
 export interface SelectedPlayerData {
     id: number;
+    name: string;
     popularity: number;
     relationships: RelationshipMap;
     isEvicted: boolean;
     superiors?: { [id: number]: number };
 }
 
+export function isSomeoneElseSelected(data: null | SelectedPlayerData, hero: PortraitProps): boolean {
+    return !!(data && data.id !== hero.id);
+}
 export function selectPlayer(player: SelectedPlayerData | null) {
     if (!player || (getSelectedPlayer() && (getSelectedPlayer() as Houseguest).id === player.id)) {
         selectedPlayer$.next(null);
