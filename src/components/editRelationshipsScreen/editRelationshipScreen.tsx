@@ -100,7 +100,9 @@ export class EditRelationshipsScreen extends React.Component<
         const helpText = someoneSelected
             ? this.state.swapButtonActive
                 ? "Select a houseguest to swap with."
-                : "Select another houseguest to edit the relationship between two of them."
+                : `Select another houseguest to edit their relationship with ${
+                      this.state.cast[this.state.selectedPlayer!].name
+                  }.`
             : "Select a houseguest to edit their relationships.";
 
         return (
