@@ -12,6 +12,7 @@ import { CastingScreen } from "../castingScreen/castingScreen";
 import { DeckScreen } from "../deckScreen/deckScreen";
 import { EditRelationshipsScreen, getProfiles } from "../editRelationshipsScreen/editRelationshipScreen";
 import { Tribe } from "../../model/tribe";
+import { selectPlayer } from "../playerPortrait/selectedPortrait";
 
 interface PregameScreenOptions {
     initialTribes?: Tribe[];
@@ -32,6 +33,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, PregameSc
 
     public componentDidMount() {
         displayMode$.next(popularityMode);
+        selectPlayer(null);
         this.setState({ ...cast$.value.options });
     }
 
