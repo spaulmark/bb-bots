@@ -8,8 +8,6 @@ import {
     classifyRelationship,
 } from "../../utils/ai/classifyRelationship";
 import { getSelectedPlayer } from "../../subjects/subjects";
-import { Noselect } from "./setupPortrait";
-import styled from "styled-components";
 
 export function heroIsPregame(hero: PortraitProps): boolean {
     const heroIsZero =
@@ -104,31 +102,7 @@ function addPopularityLine(
     return key;
 }
 
-const EditRelationshipsButton = styled(Noselect)`
-    color: #300808;
-    width: 100%;
-`;
-
 function addCompsLine(hero: PortraitProps, subtitle: any[], key: number) {
-    const data = getSelectedPlayer() as SelectedPlayerData | null;
-    if (hero.editable && isSomeoneElseSelected(data, hero)) {
-        subtitle.push(
-            <EditRelationshipsButton
-                key={key++}
-                onClick={(event) => {
-                    event.stopPropagation();
-                    window.prompt(
-                        `Enter new relationship for ${data?.name} and ${hero.name}`,
-                        `${roundTwoDigits(hero.relationships![data!.id])}`
-                    );
-                    // TODO: delete all this i guess
-                }}
-            >
-                EDIT
-            </EditRelationshipsButton>
-        );
-        return key;
-    }
     if (compWins(hero)) {
         subtitle.push(<div key={key++}>{`${compWins(hero)}`}</div>);
     } else {

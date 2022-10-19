@@ -92,13 +92,24 @@ export class EditRelationshipsScreen extends React.Component<
             true,
             this.state.swapButtonActive
         );
+        const someoneSelected = isWellDefined(this.state.selectedPlayer);
+
+        // no one selected: Select a houseguest to edit their relationships
+        // someone selected but swap button not active: Select a houseguest to edit their relationships
+        // swap button active: Select a houseguest to swap with
+        const helpText = someoneSelected
+            ? this.state.swapButtonActive
+                ? "Select a houseguest to swap with."
+                : "Select another houseguest to edit the relationship between two of them."
+            : "Select a houseguest to edit their relationships.";
+
         return (
             <HasText>
                 <MemoryWall houseguests={profiles} />
                 <Centered>
                     <button
                         className={`button is-primary ${this.state.swapButtonActive ? `is-light` : ``}`}
-                        disabled={!isWellDefined(this.state.selectedPlayer)}
+                        disabled={!someoneSelected}
                         onClick={() => {
                             this.setState({ swapButtonActive: !this.state.swapButtonActive });
                         }}
@@ -106,11 +117,7 @@ export class EditRelationshipsScreen extends React.Component<
                         {this.state.swapButtonActive ? "Cancel" : "Swap"}
                     </button>
                 </Centered>
-                <CenteredBold>
-                    {this.state.swapButtonActive
-                        ? "Select a houseguest to swap with."
-                        : "Select a houseguest to edit their relationships."}
-                </CenteredBold>
+                <CenteredBold>{helpText}</CenteredBold>
                 {props.profiles.length === 0 ? (
                     ""
                 ) : (

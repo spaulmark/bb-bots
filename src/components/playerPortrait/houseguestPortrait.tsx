@@ -1,6 +1,6 @@
 import React from "react";
-import { isSomeoneElseSelected, selectPlayer } from "./selectedPortrait";
-import { isNotWellDefined, RelationshipMap } from "../../utils";
+import { isSomeoneElseSelected, SelectedPlayerData, selectPlayer } from "./selectedPortrait";
+import { isNotWellDefined, RelationshipMap, roundTwoDigits } from "../../utils";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
 import styled from "styled-components";
@@ -116,6 +116,22 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         this.controller.unsubscribe();
     }
 
+    private dealWithInput(data: SelectedPlayerData): void {
+        let input = parseFloat(
+            window.prompt(
+                `Enter new relationship for ${data?.name} and ${this.props.name}`,
+                `${roundTwoDigits(this.props.relationships![data!.id])}`
+            ) || ""
+        );
+        if (isNaN(input)) {
+            return;
+        }
+        input > 100 && (input = 100);
+        input < -100 && (input = -100);
+        input /= 100;
+        // TODO: set it
+    }
+
     private onClick(): void {
         // this honestly makes me want to throw up
         if (
@@ -128,6 +144,16 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         ) {
             return;
         }
+        const selectedPlayer = getSelectedPlayer() as SelectedPlayerData | null;
+        if (
+            this.props.editable &&
+            isSomeoneElseSelected(selectedPlayer, this.props) &&
+            !this.props.ignoreSelected
+        ) {
+            this.dealWithInput(selectedPlayer!);
+            return;
+        }
+
         const data = {
             id: this.props.id,
             relationships: this.props.relationships,
@@ -159,11 +185,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         } else if (props.isEvicted) {
             Portrait = Evicted;
             tribeStyle = { backgroundColor: "#111111", color: "grey" };
-        } else if (
-            props.editable &&
-            !props.ignoreSelected &&
-            isSomeoneElseSelected(getSelectedPlayer(), props)
-        ) {
+        } else if (props.editable && isSomeoneElseSelected(getSelectedPlayer(), props)) {
             Portrait = Editable;
         }
 
