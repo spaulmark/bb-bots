@@ -116,10 +116,10 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         this.controller.unsubscribe();
     }
 
-    private dealWithInput(data: SelectedPlayerData): void {
+    private changeRelationship(data: SelectedPlayerData): void {
         let input = parseFloat(
             window.prompt(
-                `Enter new relationship for ${data?.name} and ${this.props.name}`,
+                `Enter new relationship between ${data?.name} and ${this.props.name}:`,
                 `${roundTwoDigits(this.props.relationships![data!.id])}`
             ) || ""
         );
@@ -150,7 +150,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
             isSomeoneElseSelected(selectedPlayer, this.props) &&
             !this.props.ignoreSelected
         ) {
-            this.dealWithInput(selectedPlayer!);
+            this.changeRelationship(selectedPlayer!);
             return;
         }
 
