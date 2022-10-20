@@ -8,6 +8,7 @@ import { ColorTheme } from "../../theme/theme";
 import { Tribe } from "../../model/tribe";
 import { textColor } from "../../model/color";
 import { getSelectedPlayer } from "../../subjects/subjects";
+import { relationshipUpdate$ } from "../editRelationshipsScreen/editRelationshipScreen";
 
 const Subtitle = styled.small`
     font-weight: 100;
@@ -117,19 +118,23 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
     }
 
     private changeRelationship(data: SelectedPlayerData): void {
-        let input = parseFloat(
+        let relationship = parseFloat(
             window.prompt(
                 `Enter new relationship between ${data?.name} and ${this.props.name}:`,
                 `${roundTwoDigits(this.props.relationships![data!.id])}`
             ) || ""
         );
-        if (isNaN(input)) {
+        if (isNaN(relationship)) {
             return;
         }
-        input > 100 && (input = 100);
-        input < -100 && (input = -100);
-        input /= 100;
-        // TODO: set it
+        relationship > 100 && (relationship = 100);
+        relationship < -100 && (relationship = -100);
+        relationship /= 100;
+        relationshipUpdate$.next({
+            hero: this.props.id!,
+            villain: data.id,
+            relationship,
+        });
     }
 
     private onClick(): void {

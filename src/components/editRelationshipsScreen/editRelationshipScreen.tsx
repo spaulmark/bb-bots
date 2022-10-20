@@ -17,7 +17,7 @@ import { Screens } from "../topbar/topBar";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { getLastJurySize } from "../seasonEditor/seasonEditorPage";
-import { Subscription } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { isWellDefined } from "../../utils";
 
 interface RelationshipScreenProps {
@@ -34,6 +34,9 @@ interface RelationshipScreenState {
     selectedPlayer: number | undefined;
     swapButtonActive: boolean;
 }
+
+// subject for updating relationships
+export const relationshipUpdate$ = new Subject<{ hero: number; villain: number; relationship: number }>();
 
 export class EditRelationshipsScreen extends React.Component<
     RelationshipScreenProps,
@@ -75,6 +78,14 @@ export class EditRelationshipsScreen extends React.Component<
 
                     const swapButtonActive = false;
                     this.setState({ selectedPlayer: player?.id, swapButtonActive });
+                },
+            }),
+            relationshipUpdate$.subscribe({
+                next: (update) => {
+                    const newState = { ...this.state };
+                    newState.relationships[update.hero][update.villain] = update.relationship;
+                    newState.relationships[update.villain][update.hero] = update.relationship;
+                    this.setState(newState);
                 },
             })
         );
