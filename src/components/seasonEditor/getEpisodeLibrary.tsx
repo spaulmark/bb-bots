@@ -21,7 +21,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
     const teamIdtoFinalX = new Map<number, number>();
     const _mappedItems = _items.map((item) => {
         if (item.episode.teamsLookupId !== undefined) {
-            // if a team ends when it starts, don't use it
+            // if a team ends when it starts, don't use it FIXME: this will break 10000% when returnees happen
             // eslint-disable-next-line
             if (parseInt(teamListContents[item.episode.teamsLookupId!].endsWhen) === finalX) return;
             teamIdtoFinalX.set(item.episode.teamsLookupId, finalX);
@@ -114,7 +114,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 logWasModified && currentGameState.incrementLogIndex();
 
                 // now assign them to teams using the modulo operator
-                currentGameState.nonEvictedHouseguests.forEach((hgid, i) => {
+                currentGameState.nonEvictedHouseguests.forEach((hgid) => {
                     const hg = getById(currentGameState, hgid);
                     currentGameState.currentLog.votes[hg.id] = new EndTeamVote("black");
                 });
