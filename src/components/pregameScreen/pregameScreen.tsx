@@ -116,7 +116,7 @@ export class PregameScreen extends React.Component<PregameScreenProps, PregameSc
                                 )
                             }
                         >
-                            Edit Relationships
+                            {`Edit Relationships${initialTribes?.length ? "/Teams" : ""}`}
                         </button>
                     )}
                 </div>

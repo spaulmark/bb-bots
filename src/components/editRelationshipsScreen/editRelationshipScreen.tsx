@@ -130,7 +130,9 @@ export class EditRelationshipsScreen extends React.Component<
                 : `Select another houseguest to edit their relationship with ${
                       this.state.cast[this.state.selectedPlayer!].name
                   }.`
-            : "Select a houseguest to edit their relationships.";
+            : `Select a houseguest to edit their relationships${
+                  props.initialTribes?.length ? " and change their team" : ""
+              }.`;
 
         return (
             <HasText>
