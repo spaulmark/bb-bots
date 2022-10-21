@@ -2,7 +2,7 @@ import React from "react";
 import { firstImpressionsMap, GameState, PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { HasText } from "../layout/text";
-import { Centered, CenteredBold } from "../layout/centered";
+import { CenteredBold } from "../layout/centered";
 import { Tribe } from "../../model/tribe";
 import { classifyRelationship, RelationshipType } from "../../utils/ai/classifyRelationship";
 import {
@@ -20,6 +20,7 @@ import { getLastJurySize } from "../seasonEditor/seasonEditorPage";
 import { Subject, Subscription } from "rxjs";
 import { isWellDefined } from "../../utils";
 import { shuffle } from "lodash";
+import { textColor } from "../../model/color";
 
 interface RelationshipScreenProps {
     profiles: PlayerProfile[];
@@ -134,10 +135,23 @@ export class EditRelationshipsScreen extends React.Component<
                   props.initialTribes?.length ? " and change their team" : ""
               }.`;
 
+        const tribeChoices = props.initialTribes?.map((tribe) => (
+            <div
+                className="dropdown-item"
+                style={{ backgroundColor: tribe.color, color: textColor(tribe.color), minHeight: "2rem" }}
+                key={tribe.tribeId}
+            >
+                {tribe.name}
+            </div>
+        ));
+        // disabled ? opacity: 0.5;
+        // cursor: not-allowed;
+
         return (
             <HasText>
                 <MemoryWall houseguests={profiles} />
-                <Centered>
+                <CenteredBold>{helpText}</CenteredBold>
+                <div className="buttons is-centered">
                     <button
                         className={`button is-primary ${this.state.swapButtonActive ? `is-light` : ``}`}
                         disabled={!someoneSelected}
@@ -147,8 +161,22 @@ export class EditRelationshipsScreen extends React.Component<
                     >
                         {this.state.swapButtonActive ? "Cancel" : "Swap"}
                     </button>
-                </Centered>
-                <CenteredBold>{helpText}</CenteredBold>
+                    {this.props.initialTribes && (
+                        <div className="dropdown is-hoverable is-up">
+                            <div className="dropdown-trigger">
+                                <button className="button">
+                                    <span>Change Team</span>
+                                    <span className="icon is-small">^</span>
+                                </button>
+                            </div>
+                            <div className="dropdown-menu">
+                                <div className="dropdown-content" style={{ padding: 0 }}>
+                                    {tribeChoices}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
                 {props.profiles.length === 0 ? (
                     ""
                 ) : (
