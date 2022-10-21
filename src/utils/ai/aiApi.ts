@@ -147,6 +147,11 @@ export function backdoorNPlayers(
     gameState: GameState,
     n: number
 ): NumberWithLogic[] {
+    // if the number of people you are trying to backdoor is the same as your options,
+    // no point in doing any logic for it (plus this fixes an edge case at F5/F4)
+    if (options.length === n) {
+        return options.map((hg) => ({ decision: hg.id, reason: `I am forced to nominate ${hg.name}` }));
+    }
     // exclude teammates in options[], but if that gives an empty list never mind lol
     const forcedOptions = [];
     if (hero.tribe !== undefined) {
@@ -162,7 +167,6 @@ export function backdoorNPlayers(
             options = exclude(options, nonTeammates);
         }
     }
-
     if (options.length < n) throw new Error(`Tried to backdoor ${n} players with ${options.length} options.`);
     const result: NumberWithLogic[] = [];
     for (let option of forcedOptions) {
