@@ -19,6 +19,7 @@ import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { getLastJurySize } from "../seasonEditor/seasonEditorPage";
 import { Subject, Subscription } from "rxjs";
 import { isWellDefined } from "../../utils";
+import { shuffle } from "lodash";
 
 interface RelationshipScreenProps {
     profiles: PlayerProfile[];
@@ -45,13 +46,27 @@ export class EditRelationshipsScreen extends React.Component<
     private subs: Subscription[] = [];
     public constructor(props: RelationshipScreenProps) {
         super(props);
+        const currentTribes =
+            props.currentTribes ||
+            (props.initialTribes ? this.initalizeTribes(props.profiles, props.initialTribes) : {});
         this.state = {
             cast: props.profiles,
             relationships: props.relationships || firstImpressionsMap(props.profiles.length),
-            currentTribes: {}, // TODO: randomly assign tribes if there are no preset tribes
+            currentTribes,
             selectedPlayer: undefined,
             swapButtonActive: false,
         };
+    }
+
+    private initalizeTribes(profiles: PlayerProfile[], initialTribes: Tribe[]): { [id: number]: Tribe } {
+        const ids: number[] = [...profiles.keys()];
+        const shuffledIds = shuffle(ids);
+        const result: { [id: number]: Tribe } = {};
+        shuffledIds.forEach((id, i) => {
+            const tribe = initialTribes[i % initialTribes.length];
+            result[id] = tribe;
+        });
+        return result;
     }
 
     public componentDidMount() {
@@ -100,6 +115,7 @@ export class EditRelationshipsScreen extends React.Component<
         const profiles = getProfiles(
             this.state.cast,
             this.state.relationships,
+            this.state.currentTribes,
             true,
             this.state.swapButtonActive
         );
@@ -167,6 +183,7 @@ export class EditRelationshipsScreen extends React.Component<
 export function getProfiles(
     cast: PlayerProfile[],
     relationships: { [id: number]: { [id: number]: number } },
+    currentTribes: { [id: number]: Tribe },
     editable: boolean,
     ignoreSelected: boolean
 ) {
@@ -176,6 +193,7 @@ export function getProfiles(
         return {
             ...profile,
             popularity,
+            tribe: currentTribes[i],
             editable,
             id: i,
         };

@@ -42,7 +42,9 @@ export class PregameScreen extends React.Component<PregameScreenProps, PregameSc
         const relationships = this.state.relationships || props.options?.relationships;
         const initialTribes = this.state.initialTribes || props.options?.initialTribes;
         const currentTribes = this.state.currentTribes || props.options?.currentTribes;
-        const profiles = relationships ? getProfiles(props.cast, relationships, false, false) : props.cast;
+        const profiles = relationships
+            ? getProfiles(props.cast, relationships, currentTribes || {}, false, false)
+            : props.cast;
         return (
             <HasText>
                 <h2
