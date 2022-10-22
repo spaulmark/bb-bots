@@ -150,8 +150,8 @@ export class EditRelationshipsScreen extends React.Component<
                     if (isWellDefined(this.state.selectedPlayer)) {
                         const newState = { ...this.state };
                         newState.currentTribes[this.state.selectedPlayer!] = tribe;
-                        selectPlayer(null);
                         this.setState(newState);
+                        selectPlayer(null);
                     }
                 }}
             >
