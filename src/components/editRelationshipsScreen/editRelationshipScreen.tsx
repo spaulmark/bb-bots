@@ -138,15 +138,18 @@ export class EditRelationshipsScreen extends React.Component<
         const tribeChoices = props.initialTribes?.map((tribe) => (
             <div
                 className="dropdown-item"
-                style={{ backgroundColor: tribe.color, color: textColor(tribe.color), minHeight: "2rem" }}
+                style={{
+                    backgroundColor: tribe.color,
+                    color: textColor(tribe.color),
+                    minHeight: "2rem",
+                    cursor: "pointer",
+                }}
                 key={tribe.tribeId}
             >
                 {tribe.name}
             </div>
         ));
-        // disabled ? opacity: 0.5;
-        // cursor: not-allowed;
-
+        const disabledStyle = someoneSelected ? {} : { opacity: 0.5, cursor: "not-allowed" };
         return (
             <HasText>
                 <MemoryWall houseguests={profiles} />
@@ -162,9 +165,9 @@ export class EditRelationshipsScreen extends React.Component<
                         {this.state.swapButtonActive ? "Cancel" : "Swap"}
                     </button>
                     {this.props.initialTribes && (
-                        <div className="dropdown is-hoverable is-up">
+                        <div className={`dropdown ${someoneSelected ? "is-hoverable" : ""} is-up`}>
                             <div className="dropdown-trigger">
-                                <button className="button">
+                                <button className="button" style={disabledStyle}>
                                     <span>Change Team</span>
                                     <span className="icon is-small">^</span>
                                 </button>
