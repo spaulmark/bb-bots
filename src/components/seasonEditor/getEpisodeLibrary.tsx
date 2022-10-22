@@ -53,7 +53,9 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                         const hgTribeId = hg.tribe?.tribeId;
                         // assign the team IF hg has no tribe, or hg has a tribe not in the set of tribe ids//
                         if (hgTribeId === undefined || !setOfTribeIds.has(hgTribeId)) hg.tribe = team;
-                        currentGameState.currentLog.votes[hg.id] = new TeamVote(team.color);
+                        currentGameState.currentLog.votes[hg.id] = new TeamVote(
+                            hg.tribe?.color || team.color
+                        );
                     });
                     currentGameState.currentLog.pseudo = true;
                     // if the log was not modified earlier, make a new one so we will have something to write to
