@@ -12,6 +12,7 @@ import {
 
 export interface Veto {
     name: string;
+    emoji: string;
     use: (
         hero: Houseguest,
         nominees: Houseguest[],
@@ -23,21 +24,25 @@ export interface Veto {
 
 export const GoldenVeto: Veto = {
     name: "Golden Power of Veto",
+    emoji: "",
     use: useGoldenVeto,
 };
 
 export const DiamondVeto: Veto = {
-    name: "💎 Diamond Power of Veto",
+    name: "Diamond Power of Veto",
+    emoji: "💎",
     use: useDiamondVeto,
 };
 
 export const SpotlightVeto: Veto = {
-    name: "🔦 Spotlight Power of Veto",
+    name: "Spotlight Power of Veto",
+    emoji: "🔦",
     use: useSpotlightVeto,
 };
 
 export const BoomerangVeto: Veto = {
-    name: "🪃 Boomerang Power of Veto",
+    name: "Boomerang Power of Veto",
+    emoji: "🪃",
     use: useBoomerangVeto,
 };
 
@@ -50,6 +55,9 @@ function useBoomerangVeto(
     exclusions: Houseguest[]
 ): HouseguestWithLogic {
     if (nominees.length !== 2) throw new Error("Boomerang veto only works for 2 nominees.");
+    // if you wouldn't use gold veto on either of them, discard
+    const veto1 = useGoldenVeto(hero, [nominees[0]], gameState, HoH, exclusions);
+    const veto2 = useGoldenVeto(hero, [nominees[1]], gameState, HoH, exclusions);
     const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
     if (checks) return checks;
     // Need an additional check for boomerang veto, since there are 2 replacement noms
@@ -60,9 +68,6 @@ function useBoomerangVeto(
         };
     }
 
-    // if you wouldn't use gold veto on either of them, discard
-    const veto1 = useGoldenVeto(hero, [nominees[0]], gameState, HoH, exclusions);
-    const veto2 = useGoldenVeto(hero, [nominees[1]], gameState, HoH, exclusions);
     if (veto1.decision === null && veto2.decision === null) {
         return { decision: null, reason: "I don't want to save either of these noms." };
     }
@@ -198,10 +203,10 @@ function basicVetoChecks(
     for (const nom of nominees) {
         if (hero.id === nom.id) return { decision: hero, reason: "I am going to save myself." };
     }
-    // if player is not immune, don't use the veto if you are the only replacement nominee
     if (
+        // note that immunePlayers contains the HoH(s)
         every(immunePlayers, (player) => player.id !== hero.id) &&
-        gameState.remainingPlayers - 1 - immunePlayers.length - nominees.length === 1
+        gameState.remainingPlayers - immunePlayers.length - nominees.length <= 1
     ) {
         return {
             decision: null,

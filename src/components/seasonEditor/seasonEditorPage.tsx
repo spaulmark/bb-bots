@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
-import { cast$, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
+import { cast$, getCast, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
 import { NumericInput } from "../castingScreen/numericInput";
 import { BattleOfTheBlock } from "../episode/botbEpisode";
 import { BoomerangVetoEpisode } from "../episode/boomerangVetoEpisode";
@@ -19,11 +19,12 @@ import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { Screens } from "../topbar/topBar";
-import { SeasonEditorList } from "./seasonEditorList";
+import { SeasonEditorList, _items } from "./seasonEditorList";
 import { getEpisodeLibrary } from "./getEpisodeLibrary";
 import { TwistAdder } from "./twistAdder";
 import { SafetyChain } from "../episode/safetyChain";
-import { TeamsAdderList } from "./teamsAdderList";
+import { getTeamsListContents, TeamsAdderList } from "./teamsAdderList";
+import { Tribe } from "../../model/tribe";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -47,20 +48,52 @@ const twists: EpisodeType[] = [
     BattleOfTheBlock,
 ];
 
+let lastJurySize = defaultJurySize(16);
+
+export function getLastJurySize(): number {
+    return lastJurySize;
+}
+
+function getInitialTribes(): Tribe[] {
+    const items = _items;
+    const teamListContents = getTeamsListContents();
+
+    let tribes: Tribe[] = [];
+    for (const item of items) {
+        // if item is a tribe start episode, add it to most recent tribe episode //
+        if (item.episode.teamsLookupId !== undefined) {
+            // it is a tribe episode //
+            tribes = Object.values(teamListContents[item.episode.teamsLookupId!].Teams);
+        } else {
+            // if the non-teams episode is NOT pseudo, we must break //
+            if (!item.episode.pseudo) {
+                break;
+            }
+        }
+    }
+    return tribes;
+}
+
 const submit = async (jury: number): Promise<void> => {
+    lastJurySize = jury;
+
+    const initialTribes = getInitialTribes();
+    const cast = cast$.getValue();
+    cast$.next({ ...cast, options: { initialTribes } });
+
     season$.next(getEpisodeLibrary());
 
     // reset stuff and start a new game
-    pushToMainContentStream(<PregameScreen cast={cast$.value} />, Screens.Other);
+    pushToMainContentStream(<PregameScreen cast={getCast()} />, Screens.Ingame);
     selectPlayer(null);
     // vscode says the awaits are unnessecary here,
     // but if you remove them then bad things happen
     await newEpisode(null);
-    await newEpisode(new PregameEpisode(new GameState({ players: cast$.value, jury })));
+    await newEpisode(new PregameEpisode(new GameState({ players: getCast(), jury })));
 };
 
 export function SeasonEditorPage(): JSX.Element {
-    const castLength = cast$.value.length;
+    const castLength = getCast().length;
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
     const validJurySize = validateJurySize(parseInt(jurySize), castLength);
     const [areTwistsValid, setTwistsValid] = useState(true);

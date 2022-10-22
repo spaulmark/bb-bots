@@ -22,6 +22,8 @@ export interface ProfileHouseguest extends PlayerProfile {
     enemies?: number;
     targetingMe?: number;
     tribe?: Tribe;
+    editable?: boolean;
+    ignoreSelected?: boolean;
 }
 
 export function MemoryWall(props: MemoryWallProps): JSX.Element {

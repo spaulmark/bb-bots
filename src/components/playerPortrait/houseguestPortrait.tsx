@@ -1,13 +1,14 @@
 import React from "react";
-import { selectPlayer } from "./selectedPortrait";
-import { isNotWellDefined, RelationshipMap, rng } from "../../utils";
-import _ from "lodash";
+import { isSomeoneElseSelected, SelectedPlayerData, selectPlayer } from "./selectedPortrait";
+import { isNotWellDefined, RelationshipMap, roundTwoDigits } from "../../utils";
 import { HouseguestPortraitController } from "./houseguestPortraitController";
 import { PortraitDisplayMode } from "../../model/portraitDisplayMode";
 import styled from "styled-components";
 import { ColorTheme } from "../../theme/theme";
 import { Tribe } from "../../model/tribe";
 import { textColor } from "../../model/color";
+import { getSelectedPlayer } from "../../subjects/subjects";
+import { relationshipUpdate$ } from "../editRelationshipsScreen/editRelationshipScreen";
 
 const Subtitle = styled.small`
     font-weight: 100;
@@ -62,6 +63,14 @@ const Sepia = styled(Normal)`
     filter: sepia(100%);
 `;
 
+// this is a css moment !important;
+const Editable = styled(MemoryWallPortrait)`
+    :hover {
+        color: orange;
+        background-color: #fff6e1 !important;
+    }
+`;
+
 export interface PortraitProps {
     imageURL: string;
     name: string;
@@ -79,6 +88,8 @@ export interface PortraitProps {
     targetingMe?: number;
     targets?: number[];
     tribe?: Tribe;
+    editable?: boolean;
+    ignoreSelected?: boolean; // ie. is swap button active?
 }
 
 export interface PortraitState {
@@ -106,20 +117,55 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         this.controller.unsubscribe();
     }
 
+    private changeRelationship(data: SelectedPlayerData): void {
+        let relationship = parseFloat(
+            window.prompt(
+                `Enter new relationship between ${data?.name} and ${this.props.name}:`,
+                `${roundTwoDigits(this.props.relationships![data!.id])}`
+            ) || ""
+        );
+        if (isNaN(relationship)) {
+            return;
+        }
+        relationship > 100 && (relationship = 100);
+        relationship < -100 && (relationship = -100);
+        relationship /= 100;
+        relationshipUpdate$.next({
+            hero: this.props.id!,
+            villain: data.id,
+            relationship,
+        });
+    }
+
     private onClick(): void {
+        // this honestly makes me want to throw up
         if (
-            (this.props.targets && this.props.targets[0] === 0 && this.props.targets[1] == 0) ||
+            (!this.props.editable &&
+                this.props.targets &&
+                this.props.targets[0] === 0 &&
+                this.props.targets[1] === 0) ||
             isNotWellDefined(this.props.id) ||
             !this.props.relationships
         ) {
             return;
         }
+        const selectedPlayer = getSelectedPlayer() as SelectedPlayerData | null;
+        if (
+            this.props.editable &&
+            isSomeoneElseSelected(selectedPlayer, this.props) &&
+            !this.props.ignoreSelected
+        ) {
+            this.changeRelationship(selectedPlayer!);
+            return;
+        }
+
         const data = {
             id: this.props.id,
             relationships: this.props.relationships,
             isEvicted: !!this.props.isEvicted,
             popularity: this.props.popularity || 0,
             superiors: this.props.superiors,
+            name: this.props.name,
         };
         selectPlayer(data);
     }
@@ -144,6 +190,8 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
         } else if (props.isEvicted) {
             Portrait = Evicted;
             tribeStyle = { backgroundColor: "#111111", color: "grey" };
+        } else if (props.editable && isSomeoneElseSelected(getSelectedPlayer(), props)) {
+            Portrait = Editable;
         }
 
         const tribe = props.tribe ? (

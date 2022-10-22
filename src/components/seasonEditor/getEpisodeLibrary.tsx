@@ -21,8 +21,9 @@ export function getEpisodeLibrary(): EpisodeLibrary {
     const teamIdtoFinalX = new Map<number, number>();
     const _mappedItems = _items.map((item) => {
         if (item.episode.teamsLookupId !== undefined) {
-            // if a team ends when it starts, don't use it
-            if (parseInt(teamListContents[item.episode.teamsLookupId!].endsWhen) == finalX) return;
+            // if a team ends when it starts, don't use it FIXME: this will break 10000% when returnees happen
+            // eslint-disable-next-line
+            if (parseInt(teamListContents[item.episode.teamsLookupId!].endsWhen) === finalX) return;
             teamIdtoFinalX.set(item.episode.teamsLookupId, finalX);
             const dynamicEpisodeType = {
                 canPlayWith: (n: number) => n > 3,
@@ -36,6 +37,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 generate: (initialGamestate: GameState) => {
                     let currentGameState = new MutableGameState(initialGamestate);
                     const teams = Object.values(teamListContents[item.episode.teamsLookupId!].Teams);
+                    const setOfTribeIds = new Set(teams.map((team) => team.tribeId));
                     const nonEvictedHouseguests: number[] = shuffle(
                         Array.from(currentGameState.nonEvictedHouseguests)
                     );
@@ -48,8 +50,12 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                     nonEvictedHouseguests.forEach((hgid, i) => {
                         const hg = getById(currentGameState, hgid);
                         const team = teams[i % teams.length];
-                        hg.tribe = team;
-                        currentGameState.currentLog.votes[hg.id] = new TeamVote(team.color);
+                        const hgTribeId = hg.tribe?.tribeId;
+                        // assign the team IF hg has no tribe, or hg has a tribe not in the set of tribe ids//
+                        if (hgTribeId === undefined || !setOfTribeIds.has(hgTribeId)) hg.tribe = team;
+                        currentGameState.currentLog.votes[hg.id] = new TeamVote(
+                            hg.tribe?.color || team.color
+                        );
                     });
                     currentGameState.currentLog.pseudo = true;
                     // if the log was not modified earlier, make a new one so we will have something to write to
@@ -113,7 +119,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 logWasModified && currentGameState.incrementLogIndex();
 
                 // now assign them to teams using the modulo operator
-                currentGameState.nonEvictedHouseguests.forEach((hgid, i) => {
+                currentGameState.nonEvictedHouseguests.forEach((hgid) => {
                     const hg = getById(currentGameState, hgid);
                     currentGameState.currentLog.votes[hg.id] = new EndTeamVote("black");
                 });

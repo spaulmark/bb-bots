@@ -40,10 +40,11 @@ export function rng() {
 
 const rng$ = new BehaviorSubject(new BbRandomGenerator(0));
 
+// eslint-disable-next-line
 const castSub = cast$.subscribe({
     next: (cast) => {
         let castNames = "";
-        cast.forEach((houseguest) => (castNames += houseguest.name));
+        cast.cast.forEach((houseguest) => (castNames += houseguest.name));
         rng$.next(new BbRandomGenerator(hashcode(castNames)));
     },
 });

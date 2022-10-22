@@ -3,25 +3,48 @@ import { PlayerProfile } from "../../model";
 import { MemoryWall } from "../memoryWall";
 import { HasText } from "../layout/text";
 import { popularityMode } from "../../model/portraitDisplayMode";
-import { displayMode$, pushToMainContentStream, switchSceneRelative } from "../../subjects/subjects";
+import { cast$, displayMode$, pushToMainContentStream, switchSceneRelative } from "../../subjects/subjects";
 import { selectedColor } from "../playerPortrait/houseguestPortraitController";
 import { Screens, TopbarLink } from "../topbar/topBar";
 import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 import { Centered, CenteredBold } from "../layout/centered";
 import { CastingScreen } from "../castingScreen/castingScreen";
 import { DeckScreen } from "../deckScreen/deckScreen";
+import { EditRelationshipsScreen, getProfiles } from "../editRelationshipsScreen/editRelationshipScreen";
+import { Tribe } from "../../model/tribe";
+import { selectPlayer } from "../playerPortrait/selectedPortrait";
 
-interface PregameScreenProps {
-    cast: PlayerProfile[];
+interface PregameScreenOptions {
+    initialTribes?: Tribe[];
+    currentTribes?: { [id: number]: Tribe };
+    relationships?: { [id: number]: { [id: number]: number } }; // hero -> villain -> relationship
 }
 
-export class PregameScreen extends React.Component<PregameScreenProps, {}> {
+export interface PregameScreenProps {
+    cast: PlayerProfile[];
+    options?: PregameScreenOptions;
+}
+
+export class PregameScreen extends React.Component<PregameScreenProps, PregameScreenOptions> {
+    constructor(props: PregameScreenProps) {
+        super(props);
+        this.state = cast$.value.options ? { ...cast$.value.options } : {};
+    }
+
     public componentDidMount() {
         displayMode$.next(popularityMode);
+        selectPlayer(null);
+        this.setState({ ...cast$.value.options });
     }
 
     public render() {
         const props = this.props;
+        const relationships = this.state.relationships || props.options?.relationships;
+        const initialTribes = this.state.initialTribes || props.options?.initialTribes;
+        const currentTribes = this.state.currentTribes || props.options?.currentTribes;
+        const profiles = relationships
+            ? getProfiles(props.cast, relationships, currentTribes || {}, false, false)
+            : props.cast;
         return (
             <HasText>
                 <h2
@@ -58,9 +81,9 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                     >
                         add twists
                     </TopbarLink>{" "}
-                    and watch as everyone votes each other out until one winner remains!{" "}
+                    and watch as everyone votes each other out until one winner remains!
                 </Centered>
-                {props.cast.length === 0 ? "" : <MemoryWall houseguests={props.cast} />}
+                {props.cast.length === 0 ? "" : <MemoryWall houseguests={profiles} />}
                 {props.cast.length === 0 ? (
                     ""
                 ) : (
@@ -68,13 +91,35 @@ export class PregameScreen extends React.Component<PregameScreenProps, {}> {
                         <b> {"You can use the ⬅️ and ➡️ arrow keys to move forwards and backwards."}</b>
                     </p>
                 )}
-                {props.cast.length === 0 ? (
-                    ""
-                ) : (
-                    <button className="button is-success" onClick={() => switchSceneRelative(1)}>
-                        Start Game
-                    </button>
-                )}
+                <div style={{ justifyContent: "space-between", display: "flex" }}>
+                    {props.cast.length === 0 ? (
+                        ""
+                    ) : (
+                        <button className="button is-success" onClick={() => switchSceneRelative(1)}>
+                            Start Game
+                        </button>
+                    )}
+                    {props.cast.length === 0 ? (
+                        ""
+                    ) : (
+                        <button
+                            className="button is-primary"
+                            onClick={() =>
+                                pushToMainContentStream(
+                                    <EditRelationshipsScreen
+                                        profiles={props.cast}
+                                        initialTribes={initialTribes}
+                                        currentTribes={currentTribes}
+                                        relationships={relationships}
+                                    />,
+                                    Screens.EditRelationships
+                                )
+                            }
+                        >
+                            {`Edit Relationships${initialTribes?.length ? "/Teams" : ""}`}
+                        </button>
+                    )}
+                </div>
             </HasText>
         );
     }

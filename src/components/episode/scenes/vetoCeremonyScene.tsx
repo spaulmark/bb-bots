@@ -7,7 +7,6 @@ import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { listNames } from "../../../utils/listStrings";
-import _ from "lodash";
 import { BoomerangVeto, DiamondVeto, Veto } from "../veto/veto";
 
 export function generateVetoCeremonyScene(
@@ -27,6 +26,13 @@ export function generateVetoCeremonyScene(
     });
     const HoH = hohArray[0];
     const coHoH = hohArray.length > 1 ? hohArray[1] : undefined;
+
+    // this fixes a bug where under extremely specific circumstances at F5,
+    // the co-HoH could be named as a replacement nominee
+    HoH.id !== povWinner.id && immuneHgs.push(HoH);
+    if (coHoH) {
+        coHoH.id !== povWinner.id && immuneHgs.push(coHoH);
+    }
 
     const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, coHoH ? -1 : HoH.id, immuneHgs);
 
@@ -58,13 +64,7 @@ export function generateVetoCeremonyScene(
             ? `Since I have just vetoed one of my nominations, I must name ${aReplacementNominee}.`
             : `${HoHnamer.name}, since I have just vetoed ${oneOf}your nominations, ${you} must name ${aReplacementNominee}.`;
         // if the exclusion yielded no options, you may be forced to name the veto winner as a replacement
-        let exclusion = exclude(initialGameState.houseguests, [
-            HoH,
-            ...initialNominees,
-            povWinner,
-            ...immuneHgs,
-            coHoH || HoH,
-        ]);
+        let exclusion = exclude(initialGameState.houseguests, [...initialNominees, povWinner, ...immuneHgs]);
         if (exclusion.length === 0) {
             exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees, ...immuneHgs]);
         }
@@ -130,8 +130,6 @@ export function generateVetoCeremonyScene(
             </div>
         ),
     });
-    initialGameState.currentLog.nominationsPostVeto = require("alphanum-sort")(
-        finalNominees.map((nom) => nom.name)
-    );
+
     return [initialGameState, scene, finalNominees];
 }

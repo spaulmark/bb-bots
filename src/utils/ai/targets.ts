@@ -1,5 +1,4 @@
-import _ from "lodash";
-import { GameState, getById, Houseguest, inJury } from "../../model";
+import { exclude, GameState, getById, Houseguest, inJury } from "../../model";
 import { backdoorNPlayers, NumberWithLogic } from "./aiApi";
 import { lowestScore, relationship } from "./aiUtils";
 import { classifyRelationship, classifyTwoWayRelationship, RelationshipType } from "./classifyRelationship";
@@ -55,7 +54,10 @@ export class Targets {
     public refreshTargets(gameState: GameState) {
         const choices = backdoorNPlayers(
             this.hg,
-            Array.from(gameState.nonEvictedHouseguests).map((id) => getById(gameState, id)),
+            exclude(
+                Array.from(gameState.nonEvictedHouseguests).map((id) => getById(gameState, id)),
+                [this.hg]
+            ),
             gameState,
             2
         );

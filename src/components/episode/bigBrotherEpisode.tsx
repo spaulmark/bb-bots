@@ -146,9 +146,7 @@ export function generateVetoScenesOnwards(
         doubleEviction,
         votingTo: "Evict",
     });
-    if (veto === null) {
-        currentGameState.currentLog.nominationsPostVeto = currentGameState.currentLog.nominationsPreVeto;
-    }
+
     scenes.push(evictionScene);
     return { gameState: currentGameState, scenes };
 }

@@ -9,14 +9,15 @@ import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 import { BehaviorSubject, Subscription } from "rxjs";
 
 export enum Screens {
-    Deck = "choosecast",
-    Casting = "editcast",
-    Season = "editseason",
-    Other = "other",
+    Deck = 1,
+    Casting = 2,
+    Season = 3,
+    Ingame = 4,
+    EditRelationships = 5,
 }
 
 // for topbar minty colors
-export const activeScreen$ = new BehaviorSubject<Screens>(Screens.Other);
+export const activeScreen$ = new BehaviorSubject<Screens>(Screens.Ingame);
 
 export const TopbarLink = styled.a`
     color: ${({ theme }: { theme: ColorTheme }) => theme.link};
@@ -74,7 +75,7 @@ export class Topbar extends React.Component<{ style?: any }, { tab: Screens }> {
     private subs: Subscription[] = [];
     constructor(props: Readonly<{ style?: any }>) {
         super(props);
-        this.state = { tab: Screens.Other };
+        this.state = { tab: Screens.Ingame };
     }
     componentDidMount() {
         this.subs.push(activeScreen$.subscribe((tab) => this.setState({ tab })));

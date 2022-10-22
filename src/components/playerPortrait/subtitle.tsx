@@ -1,7 +1,7 @@
 import React from "react";
 import { isWellDefined, roundTwoDigits } from "../../utils";
 import { ProfileHouseguest, PortraitProps, PortraitState } from "../memoryWall";
-import { SelectedPlayerData } from "./selectedPortrait";
+import { isSomeoneElseSelected, SelectedPlayerData } from "./selectedPortrait";
 import {
     RelationshipTypeToSymbol,
     RelationshipType as Relationship,
@@ -26,7 +26,7 @@ export function generatePowerSubtitle(
     key = addCompsLine(hero, subtitle, key);
     if (!hero.isEvicted && state.powerRanking !== undefined) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
-        if (data && data.id !== hero.id) {
+        if (isSomeoneElseSelected(data, hero)) {
             subtitle.push(<div key={key++}>{`WIN ${roundTwoDigits(state.powerRanking!)}%`}</div>);
         } else if (data && data.id === hero.id) {
             subtitle.push(<div key={key++}>I WOULD</div>);
@@ -66,8 +66,8 @@ function addFriendshipCountTitles(hero: PortraitProps, subtitle: any[], key: num
     }
     if (!hero.isEvicted) {
         const data = getSelectedPlayer() as SelectedPlayerData | null;
-        if (data && data.id !== hero.id) {
-            const titles = friendOrEnemyTitle(hero, data);
+        if (isSomeoneElseSelected(data, hero) && !hero.ignoreSelected) {
+            const titles = friendOrEnemyTitle(hero, data!);
             subtitle = subtitle.concat(titles.map((txt) => <div key={key++}>{txt}</div>));
         } else {
             const titles = friendEnemyCountTitle(hero);

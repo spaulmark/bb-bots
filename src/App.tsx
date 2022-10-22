@@ -4,7 +4,6 @@ import { MainPageController } from "./components/mainPage/mainPageController";
 import { ThemeProvider } from "styled-components";
 import { ColorTheme, darkTheme } from "./theme/theme";
 import { GlobalStyles } from "./theme/globalTheme";
-import { theme$ } from "./subjects/subjects";
 import { Subscription } from "rxjs";
 
 class App extends React.Component<{}, { theme: ColorTheme }> {
@@ -14,16 +13,6 @@ class App extends React.Component<{}, { theme: ColorTheme }> {
         this.state = {
             theme: darkTheme,
         };
-    }
-
-    public componentDidMount() {
-        this.sub = theme$.subscribe((theme) => {
-            this.setState({ theme });
-        });
-    }
-
-    public componentWillUnmount() {
-        if (this.sub) this.sub.unsubscribe();
     }
 
     render() {

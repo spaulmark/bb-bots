@@ -128,7 +128,7 @@ export class HoHVote implements VoteType {
     }
 
     render = (state: GameState) => {
-        return <HohCell key={getKey()}>{this.id == -1 ? this.hohText : this.hohVote(state)}</HohCell>;
+        return <HohCell key={getKey()}>{this.id === -1 ? this.hohText : this.hohVote(state)}</HohCell>;
     };
     constructor(id?: number) {
         this.id = id === undefined ? -1 : id;

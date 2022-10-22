@@ -25,6 +25,8 @@ export const Noselect = styled.div`
     ${unselectable}
 `;
 
+export const PencilEmoji = "✎";
+
 const XButton = styled(Noselect)`
     color: #300808;
     width: 50%;
@@ -94,10 +96,10 @@ export class SetupPortrait extends React.Component<SetupPortraitProps, SetupPort
                                 this.props.onRename();
                             }}
                         >
-                            ✎
+                            {PencilEmoji}
                         </EditButton>
                     </div>
-                    <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} />
+                    <img src={this.props.imageUrl} style={{ width: 100, height: 100 }} alt="" />
                     <br />
                     <p>{this.state.name}</p>
                 </div>

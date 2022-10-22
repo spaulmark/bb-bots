@@ -1,7 +1,6 @@
 // Homebrew typescript implementation of this:
 // https://www.researchgate.net/publication/257017356_On_computing_the_distribution_function_for_the_Poisson_binomial_distribution?enrichId=rgreq-6ff78e1a69dcaf49a733e2dd0e9f2db6-XXX&enrichSource=Y292ZXJQYWdlOzI1NzAxNzM1NjtBUzo1NTg0MDU5OTE1MzA0OTZAMTUxMDE0NTc3MTQ0Mw%3D%3D&el=1_x_3&_esc=publicationCoverPdf
 
-import _ from "lodash";
 import { fft } from "./fft";
 
 // Due to the high complexity of this function, it has been optimized for readability.

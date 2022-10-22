@@ -5,7 +5,6 @@ export class EpisodeLog {
     public vetoWinner?: string;
     public winner?: number;
     public runnerUp?: number;
-    public nominationsPostVeto: string[] = [];
     public evicted: number[] = [];
     public customEvicted: number[] = [];
     public customEvictedText: string = "";
@@ -15,13 +14,13 @@ export class EpisodeLog {
     public soleVoter?: string;
     public votingTo?: string;
     public pseudo?: boolean = false;
+    public vetoEmoji?: string;
     public strikethroughNominees: string[] = [];
 }
 
 export function hasLogBeenModified(log: EpisodeLog): boolean {
     return (
         log.nominationsPreVeto.length > 0 ||
-        log.nominationsPostVeto.length > 0 ||
         log.evicted.length > 0 ||
         log.customEvicted.length > 0 ||
         log.customEvictedText.length > 0 ||

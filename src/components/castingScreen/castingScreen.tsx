@@ -5,11 +5,10 @@ import { SetupPortrait } from "../playerPortrait/setupPortrait";
 import { shuffle } from "lodash";
 import { RandomButton } from "./randomXButton";
 import { selectCastPlayer } from "../playerPortrait/selectedPortrait";
-import { pushToMainContentStream, selectedCastPlayer$, updateCast } from "../../subjects/subjects";
+import { pushToMainContentStream, selectedCastPlayer$, overwriteCast } from "../../subjects/subjects";
 import { HasText, Input } from "../layout/text";
 import { Centered } from "../layout/centered";
 import { Subscription } from "rxjs";
-import _ from "lodash";
 import { HelpLink } from "../episode/allianceList";
 import { SeasonEditorPage } from "../seasonEditor/seasonEditorPage";
 import { Screens } from "../topbar/topBar";
@@ -94,7 +93,7 @@ export class CastingScreen extends React.Component<CastingScreenProps, CastingSc
     }
 
     private submit = () => {
-        updateCast(this.state.players);
+        overwriteCast(this.state.players);
         pushToMainContentStream(<SeasonEditorPage />, Screens.Season);
     };
 
