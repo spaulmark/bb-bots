@@ -59,7 +59,7 @@ export function generateBotbScene(
                     {block0} {block1}
                 </div>
                 <Centered>...</Centered>
-                <Portraits centered={true} houseguests={winners} />
+                <Portraits centered={true} houseguests={[winners[0], winners[1]]} />
                 <CenteredBold>
                     {`${listNames(winners.map((w) => w.name))} have won the Battle of the Block!`}
                 </CenteredBold>
