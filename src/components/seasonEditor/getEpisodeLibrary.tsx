@@ -37,6 +37,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 generate: (initialGamestate: GameState) => {
                     let currentGameState = new MutableGameState(initialGamestate);
                     const teams = Object.values(teamListContents[item.episode.teamsLookupId!].Teams);
+                    const setOfTribeIds = new Set(teams.map((team) => team.tribeId));
                     const nonEvictedHouseguests: number[] = shuffle(
                         Array.from(currentGameState.nonEvictedHouseguests)
                     );
@@ -49,7 +50,9 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                     nonEvictedHouseguests.forEach((hgid, i) => {
                         const hg = getById(currentGameState, hgid);
                         const team = teams[i % teams.length];
-                        hg.tribe = team;
+                        const hgTribeId = hg.tribe?.tribeId;
+                        // assign the team IF hg has no tribe, or hg has a tribe not in the set of tribe ids//
+                        if (hgTribeId === undefined || !setOfTribeIds.has(hgTribeId)) hg.tribe = team;
                         currentGameState.currentLog.votes[hg.id] = new TeamVote(team.color);
                     });
                     currentGameState.currentLog.pseudo = true;

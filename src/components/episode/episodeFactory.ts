@@ -53,6 +53,12 @@ export function nextEpisode(gameState: GameState, episodeType: EpisodeType): Epi
     let newState = new MutableGameState(gameState);
     if (gameState.phase === 0) {
         firstImpressions(newState.houseguests);
+        if (cast$.value.options?.currentTribes) {
+            const tribes = cast$.value.options.currentTribes;
+            newState.houseguests.forEach((hg) => {
+                hg.tribe = tribes[hg.id];
+            });
+        }
     }
     !episodeType.pseudo && newState.phase++;
     !episodeType.pseudo && newState.resetLogIndex();
