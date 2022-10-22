@@ -165,6 +165,14 @@ export class EditRelationshipsScreen extends React.Component<
                 <CenteredBold>{helpText}</CenteredBold>
                 <div className="buttons is-centered">
                     <button
+                        className={`button is-warning`}
+                        onClick={() => {
+                            this.setState({ relationships: firstImpressionsMap(props.profiles.length) });
+                        }}
+                    >
+                        Random All
+                    </button>
+                    <button
                         className={`button is-primary ${this.state.swapButtonActive ? `is-light` : ``}`}
                         disabled={!someoneSelected}
                         onClick={() => {
