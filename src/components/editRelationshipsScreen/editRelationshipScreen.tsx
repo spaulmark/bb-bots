@@ -145,6 +145,15 @@ export class EditRelationshipsScreen extends React.Component<
                     cursor: "pointer",
                 }}
                 key={tribe.tribeId}
+                onClick={() => {
+                    // if someone is selected, change their tribe
+                    if (isWellDefined(this.state.selectedPlayer)) {
+                        const newState = { ...this.state };
+                        newState.currentTribes[this.state.selectedPlayer!] = tribe;
+                        selectPlayer(null);
+                        this.setState(newState);
+                    }
+                }}
             >
                 {tribe.name}
             </div>
