@@ -168,6 +168,7 @@ export class EditRelationshipsScreen extends React.Component<
                         className={`button is-warning`}
                         onClick={() => {
                             this.setState({ relationships: firstImpressionsMap(props.profiles.length) });
+                            selectPlayer(null);
                         }}
                     >
                         Random All
