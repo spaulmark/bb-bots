@@ -64,6 +64,7 @@ export function validateJurySize(j: number, castSize: number): boolean {
 class _GameState {
     private jurors: number = 0;
     readonly houseguests: Houseguest[] = [];
+    public hohPlaysVeto: boolean = true;
 
     public finalJurySize() {
         return this.jurors;
@@ -79,6 +80,7 @@ class _GameState {
 interface InitGameState {
     players: PlayerProfile[];
     jury: number;
+    hohPlaysVeto?: boolean;
 }
 
 export class GameState extends _GameState {
@@ -124,6 +126,7 @@ export class GameState extends _GameState {
                 this.houseguests.push(hg);
             });
             this.jurySize = _init.jury;
+            this.hohPlaysVeto = _init.hohPlaysVeto === false ? false : true;
         }
         if (!this.finalJurySize()) {
             this.jurySize = defaultJurySize(this.houseguests.length);
