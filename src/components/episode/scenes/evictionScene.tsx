@@ -176,7 +176,14 @@ export function generateEvictionScene(
                         </CenteredBold>
                     </div>
                 )}
-                <Portraits houseguests={nominees.map((hg) => getById(newGameState, hg.id))} centered={true} />
+                <Portraits
+                    houseguests={nominees.map((_hg) => {
+                        const hg: ProfileHouseguest = { ...getById(initialGameState, _hg.id) };
+                        if (evicteesSet.has(_hg.id)) hg.isEvicted = true;
+                        return hg;
+                    })}
+                    centered={true}
+                />
                 {options.votingTo === "Save" && (
                     <CenteredBold>{`${listNames(
                         nominees.filter((nom) => !evicteesSet.has(nom.id)).map((hg) => hg.name)
