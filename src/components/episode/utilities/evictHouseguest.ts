@@ -24,18 +24,33 @@ export function evictHouseguest(gameState: MutableGameState, id: number): GameSt
     }
     gameState.nonEvictedHouseguests.delete(evictee.id);
     gameState.remainingPlayers--;
-    refreshHgStats(gameState);
+    refreshHgStats(gameState, []); // TODO: this will break for sure, we need to fix the bug
     return gameState;
 }
 
-export function refreshHgStats(gameState: MutableGameState, updateDelta: boolean = false) {
+export function refreshHgStats(
+    gameState: MutableGameState,
+    split: { members: Set<number> }[],
+    updateDelta: boolean = false
+) {
+    // second condition looks weird, but getting rid of it breaks things.
     if (inJury(gameState) && getJurors(gameState).length === 0) {
         populateSuperiors(nonEvictedHouseguests(gameState));
     }
     if (inJury(gameState)) {
         updatePowerRankings(nonEvictedHouseguests(gameState));
     }
-    updatePopularity(gameState, updateDelta);
+    // TODO: both of these things need updating, make it so it takes in a list of ids instead of reading from the gamestate
+
+    //  //
+    const splits =
+        split.length > 0
+            ? split
+            : [{ members: new Set<number>(nonEvictedHouseguests(gameState).map((hg) => hg.id)) }];
+    splits.forEach((split) => {
+        const hgs = Array.from(split.members).map((id) => getById(gameState, id));
+        updatePopularity(hgs, updateDelta);
+    });
     gameState.remainingPlayers > 2 && updateFriendCounts(gameState);
 }
 
@@ -60,11 +75,10 @@ function updatePowerRankings(houseguests: Houseguest[]) {
     });
 }
 
-function updatePopularity(gameState: GameState, updateDelta: boolean = false) {
-    const houseguests = nonEvictedHouseguests(gameState);
+function updatePopularity(houseguests: Houseguest[], updateDelta: boolean = false) {
     houseguests.forEach((hg) => {
         hg.targetingMe = 0;
-        const result = calculatePopularity(hg, nonEvictedHouseguests(gameState));
+        const result = calculatePopularity(hg, houseguests);
         if (updateDelta)
             hg.deltaPopularity = (roundTwoDigits(result) - roundTwoDigits(hg.previousPopularity)) / 100;
         hg.popularity = result;

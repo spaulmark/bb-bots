@@ -41,6 +41,11 @@ export class Episode {
     }
 }
 
+export interface Split {
+    name: string;
+    members: Set<number>;
+}
+
 export interface EpisodeType {
     readonly canPlayWith: (n: number) => boolean;
     readonly eliminates: number;
@@ -52,5 +57,6 @@ export interface EpisodeType {
     readonly emoji?: string;
     readonly description?: string;
     readonly teamsLookupId?: number;
+    readonly splitFunction?: (gameState: GameState) => Split[];
     readonly generate: (gameState: GameState) => Episode;
 }

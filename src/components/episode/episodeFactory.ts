@@ -1,6 +1,6 @@
 import { GameState, MutableGameState, nonEvictedHouseguests } from "../../model/gameState";
 import { Episode, Houseguest } from "../../model";
-import { EpisodeType } from "./episodes";
+import { EpisodeType, Split } from "./episodes";
 import { angleBetween, rng } from "../../utils";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
@@ -49,9 +49,9 @@ function firstImpressions(houseguests: Houseguest[]) {
     }
 }
 
-export function nextEpisode(gameState: GameState, episodeType: EpisodeType): Episode {
-    let newState = new MutableGameState(gameState);
-    if (gameState.phase === 0) {
+export function nextEpisode(oldState: GameState, episodeType: EpisodeType): Episode {
+    let newState = new MutableGameState(oldState);
+    if (oldState.phase === 0) {
         firstImpressions(newState.houseguests);
         if (cast$.value.options?.currentTribes) {
             const tribes = cast$.value.options.currentTribes;
@@ -62,10 +62,13 @@ export function nextEpisode(gameState: GameState, episodeType: EpisodeType): Epi
     }
     !episodeType.pseudo && newState.phase++;
     !episodeType.pseudo && newState.resetLogIndex();
-    if (gameState.remainingPlayers > 2 && !episodeType.pseudo) {
+    if (oldState.remainingPlayers > 2 && !episodeType.pseudo) {
         newState.log[newState.phase] = [new EpisodeLog()];
     }
-    refreshHgStats(newState, true);
+    const split: Split[] = episodeType.splitFunction ? episodeType.splitFunction(newState) : [];
+
+    // TODO: this needs to take into account a house split
+    refreshHgStats(newState, split, true);
     nonEvictedHouseguests(newState).forEach((hg) => {
         hg.previousPopularity = hg.popularity;
     });

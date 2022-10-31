@@ -25,6 +25,7 @@ import { TwistAdder } from "./twistAdder";
 import { SafetyChain } from "../episode/safetyChain";
 import { getTeamsListContents, TeamsAdderList } from "./teamsAdderList";
 import { Tribe } from "../../model/tribe";
+import { SplitHouse } from "../episode/splitHouse";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -46,6 +47,7 @@ const twists: EpisodeType[] = [
     BoomerangVetoEpisode,
     CoHoH,
     BattleOfTheBlock,
+    SplitHouse,
 ];
 
 let lastJurySize = defaultJurySize(16);
