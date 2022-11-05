@@ -24,7 +24,8 @@ export function evictHouseguest(gameState: MutableGameState, id: number): GameSt
     }
     gameState.nonEvictedHouseguests.delete(evictee.id);
     gameState.remainingPlayers--;
-    refreshHgStats(gameState, []); // TODO: this will break for sure, we need to fix the bug
+    refreshHgStats(gameState, []); // TODO: pass in the split from the gamestate
+    // ^^ this might break with double evictions and chainables, b/c the split house ends after the round...? idk; leave it for now //
     return gameState;
 }
 
@@ -50,8 +51,8 @@ export function refreshHgStats(
     splits.forEach((split) => {
         const hgs = Array.from(split.members).map((id) => getById(gameState, id));
         updatePopularity(hgs, updateDelta);
+        updateFriendCounts(hgs, gameState);
     });
-    gameState.remainingPlayers > 2 && updateFriendCounts(gameState);
 }
 
 function populateSuperiors(houseguests: Houseguest[]) {
@@ -85,8 +86,7 @@ function updatePopularity(houseguests: Houseguest[], updateDelta: boolean = fals
     });
 }
 
-function updateFriendCounts(gameState: GameState) {
-    const houseguests = nonEvictedHouseguests(gameState);
+function updateFriendCounts(houseguests: Houseguest[], gameState: GameState) {
     houseguests.forEach((hero: Houseguest) => {
         let targets = new Targets(hero);
         let friends = 0;
@@ -106,6 +106,8 @@ function updateFriendCounts(gameState: GameState) {
         });
         hero.friends = friends;
         hero.enemies = enemies;
+        if (houseguests.length < 3) return;
+        // this stuff breaks if there are less than 3 players left
         targets.refreshTargets(gameState);
         hero.targets = targets.getTargets();
         hero.targets.forEach((target) => {
