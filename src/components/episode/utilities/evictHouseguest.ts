@@ -41,9 +41,6 @@ export function refreshHgStats(
     if (inJury(gameState)) {
         updatePowerRankings(nonEvictedHouseguests(gameState));
     }
-    // TODO: both of these things need updating, make it so it takes in a list of ids instead of reading from the gamestate
-
-    //  //
     const splits =
         split.length > 0
             ? split

@@ -161,7 +161,7 @@ export class EditRelationshipsScreen extends React.Component<
         const disabledStyle = someoneSelected ? {} : { opacity: 0.5, cursor: "not-allowed" };
         return (
             <HasText>
-                <MemoryWall houseguests={profiles} />
+                <MemoryWall splits={[{ houseguests: profiles }]} />
                 <CenteredBold>{helpText}</CenteredBold>
                 <div className="buttons is-centered">
                     <button

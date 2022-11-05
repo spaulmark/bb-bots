@@ -66,8 +66,7 @@ export function nextEpisode(oldState: GameState, episodeType: EpisodeType): Epis
         newState.log[newState.phase] = [new EpisodeLog()];
     }
     const split: Split[] = episodeType.splitFunction ? episodeType.splitFunction(newState) : [];
-
-    // TODO: this needs to take into account a house split
+    newState.split = split;
     refreshHgStats(newState, split, true);
     nonEvictedHouseguests(newState).forEach((hg) => {
         hg.previousPopularity = hg.popularity;

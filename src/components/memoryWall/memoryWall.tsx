@@ -4,7 +4,7 @@ import { Portraits } from "../playerPortrait/portraits";
 import { RelationshipMap } from "../../utils";
 import { Tribe } from "../../model/tribe";
 export interface MemoryWallProps {
-    readonly houseguests: ProfileHouseguest[];
+    readonly splits: { splitName?: string; houseguests: ProfileHouseguest[] }[];
 }
 
 export interface ProfileHouseguest extends PlayerProfile {
@@ -25,19 +25,25 @@ export interface ProfileHouseguest extends PlayerProfile {
     editable?: boolean;
     ignoreSelected?: boolean;
 }
-
 export function MemoryWall(props: MemoryWallProps): JSX.Element {
-    if (!props.houseguests || props.houseguests.length === 0) {
-        return <div />;
+    const result: JSX.Element[] = [];
+    let key = 0;
+    for (const split of props.splits) {
+        const houseguests = split.houseguests;
+        if (!houseguests || houseguests.length === 0) {
+            result.push(<div key={key++} />);
+        }
+        result.push(
+            <div
+                key={key++}
+                style={{
+                    margin: "auto",
+                    maxWidth: houseguests.length < 26 ? 800 : -1,
+                }}
+            >
+                <Portraits houseguests={houseguests} centered={true} detailed={true} />
+            </div>
+        );
     }
-    return (
-        <div
-            style={{
-                margin: "auto",
-                maxWidth: props.houseguests.length < 26 ? 800 : -1,
-            }}
-        >
-            <Portraits houseguests={props.houseguests} centered={true} detailed={true} />
-        </div>
-    );
+    return <div>{result}</div>;
 }

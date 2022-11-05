@@ -20,7 +20,7 @@ export function generateBbFinale(initialGameState: GameState): Episode {
     const title = "Finale";
     const content = (
         <HasText>
-            <MemoryWall houseguests={initialGameState.houseguests} /> <br />
+            <MemoryWall splits={[{ houseguests: initialGameState.houseguests }]} /> <br />
             <NextEpisodeButton />
         </HasText>
     );

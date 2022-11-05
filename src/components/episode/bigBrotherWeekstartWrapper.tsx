@@ -1,5 +1,5 @@
 import React from "react";
-import { GameState } from "../../model";
+import { GameState, getById } from "../../model";
 import { weekStartTab$ } from "../../subjects/subjects";
 import { Subscription } from "rxjs";
 import { MemoryWall } from "../memoryWall";
@@ -45,11 +45,19 @@ export class WeekStartWrapper extends React.Component<WeekStartWrapperProps, Wee
                 </HelpLink>
             ) : null;
         if (this.state.tab === 0) {
-            return [
-                <MemoryWall key="memorywall" houseguests={this.props.gameState.houseguests} />,
-                helpText1,
-                helptext2,
-            ];
+            const splits =
+                this.props.gameState.split.length === 0
+                    ? [{ houseguests: this.props.gameState.houseguests }]
+                    : this.props.gameState.split.map((split) => {
+                          return {
+                              name: split.name,
+                              houseguests: Array.from(split.members).map((id) =>
+                                  getById(this.props.gameState, id)
+                              ),
+                          };
+                      });
+
+            return [<MemoryWall key="memorywall" splits={splits} />, helpText1, helptext2];
         }
         return <AllianceList gameState={this.props.gameState} />;
     }

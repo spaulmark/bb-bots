@@ -5,6 +5,7 @@ import { newRelationshipMap, rng } from "../utils";
 import { getFinalists } from "./season";
 import { EpisodeLog } from "./logging/episodelog";
 import { Cliques } from "../utils/generateCliques";
+import { Split } from "../components/episode/episodes";
 
 export function getById(gameState: GameState, id: number): Houseguest {
     return gameState.houseguestCache[id];
@@ -65,6 +66,7 @@ class _GameState {
     private jurors: number = 0;
     readonly houseguests: Houseguest[] = [];
     public hohPlaysVeto: boolean = true;
+    public split: Split[] = [];
 
     public finalJurySize() {
         return this.jurors;
@@ -81,6 +83,7 @@ interface InitGameState {
     players: PlayerProfile[];
     jury: number;
     hohPlaysVeto?: boolean;
+    split?: Split[];
 }
 
 export class GameState extends _GameState {
