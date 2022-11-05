@@ -32,7 +32,9 @@ export function MemoryWall(props: MemoryWallProps): JSX.Element {
         const houseguests = split.houseguests;
         if (!houseguests || houseguests.length === 0) {
             result.push(<div key={key++} />);
+            continue;
         }
+        result.push(<hr key={key++} />);
         result.push(
             <div
                 key={key++}
@@ -41,10 +43,10 @@ export function MemoryWall(props: MemoryWallProps): JSX.Element {
                     maxWidth: houseguests.length < 26 ? 800 : -1,
                 }}
             >
-                {split.splitName && <h2 style={{ textAlign: "center" }}>{split.splitName}</h2>}
                 <Portraits houseguests={houseguests} centered={true} detailed={true} />
             </div>
         );
     }
+    result.shift();
     return <div>{result}</div>;
 }
