@@ -41,6 +41,7 @@ export function MemoryWall(props: MemoryWallProps): JSX.Element {
                     maxWidth: houseguests.length < 26 ? 800 : -1,
                 }}
             >
+                {split.splitName && <h2 style={{ textAlign: "center" }}>{split.splitName}</h2>}
                 <Portraits houseguests={houseguests} centered={true} detailed={true} />
             </div>
         );

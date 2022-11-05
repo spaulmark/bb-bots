@@ -50,7 +50,7 @@ export class WeekStartWrapper extends React.Component<WeekStartWrapperProps, Wee
                     ? [{ houseguests: this.props.gameState.houseguests }]
                     : this.props.gameState.split.map((split) => {
                           return {
-                              name: split.name,
+                              splitName: split.name,
                               houseguests: Array.from(split.members).map((id) =>
                                   getById(this.props.gameState, id)
                               ),
