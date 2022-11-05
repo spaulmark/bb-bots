@@ -45,7 +45,10 @@ function generate(initialGamestate: GameState): Episode {
 function splitHouseRandomly(names: string[]): (gameState: GameState) => Split[] {
     return (currentGameState: GameState) => {
         const nonEvictedHouseguests: number[] = shuffle(Array.from(currentGameState.nonEvictedHouseguests));
-        const members: Set<number>[] = Array(names.length).fill(new Set<number>());
+        const members: Set<number>[] = [];
+        for (let i = 0; i < names.length; i++) {
+            members.push(new Set<number>());
+        }
         nonEvictedHouseguests.forEach((hgid, i) => {
             members[i % names.length].add(hgid);
         });
