@@ -1,5 +1,5 @@
 import React from "react";
-import { GameState, getById } from "../../model";
+import { GameState, getSplitMembers } from "../../model";
 import { weekStartTab$ } from "../../subjects/subjects";
 import { Subscription } from "rxjs";
 import { MemoryWall } from "../memoryWall";
@@ -51,9 +51,7 @@ export class WeekStartWrapper extends React.Component<WeekStartWrapperProps, Wee
                     : this.props.gameState.split.map((split) => {
                           return {
                               splitName: split.name,
-                              houseguests: Array.from(split.members).map((id) =>
-                                  getById(this.props.gameState, id)
-                              ),
+                              houseguests: getSplitMembers(split, this.props.gameState),
                           };
                       });
 

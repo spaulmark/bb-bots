@@ -1,4 +1,4 @@
-import { Houseguest, GameState, nonEvictedHouseguests, getById } from "../model";
+import { Houseguest, GameState, getById } from "../model";
 
 import { classifyRelationship, RelationshipType } from "./ai/classifyRelationship";
 
@@ -29,10 +29,9 @@ function generateEdge(
     return [null, 0];
 }
 
-export default function generateGraph(gameState: GameState): Graph {
+export default function generateGraph(gameState: GameState, players: Houseguest[]): Graph {
     // this algorithm assumes every relationship is mutual,
     // and will need a face lift if we get non-mutual relationships.
-    const players = nonEvictedHouseguests(gameState);
     const nodes: number[] = [];
     const edges: EdgeMap = new EdgeMap();
     players.forEach((player) => {

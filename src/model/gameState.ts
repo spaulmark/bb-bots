@@ -95,7 +95,7 @@ export class GameState extends _GameState {
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest[];
     readonly log: EpisodeLog[][] = [];
-    readonly cliques: Cliques[] = [];
+    readonly cliques: Cliques[][] = [];
 
     public __logindex__: number = 0;
     get currentLog(): EpisodeLog {
@@ -143,7 +143,7 @@ export class MutableGameState extends _GameState {
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest[];
-    public cliques: Cliques[] = [];
+    public cliques: Cliques[][] = [];
     public log: EpisodeLog[][] = [];
 
     public __logindex__: number = 0;

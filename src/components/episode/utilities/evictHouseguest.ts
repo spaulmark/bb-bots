@@ -8,6 +8,7 @@ import {
     getJurors,
     inJury,
     MutableGameState,
+    getSplitMembers,
 } from "../../../model";
 import { getFinalists } from "../../../model/season";
 import { average, roundTwoDigits } from "../../../utils";
@@ -24,8 +25,7 @@ export function evictHouseguest(gameState: MutableGameState, id: number): GameSt
     }
     gameState.nonEvictedHouseguests.delete(evictee.id);
     gameState.remainingPlayers--;
-    refreshHgStats(gameState, []); // TODO: pass in the split from the gamestate
-    // ^^ this might break with double evictions and chainables, b/c the split house ends after the round...? idk; leave it for now //
+    refreshHgStats(gameState, gameState.split);
     return gameState;
 }
 
@@ -46,7 +46,7 @@ export function refreshHgStats(
             ? split
             : [{ members: new Set<number>(nonEvictedHouseguests(gameState).map((hg) => hg.id)) }];
     splits.forEach((split) => {
-        const hgs = Array.from(split.members).map((id) => getById(gameState, id));
+        const hgs = getSplitMembers(split, gameState);
         updatePopularity(hgs, updateDelta);
         updateFriendCounts(hgs, gameState);
     });

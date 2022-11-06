@@ -29,38 +29,43 @@ export function AllianceList(props: AllianceListProps) {
                 </Centered>
             </HasText>
         );
-    const cliques = props.gameState.cliques;
-    const elements: JSX.Element[] = cliques.map((clique, i) => {
-        if (isNotWellDefined(clique.affiliates)) {
-            return (
+    const cliques_array = props.gameState.cliques;
+    const elements: JSX.Element[] = [];
+    cliques_array.forEach((cliques, j) => {
+        elements.push(<hr key={`hr${j}`} />);
+        cliques.forEach((clique, i) => {
+            if (isNotWellDefined(clique.affiliates)) {
+                return elements.push(
+                    <Portraits
+                        centered={true}
+                        detailed={true}
+                        key={`${i}, ${j}, ${props.gameState.phase}`}
+                        houseguests={clique.core.map((id) => getById(props.gameState, id))}
+                    />
+                );
+            }
+            const entries: (number | "⬅️" | "➡️")[] = [
+                ...clique.affiliates[0],
+                "➡️",
+                ...clique.core,
+                "⬅️",
+                ...clique.affiliates[1],
+            ];
+            elements.push(
                 <Portraits
                     centered={true}
                     detailed={true}
-                    key={`${clique}, ${i}, ${props.gameState.phase}`}
-                    houseguests={clique.core.map((id) => getById(props.gameState, id))}
+                    key={`${i}, ${j}, ${props.gameState.phase}`}
+                    houseguests={entries.map((id) => {
+                        if (id === "⬅️") return "⬅️";
+                        if (id === "➡️") return "➡️";
+                        return getById(props.gameState, id);
+                    })}
                 />
             );
-        }
-        const entries: (number | "⬅️" | "➡️")[] = [
-            ...clique.affiliates[0],
-            "➡️",
-            ...clique.core,
-            "⬅️",
-            ...clique.affiliates[1],
-        ];
-        return (
-            <Portraits
-                centered={true}
-                detailed={true}
-                key={`${clique}, ${i}, ${props.gameState.phase}`}
-                houseguests={entries.map((id) => {
-                    if (id === "⬅️") return "⬅️";
-                    if (id === "➡️") return "➡️";
-                    return getById(props.gameState, id);
-                })}
-            />
-        );
+        });
     });
+    elements.shift();
     return (
         <div>
             {elements}

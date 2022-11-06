@@ -1,9 +1,10 @@
 import React from "react";
-import { GameState } from "../../model/gameState";
+import { GameState, getById } from "../../model/gameState";
 import { Scene } from "./scenes/scene";
 import { ViewsBar } from "../viewsBar/viewBar";
 import { defaultContent } from "./bigBrotherEpisode";
 import { getEmoji } from "../seasonEditor/twistAdder";
+import { Houseguest } from "../../model";
 
 export interface InitEpisode {
     scenes: Scene[];
@@ -44,6 +45,10 @@ export class Episode {
 export interface Split {
     name: string;
     members: Set<number>;
+}
+
+export function getSplitMembers(split: { members: Set<number> }, gameState: GameState): Houseguest[] {
+    return Array.from(split.members).map((id) => getById(gameState, id));
 }
 
 export interface EpisodeType {
