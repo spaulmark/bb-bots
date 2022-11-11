@@ -182,7 +182,7 @@ export class EditRelationshipsScreen extends React.Component<
                     >
                         {this.state.swapButtonActive ? "Cancel" : "Swap"}
                     </button>
-                    {this.props.initialTribes && (
+                    {!!this.props.initialTribes?.length && (
                         <div className={`dropdown ${someoneSelected ? "is-hoverable" : ""} is-up`}>
                             <div className="dropdown-trigger">
                                 <button className="button" style={disabledStyle}>
