@@ -22,7 +22,10 @@ function generateDoubleEviction(initialGamestate: GameState): Episode {
     const scenes: Scene[] = [];
 
     currentGameState.incrementLogIndex();
-    const doubleEviction = generateBBVanillaScenes(currentGameState, GoldenVeto, true);
+    const doubleEviction = generateBBVanillaScenes(currentGameState, {
+        veto: GoldenVeto,
+        doubleEviction: true,
+    });
     currentGameState = doubleEviction.gameState;
     scenes.push(
         new Scene({

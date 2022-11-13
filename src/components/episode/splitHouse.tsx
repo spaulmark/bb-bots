@@ -24,7 +24,10 @@ function generate(initialGamestate: GameState): Episode {
     let currentGameState = new MutableGameState(initialGamestate);
     const scenes: Scene[] = [];
     // currentGameState.incrementLogIndex();
-    const doubleEviction = generateBBVanillaScenes(currentGameState, GoldenVeto, true);
+    const doubleEviction = generateBBVanillaScenes(currentGameState, {
+        doubleEviction: true,
+        veto: GoldenVeto,
+    });
     currentGameState = doubleEviction.gameState;
     scenes.push(
         new Scene({

@@ -15,7 +15,7 @@ export const BoomerangVetoEpisode: EpisodeType = {
 };
 
 function generate(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate, BoomerangVeto);
+    const episode = generateBBVanillaScenes(initialGamestate, { veto: BoomerangVeto });
     return new Episode({
         gameState: new GameState(episode.gameState),
         initialGamestate,

@@ -73,7 +73,7 @@ export function defaultContent(initialGameState: GameState) {
 }
 
 export function generateBbVanilla(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
+    const episode = generateBBVanillaScenes(initialGamestate, { veto: GoldenVeto });
     return new Episode({
         scenes: episode.scenes,
         gameState: new GameState(episode.gameState),
@@ -82,10 +82,15 @@ export function generateBbVanilla(initialGamestate: GameState): Episode {
     });
 }
 
+interface BBVanillaOptions {
+    doubleEviction?: boolean;
+    veto: Veto | null;
+    splitIndex?: number;
+}
+
 export function generateBBVanillaScenes(
     initialGamestate: GameState,
-    veto: Veto | null,
-    doubleEviction: boolean = false
+    options: BBVanillaOptions
 ): {
     gameState: GameState;
     scenes: Scene[];
@@ -94,6 +99,8 @@ export function generateBBVanillaScenes(
     let currentGameState: GameState;
     let hohCompScene: Scene;
     const scenes: Scene[] = [];
+    const doubleEviction = !!options.doubleEviction;
+    const veto = options.veto;
 
     [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, { doubleEviction });
     const hoh = hohArray[0];
