@@ -56,9 +56,7 @@ function generateCoHoH(initialGamestate: GameState): Episode {
         hohArray,
         nominees,
         povWinner,
-        false,
-        GoldenVeto,
-        []
+        { veto: GoldenVeto }
     );
     scenes.push(vetoCeremonyScene);
 

@@ -1,11 +1,4 @@
-import {
-    GameState,
-    Houseguest,
-    EpisodeType,
-    Episode,
-    getNonEvictedHgsFromSplitIndex,
-    nonEvictedHouseguests,
-} from "../../model";
+import { GameState, Houseguest, EpisodeType, Episode, nonEvictedHousguestsSplit } from "../../model";
 import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
@@ -19,7 +12,6 @@ import styled from "styled-components";
 import { weekStartTab$ } from "../../subjects/subjects";
 import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
 import { GoldenVeto, Veto } from "./veto/veto";
-import { isNotWellDefined } from "../../utils";
 
 export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
@@ -37,11 +29,6 @@ export const BigBrotherVanilla: EpisodeType = {
 const TabItem = styled.li`
     cursor: pointer;
 `;
-
-// Refactoring ideas
-/**
- * Might be best to start passing ids instead of houseguests for HoH/nominees/veto winner
- */
 
 function Tab(props: { text: string; active: number; id: number; setActive: any }): JSX.Element {
     return (
@@ -149,9 +136,7 @@ export function generateVetoScenesOnwards(
 ) {
     let povWinner: Houseguest | undefined = undefined;
     // force no veto if 3 or less houseguests are participating in the episode
-    const lessThan3hgs = !isNotWellDefined(splitIndex)
-        ? getNonEvictedHgsFromSplitIndex(splitIndex, currentGameState).length <= 3
-        : nonEvictedHouseguests(currentGameState).length <= 3;
+    const lessThan3hgs = nonEvictedHousguestsSplit(splitIndex, currentGameState).length <= 3;
     if (veto && !lessThan3hgs) {
         let vetoCompScene;
         [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
@@ -168,9 +153,7 @@ export function generateVetoScenesOnwards(
             [hoh],
             nominees,
             povWinner,
-            doubleEviction,
-            veto,
-            immuneHgs
+            { doubleEviction, veto, immuneHgs, splitIndex }
         );
         scenes.push(vetoCeremonyScene);
     }

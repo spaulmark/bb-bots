@@ -2,11 +2,10 @@ import {
     GameState,
     Houseguest,
     MutableGameState,
-    nonEvictedHouseguests,
     randomPlayer,
     getById,
     exclude,
-    getNonEvictedHgsFromSplitIndex,
+    nonEvictedHousguestsSplit,
 } from "../../../model";
 import { Scene } from "./scene";
 import { Portraits } from "../../playerPortrait/portraits";
@@ -15,7 +14,6 @@ import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { listNames } from "../../../utils/listStrings";
 import { Veto } from "../veto/veto";
-import { isNotWellDefined } from "../../../utils";
 
 interface VetoCompSceneOptions {
     veto: Veto;
@@ -33,9 +31,7 @@ export function generateVetoCompScene(
     const veto = options.veto;
     const doubleEviction = !!options.doubleEviction;
     const splitIndex = options.splitIndex;
-    const nonEvictedHgs = isNotWellDefined(splitIndex)
-        ? nonEvictedHouseguests(newGameState)
-        : getNonEvictedHgsFromSplitIndex(splitIndex, newGameState);
+    const nonEvictedHgs = nonEvictedHousguestsSplit(splitIndex, newGameState);
 
     const hohPlaysVeto = newGameState.hohPlaysVeto || newGameState.remainingPlayers <= 5 || HoHs.length > 1;
     const maxVetoPlayers = hohPlaysVeto ? 6 : 5;

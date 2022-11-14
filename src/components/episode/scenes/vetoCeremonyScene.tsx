@@ -1,4 +1,4 @@
-import { GameState, Houseguest, getById, exclude } from "../../../model";
+import { GameState, Houseguest, getById, exclude, nonEvictedHousguestsSplit } from "../../../model";
 import { Scene } from "./scene";
 import { backdoorNPlayers } from "../../../utils/ai/aiApi";
 import { Portrait } from "../../playerPortrait/portraits";
@@ -9,17 +9,26 @@ import { DividerBox } from "../../layout/box";
 import { listNames } from "../../../utils/listStrings";
 import { BoomerangVeto, DiamondVeto, Veto } from "../veto/veto";
 
+interface VetoCeremonySceneOptions {
+    doubleEviction?: boolean;
+    veto: Veto;
+    immuneHgs?: Houseguest[];
+    splitIndex?: number;
+}
+
 export function generateVetoCeremonyScene(
     initialGameState: GameState,
     hohArray: Houseguest[],
     initialNominees: Houseguest[],
     povWinner: Houseguest,
-    doubleEviction: boolean,
-    veto: Veto,
-    immuneHgs: Houseguest[]
+    options: VetoCeremonySceneOptions
 ): [GameState, Scene, Houseguest[]] {
     let povTarget: Houseguest | null = null;
     let descisionText = "";
+    const veto = options.veto;
+    const immunePlayers = options.immuneHgs || [];
+    const doubleEviction = !!options.doubleEviction;
+    const splitIndex = options.splitIndex;
 
     initialNominees = initialNominees.map((nominee) => {
         return getById(initialGameState, nominee.id);
@@ -29,12 +38,15 @@ export function generateVetoCeremonyScene(
 
     // this fixes a bug where under extremely specific circumstances at F5,
     // the co-HoH could be named as a replacement nominee
-    HoH.id !== povWinner.id && immuneHgs.push(HoH);
+    HoH.id !== povWinner.id && immunePlayers.push(HoH);
     if (coHoH) {
-        coHoH.id !== povWinner.id && immuneHgs.push(coHoH);
+        coHoH.id !== povWinner.id && immunePlayers.push(coHoH);
     }
 
-    const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, coHoH ? -1 : HoH.id, immuneHgs);
+    const vetoChoice = veto.use(povWinner, initialNominees, initialGameState, coHoH ? -1 : HoH.id, {
+        immunePlayers,
+        splitIndex,
+    });
 
     let nomineeWonPov = false;
     initialNominees.forEach((nom) => nom.id === povWinner.id && (nomineeWonPov = true));
@@ -42,9 +54,9 @@ export function generateVetoCeremonyScene(
     povTarget = vetoChoice.decision;
     const tousethepov = "to use the power of veto";
     if (!povTarget) {
-        descisionText += `... not ${tousethepov}.`;
+        descisionText += `...not ${tousethepov}.`;
     } else if (veto === BoomerangVeto) {
-        descisionText += `... ${tousethepov}.`;
+        descisionText += `...${tousethepov}.`;
     } else if (nomineeWonPov) {
         descisionText += `...${tousethepov} on myself.`;
     } else {
@@ -64,9 +76,10 @@ export function generateVetoCeremonyScene(
             ? `Since I have just vetoed one of my nominations, I must name ${aReplacementNominee}.`
             : `${HoHnamer.name}, since I have just vetoed ${oneOf}your nominations, ${you} must name ${aReplacementNominee}.`;
         // if the exclusion yielded no options, you may be forced to name the veto winner as a replacement
-        let exclusion = exclude(initialGameState.houseguests, [...initialNominees, povWinner, ...immuneHgs]);
+        const potentialRenoms = nonEvictedHousguestsSplit(splitIndex, initialGameState);
+        let exclusion = exclude(potentialRenoms, [...initialNominees, povWinner, ...immunePlayers]);
         if (exclusion.length === 0) {
-            exclusion = exclude(initialGameState.houseguests, [HoH, ...initialNominees, ...immuneHgs]);
+            exclusion = exclude(potentialRenoms, [HoH, ...initialNominees, ...immunePlayers]);
         }
         const replacementCount = veto === BoomerangVeto ? 2 : 1;
         const replacementNoms = backdoorNPlayers(

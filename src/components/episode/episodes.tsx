@@ -1,10 +1,11 @@
 import React from "react";
-import { GameState, getById } from "../../model/gameState";
+import { GameState, getById, nonEvictedHouseguests } from "../../model/gameState";
 import { Scene } from "./scenes/scene";
 import { ViewsBar } from "../viewsBar/viewBar";
 import { defaultContent } from "./bigBrotherEpisode";
 import { getEmoji } from "../seasonEditor/twistAdder";
 import { Houseguest } from "../../model";
+import { isNotWellDefined } from "../../utils";
 
 export interface InitEpisode {
     scenes: Scene[];
@@ -47,7 +48,13 @@ export interface Split {
     members: Set<number>;
 }
 
-export function getNonEvictedHgsFromSplitIndex(index: number, gameState: GameState): Houseguest[] {
+export function nonEvictedHousguestsSplit(splitIndex: number | null | undefined, gameState: GameState) {
+    return isNotWellDefined(splitIndex)
+        ? nonEvictedHouseguests(gameState)
+        : getNonEvictedHgsFromSplitIndex(splitIndex, gameState);
+}
+
+function getNonEvictedHgsFromSplitIndex(index: number, gameState: GameState): Houseguest[] {
     return getMembersFromSplitIndex(index, gameState).filter((hg) => !hg.isEvicted);
 }
 
