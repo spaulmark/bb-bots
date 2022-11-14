@@ -102,7 +102,10 @@ export function generateBBVanillaScenes(
     const doubleEviction = !!options.doubleEviction;
     const veto = options.veto;
 
-    [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, { doubleEviction });
+    [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, {
+        doubleEviction,
+        splitIndex: options.splitIndex,
+    });
     const hoh = hohArray[0];
     scenes.push(hohCompScene);
 

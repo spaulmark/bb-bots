@@ -1,4 +1,11 @@
-import { exclude, GameState, Houseguest, MutableGameState, randomPlayer } from "../../../model";
+import {
+    exclude,
+    GameState,
+    getMembersFromSplitIndex,
+    Houseguest,
+    MutableGameState,
+    randomPlayer,
+} from "../../../model";
 import { Scene } from "./scene";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
 import { NextEpisodeButton } from "../../nextEpisodeButton/nextEpisodeButton";
@@ -6,6 +13,7 @@ import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { HoHVote } from "../../../model/logging/voteType";
 import { listNames } from "../../../utils/listStrings";
+import { isNotWellDefined } from "../../../utils";
 
 interface HohCompOptions {
     doubleEviction?: boolean;
@@ -16,6 +24,7 @@ interface HohCompOptions {
     compName?: string;
     bottomText?: string;
     competitors?: Houseguest[];
+    splitIndex?: number;
 }
 
 export function generateHohCompScene(
@@ -23,11 +32,14 @@ export function generateHohCompScene(
     options: HohCompOptions
 ): [GameState, Scene, Houseguest[]] {
     const newGameState = new MutableGameState(initialGameState);
+    const houseguests = isNotWellDefined(options.splitIndex)
+        ? newGameState.houseguests
+        : getMembersFromSplitIndex(options.splitIndex, newGameState);
     const coHoH = options.coHoH || false;
     const coHohIsFinal = options.coHohIsFinal || false;
     const doubleEviction: boolean = options.doubleEviction || false;
     const previousHoh = initialGameState.previousHOH ? initialGameState.previousHOH : [];
-    const competitors = options.competitors || exclude(newGameState.houseguests, previousHoh);
+    const competitors = options.competitors || exclude(houseguests, previousHoh);
     const newHoH: Houseguest = randomPlayer(competitors);
     const newHoH2: Houseguest = options.coHoH ? randomPlayer(competitors, [newHoH, ...previousHoh]) : newHoH;
     // set previous hoh

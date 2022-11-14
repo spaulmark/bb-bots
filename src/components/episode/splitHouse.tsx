@@ -1,10 +1,10 @@
 import { GameState, MutableGameState } from "../../model";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Episode, EpisodeType, Split } from "./episodes";
-import React from "react";
 import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
 import { shuffle } from "lodash";
+import _ from "lodash";
 
 export const SplitHouse: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
@@ -19,24 +19,26 @@ export const SplitHouse: EpisodeType = {
     generate,
 };
 
-// TODO: the split needs to get assigned to the gamestate in the episode factory
 function generate(initialGamestate: GameState): Episode {
     let currentGameState = new MutableGameState(initialGamestate);
     const scenes: Scene[] = [];
-    // currentGameState.incrementLogIndex();
-    const doubleEviction = generateBBVanillaScenes(currentGameState, {
-        doubleEviction: true,
+    const split0 = generateBBVanillaScenes(currentGameState, {
         veto: GoldenVeto,
+        splitIndex: 0,
     });
-    currentGameState = doubleEviction.gameState;
-    scenes.push(
-        new Scene({
-            title: "Double Eviction",
-            content: <div>{doubleEviction.scenes.map((scene) => scene.content)}</div>,
-            gameState: doubleEviction.gameState,
-        })
-    );
-
+    currentGameState = split0.gameState;
+    const split0prevHoH = _.cloneDeep(split0.gameState.previousHOH);
+    currentGameState.previousHOH = _.cloneDeep(initialGamestate.previousHOH) || [];
+    split0.scenes.forEach((scene) => scenes.push(scene));
+    // TODO: i think the HGs not in the current split need [blank votes] //
+    currentGameState.incrementLogIndex();
+    const split1 = generateBBVanillaScenes(currentGameState, {
+        veto: GoldenVeto,
+        splitIndex: 1,
+    });
+    currentGameState = split1.gameState;
+    split1.scenes.forEach((scene) => scenes.push(scene));
+    split0prevHoH && currentGameState.previousHOH?.push(...split0prevHoH);
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,

@@ -47,6 +47,10 @@ export interface Split {
     members: Set<number>;
 }
 
+export function getMembersFromSplitIndex(index: number, gameState: GameState): Houseguest[] {
+    return getSplitMembers(gameState.split[index], gameState);
+}
+
 export function getSplitMembers(split: { members: Set<number> }, gameState: GameState): Houseguest[] {
     return Array.from(split.members).map((id) => getById(gameState, id));
 }
