@@ -45,7 +45,7 @@ function generateCoHoH(initialGamestate: GameState): Episode {
         currentGameState,
         hohArray,
         nominees,
-        GoldenVeto
+        { veto: GoldenVeto }
     );
     scenes.push(vetoCompScene);
     // veto replacement scene might be different because each hoh nominated one person, so whoever gets vetoed, that hoh replaces

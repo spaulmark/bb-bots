@@ -47,6 +47,10 @@ export interface Split {
     members: Set<number>;
 }
 
+export function getNonEvictedHgsFromSplitIndex(index: number, gameState: GameState): Houseguest[] {
+    return getMembersFromSplitIndex(index, gameState).filter((hg) => !hg.isEvicted);
+}
+
 export function getMembersFromSplitIndex(index: number, gameState: GameState): Houseguest[] {
     return getSplitMembers(gameState.split[index], gameState);
 }

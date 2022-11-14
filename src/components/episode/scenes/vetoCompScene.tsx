@@ -6,6 +6,7 @@ import {
     randomPlayer,
     getById,
     exclude,
+    getNonEvictedHgsFromSplitIndex,
 } from "../../../model";
 import { Scene } from "./scene";
 import { Portraits } from "../../playerPortrait/portraits";
@@ -14,23 +15,35 @@ import React from "react";
 import { Centered, CenteredBold } from "../../layout/centered";
 import { listNames } from "../../../utils/listStrings";
 import { Veto } from "../veto/veto";
+import { isNotWellDefined } from "../../../utils";
+
+interface VetoCompSceneOptions {
+    veto: Veto;
+    doubleEviction?: boolean;
+    splitIndex?: number;
+}
 
 export function generateVetoCompScene(
     initialGameState: GameState,
     HoHs: Houseguest[],
     nominees: Houseguest[],
-    veto: Veto,
-    doubleEviction: boolean = false
+    options: VetoCompSceneOptions
 ): [GameState, Scene, Houseguest] {
     const newGameState = new MutableGameState(initialGameState);
+    const veto = options.veto;
+    const doubleEviction = !!options.doubleEviction;
+    const splitIndex = options.splitIndex;
+    const nonEvictedHgs = isNotWellDefined(splitIndex)
+        ? nonEvictedHouseguests(newGameState)
+        : getNonEvictedHgsFromSplitIndex(splitIndex, newGameState);
 
     const hohPlaysVeto = newGameState.hohPlaysVeto || newGameState.remainingPlayers <= 5 || HoHs.length > 1;
     const maxVetoPlayers = hohPlaysVeto ? 6 : 5;
 
     // pick players
-    const choices = exclude(nonEvictedHouseguests(newGameState), HoHs);
+    const choices = exclude(nonEvictedHgs, HoHs);
     let povPlayers: any[] = [];
-    const everyoneWillPlay = nonEvictedHouseguests(newGameState).length <= maxVetoPlayers;
+    const everyoneWillPlay = nonEvictedHgs.length <= maxVetoPlayers;
     if (everyoneWillPlay) {
         HoHs.forEach((hoh) => povPlayers.push({ ...hoh }));
         nominees.forEach((nominee) => povPlayers.push({ ...nominee }));

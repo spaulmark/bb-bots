@@ -59,7 +59,8 @@ function generateBoB(initialGamestate: GameState): Episode {
         finalnoms,
         false,
         scenes,
-        botbWinners
+        botbWinners,
+        undefined
     );
     currentGameState = vetostuff.gameState;
 

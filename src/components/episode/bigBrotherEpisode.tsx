@@ -1,4 +1,11 @@
-import { GameState, Houseguest, EpisodeType, Episode } from "../../model";
+import {
+    GameState,
+    Houseguest,
+    EpisodeType,
+    Episode,
+    getNonEvictedHgsFromSplitIndex,
+    nonEvictedHouseguests,
+} from "../../model";
 import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
@@ -12,6 +19,7 @@ import styled from "styled-components";
 import { weekStartTab$ } from "../../subjects/subjects";
 import { WeekStartWrapper } from "./bigBrotherWeekstartWrapper";
 import { GoldenVeto, Veto } from "./veto/veto";
+import { isNotWellDefined } from "../../utils";
 
 export const BigBrotherVanilla: EpisodeType = {
     canPlayWith: (n: number) => {
@@ -118,7 +126,16 @@ export function generateBBVanillaScenes(
     });
     scenes.push(nomCeremonyScene);
 
-    return generateVetoScenesOnwards(veto, currentGameState, hoh, nominees, doubleEviction, scenes, []);
+    return generateVetoScenesOnwards(
+        veto,
+        currentGameState,
+        hoh,
+        nominees,
+        doubleEviction,
+        scenes,
+        [],
+        splitIndex
+    );
 }
 export function generateVetoScenesOnwards(
     veto: Veto | null,
@@ -127,18 +144,21 @@ export function generateVetoScenesOnwards(
     nominees: Houseguest[],
     doubleEviction: boolean,
     scenes: Scene[],
-    immuneHgs: Houseguest[]
+    immuneHgs: Houseguest[],
+    splitIndex: number | undefined
 ) {
     let povWinner: Houseguest | undefined = undefined;
-    // TODO: force no veto if houseguests (based on split index or not) is 3 or less
-    if (veto) {
+    // force no veto if 3 or less houseguests are participating in the episode
+    const lessThan3hgs = !isNotWellDefined(splitIndex)
+        ? getNonEvictedHgsFromSplitIndex(splitIndex, currentGameState).length <= 3
+        : nonEvictedHouseguests(currentGameState).length <= 3;
+    if (veto && !lessThan3hgs) {
         let vetoCompScene;
         [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
             currentGameState,
             [hoh],
             nominees,
-            veto,
-            doubleEviction
+            { veto, doubleEviction, splitIndex }
         );
         scenes.push(vetoCompScene);
         let vetoCeremonyScene;
