@@ -1,4 +1,11 @@
-import { GameState, Houseguest, MutableGameState, getById, exclude } from "../../../model";
+import {
+    GameState,
+    Houseguest,
+    MutableGameState,
+    getById,
+    exclude,
+    getMembersFromSplitIndex,
+} from "../../../model";
 import { Scene } from "./scene";
 import { shuffle } from "lodash";
 import { Portrait, Portraits } from "../../playerPortrait/portraits";
@@ -8,11 +15,12 @@ import { Centered, CenteredBold } from "../../layout/centered";
 import { DividerBox } from "../../layout/box";
 import { backdoorNPlayers } from "../../../utils/ai/aiApi";
 import { listNames } from "../../../utils/listStrings";
-import { sortAlphaNum } from "../../../utils";
+import { isNotWellDefined, sortAlphaNum } from "../../../utils";
 
 interface NomCeremonyOptions {
     doubleEviction?: boolean;
     thirdNominee?: boolean;
+    splitIndex?: number;
 }
 
 export function generateNomCeremonyScene(
@@ -25,30 +33,23 @@ export function generateNomCeremonyScene(
     const coHoH = hohList.length > 1 ? hohList[1] : undefined;
     const doubleEviction = options.doubleEviction || false;
 
+    const houseguests = isNotWellDefined(options.splitIndex)
+        ? newGameState.houseguests
+        : getMembersFromSplitIndex(options.splitIndex, newGameState);
+
     const nom1: Houseguest = getById(
         newGameState,
-        backdoorNPlayers(
-            HoH,
-            exclude(newGameState.houseguests, coHoH ? [HoH, coHoH] : [HoH]),
-            newGameState,
-            1
-        )[0].decision
+        backdoorNPlayers(HoH, exclude(houseguests, coHoH ? [HoH, coHoH] : [HoH]), newGameState, 1)[0].decision
     );
 
     const nom2 = coHoH
         ? getById(
               newGameState,
-              backdoorNPlayers(
-                  coHoH,
-                  exclude(newGameState.houseguests, [HoH, coHoH, nom1]),
-                  newGameState,
-                  1
-              )[0].decision
+              backdoorNPlayers(coHoH, exclude(houseguests, [HoH, coHoH, nom1]), newGameState, 1)[0].decision
           )
         : getById(
               newGameState,
-              backdoorNPlayers(HoH, exclude(newGameState.houseguests, [HoH, nom1]), newGameState, 1)[0]
-                  .decision
+              backdoorNPlayers(HoH, exclude(houseguests, [HoH, nom1]), newGameState, 1)[0].decision
           );
     nom1.nominations++;
     nom2.nominations++;
@@ -57,8 +58,7 @@ export function generateNomCeremonyScene(
     if (options.thirdNominee) {
         nom3 = getById(
             newGameState,
-            backdoorNPlayers(HoH, exclude(newGameState.houseguests, [HoH, nom1, nom2]), newGameState, 1)[0]
-                .decision
+            backdoorNPlayers(HoH, exclude(houseguests, [HoH, nom1, nom2]), newGameState, 1)[0].decision
         );
         nom3.nominations++;
         newGameState.currentLog.nominationsPreVeto.push(nom3.name);

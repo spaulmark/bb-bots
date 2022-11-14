@@ -101,10 +101,11 @@ export function generateBBVanillaScenes(
     const scenes: Scene[] = [];
     const doubleEviction = !!options.doubleEviction;
     const veto = options.veto;
+    const splitIndex = options.splitIndex;
 
     [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, {
         doubleEviction,
-        splitIndex: options.splitIndex,
+        splitIndex,
     });
     const hoh = hohArray[0];
     scenes.push(hohCompScene);
@@ -113,6 +114,7 @@ export function generateBBVanillaScenes(
     let nominees: Houseguest[];
     [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, [hoh], {
         doubleEviction,
+        splitIndex,
     });
     scenes.push(nomCeremonyScene);
 
@@ -128,6 +130,7 @@ export function generateVetoScenesOnwards(
     immuneHgs: Houseguest[]
 ) {
     let povWinner: Houseguest | undefined = undefined;
+    // TODO: force no veto if houseguests (based on split index or not) is 3 or less
     if (veto) {
         let vetoCompScene;
         [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
