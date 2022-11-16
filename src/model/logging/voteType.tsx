@@ -50,6 +50,15 @@ export class NormalVote implements VoteType {
     }
 }
 
+export class BlankVote implements VoteType {
+    id: number = 0; // unused
+    render = (_: GameState) => (
+        <EndgameTableCell key={getKey()}>
+            <Centered noMargin={true} />
+        </EndgameTableCell>
+    );
+}
+
 export class WinnerVote implements VoteType {
     id: number = 1; // unused
     render = (state: GameState) => (
@@ -105,8 +114,8 @@ export class GrayVote implements VoteType {
             </NotEligibleCell>
         );
     };
-    constructor(text: string) {
-        this.text = text;
+    constructor(text?: string) {
+        this.text = text || "";
     }
 }
 

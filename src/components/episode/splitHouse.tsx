@@ -1,10 +1,11 @@
 import { GameState, MutableGameState } from "../../model";
 import { generateBBVanillaScenes } from "./bigBrotherEpisode";
-import { Episode, EpisodeType, Split } from "./episodes";
+import { Episode, EpisodeType, nonEvictedHousguestsSplit, Split } from "./episodes";
 import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
 import { shuffle } from "lodash";
 import _ from "lodash";
+import { BlankVote, GrayVote } from "../../model/logging/voteType";
 
 export const SplitHouse: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
@@ -30,8 +31,13 @@ function generate(initialGamestate: GameState): Episode {
     const split0prevHoH = _.cloneDeep(split0.gameState.previousHOH);
     currentGameState.previousHOH = _.cloneDeep(initialGamestate.previousHOH) || [];
     split0.scenes.forEach((scene) => scenes.push(scene));
-    // TODO: i think the HGs not in the current split need [blank votes] //
+    nonEvictedHousguestsSplit(1, currentGameState).forEach((hg) => {
+        currentGameState.currentLog.votes[hg.id] = new GrayVote("Not Eligible");
+    });
     currentGameState.incrementLogIndex();
+    nonEvictedHousguestsSplit(0, currentGameState).forEach((hg) => {
+        currentGameState.currentLog.votes[hg.id] = new GrayVote("Not Eligible");
+    });
     const split1 = generateBBVanillaScenes(currentGameState, {
         veto: GoldenVeto,
         splitIndex: 1,
