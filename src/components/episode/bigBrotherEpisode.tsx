@@ -161,6 +161,7 @@ export function generateVetoScenesOnwards(
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, [hoh], nominees, {
         doubleEviction,
         votingTo: "Evict",
+        splitIndex,
     });
 
     scenes.push(evictionScene);
