@@ -61,6 +61,7 @@ export function nextEpisode(oldState: GameState, episodeType: EpisodeType): Epis
     if (oldState.remainingPlayers > 2 && !episodeType.pseudo) {
         newState.log[newState.phase] = [new EpisodeLog()];
     }
+    !episodeType.pseudo && (newState.currentLog.weekEmoji = episodeType.emoji || "");
     const split: Split[] = episodeType.splitFunction ? episodeType.splitFunction(newState) : [];
     newState.split = split;
     refreshHgStats(newState, split, true);

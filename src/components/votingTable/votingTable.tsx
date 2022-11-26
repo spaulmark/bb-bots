@@ -397,7 +397,9 @@ function generateTopRow(
     }
     cells.push(
         <GrayCell key={`toprow--${week}`} colSpan={colspan}>
-            <CenteredBold noMargin={true}>Week {week}</CenteredBold>
+            <CenteredBold noMargin={true}>{`Week ${week}${
+                log.weekEmoji ? ` ${log.weekEmoji}` : ""
+            }`}</CenteredBold>
         </GrayCell>
     );
 }
