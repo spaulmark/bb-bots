@@ -7,10 +7,6 @@ import { generateCliques } from "../../utils/generateCliques";
 import { refreshHgStats } from "./utilities/evictHouseguest";
 import { cast$ } from "../../subjects/subjects";
 
-export function canDisplayCliques(newState: GameState): boolean {
-    return newState.remainingPlayers <= 30;
-}
-
 export function firstImpressionsMap(hgs: number): { [id: number]: { [id: number]: number } } {
     const sin = Math.sin;
     const cos = Math.cos;
@@ -71,7 +67,7 @@ export function nextEpisode(oldState: GameState, episodeType: EpisodeType): Epis
     nonEvictedHouseguests(newState).forEach((hg) => {
         hg.previousPopularity = hg.popularity;
     });
-    if (canDisplayCliques(newState)) newState.cliques = generateCliques(newState);
+    newState.cliques = generateCliques(newState);
     const finalState = new GameState(newState);
     if (!episodeType.canPlayWith(finalState.remainingPlayers))
         throw new Error(

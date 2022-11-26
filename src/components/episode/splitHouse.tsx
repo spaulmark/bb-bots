@@ -5,7 +5,7 @@ import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
 import { shuffle } from "lodash";
 import _ from "lodash";
-import { BlankVote, GrayVote } from "../../model/logging/voteType";
+import { BlankVote } from "../../model/logging/voteType";
 
 export const SplitHouse: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,

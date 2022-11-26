@@ -22,16 +22,17 @@ export function generateCliques(gameState: GameState): Cliques[][] {
     const result: Cliques[][] = [];
     if (gameState.split.length === 0)
         return [
-            generateCliquesBySplit(gameState, generateGraph(gameState, nonEvictedHouseguests(gameState))),
+            generateCliquesFromGraph(gameState, generateGraph(gameState, nonEvictedHouseguests(gameState))),
         ];
     gameState.split.forEach((split) => {
         const g = generateGraph(gameState, getSplitMembers(split, gameState));
-        result.push(generateCliquesBySplit(gameState, g));
+        result.push(generateCliquesFromGraph(gameState, g));
     });
     return result;
 }
 
-function generateCliquesBySplit(gameState: GameState, g: Graph): Cliques[] {
+function generateCliquesFromGraph(gameState: GameState, g: Graph | null): Cliques[] {
+    if (!g) return [];
     cliques = [];
     bronKerbosch(new Set<number>([]), new Set(g.nodes), new Set<number>([]), g);
     cliques.forEach((clique) => clique.map((id) => getById(gameState, id)));

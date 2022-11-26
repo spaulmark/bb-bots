@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { canDisplayCliques, GameState, getById } from "../../model";
+import { GameState, getById } from "../../model";
 import { ColorTheme } from "../../theme/theme";
 import { isNotWellDefined } from "../../utils";
 import { Centered } from "../layout/centered";
@@ -20,19 +20,20 @@ interface AllianceListProps {
 }
 
 export function AllianceList(props: AllianceListProps) {
-    if (!canDisplayCliques(props.gameState))
-        return (
-            <HasText>
-                <Centered>
-                    ⚠️ There are too many players left in the game to display the alliances! Try again when
-                    there are 30 or less! ⚠️
-                </Centered>
-            </HasText>
-        );
     const cliques_array = props.gameState.cliques;
     const elements: JSX.Element[] = [];
     cliques_array.forEach((cliques, j) => {
         elements.push(<hr key={`hr${j}`} />);
+        if (cliques.length === 0) {
+            elements.push(
+                <HasText>
+                    <Centered>
+                        ⚠️ There are too many players left in the game to display the alliances! Try again
+                        when there are 30 or less! ⚠️
+                    </Centered>
+                </HasText>
+            );
+        }
         cliques.forEach((clique, i) => {
             if (isNotWellDefined(clique.affiliates)) {
                 return elements.push(

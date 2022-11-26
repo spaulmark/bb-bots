@@ -29,7 +29,8 @@ function generateEdge(
     return [null, 0];
 }
 
-export default function generateGraph(gameState: GameState, players: Houseguest[]): Graph {
+export default function generateGraph(gameState: GameState, players: Houseguest[]): Graph | null {
+    if (players.length > 30) return null;
     // this algorithm assumes every relationship is mutual,
     // and will need a face lift if we get non-mutual relationships.
     const nodes: number[] = [];
