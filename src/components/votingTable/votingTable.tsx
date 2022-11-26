@@ -15,6 +15,20 @@ export const EndgameTableCell = styled(PaddedCell)`
     border: 1px solid ${({ theme }: { theme: ColorTheme }) => theme.tableCellBorder};
 `;
 
+export const HatchedCell = styled(EndgameTableCell)`
+    background-image: linear-gradient(
+        145deg,
+        #363537 25%,
+        #2e2e2e 25%,
+        #2e2e2e 50%,
+        #363537 50%,
+        #363537 75%,
+        #2e2e2e 75%,
+        #2e2e2e 100%
+    );
+    background-size: 69.74px 48.83px;
+`;
+
 const EndgameTable = styled.table`
     border: 1px solid ${({ theme }: { theme: ColorTheme }) => theme.tableCellBorder};
     border-collapse: collapse;

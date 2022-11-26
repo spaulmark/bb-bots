@@ -32,11 +32,11 @@ function generate(initialGamestate: GameState): Episode {
     currentGameState.previousHOH = _.cloneDeep(initialGamestate.previousHOH) || [];
     split0.scenes.forEach((scene) => scenes.push(scene));
     nonEvictedHousguestsSplit(1, currentGameState).forEach((hg) => {
-        currentGameState.currentLog.votes[hg.id] = new GrayVote("Not Eligible");
+        currentGameState.currentLog.votes[hg.id] = new BlankVote();
     });
     currentGameState.incrementLogIndex();
     nonEvictedHousguestsSplit(0, currentGameState).forEach((hg) => {
-        currentGameState.currentLog.votes[hg.id] = new GrayVote("Not Eligible");
+        currentGameState.currentLog.votes[hg.id] = new BlankVote();
     });
     const split1 = generateBBVanillaScenes(currentGameState, {
         veto: GoldenVeto,

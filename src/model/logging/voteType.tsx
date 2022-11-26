@@ -11,6 +11,7 @@ import {
     PoVCell,
     NotEligibleCell,
     PaddedCell,
+    HatchedCell,
 } from "../../components/votingTable/votingTable";
 
 let voteKey = 0;
@@ -53,9 +54,9 @@ export class NormalVote implements VoteType {
 export class BlankVote implements VoteType {
     id: number = 0; // unused
     render = (_: GameState) => (
-        <EndgameTableCell key={getKey()}>
+        <HatchedCell key={getKey()}>
             <Centered noMargin={true} />
-        </EndgameTableCell>
+        </HatchedCell>
     );
 }
 
