@@ -72,6 +72,9 @@ export function generateEvictionScene(
     newGameState.currentLog.outOf = outOf;
     if (outOf === 1) {
         newGameState.currentLog.soleVoter = lastVoter!!.name;
+    } else if (outOf === 0) {
+        // special case when there are only 3 hgs left and the hoh is the only one who can vote
+        newGameState.currentLog.soleVoter = hohArray[0].name;
     }
     let tieVote = pluralities.length > 1;
     let tieBreaker = { decision: -1, reason: "" };
