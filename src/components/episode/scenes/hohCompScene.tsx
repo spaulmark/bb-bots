@@ -76,7 +76,7 @@ export function generateHohCompScene(
                     (doubleEviction ? (
                         <CenteredBold>
                             Houseguests, please return to the living room. Tonight will be a{" "}
-                            {initialGameState.__logindex__ === 1 ? "double" : "triple"} eviction.
+                            {initialGameState.__logindex__ > 1 ? "another double" : "double"} eviction.
                         </CenteredBold>
                     ) : (
                         <Centered>
