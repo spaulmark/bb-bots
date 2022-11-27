@@ -29,20 +29,22 @@ export class WeekStartWrapper extends React.Component<WeekStartWrapperProps, Wee
     render() {
         const helpText1 =
             this.props.gameState.phase === 1 ? (
-                <div key="helptext1" style={{ marginTop: 10 }}>
+                <div key="helptext1" style={{ marginTop: 20 }}>
                     <b>Try clicking on houseguests to view their relationships.</b> <br />
                 </div>
             ) : null;
         const helptext2 =
             this.props.gameState.phase === 2 ? (
-                <HelpLink
-                    key="helptext2"
-                    href="https://github.com/spaulmark/bb-bots/blob/master/README.md#understanding-relationships"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    What do the 🛇 ✘ ♥ 💔 🎯 symbols mean?
-                </HelpLink>
+                <div key="helptext1" style={{ marginTop: 20 }}>
+                    <HelpLink
+                        key="helptext2"
+                        href="https://github.com/spaulmark/bb-bots/blob/master/README.md#understanding-relationships"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        What do the 🛇 ✘ ♥ 💔 🎯 symbols mean?
+                    </HelpLink>
+                </div>
             ) : null;
         if (this.state.tab === 0) {
             const splits =
