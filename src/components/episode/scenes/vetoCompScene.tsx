@@ -33,7 +33,7 @@ export function generateVetoCompScene(
     const splitIndex = options.splitIndex;
     const nonEvictedHgs = nonEvictedHousguestsSplit(splitIndex, newGameState);
 
-    const hohPlaysVeto = newGameState.hohPlaysVeto || newGameState.remainingPlayers <= 5 || HoHs.length > 1;
+    const hohPlaysVeto = newGameState.hohPlaysVeto || nonEvictedHgs.length <= 5 || HoHs.length > 1;
     const maxVetoPlayers = hohPlaysVeto ? 6 : 5;
 
     // pick players
