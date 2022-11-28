@@ -30,7 +30,7 @@ export class WeekStartWrapper extends React.Component<WeekStartWrapperProps, Wee
         const helpText1 =
             this.props.gameState.phase === 1 ? (
                 <div key="helptext1" style={{ marginTop: 20 }}>
-                    <b>Try clicking on houseguests to view their relationships.</b> <br />
+                    <b>Try clicking on players to view their relationships.</b> <br />
                 </div>
             ) : null;
         const helptext2 =
