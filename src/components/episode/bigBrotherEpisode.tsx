@@ -1,4 +1,4 @@
-import { GameState, Houseguest, EpisodeType, Episode } from "../../model";
+import { GameState, Houseguest, EpisodeType, Episode, nonEvictedHousguestsSplit } from "../../model";
 import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
@@ -29,11 +29,6 @@ export const BigBrotherVanilla: EpisodeType = {
 const TabItem = styled.li`
     cursor: pointer;
 `;
-
-// Refactoring ideas
-/**
- * Might be best to start passing ids instead of houseguests for HoH/nominees/veto winner
- */
 
 function Tab(props: { text: string; active: number; id: number; setActive: any }): JSX.Element {
     return (
@@ -73,7 +68,7 @@ export function defaultContent(initialGameState: GameState) {
 }
 
 export function generateBbVanilla(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate, GoldenVeto);
+    const episode = generateBBVanillaScenes(initialGamestate, { veto: GoldenVeto });
     return new Episode({
         scenes: episode.scenes,
         gameState: new GameState(episode.gameState),
@@ -82,10 +77,15 @@ export function generateBbVanilla(initialGamestate: GameState): Episode {
     });
 }
 
+interface BBVanillaOptions {
+    doubleEviction?: boolean;
+    veto: Veto | null;
+    splitIndex?: number;
+}
+
 export function generateBBVanillaScenes(
     initialGamestate: GameState,
-    veto: Veto | null,
-    doubleEviction: boolean = false
+    options: BBVanillaOptions
 ): {
     gameState: GameState;
     scenes: Scene[];
@@ -94,8 +94,14 @@ export function generateBBVanillaScenes(
     let currentGameState: GameState;
     let hohCompScene: Scene;
     const scenes: Scene[] = [];
+    const doubleEviction = !!options.doubleEviction;
+    const veto = options.veto;
+    const splitIndex = options.splitIndex;
 
-    [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, { doubleEviction });
+    [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, {
+        doubleEviction,
+        splitIndex,
+    });
     const hoh = hohArray[0];
     scenes.push(hohCompScene);
 
@@ -103,10 +109,20 @@ export function generateBBVanillaScenes(
     let nominees: Houseguest[];
     [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, [hoh], {
         doubleEviction,
+        splitIndex,
     });
     scenes.push(nomCeremonyScene);
 
-    return generateVetoScenesOnwards(veto, currentGameState, hoh, nominees, doubleEviction, scenes, []);
+    return generateVetoScenesOnwards(
+        veto,
+        currentGameState,
+        hoh,
+        nominees,
+        doubleEviction,
+        scenes,
+        [],
+        splitIndex
+    );
 }
 export function generateVetoScenesOnwards(
     veto: Veto | null,
@@ -115,17 +131,19 @@ export function generateVetoScenesOnwards(
     nominees: Houseguest[],
     doubleEviction: boolean,
     scenes: Scene[],
-    immuneHgs: Houseguest[]
+    immuneHgs: Houseguest[],
+    splitIndex: number | undefined
 ) {
     let povWinner: Houseguest | undefined = undefined;
-    if (veto) {
+    // force no veto if 3 or less houseguests are participating in the episode
+    const lessThan3hgs = nonEvictedHousguestsSplit(splitIndex, currentGameState).length <= 3;
+    if (veto && !lessThan3hgs) {
         let vetoCompScene;
         [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
             currentGameState,
             [hoh],
             nominees,
-            veto,
-            doubleEviction
+            { veto, doubleEviction, splitIndex }
         );
         scenes.push(vetoCompScene);
         let vetoCeremonyScene;
@@ -135,9 +153,7 @@ export function generateVetoScenesOnwards(
             [hoh],
             nominees,
             povWinner,
-            doubleEviction,
-            veto,
-            immuneHgs
+            { doubleEviction, veto, immuneHgs, splitIndex }
         );
         scenes.push(vetoCeremonyScene);
     }
@@ -145,6 +161,7 @@ export function generateVetoScenesOnwards(
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, [hoh], nominees, {
         doubleEviction,
         votingTo: "Evict",
+        splitIndex,
     });
 
     scenes.push(evictionScene);

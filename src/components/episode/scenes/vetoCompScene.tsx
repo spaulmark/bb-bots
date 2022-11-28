@@ -2,9 +2,10 @@ import {
     GameState,
     Houseguest,
     MutableGameState,
-    nonEvictedHouseguests,
     randomPlayer,
     getById,
+    exclude,
+    nonEvictedHousguestsSplit,
 } from "../../../model";
 import { Scene } from "./scene";
 import { Portraits } from "../../playerPortrait/portraits";
@@ -14,30 +15,41 @@ import { Centered, CenteredBold } from "../../layout/centered";
 import { listNames } from "../../../utils/listStrings";
 import { Veto } from "../veto/veto";
 
+interface VetoCompSceneOptions {
+    veto: Veto;
+    doubleEviction?: boolean;
+    splitIndex?: number;
+}
+
 export function generateVetoCompScene(
     initialGameState: GameState,
     HoHs: Houseguest[],
     nominees: Houseguest[],
-    veto: Veto,
-    doubleEviction: boolean = false
+    options: VetoCompSceneOptions
 ): [GameState, Scene, Houseguest] {
     const newGameState = new MutableGameState(initialGameState);
+    const veto = options.veto;
+    const doubleEviction = !!options.doubleEviction;
+    const splitIndex = options.splitIndex;
+    const nonEvictedHgs = nonEvictedHousguestsSplit(splitIndex, newGameState);
+
+    const hohPlaysVeto = newGameState.hohPlaysVeto || newGameState.remainingPlayers <= 5 || HoHs.length > 1;
+    const maxVetoPlayers = hohPlaysVeto ? 6 : 5;
 
     // pick players
-    const choices = nonEvictedHouseguests(newGameState);
+    const choices = exclude(nonEvictedHgs, HoHs);
     let povPlayers: any[] = [];
-    const everyoneWillPlay = choices.length <= 6;
-
+    const everyoneWillPlay = nonEvictedHgs.length <= maxVetoPlayers;
     if (everyoneWillPlay) {
         HoHs.forEach((hoh) => povPlayers.push({ ...hoh }));
         nominees.forEach((nominee) => povPlayers.push({ ...nominee }));
-        while (povPlayers.length < choices.length) {
+        while (exclude(choices, povPlayers).length > 0) {
             povPlayers.push({ ...randomPlayer(choices, povPlayers) });
         }
     } else {
-        HoHs.forEach((hoh) => povPlayers.push({ ...hoh }));
+        hohPlaysVeto && HoHs.forEach((hoh) => povPlayers.push({ ...hoh }));
         nominees.forEach((nominee) => povPlayers.push({ ...nominee }));
-        while (povPlayers.length < 6) {
+        while (povPlayers.length < maxVetoPlayers) {
             povPlayers.push({ ...randomPlayer(choices, povPlayers) });
         }
     }
@@ -50,13 +62,13 @@ export function generateVetoCompScene(
     if (everyoneWillPlay) {
         introText = "Everyone left in the house will compete in this challenge.";
     } else {
-        introText = `${listNames(HoHs.map((h) => h.name))}, as Head of Household, and ${listNames(
-            nominees.map((nom) => nom.name)
-        )} as nominees, will compete, as well as ${
-            povPlayers.length - HoHs.length - nominees.length
-        } others chosen by random draw.`; // this line assumes hoh plays in veto (-1)
+        introText = `${
+            hohPlaysVeto ? `${listNames(HoHs.map((h) => h.name))}, as Head of Household, and ` : ``
+        }${listNames(nominees.map((nom) => nom.name))} as nominees, will compete, as well as ${
+            povPlayers.length - (hohPlaysVeto ? HoHs.length : 0) - nominees.length
+        } others chosen by random draw.`;
     }
-    const firstRow = [...HoHs, ...nominees];
+    const firstRow = [...(hohPlaysVeto ? HoHs : []), ...nominees];
     const extras = [];
     for (let i = firstRow.length; i < povPlayers.length; i++) {
         extras.push(povPlayers[i]);

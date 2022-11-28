@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { canDisplayCliques, GameState, getById } from "../../model";
+import { GameState, getById } from "../../model";
 import { ColorTheme } from "../../theme/theme";
 import { isNotWellDefined } from "../../utils";
-import { Centered } from "../layout/centered";
+import { Centered, CenteredBold } from "../layout/centered";
 import { HasText } from "../layout/text";
 import { Portraits } from "../playerPortrait/portraits";
 
@@ -20,47 +20,55 @@ interface AllianceListProps {
 }
 
 export function AllianceList(props: AllianceListProps) {
-    if (!canDisplayCliques(props.gameState))
-        return (
-            <HasText>
-                <Centered>
-                    ⚠️ There are too many players left in the game to display the alliances! Try again when
-                    there are 30 or less! ⚠️
-                </Centered>
-            </HasText>
-        );
-    const cliques = props.gameState.cliques;
-    const elements: JSX.Element[] = cliques.map((clique, i) => {
-        if (isNotWellDefined(clique.affiliates)) {
-            return (
+    const cliques_array = props.gameState.cliques;
+    const elements: JSX.Element[] = [];
+    cliques_array.forEach((cliques, j) => {
+        elements.push(<hr key={`hr${j}`} />);
+        props.gameState.split[j] &&
+            elements.push(<CenteredBold key={`title${j}`}>{props.gameState.split[j].name}</CenteredBold>);
+        if (cliques.length === 0) {
+            elements.push(
+                <HasText>
+                    <Centered>
+                        ⚠️ There are too many players left in the game to display the alliances! Try again
+                        when there are 30 or less! ⚠️
+                    </Centered>
+                </HasText>
+            );
+        }
+        cliques.forEach((clique, i) => {
+            if (isNotWellDefined(clique.affiliates)) {
+                return elements.push(
+                    <Portraits
+                        centered={true}
+                        detailed={true}
+                        key={`${i}, ${j}, ${props.gameState.phase}`}
+                        houseguests={clique.core.map((id) => getById(props.gameState, id))}
+                    />
+                );
+            }
+            const entries: (number | "⬅️" | "➡️")[] = [
+                ...clique.affiliates[0],
+                "➡️",
+                ...clique.core,
+                "⬅️",
+                ...clique.affiliates[1],
+            ];
+            elements.push(
                 <Portraits
                     centered={true}
                     detailed={true}
-                    key={`${clique}, ${i}, ${props.gameState.phase}`}
-                    houseguests={clique.core.map((id) => getById(props.gameState, id))}
+                    key={`${i}, ${j}, ${props.gameState.phase}`}
+                    houseguests={entries.map((id) => {
+                        if (id === "⬅️") return "⬅️";
+                        if (id === "➡️") return "➡️";
+                        return getById(props.gameState, id);
+                    })}
                 />
             );
-        }
-        const entries: (number | "⬅️" | "➡️")[] = [
-            ...clique.affiliates[0],
-            "➡️",
-            ...clique.core,
-            "⬅️",
-            ...clique.affiliates[1],
-        ];
-        return (
-            <Portraits
-                centered={true}
-                detailed={true}
-                key={`${clique}, ${i}, ${props.gameState.phase}`}
-                houseguests={entries.map((id) => {
-                    if (id === "⬅️") return "⬅️";
-                    if (id === "➡️") return "➡️";
-                    return getById(props.gameState, id);
-                })}
-            />
-        );
+        });
     });
+    elements.shift(); // removes the leading hr
     return (
         <div>
             {elements}

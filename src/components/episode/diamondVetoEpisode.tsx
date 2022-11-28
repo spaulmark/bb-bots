@@ -15,7 +15,7 @@ export const DiamondVetoEpisode: EpisodeType = {
 };
 
 function generate(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate, DiamondVeto);
+    const episode = generateBBVanillaScenes(initialGamestate, { veto: DiamondVeto });
     return new Episode({
         gameState: new GameState(episode.gameState),
         initialGamestate,

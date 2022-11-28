@@ -1,4 +1,4 @@
-import { GameState, Houseguest, MutableGameState, nonEvictedHouseguests, getById } from "../../../model";
+import { GameState, Houseguest, MutableGameState, getById, nonEvictedHousguestsSplit } from "../../../model";
 import { Scene } from "./scene";
 import { shuffle } from "lodash";
 import { ProfileHouseguest } from "../../memoryWall";
@@ -33,6 +33,7 @@ interface EvictionSceneOptions {
     votingTo: "Save" | "Evict";
     doubleEviction?: boolean;
     tieBreaker?: TieBreaker;
+    splitIndex?: number;
 }
 
 export function generateEvictionScene(
@@ -52,7 +53,7 @@ export function generateEvictionScene(
     let outOf = 0;
     const nonVoters = new Set<number>(nominees.map((hg) => hg.id));
     hohArray.forEach((h) => nonVoters.add(h.id));
-    nonEvictedHouseguests(newGameState).forEach((hg) => {
+    nonEvictedHousguestsSplit(options.splitIndex, newGameState).forEach((hg) => {
         if (!nonVoters.has(hg.id)) {
             const logic = castVote(hg, nominees, newGameState);
             const result: ProfileHouseguest = { ...hg };
@@ -71,6 +72,9 @@ export function generateEvictionScene(
     newGameState.currentLog.outOf = outOf;
     if (outOf === 1) {
         newGameState.currentLog.soleVoter = lastVoter!!.name;
+    } else if (outOf === 0) {
+        // special case when there are only 3 hgs left and the hoh is the only one who can vote
+        newGameState.currentLog.soleVoter = hohArray[0].name;
     }
     let tieVote = pluralities.length > 1;
     let tieBreaker = { decision: -1, reason: "" };
@@ -88,7 +92,7 @@ export function generateEvictionScene(
             : new HoHVote(tiebreakerDecision);
     }
     let evictees: Houseguest[] = [];
-
+    const zeroZeroTie = tieBreaker.decision > -1 && voteCounts[pluralities[tieBreaker.decision]] === 0;
     if (options.votingTo === "Evict") {
         // voting to evict
         if (tieBreaker.decision > -1) {
@@ -157,17 +161,19 @@ export function generateEvictionScene(
         gameState: initialGameState,
         content: (
             <div style={margin}>
-                <CenteredBold>{voteCountText}</CenteredBold>
-                <div className="columns is-centered">
-                    {votes.map((voters, i) => (
-                        <DividerBox className="column" key={`voters${i}`}>
-                            <Portraits houseguests={voters} centered={true} />
-                        </DividerBox>
-                    ))}
-                </div>
+                {!zeroZeroTie && <CenteredBold>{voteCountText}</CenteredBold>}
+                {!zeroZeroTie && (
+                    <div className="columns is-centered">
+                        {votes.map((voters, i) => (
+                            <DividerBox className="column" key={`voters${i}`}>
+                                <Portraits houseguests={voters} centered={true} />
+                            </DividerBox>
+                        ))}
+                    </div>
+                )}
                 {tieVote && (
                     <div>
-                        <CenteredBold> We have a tie.</CenteredBold>
+                        {!zeroZeroTie && <CenteredBold> We have a tie.</CenteredBold>}
                         <Centered>{soleVoteText}</Centered>
                         <Portraits houseguests={[displayHoH]} centered={true} />
                         <CenteredBold>
@@ -176,7 +182,14 @@ export function generateEvictionScene(
                         </CenteredBold>
                     </div>
                 )}
-                <Portraits houseguests={nominees.map((hg) => getById(newGameState, hg.id))} centered={true} />
+                <Portraits
+                    houseguests={nominees.map((_hg) => {
+                        const hg: ProfileHouseguest = { ...getById(initialGameState, _hg.id) };
+                        if (evicteesSet.has(_hg.id)) hg.isEvicted = true;
+                        return hg;
+                    })}
+                    centered={true}
+                />
                 {options.votingTo === "Save" && (
                     <CenteredBold>{`${listNames(
                         nominees.filter((nom) => !evicteesSet.has(nom.id)).map((hg) => hg.name)

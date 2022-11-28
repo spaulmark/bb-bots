@@ -14,7 +14,7 @@ export const NoVeto: EpisodeType = {
 };
 
 function generateNoVeto(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate, null);
+    const episode = generateBBVanillaScenes(initialGamestate, { veto: null });
     return new Episode({
         gameState: new GameState(episode.gameState),
         initialGamestate,

@@ -8,6 +8,7 @@ import {
     getJurors,
     inJury,
     MutableGameState,
+    getSplitMembers,
 } from "../../../model";
 import { getFinalists } from "../../../model/season";
 import { average, roundTwoDigits } from "../../../utils";
@@ -24,19 +25,31 @@ export function evictHouseguest(gameState: MutableGameState, id: number): GameSt
     }
     gameState.nonEvictedHouseguests.delete(evictee.id);
     gameState.remainingPlayers--;
-    refreshHgStats(gameState);
+    refreshHgStats(gameState, gameState.split);
     return gameState;
 }
 
-export function refreshHgStats(gameState: MutableGameState, updateDelta: boolean = false) {
+export function refreshHgStats(
+    gameState: MutableGameState,
+    split: { members: Set<number> }[],
+    updateDelta: boolean = false
+) {
+    // second condition looks weird, but getting rid of it breaks things.
     if (inJury(gameState) && getJurors(gameState).length === 0) {
         populateSuperiors(nonEvictedHouseguests(gameState));
     }
     if (inJury(gameState)) {
         updatePowerRankings(nonEvictedHouseguests(gameState));
     }
-    updatePopularity(gameState, updateDelta);
-    gameState.remainingPlayers > 2 && updateFriendCounts(gameState);
+    const splits =
+        split.length > 0
+            ? split
+            : [{ members: new Set<number>(nonEvictedHouseguests(gameState).map((hg) => hg.id)) }];
+    splits.forEach((split) => {
+        const hgs = getSplitMembers(split, gameState);
+        updatePopularity(hgs, updateDelta);
+        updateFriendCounts(hgs, gameState);
+    });
 }
 
 function populateSuperiors(houseguests: Houseguest[]) {
@@ -60,19 +73,17 @@ function updatePowerRankings(houseguests: Houseguest[]) {
     });
 }
 
-function updatePopularity(gameState: GameState, updateDelta: boolean = false) {
-    const houseguests = nonEvictedHouseguests(gameState);
+function updatePopularity(houseguests: Houseguest[], updateDelta: boolean = false) {
     houseguests.forEach((hg) => {
         hg.targetingMe = 0;
-        const result = calculatePopularity(hg, nonEvictedHouseguests(gameState));
+        const result = calculatePopularity(hg, houseguests);
         if (updateDelta)
             hg.deltaPopularity = (roundTwoDigits(result) - roundTwoDigits(hg.previousPopularity)) / 100;
         hg.popularity = result;
     });
 }
 
-function updateFriendCounts(gameState: GameState) {
-    const houseguests = nonEvictedHouseguests(gameState);
+function updateFriendCounts(houseguests: Houseguest[], gameState: GameState) {
     houseguests.forEach((hero: Houseguest) => {
         let targets = new Targets(hero);
         let friends = 0;
@@ -92,10 +103,12 @@ function updateFriendCounts(gameState: GameState) {
         });
         hero.friends = friends;
         hero.enemies = enemies;
-        targets.refreshTargets(gameState);
+        if (houseguests.length < 3) return;
+        // this stuff breaks if there are less than 3 players left
+        targets.refreshTargets(gameState, houseguests);
         hero.targets = targets.getTargets();
         hero.targets.forEach((target) => {
-            getById(gameState, target).targetingMe++;
+            target >= 0 && getById(gameState, target).targetingMe++;
         });
     });
 }

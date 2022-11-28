@@ -11,6 +11,7 @@ import {
     PoVCell,
     NotEligibleCell,
     PaddedCell,
+    HatchedCell,
 } from "../../components/votingTable/votingTable";
 
 let voteKey = 0;
@@ -48,6 +49,15 @@ export class NormalVote implements VoteType {
     constructor(id: number) {
         this.id = id;
     }
+}
+
+export class BlankVote implements VoteType {
+    id: number = 0; // unused
+    render = (_: GameState) => (
+        <HatchedCell key={getKey()}>
+            <Centered noMargin={true} />
+        </HatchedCell>
+    );
 }
 
 export class WinnerVote implements VoteType {
@@ -105,8 +115,8 @@ export class GrayVote implements VoteType {
             </NotEligibleCell>
         );
     };
-    constructor(text: string) {
-        this.text = text;
+    constructor(text?: string) {
+        this.text = text || "";
     }
 }
 

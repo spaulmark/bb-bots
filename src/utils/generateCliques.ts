@@ -1,5 +1,5 @@
 import { intersection } from ".";
-import { GameState, getById } from "../model";
+import { GameState, getById, getSplitMembers, nonEvictedHouseguests } from "../model";
 import generateGraph from "./generateGraph";
 import { difference } from "./utilities";
 
@@ -18,8 +18,21 @@ export interface Cliques {
     affiliates?: [number[], number[]];
 }
 
-export function generateCliques(gameState: GameState): Cliques[] {
-    const g = generateGraph(gameState);
+export function generateCliques(gameState: GameState): Cliques[][] {
+    const result: Cliques[][] = [];
+    if (gameState.split.length === 0)
+        return [
+            generateCliquesFromGraph(gameState, generateGraph(gameState, nonEvictedHouseguests(gameState))),
+        ];
+    gameState.split.forEach((split) => {
+        const g = generateGraph(gameState, getSplitMembers(split, gameState));
+        result.push(generateCliquesFromGraph(gameState, g));
+    });
+    return result;
+}
+
+function generateCliquesFromGraph(gameState: GameState, g: Graph | null): Cliques[] {
+    if (!g) return [];
     cliques = [];
     bronKerbosch(new Set<number>([]), new Set(g.nodes), new Set<number>([]), g);
     cliques.forEach((clique) => clique.map((id) => getById(gameState, id)));

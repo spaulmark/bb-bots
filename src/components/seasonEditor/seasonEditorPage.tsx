@@ -25,6 +25,7 @@ import { TwistAdder } from "./twistAdder";
 import { SafetyChain } from "../episode/safetyChain";
 import { getTeamsListContents, TeamsAdderList } from "./teamsAdderList";
 import { Tribe } from "../../model/tribe";
+import { SplitHouse } from "../episode/splitHouse";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -46,6 +47,7 @@ const twists: EpisodeType[] = [
     BoomerangVetoEpisode,
     CoHoH,
     BattleOfTheBlock,
+    SplitHouse,
 ];
 
 let lastJurySize = defaultJurySize(16);
@@ -74,7 +76,7 @@ function getInitialTribes(): Tribe[] {
     return tribes;
 }
 
-const submit = async (jury: number): Promise<void> => {
+const submit = async (jury: number, hohPlaysVeto: boolean): Promise<void> => {
     lastJurySize = jury;
 
     const initialTribes = getInitialTribes();
@@ -89,7 +91,7 @@ const submit = async (jury: number): Promise<void> => {
     // vscode says the awaits are unnessecary here,
     // but if you remove them then bad things happen
     await newEpisode(null);
-    await newEpisode(new PregameEpisode(new GameState({ players: getCast(), jury })));
+    await newEpisode(new PregameEpisode(new GameState({ players: getCast(), jury, hohPlaysVeto })));
 };
 
 export function SeasonEditorPage(): JSX.Element {
@@ -97,6 +99,7 @@ export function SeasonEditorPage(): JSX.Element {
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
     const validJurySize = validateJurySize(parseInt(jurySize), castLength);
     const [areTwistsValid, setTwistsValid] = useState(true);
+    const [hohPlaysVeto, setHohPlaysVeto] = useState(true);
     return (
         <div className="columns">
             <div className="column is-one-quarter">
@@ -115,7 +118,29 @@ export function SeasonEditorPage(): JSX.Element {
                         <TwistAdder type={type} key={`${type.name}${type.emoji}`} />
                     ))}
                     <div
-                        className="column is-4"
+                        className="column is-5-desktop is-5-widescreen is-5-fullhd is-12-tablet"
+                        style={{
+                            border: "1px solid #808080",
+                            borderRadius: "4px",
+                            backgroundColor: "#444346",
+                            margin: "10px",
+                        }}
+                    >
+                        <div className="field has-addons has-addons-centered" style={{ textAlign: "center" }}>
+                            <p className="field-label is-normal control">
+                                <Label className="label"> HoH Plays Veto?</Label>
+                            </p>
+                            <p className="control">
+                                <input
+                                    type="checkbox"
+                                    checked={hohPlaysVeto}
+                                    onChange={() => setHohPlaysVeto(!hohPlaysVeto)}
+                                />
+                            </p>
+                        </div>
+                    </div>
+                    <div
+                        className="column is-5-desktop is-5-widescreen is-5-fullhd is-12-tablet"
                         style={{
                             border: "1px solid #808080",
                             borderRadius: "4px",
@@ -157,7 +182,7 @@ export function SeasonEditorPage(): JSX.Element {
                     className="button is-success"
                     style={{ float: "right" }}
                     onClick={() => {
-                        submit(parseInt(jurySize));
+                        submit(parseInt(jurySize), hohPlaysVeto);
                     }}
                     disabled={!validJurySize || !areTwistsValid}
                 >

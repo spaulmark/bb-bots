@@ -161,13 +161,14 @@ export class EditRelationshipsScreen extends React.Component<
         const disabledStyle = someoneSelected ? {} : { opacity: 0.5, cursor: "not-allowed" };
         return (
             <HasText>
-                <MemoryWall houseguests={profiles} />
+                <MemoryWall splits={[{ houseguests: profiles }]} />
                 <CenteredBold>{helpText}</CenteredBold>
                 <div className="buttons is-centered">
                     <button
                         className={`button is-warning`}
                         onClick={() => {
                             this.setState({ relationships: firstImpressionsMap(props.profiles.length) });
+                            selectPlayer(null);
                         }}
                     >
                         Random All
@@ -181,7 +182,7 @@ export class EditRelationshipsScreen extends React.Component<
                     >
                         {this.state.swapButtonActive ? "Cancel" : "Swap"}
                     </button>
-                    {this.props.initialTribes && (
+                    {!!this.props.initialTribes?.length && (
                         <div className={`dropdown ${someoneSelected ? "is-hoverable" : ""} is-up`}>
                             <div className="dropdown-trigger">
                                 <button className="button" style={disabledStyle}>

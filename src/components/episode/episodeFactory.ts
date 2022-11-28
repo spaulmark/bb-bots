@@ -1,15 +1,11 @@
 import { GameState, MutableGameState, nonEvictedHouseguests } from "../../model/gameState";
 import { Episode, Houseguest } from "../../model";
-import { EpisodeType } from "./episodes";
+import { EpisodeType, Split } from "./episodes";
 import { angleBetween, rng } from "../../utils";
 import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
 import { refreshHgStats } from "./utilities/evictHouseguest";
 import { cast$ } from "../../subjects/subjects";
-
-export function canDisplayCliques(newState: GameState): boolean {
-    return newState.remainingPlayers <= 30;
-}
 
 export function firstImpressionsMap(hgs: number): { [id: number]: { [id: number]: number } } {
     const sin = Math.sin;
@@ -49,9 +45,9 @@ function firstImpressions(houseguests: Houseguest[]) {
     }
 }
 
-export function nextEpisode(gameState: GameState, episodeType: EpisodeType): Episode {
-    let newState = new MutableGameState(gameState);
-    if (gameState.phase === 0) {
+export function nextEpisode(oldState: GameState, episodeType: EpisodeType): Episode {
+    let newState = new MutableGameState(oldState);
+    if (oldState.phase === 0) {
         firstImpressions(newState.houseguests);
         if (cast$.value.options?.currentTribes) {
             const tribes = cast$.value.options.currentTribes;
@@ -62,14 +58,17 @@ export function nextEpisode(gameState: GameState, episodeType: EpisodeType): Epi
     }
     !episodeType.pseudo && newState.phase++;
     !episodeType.pseudo && newState.resetLogIndex();
-    if (gameState.remainingPlayers > 2 && !episodeType.pseudo) {
+    if (oldState.remainingPlayers > 2 && !episodeType.pseudo) {
         newState.log[newState.phase] = [new EpisodeLog()];
     }
-    refreshHgStats(newState, true);
+    !episodeType.pseudo && (newState.currentLog.weekEmoji = episodeType.emoji || "");
+    const split: Split[] = episodeType.splitFunction ? episodeType.splitFunction(newState) : [];
+    newState.split = split;
+    refreshHgStats(newState, split, true);
     nonEvictedHouseguests(newState).forEach((hg) => {
         hg.previousPopularity = hg.popularity;
     });
-    if (canDisplayCliques(newState)) newState.cliques = generateCliques(newState);
+    newState.cliques = generateCliques(newState);
     const finalState = new GameState(newState);
     if (!episodeType.canPlayWith(finalState.remainingPlayers))
         throw new Error(

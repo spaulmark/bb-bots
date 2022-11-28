@@ -65,7 +65,7 @@ export function isNotWellDefined(x: any): x is null | undefined {
     return x === null || x === undefined;
 }
 
-export function dot(x: number[], y: number[]) {
+function dot(x: number[], y: number[]) {
     if (x.length !== y.length)
         throw new Error(
             `Tried to get the dot product between two vectors of non-equal length: ${x.length} !== ${y.length}`
@@ -80,7 +80,7 @@ export function dot(x: number[], y: number[]) {
 export function magnitude(x: number[]): number {
     let result = 0;
     x.forEach((x) => (result += x ** 2));
-    return result;
+    return Math.sqrt(result);
 }
 
 // returns a value between 0 and pi

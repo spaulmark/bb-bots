@@ -5,6 +5,7 @@ import { newRelationshipMap, rng } from "../utils";
 import { getFinalists } from "./season";
 import { EpisodeLog } from "./logging/episodelog";
 import { Cliques } from "../utils/generateCliques";
+import { Split } from "../components/episode/episodes";
 
 export function getById(gameState: GameState, id: number): Houseguest {
     return gameState.houseguestCache[id];
@@ -64,6 +65,8 @@ export function validateJurySize(j: number, castSize: number): boolean {
 class _GameState {
     private jurors: number = 0;
     readonly houseguests: Houseguest[] = [];
+    public hohPlaysVeto: boolean = true;
+    public split: Split[] = [];
 
     public finalJurySize() {
         return this.jurors;
@@ -79,6 +82,8 @@ class _GameState {
 interface InitGameState {
     players: PlayerProfile[];
     jury: number;
+    hohPlaysVeto?: boolean;
+    split?: Split[];
 }
 
 export class GameState extends _GameState {
@@ -90,7 +95,7 @@ export class GameState extends _GameState {
     readonly phase: number = 0;
     readonly previousHOH?: Houseguest[];
     readonly log: EpisodeLog[][] = [];
-    readonly cliques: Cliques[] = [];
+    readonly cliques: Cliques[][] = [];
 
     public __logindex__: number = 0;
     get currentLog(): EpisodeLog {
@@ -124,6 +129,7 @@ export class GameState extends _GameState {
                 this.houseguests.push(hg);
             });
             this.jurySize = _init.jury;
+            this.hohPlaysVeto = _init.hohPlaysVeto === false ? false : true;
         }
         if (!this.finalJurySize()) {
             this.jurySize = defaultJurySize(this.houseguests.length);
@@ -137,7 +143,7 @@ export class MutableGameState extends _GameState {
     public remainingPlayers: number = 0;
     public phase: number = 0;
     public previousHOH?: Houseguest[];
-    public cliques: Cliques[] = [];
+    public cliques: Cliques[][] = [];
     public log: EpisodeLog[][] = [];
 
     public __logindex__: number = 0;

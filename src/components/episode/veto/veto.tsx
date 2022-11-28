@@ -1,5 +1,5 @@
 import { every } from "lodash";
-import { Houseguest, GameState, exclude, getById, nonEvictedHouseguests } from "../../../model";
+import { Houseguest, GameState, exclude, getById, nonEvictedHousguestsSplit } from "../../../model";
 import { backdoorNPlayers, HouseguestWithLogic, NumberWithLogic } from "../../../utils/ai/aiApi";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
 import {
@@ -18,7 +18,7 @@ export interface Veto {
         nominees: Houseguest[],
         gameState: GameState,
         HoH: number,
-        exclusions: Houseguest[]
+        optionals: VetoOptionals
     ) => HouseguestWithLogic;
 }
 
@@ -52,16 +52,17 @@ function useBoomerangVeto(
     nominees: Houseguest[],
     gameState: GameState,
     HoH: number,
-    exclusions: Houseguest[]
+    optionals: VetoOptionals
 ): HouseguestWithLogic {
     if (nominees.length !== 2) throw new Error("Boomerang veto only works for 2 nominees.");
     // if you wouldn't use gold veto on either of them, discard
-    const veto1 = useGoldenVeto(hero, [nominees[0]], gameState, HoH, exclusions);
-    const veto2 = useGoldenVeto(hero, [nominees[1]], gameState, HoH, exclusions);
-    const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
+    const veto1 = useGoldenVeto(hero, [nominees[0]], gameState, HoH, optionals);
+    const veto2 = useGoldenVeto(hero, [nominees[1]], gameState, HoH, optionals);
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH, optionals);
     if (checks) return checks;
+    const remainingPlayers = nonEvictedHousguestsSplit(optionals.splitIndex, gameState).length;
     // Need an additional check for boomerang veto, since there are 2 replacement noms
-    if (gameState.remainingPlayers - 1 - nominees.length === 2) {
+    if (remainingPlayers - 1 - nominees.length === 2) {
         return {
             decision: null,
             reason: "It doesn't make sense to use the veto here.",
@@ -89,10 +90,10 @@ function useSpotlightVeto(
     nominees: Houseguest[],
     gameState: GameState,
     HoH: number,
-    exclusions: Houseguest[]
+    optionals: VetoOptionals
 ): HouseguestWithLogic {
     // basically ya forced to use it
-    const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH, optionals);
     if (checks && checks.decision !== null) return checks;
     // use the veto on whoever is the worse target between the 2 nominees
     const invertedDecision = isBetterTargetWithLogic(
@@ -110,9 +111,9 @@ function useGoldenVeto(
     nominees: Houseguest[],
     gameState: GameState,
     HoH: number,
-    exclusions: Houseguest[]
+    optionals: VetoOptionals
 ): HouseguestWithLogic {
-    const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH, optionals);
     if (checks) return checks;
     let reason = "None of these nominees are my friends.";
     let potentialSave: Houseguest | null = null;
@@ -151,17 +152,15 @@ function useDiamondVeto(
     nominees: Houseguest[],
     gameState: GameState,
     HoH: number,
-    exclusions: Houseguest[],
-    skipChecks: boolean = false
+    optionals: VetoOptionals
 ): HouseguestWithLogic {
-    if (!skipChecks) {
-        const checks = basicVetoChecks(hero, nominees, gameState, HoH, exclusions);
-        if (checks) return checks;
-    }
+    const checks = basicVetoChecks(hero, nominees, gameState, HoH, optionals);
+    if (checks) return checks;
     // get the 2 best targets out of the pool of all options
+    const options = nonEvictedHousguestsSplit(optionals.splitIndex, gameState);
     const idealTargets: NumberWithLogic[] = backdoorNPlayers(
         hero,
-        exclude(nonEvictedHouseguests(gameState), [hero, getById(gameState, HoH)]),
+        exclude(options, [hero, getById(gameState, HoH)]),
         gameState,
         2
     );
@@ -187,12 +186,17 @@ function useDiamondVeto(
     return { decision: nominees[worseTarget], reason: "I would rather see someone else nominated." };
 }
 
+interface VetoOptionals {
+    immunePlayers?: Houseguest[];
+    splitIndex?: number;
+}
+
 function basicVetoChecks(
     hero: Houseguest,
     nominees: Houseguest[],
     gameState: GameState,
     HoH: number,
-    immunePlayers: Houseguest[] = []
+    options: VetoOptionals
 ): HouseguestWithLogic | null {
     if (hero.id === HoH) {
         return {
@@ -203,10 +207,12 @@ function basicVetoChecks(
     for (const nom of nominees) {
         if (hero.id === nom.id) return { decision: hero, reason: "I am going to save myself." };
     }
+    const immunePlayers = options.immunePlayers || [];
+    const remainingPlayers = nonEvictedHousguestsSplit(options.splitIndex, gameState).length;
     if (
         // note that immunePlayers contains the HoH(s)
         every(immunePlayers, (player) => player.id !== hero.id) &&
-        gameState.remainingPlayers - immunePlayers.length - nominees.length <= 1
+        remainingPlayers - immunePlayers.length - nominees.length <= 1
     ) {
         return {
             decision: null,

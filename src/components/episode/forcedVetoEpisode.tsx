@@ -15,7 +15,7 @@ export const ForcedVetoEpisode: EpisodeType = {
 };
 
 function generateForcedVeto(initialGamestate: GameState): Episode {
-    const episode = generateBBVanillaScenes(initialGamestate, SpotlightVeto);
+    const episode = generateBBVanillaScenes(initialGamestate, { veto: SpotlightVeto });
     return new Episode({
         gameState: new GameState(episode.gameState),
         initialGamestate,

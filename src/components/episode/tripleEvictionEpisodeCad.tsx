@@ -24,6 +24,7 @@ export const TripleEvictionCad: EpisodeType = {
 export function generateTripleEvictionCad(initialGamestate: GameState): Episode {
     let currentGameState = new MutableGameState(initialGamestate);
     const scenes: Scene[] = [];
+    const doubleEviction = true;
 
     currentGameState.incrementLogIndex();
 
@@ -31,7 +32,7 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
     let hohCompScene: Scene;
     const tripleScenes: Scene[] = [];
     [currentGameState, hohCompScene, hohArray] = generateHohCompScene(currentGameState, {
-        doubleEviction: true,
+        doubleEviction,
         customText: "Houseguests, please return to the living room. Tonight will be a triple eviction.",
     });
     tripleScenes.push(hohCompScene);
@@ -40,20 +41,17 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
     let nomCeremonyScene;
     let nominees: Houseguest[];
     [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, [hoh], {
-        doubleEviction: true,
+        doubleEviction,
         thirdNominee: true,
     });
     tripleScenes.push(nomCeremonyScene);
 
     let vetoCompScene;
     let povWinner: Houseguest;
-    [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
-        currentGameState,
-        [hoh],
-        nominees,
-        GoldenVeto,
-        true
-    );
+    [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(currentGameState, [hoh], nominees, {
+        veto: GoldenVeto,
+        doubleEviction,
+    });
     tripleScenes.push(vetoCompScene);
 
     let vetoCeremonyScene;
@@ -63,15 +61,13 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
         [hoh],
         nominees,
         povWinner,
-        true,
-        GoldenVeto,
-        []
+        { doubleEviction, veto: GoldenVeto }
     );
     tripleScenes.push(vetoCeremonyScene);
 
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, [hoh], nominees, {
-        doubleEviction: true,
+        doubleEviction,
         votingTo: "Save",
     });
     tripleScenes.push(evictionScene);

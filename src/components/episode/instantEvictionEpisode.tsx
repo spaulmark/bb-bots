@@ -21,7 +21,7 @@ function generateInstantEviction(initialGamestate: GameState): Episode {
     const scenes: Scene[] = [];
 
     currentGameState.incrementLogIndex();
-    const doubleEviction = generateBBVanillaScenes(currentGameState, null, true);
+    const doubleEviction = generateBBVanillaScenes(currentGameState, { veto: null, doubleEviction: true });
     currentGameState = doubleEviction.gameState;
 
     scenes.push(

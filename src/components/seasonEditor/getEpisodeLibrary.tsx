@@ -148,6 +148,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
         }
         mappedItems.splice(i, 0, { episode: endTeamsEpisodeType });
     });
+    //////////// all the crap above this is just for teams. /////////////
 
     let previousItem: EpisodeType | undefined = undefined;
     for (const item of mappedItems) {
@@ -161,6 +162,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
             const pseudoItem = previousItem;
             const newItem = item.episode;
             const common = {
+                splitFunction: newItem.splitFunction,
                 canPlayWith: () => true,
                 eliminates: pseudoItem.eliminates + newItem.eliminates,
                 emoji: `${pseudoItem.emoji} ${newItem.emoji}`,
@@ -195,6 +197,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
             const dynamicEpisodeType = {
                 arrowsEnabled: oldEpisode.arrowsEnabled || newEpisode.arrowsEnabled,
                 canPlayWith: () => true,
+                splitFunction: oldEpisode.splitFunction,
                 eliminates: oldEpisode.eliminates + newEpisode.eliminates,
                 hasViewsbar: oldEpisode.hasViewsbar || newEpisode.hasViewsbar,
                 emoji: `${oldEpisode.emoji} ${newEpisode.emoji}`,
