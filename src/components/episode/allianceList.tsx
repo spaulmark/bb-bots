@@ -24,7 +24,8 @@ export function AllianceList(props: AllianceListProps) {
     const elements: JSX.Element[] = [];
     cliques_array.forEach((cliques, j) => {
         elements.push(<hr key={`hr${j}`} />);
-        elements.push(<CenteredBold key={`title${j}`}>{props.gameState.split[j].name}</CenteredBold>);
+        props.gameState.split[j] &&
+            elements.push(<CenteredBold key={`title${j}`}>{props.gameState.split[j].name}</CenteredBold>);
         if (cliques.length === 0) {
             elements.push(
                 <HasText>
