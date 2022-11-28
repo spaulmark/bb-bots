@@ -51,16 +51,10 @@ export class Targets {
     public getTargets(): [number, number] {
         return [this.firstTarget.id, this.secondTarget.id];
     }
-    public refreshTargets(gameState: GameState) {
-        const choices = backdoorNPlayers(
-            this.hg,
-            exclude(
-                Array.from(gameState.nonEvictedHouseguests).map((id) => getById(gameState, id)),
-                [this.hg]
-            ),
-            gameState,
-            2
-        );
+    public refreshTargets(gameState: GameState, houseguests: Houseguest[]) {
+        const exclusion = exclude(houseguests, [this.hg]);
+        if (exclusion.length < 2) return;
+        const choices = backdoorNPlayers(this.hg, exclusion, gameState, 2);
         this.firstTarget = getRelationshipSummary(this.hg, getById(gameState, choices[0].decision));
         this.secondTarget = getRelationshipSummary(this.hg, getById(gameState, choices[1].decision));
     }

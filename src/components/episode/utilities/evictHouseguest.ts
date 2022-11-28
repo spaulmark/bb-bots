@@ -105,10 +105,10 @@ function updateFriendCounts(houseguests: Houseguest[], gameState: GameState) {
         hero.enemies = enemies;
         if (houseguests.length < 3) return;
         // this stuff breaks if there are less than 3 players left
-        targets.refreshTargets(gameState);
+        targets.refreshTargets(gameState, houseguests);
         hero.targets = targets.getTargets();
         hero.targets.forEach((target) => {
-            getById(gameState, target).targetingMe++;
+            target >= 0 && getById(gameState, target).targetingMe++;
         });
     });
 }
