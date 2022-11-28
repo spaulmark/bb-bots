@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { GameState, getById } from "../../model";
 import { ColorTheme } from "../../theme/theme";
 import { isNotWellDefined } from "../../utils";
-import { Centered } from "../layout/centered";
+import { Centered, CenteredBold } from "../layout/centered";
 import { HasText } from "../layout/text";
 import { Portraits } from "../playerPortrait/portraits";
 
@@ -24,6 +24,7 @@ export function AllianceList(props: AllianceListProps) {
     const elements: JSX.Element[] = [];
     cliques_array.forEach((cliques, j) => {
         elements.push(<hr key={`hr${j}`} />);
+        elements.push(<CenteredBold key={`title${j}`}>{props.gameState.split[j].name}</CenteredBold>);
         if (cliques.length === 0) {
             elements.push(
                 <HasText>
@@ -66,7 +67,7 @@ export function AllianceList(props: AllianceListProps) {
             );
         });
     });
-    elements.shift();
+    elements.shift(); // removes the leading hr
     return (
         <div>
             {elements}
