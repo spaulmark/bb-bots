@@ -52,6 +52,11 @@ const twists: EpisodeType[] = [
 ];
 
 let lastJurySize = defaultJurySize(16);
+let lastHoHPlaysVeto = true;
+
+export function getLastHoHPlaysVeto(): boolean {
+    return lastHoHPlaysVeto;
+}
 
 export function getLastJurySize(): number {
     return lastJurySize;
@@ -79,7 +84,7 @@ function getInitialTribes(): Tribe[] {
 
 const submit = async (jury: number, hohPlaysVeto: boolean): Promise<void> => {
     lastJurySize = jury;
-
+    lastHoHPlaysVeto = hohPlaysVeto;
     const initialTribes = getInitialTribes();
     const cast = cast$.getValue();
     cast$.next({ ...cast, options: { initialTribes } });

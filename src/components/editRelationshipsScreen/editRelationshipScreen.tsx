@@ -16,7 +16,7 @@ import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { Screens } from "../topbar/topBar";
 import { PregameEpisode } from "../episode/pregameEpisode";
 import { selectPlayer } from "../playerPortrait/selectedPortrait";
-import { getLastJurySize } from "../seasonEditor/seasonEditorPage";
+import { getLastHoHPlaysVeto, getLastJurySize } from "../seasonEditor/seasonEditorPage";
 import { Subject, Subscription } from "rxjs";
 import { isWellDefined } from "../../utils";
 import { shuffle } from "lodash";
@@ -215,7 +215,11 @@ export class EditRelationshipsScreen extends React.Component<
                             await newEpisode(null);
                             await newEpisode(
                                 new PregameEpisode(
-                                    new GameState({ players: getCast(), jury: getLastJurySize() })
+                                    new GameState({
+                                        players: getCast(),
+                                        jury: getLastJurySize(),
+                                        hohPlaysVeto: getLastHoHPlaysVeto(),
+                                    })
                                 )
                             );
                             pushToMainContentStream(
