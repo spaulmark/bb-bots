@@ -288,7 +288,7 @@ function voteBasedonWinrate(
 ): NumberWithLogic {
     const heroBeatsnom0 = hero.powerRanking < hero.superiors[nom0.id];
     const heroBeatsnom1 = hero.powerRanking < hero.superiors[nom1.id];
-    // if i am voting between 2 people who i can't beat, vote based on relationship
+    // if i am voting between 2 people who i can't beat, vote based on callback
     if (!heroBeatsnom0 && !heroBeatsnom1) {
         return callback(hero, [nom0, nom1]);
     }
