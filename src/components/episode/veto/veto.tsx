@@ -6,7 +6,7 @@ import {
     isBetterTarget,
     getRelationshipSummary,
     isBetterTargetWithLogic,
-    determineStrategy,
+    determineTargetStrategy,
     TargetStrategy,
 } from "../../../utils/ai/targets";
 
@@ -77,7 +77,7 @@ function useBoomerangVeto(
         return { decision: nominees[0], reason: "I want to save both of these noms." };
     }
     // if you would only use it on one of them, only use it if you have low friend counts
-    const strategy = determineStrategy(hero);
+    const strategy = determineTargetStrategy(hero);
     if (strategy === TargetStrategy.StatusQuo) {
         return { decision: null, reason: "I want to evict at least one of these noms." };
     } else {

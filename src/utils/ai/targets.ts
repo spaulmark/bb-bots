@@ -60,7 +60,7 @@ export class Targets {
     }
 }
 
-enum WinrateStrategy {
+export enum WinrateStrategy {
     Low,
     Medium,
     High,
@@ -79,7 +79,7 @@ export function determineWinrateStrategy(hero: Houseguest): WinrateStrategy {
     return WinrateStrategy.Medium;
 }
 
-export function determineStrategy(hero: Houseguest): TargetStrategy {
+export function determineTargetStrategy(hero: Houseguest): TargetStrategy {
     if (hero.friends === hero.enemies) return TargetStrategy.MoR;
     return hero.friends > hero.enemies ? TargetStrategy.StatusQuo : TargetStrategy.Underdog;
 }
@@ -93,7 +93,7 @@ export function isBetterTargetWithLogic(
 ): NumberWithLogic {
     if (old.relationship === 2) return { decision: 1, reason: "remove debug value" };
     if (neww.relationship === 2) return { decision: 0, reason: "remove debug value" };
-    const strategy = determineStrategy(hero);
+    const strategy = determineTargetStrategy(hero);
     const winrateStrategy = determineWinrateStrategy(hero);
     if (strategy === TargetStrategy.StatusQuo)
         return isBetterTargetStatusQuo(hero, old, neww, winrateStrategy, gameState);
