@@ -1,3 +1,5 @@
+import { Houseguest } from "../../model";
+
 export enum RelationshipType {
     Friend = "FRIEND",
     Queen = "QUEEN",
@@ -11,6 +13,10 @@ export enum TwoWayRelationshipType {
 }
 
 export const RelationshipTypeToSymbol = { FRIEND: "♥", ENEMY: "💔", PAWN: "PAWN", QUEEN: "QUEEN" };
+
+export function classifyRelationshipHgs(hero: Houseguest, villain: Houseguest) {
+    return classifyRelationship(hero.popularity, villain.popularity, hero.relationshipWith(villain));
+}
 
 export function classifyRelationship(
     heroPopularity: number,

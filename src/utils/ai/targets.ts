@@ -152,6 +152,7 @@ function targetEnemies(
     }
 }
 
+const morStrategy = (x: RelationshipType) => x === RelationshipType.Enemy;
 function isBetterTargetMoR(
     old: RelationshipSummary,
     neww: RelationshipSummary,
@@ -159,7 +160,6 @@ function isBetterTargetMoR(
     hero: Houseguest,
     winrateStrategy: WinrateStrategy
 ): NumberWithLogic {
-    const morStrategy = (x: RelationshipType) => x === RelationshipType.Enemy;
     if (winrateStrategy === WinrateStrategy.High || !inJury(gameState)) {
         // prioritize targeting enemies, break ties based on enemy centrality
         return targetEnemies(hero, old, neww, voteBasedOnCentrality(gameState, morStrategy));
@@ -176,6 +176,7 @@ function isBetterTargetMoR(
     }
 }
 
+const underdogStrategy = (x: RelationshipType) => x !== RelationshipType.Friend;
 function isBetterTargetUnderdog(
     old: RelationshipSummary,
     neww: RelationshipSummary,
@@ -183,7 +184,6 @@ function isBetterTargetUnderdog(
     hero: Houseguest,
     winrateStrategy: WinrateStrategy
 ): NumberWithLogic {
-    const underdogStrategy = (x: RelationshipType) => x !== RelationshipType.Friend;
     if (winrateStrategy === WinrateStrategy.High || !inJury(gameState)) {
         // prioritize targeting enemies, break ties based on enemy centrality
         return targetEnemies(hero, old, neww, voteBasedOnCentrality(gameState, underdogStrategy));
@@ -208,27 +208,21 @@ function isMoreCentral(
     gameState: GameState,
     condition: (x: RelationshipType) => boolean
 ): boolean {
-    let { oldPop, newPop }: { oldPop: number; newPop: number } = computeLocalPopularity(
-        gameState,
-        hero,
-        old,
-        neww,
-        condition
-    );
+    const oldHg: Houseguest = getById(gameState, old.id);
+    const newHg: Houseguest = getById(gameState, neww.id);
+
+    const oldPop = computeLocalPopularity(gameState, condition, hero, oldHg);
+    const newPop = computeLocalPopularity(gameState, condition, hero, newHg);
     return oldPop < newPop;
 }
 
-// computes the popularity of houseguests old and neww,
-// only taking into account houseguests that have relationship type x with hero
-// satisfying the boolean condition you pass in
 function computeLocalPopularity(
     gameState: GameState,
+    condition: (x: RelationshipType) => boolean,
     hero: Houseguest,
-    old: RelationshipSummary,
-    neww: RelationshipSummary,
-    condition: (x: RelationshipType) => boolean
+    villian: Houseguest
 ) {
-    const nonFriends: Houseguest[] = Array.from(gameState.nonEvictedHouseguests)
+    const matches: Houseguest[] = Array.from(gameState.nonEvictedHouseguests)
         .map((hg) => getById(gameState, hg))
         .filter(
             (villain) =>
@@ -236,21 +230,27 @@ function computeLocalPopularity(
                     classifyRelationship(hero.popularity, villain.popularity, hero.relationshipWith(villain))
                 ) && hero.id !== villain.id
         );
-    let oldPop: number = 0;
-    const oldHg: Houseguest = getById(gameState, old.id);
-    let newPop: number = 0;
-    const newHg: Houseguest = getById(gameState, neww.id);
-    nonFriends.forEach((hg) => {
-        if (hg.id !== oldHg.id) {
-            oldPop += oldHg.relationshipWith(hg);
-        }
-        if (hg.id !== newHg.id) {
-            newPop += newHg.relationshipWith(hg);
+    let pop: number = 0;
+    let matchCount: number = 0;
+    matches.forEach((hg) => {
+        if (hg.id !== villian.id) {
+            matchCount++;
+            pop += villian.relationshipWith(hg);
         }
     });
-    return { oldPop, newPop };
+    return pop / matchCount;
 }
 
+export function computeEnemyCentrality(gameState: GameState, hero: Houseguest, villian: Houseguest): number {
+    return computeLocalPopularity(gameState, morStrategy, hero, villian);
+}
+export function computeNonfriendCentrality(
+    gameState: GameState,
+    hero: Houseguest,
+    villian: Houseguest
+): number {
+    return computeLocalPopularity(gameState, underdogStrategy, hero, villian);
+}
 function isBetterTargetStatusQuo(
     hero: Houseguest,
     old: RelationshipSummary,
