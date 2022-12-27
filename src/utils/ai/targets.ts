@@ -73,7 +73,7 @@ export enum TargetStrategy {
     MoR,
 }
 
-function determineWinrateStrategy(hero: Houseguest): WinrateStrategy {
+export function determineWinrateStrategy(hero: Houseguest): WinrateStrategy {
     if (hero.powerRanking >= 0.45) return WinrateStrategy.High;
     if (hero.powerRanking <= 1 / 3) return WinrateStrategy.Low;
     return WinrateStrategy.Medium;
