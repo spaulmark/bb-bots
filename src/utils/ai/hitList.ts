@@ -8,6 +8,7 @@ import {
     determineTargetStrategy,
     determineWinrateStrategy,
 } from "./targets";
+import { linear_transform } from "../utilities";
 
 export interface HitList {
     id: number;
@@ -158,19 +159,10 @@ function pushEnemyCentrailty(
 ) {
     // we flip it to make it negative, since its something we as hero dislike
     const centrailty = -computeEnemyCentrality(gameState, hero, villian);
-    // do a linear transform on centrailty to have it be from -1 to enemyCap instead of from -1 to 1 /
     const value = linear_transform(centrailty, -1, 1, -1, hero.popularity);
     hitList.push({ id: villian.id, value });
 }
-function linear_transform(
-    x: number,
-    input_start: number,
-    input_end: number,
-    output_start: number,
-    output_end: number
-) {
-    return ((x - input_start) / (input_end - input_start)) * (output_end - output_start) + output_start;
-}
+
 function pushRelationship(hitList: HitList[], villian: Houseguest, hero: Houseguest) {
     hitList.push({ id: villian.id, value: hero.relationshipWith(villian) });
 }

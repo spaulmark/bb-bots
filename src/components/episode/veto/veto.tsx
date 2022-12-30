@@ -174,14 +174,7 @@ function useDiamondVeto(
         };
     }
     // otherwise, replace the person i least want gone
-    const worseTarget: number = isBetterTarget(
-        getRelationshipSummary(hero, nominees[0]),
-        getRelationshipSummary(hero, nominees[1]),
-        hero,
-        gameState
-    )
-        ? 0
-        : 1;
+    const worseTarget: number = isBetterTarget(nominees[0].id, nominees[1].id, hero) ? 0 : 1;
 
     return { decision: nominees[worseTarget], reason: "I would rather see someone else nominated." };
 }

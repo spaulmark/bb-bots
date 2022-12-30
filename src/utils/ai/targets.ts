@@ -67,13 +67,14 @@ export function isBetterTargetWithLogic(
     }
 }
 
-export function isBetterTarget(
-    old: RelationshipSummary,
-    neww: RelationshipSummary,
-    hero: Houseguest,
-    gameState: GameState
-): boolean {
-    return isBetterTargetWithLogic(old, neww, hero, gameState).decision === 1;
+// returns true if neww is a better target than old
+export function isBetterTarget(old: number, neww: number, hero: Houseguest): boolean {
+    for (const hit of hero.hitList) {
+        if (hit.id === old) return false;
+        if (hit.id === neww) return true;
+    }
+    console.error(hero.hitList);
+    throw new Error(`isBetterTarget: hitlist of ${hero} tried to find ${old} or ${neww} but couldn't`);
 }
 
 function voteBasedOnCentrality(

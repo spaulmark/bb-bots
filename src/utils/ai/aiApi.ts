@@ -126,14 +126,7 @@ export function getWorstTarget(hero: Houseguest, options: Houseguest[], gameStat
     const sortedOptions = [...options];
     // worst target is in position 0
     sortedOptions.sort((hg1, hg2) => {
-        return isBetterTarget(
-            getRelationshipSummary(hero, hg1),
-            getRelationshipSummary(hero, hg2),
-            hero,
-            gameState
-        )
-            ? -1
-            : 1;
+        return isBetterTarget(hg1.id, hg2.id, hero) ? -1 : 1;
     });
     if (sortedOptions.length === 0) throw "Tried to get a worst target from 0 options";
     return sortedOptions[0];
@@ -178,14 +171,7 @@ export function backdoorNPlayers(
     const sortedOptions = [...options];
     // negative value if first is less than second
     sortedOptions.sort((hg1, hg2) => {
-        return isBetterTarget(
-            getRelationshipSummary(hero, hg1),
-            getRelationshipSummary(hero, hg2),
-            hero,
-            gameState
-        )
-            ? 1
-            : -1;
+        return isBetterTarget(hg1.id, hg2.id, hero) ? 1 : -1;
     });
 
     while (result.length < n) {

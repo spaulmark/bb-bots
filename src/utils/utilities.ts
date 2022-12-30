@@ -83,6 +83,16 @@ export function magnitude(x: number[]): number {
     return Math.sqrt(result);
 }
 
+export function linear_transform(
+    x: number,
+    input_start: number,
+    input_end: number,
+    output_start: number,
+    output_end: number
+) {
+    return ((x - input_start) / (input_end - input_start)) * (output_end - output_start) + output_start;
+}
+
 // returns a value between 0 and pi
 
 export function angleBetween(x: number[], y: number[]): number {
