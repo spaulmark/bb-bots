@@ -1,4 +1,4 @@
-import { GameState, inJury, nonEvictedHouseguests } from "../../model/gameState";
+import { GameState, nonEvictedHouseguests } from "../../model/gameState";
 import { Houseguest } from "../../model";
 import { RelationshipType, classifyRelationshipHgs } from "./classifyRelationship";
 import {
@@ -10,13 +10,14 @@ import {
 } from "./targets";
 import { linear_transform } from "../utilities";
 
-export interface HitList {
+export interface HitListEntry {
     id: number;
     value: number;
+    name: string;
 }
 
-export function generateHitList(hero: Houseguest, gameState: GameState): HitList[] {
-    const list: HitList[] = [];
+export function generateHitList(hero: Houseguest, gameState: GameState): HitListEntry[] {
+    const list: HitListEntry[] = [];
     const s = (a: any, b: any) => a.value - b.value;
     const targetStrategy: TargetStrategy = determineTargetStrategy(hero);
 
@@ -37,7 +38,7 @@ export function generateHitList(hero: Houseguest, gameState: GameState): HitList
     }
 }
 
-function generateHitList_low_statusquo(hitList: HitList[], hero: Houseguest, gameState: GameState) {
+function generateHitList_low_statusquo(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
         pushWinrate(hitList, villian, hero);
@@ -45,7 +46,7 @@ function generateHitList_low_statusquo(hitList: HitList[], hero: Houseguest, gam
     return hitList;
 }
 
-function generateHitList_low_underdog(hitList: HitList[], hero: Houseguest, gameState: GameState) {
+function generateHitList_low_underdog(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
         const heroWins: boolean = hero.superiors[villian.id] > hero.powerRanking;
@@ -62,7 +63,7 @@ function generateHitList_low_underdog(hitList: HitList[], hero: Houseguest, game
                       hero.popularity,
                       friend_midpoint
                   );
-            hitList.push({ id: villian.id, value });
+            hitList.push({ id: villian.id, value, name: villian.name });
         } else {
             const value = isFriend
                 ? linear_transform(
@@ -79,13 +80,13 @@ function generateHitList_low_underdog(hitList: HitList[], hero: Houseguest, game
                       -1,
                       enemy_midpoint
                   );
-            hitList.push({ id: villian.id, value });
+            hitList.push({ id: villian.id, value, name: villian.name });
         }
     }
     return hitList;
 }
 
-function generateHitList_med_underdog(hitList: HitList[], hero: Houseguest, gameState: GameState) {
+function generateHitList_med_underdog(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
         const heroWins: boolean = hero.superiors[villian.id] > hero.powerRanking;
@@ -103,6 +104,7 @@ function generateHitList_med_underdog(hitList: HitList[], hero: Houseguest, game
                     output_start,
                     output_end
                 ),
+                name: villian.name,
             });
         } else {
             const centrailty = -computeEnemyCentrality(gameState, hero, villian);
@@ -116,13 +118,13 @@ function generateHitList_med_underdog(hitList: HitList[], hero: Houseguest, game
                 output_start,
                 output_end
             );
-            hitList.push({ id: villian.id, value: centrailtyTransformed });
+            hitList.push({ id: villian.id, value: centrailtyTransformed, name: villian.name });
         }
     }
     return hitList;
 }
 
-function generateHitList_med_statusquo(hitList: HitList[], hero: Houseguest, gameState: GameState) {
+function generateHitList_med_statusquo(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
         pushWinrateWithinRelationshipTier(hitList, villian, hero);
@@ -130,7 +132,7 @@ function generateHitList_med_statusquo(hitList: HitList[], hero: Houseguest, gam
     return hitList;
 }
 
-function generateHitList_high_underdog(hitList: HitList[], hero: Houseguest, gameState: GameState) {
+function generateHitList_high_underdog(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
         if (classifyRelationshipHgs(hero, villian) !== RelationshipType.Friend) {
@@ -142,7 +144,7 @@ function generateHitList_high_underdog(hitList: HitList[], hero: Houseguest, gam
     return hitList;
 }
 
-function generateHitList_high_statusquo(hitList: HitList[], hero: Houseguest, gameState: GameState) {
+function generateHitList_high_statusquo(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
         pushRelationship(hitList, villian, hero);
@@ -150,7 +152,7 @@ function generateHitList_high_statusquo(hitList: HitList[], hero: Houseguest, ga
     return hitList;
 }
 function pushEnemyCentrailty(
-    hitList: HitList[],
+    hitList: HitListEntry[],
     villian: Houseguest,
     hero: Houseguest,
     gameState: GameState
@@ -158,30 +160,36 @@ function pushEnemyCentrailty(
     // we flip it to make it negative, since its something we as hero dislike
     const centrailty = -computeEnemyCentrality(gameState, hero, villian);
     const value = linear_transform(centrailty, -1, 1, -1, hero.popularity);
-    hitList.push({ id: villian.id, value });
+    hitList.push({ id: villian.id, value, name: villian.name });
 }
 
-function pushRelationship(hitList: HitList[], villian: Houseguest, hero: Houseguest) {
-    hitList.push({ id: villian.id, value: hero.relationshipWith(villian) });
+function pushRelationship(hitList: HitListEntry[], villian: Houseguest, hero: Houseguest) {
+    hitList.push({ id: villian.id, value: hero.relationshipWith(villian), name: villian.name });
 }
 
-function pushWinrate(hitList: HitList[], villian: Houseguest, hero: Houseguest) {
-    hitList.push({ id: villian.id, value: linear_transform(hero.superiors[villian.id], 0, 1, -1, 1) });
+function pushWinrate(hitList: HitListEntry[], villian: Houseguest, hero: Houseguest) {
+    hitList.push({
+        id: villian.id,
+        value: linear_transform(hero.superiors[villian.id], 0, 1, -1, 1),
+        name: villian.name,
+    });
 }
 
-function pushWinrateWithinRelationshipTier(hitList: HitList[], villian: Houseguest, hero: Houseguest) {
+function pushWinrateWithinRelationshipTier(hitList: HitListEntry[], villian: Houseguest, hero: Houseguest) {
     const relationshipType: RelationshipType = classifyRelationshipHgs(hero, villian);
     if (relationshipType !== RelationshipType.Friend) {
         // map below the enemy space
         hitList.push({
             id: villian.id,
             value: linear_transform(hero.superiors[villian.id], 0, 1, -1, hero.popularity),
+            name: villian.name,
         });
     } else {
         // map above the enemy space
         hitList.push({
             id: villian.id,
             value: linear_transform(hero.superiors[villian.id], 0, 1, hero.popularity, 1),
+            name: villian.name,
         });
     }
 }
