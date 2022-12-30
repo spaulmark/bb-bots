@@ -94,7 +94,6 @@ export function linear_transform(
 }
 
 // returns a value between 0 and pi
-
 export function angleBetween(x: number[], y: number[]): number {
     if (x.length !== y.length)
         throw new Error(

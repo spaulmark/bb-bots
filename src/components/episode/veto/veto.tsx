@@ -3,9 +3,9 @@ import { Houseguest, GameState, exclude, getById, nonEvictedHousguestsSplit } fr
 import { backdoorNPlayers, HouseguestWithLogic, NumberWithLogic } from "../../../utils/ai/aiApi";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
 import {
-    isBetterTarget,
+    shouldKillNew,
     getRelationshipSummary,
-    isBetterTargetWithLogic,
+    selectTargetWithLogic,
     determineTargetStrategy,
     TargetStrategy,
 } from "../../../utils/ai/targets";
@@ -96,16 +96,17 @@ function useSpotlightVeto(
     const checks = basicVetoChecks(hero, nominees, gameState, HoH, optionals);
     if (checks && checks.decision !== null) return checks;
     // use the veto on whoever is the worse target between the 2 nominees
-    const invertedDecision = isBetterTargetWithLogic(
+    const decision = selectTargetWithLogic(
         getRelationshipSummary(hero, nominees[0]),
         getRelationshipSummary(hero, nominees[1]),
         hero,
-        gameState
+        gameState,
+        "good"
     );
-    const decision = invertedDecision.decision === 0 ? 1 : 0;
-    return { decision: nominees[decision], reason: invertedDecision.reason };
+    return { decision: nominees[decision.decision], reason: decision.reason };
 }
 
+// TODO: fix this mess
 function useGoldenVeto(
     hero: Houseguest,
     nominees: Houseguest[],
@@ -174,7 +175,7 @@ function useDiamondVeto(
         };
     }
     // otherwise, replace the person i least want gone
-    const worseTarget: number = isBetterTarget(nominees[0].id, nominees[1].id, hero) ? 0 : 1;
+    const worseTarget: number = shouldKillNew(nominees[0].id, nominees[1].id, hero) ? 0 : 1;
 
     return { decision: nominees[worseTarget], reason: "I would rather see someone else nominated." };
 }

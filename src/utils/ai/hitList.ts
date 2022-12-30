@@ -20,9 +20,7 @@ export function generateHitList(hero: Houseguest, gameState: GameState): HitList
     const s = (a: any, b: any) => a.value - b.value;
     const targetStrategy: TargetStrategy = determineTargetStrategy(hero);
 
-    const winrateStrategy: WinrateStrategy = !inJury(gameState)
-        ? WinrateStrategy.High
-        : determineWinrateStrategy(hero);
+    const winrateStrategy: WinrateStrategy = determineWinrateStrategy(hero);
 
     if (winrateStrategy === WinrateStrategy.High) {
         if (targetStrategy === TargetStrategy.Underdog)

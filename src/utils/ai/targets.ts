@@ -2,6 +2,7 @@ import { GameState, getById, Houseguest, inJury } from "../../model";
 import { NumberWithLogic } from "./aiApi";
 import { lowestScore, relationship } from "./aiUtils";
 import { classifyRelationship, classifyTwoWayRelationship, RelationshipType } from "./classifyRelationship";
+import { generateExcuse, Intent } from "./generateExcuse";
 
 interface RelationshipSummary {
     type: RelationshipType;
@@ -13,6 +14,7 @@ interface RelationshipSummary {
     villianName: string;
 }
 
+// TODO: try to kill this
 export function getRelationshipSummary(hero: Houseguest, villain: Houseguest): RelationshipSummary {
     const doIWin = hero.superiors[villain.id];
     const type = classifyRelationship(hero.popularity, villain.popularity, hero.relationships[villain.id]);
@@ -33,29 +35,40 @@ export enum WinrateStrategy {
     High,
 }
 
-// Statusquo goes with the status quo, underdog tries to disrupt & go after big targets, MoR goes after his personal targets
+// Statusquo goes with the status quo, underdog tries to disrupt & go after big targets
 export enum TargetStrategy {
     StatusQuo,
     Underdog,
 }
 
+// TODO: move this to hitlist.ts
 export function determineWinrateStrategy(hero: Houseguest): WinrateStrategy {
+    if (hero.powerRanking <= 0) return WinrateStrategy.High; // For pre-jury gameplay, or people who are drawing 100% dead
     if (hero.powerRanking >= 0.45) return WinrateStrategy.High;
     if (hero.powerRanking <= 1 / 3) return WinrateStrategy.Low;
     return WinrateStrategy.Medium;
 }
 
+// TODO: move this to hitlist.ts
 export function determineTargetStrategy(hero: Houseguest): TargetStrategy {
     return hero.friends > hero.enemies ? TargetStrategy.StatusQuo : TargetStrategy.Underdog;
 }
 
-// return the index of the better target
-export function isBetterTargetWithLogic(
+// return the index of the intended target //
+// 0 if the old target is better, 1 if the new target is better
+export function selectTargetWithLogic(
     old: RelationshipSummary,
     neww: RelationshipSummary,
     hero: Houseguest,
-    gameState: GameState
+    gameState: GameState,
+    intent: Intent
 ): NumberWithLogic {
+    // TODO: please do better than this, just use the hit list + excuse generating fcn
+    const badIntent = intent === "bad";
+    const decision = shouldKillNew(old.id, neww.id, hero) === badIntent ? 1 : 0;
+    const reason = generateExcuse(hero, decision, [old.id, neww.id], "bad");
+    return { decision, reason };
+
     if (old.relationship === 2) return { decision: 1, reason: "remove debug value" };
     if (neww.relationship === 2) return { decision: 0, reason: "remove debug value" };
     const strategy = determineTargetStrategy(hero);
@@ -67,8 +80,8 @@ export function isBetterTargetWithLogic(
     }
 }
 
-// returns true if neww is a better target than old
-export function isBetterTarget(old: number, neww: number, hero: Houseguest): boolean {
+// returns true if neww is less valued on the hit list than old
+export function shouldKillNew(old: number, neww: number, hero: Houseguest): boolean {
     for (const hit of hero.hitList) {
         if (hit.id === old) return false;
         if (hit.id === neww) return true;

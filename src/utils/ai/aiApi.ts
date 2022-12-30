@@ -1,6 +1,6 @@
 import { Houseguest, GameState, exclude, inJury } from "../../model";
 import { rng } from "../BbRandomGenerator";
-import { getRelationshipSummary, isBetterTarget, isBetterTargetWithLogic } from "./targets";
+import { getRelationshipSummary, shouldKillNew, selectTargetWithLogic } from "./targets";
 
 export interface NumberWithLogic {
     decision: number;
@@ -50,11 +50,12 @@ export function castEvictionVote(
     if (gameState.remainingPlayers === 4) {
         // prevents 4 player games from crashing LULW
         if (!inJury(gameState)) {
-            return isBetterTargetWithLogic(
+            return selectTargetWithLogic(
                 getRelationshipSummary(hero, nominees[0]),
                 getRelationshipSummary(hero, nominees[1]),
                 hero,
-                gameState
+                gameState,
+                "bad"
             );
         }
         return castF4vote(
@@ -70,11 +71,12 @@ export function castEvictionVote(
             )[0]
         );
     }
-    return isBetterTargetWithLogic(
+    return selectTargetWithLogic(
         getRelationshipSummary(hero, nominees[0]),
         getRelationshipSummary(hero, nominees[1]),
         hero,
-        gameState
+        gameState,
+        "bad"
     );
 }
 
@@ -126,7 +128,7 @@ export function getWorstTarget(hero: Houseguest, options: Houseguest[], gameStat
     const sortedOptions = [...options];
     // worst target is in position 0
     sortedOptions.sort((hg1, hg2) => {
-        return isBetterTarget(hg1.id, hg2.id, hero) ? -1 : 1;
+        return shouldKillNew(hg1.id, hg2.id, hero) ? -1 : 1;
     });
     if (sortedOptions.length === 0) throw "Tried to get a worst target from 0 options";
     return sortedOptions[0];
@@ -171,7 +173,7 @@ export function backdoorNPlayers(
     const sortedOptions = [...options];
     // negative value if first is less than second
     sortedOptions.sort((hg1, hg2) => {
-        return isBetterTarget(hg1.id, hg2.id, hero) ? 1 : -1;
+        return shouldKillNew(hg1.id, hg2.id, hero) ? 1 : -1;
     });
 
     while (result.length < n) {
