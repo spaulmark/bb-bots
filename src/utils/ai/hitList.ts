@@ -5,7 +5,6 @@ import {
     TargetStrategy,
     WinrateStrategy,
     computeEnemyCentrality,
-    computeNonfriendCentrality,
     determineTargetStrategy,
     determineWinrateStrategy,
 } from "./targets";
@@ -20,17 +19,116 @@ export function generateHitList(hero: Houseguest, gameState: GameState): [number
         : determineWinrateStrategy(hero);
 
     if (winrateStrategy === WinrateStrategy.High) {
-        if (targetStrategy === TargetStrategy.MoR)
-            return generateHitList_high_MoR(list, hero, gameState).sort(s);
         if (targetStrategy === TargetStrategy.Underdog)
             return generateHitList_high_underdog(list, hero, gameState).sort(s);
         return generateHitList_high_statusquo(list, hero, gameState).sort(s);
     } else if (winrateStrategy === WinrateStrategy.Medium) {
+        if (targetStrategy === TargetStrategy.Underdog)
+            return generateHitList_med_underdog(list, hero, gameState).sort(s);
         return generateHitList_med_statusquo(list, hero, gameState).sort(s);
     } else {
-        // low
+        if (targetStrategy === TargetStrategy.Underdog)
+            return generateHitList_low_underdog(list, hero, gameState).sort(s);
+        return generateHitList_low_statusquo(list, hero, gameState).sort(s);
     }
-    return [];
+}
+
+function generateHitList_low_statusquo(
+    hitList: [number, number, string][],
+    hero: Houseguest,
+    gameState: GameState
+) {
+    for (const villian of nonEvictedHouseguests(gameState)) {
+        if (hero.id === villian.id) continue;
+        pushWinrate(hitList, villian, hero);
+    }
+    return hitList;
+}
+
+function generateHitList_low_underdog(
+    hitList: [number, number, string][],
+    hero: Houseguest,
+    gameState: GameState
+) {
+    for (const villian of nonEvictedHouseguests(gameState)) {
+        if (hero.id === villian.id) continue;
+        const heroWins: boolean = hero.superiors[villian.id] > hero.powerRanking;
+        const isFriend: boolean = classifyRelationshipHgs(hero, villian) === RelationshipType.Friend;
+        const friend_midpoint = (hero.popularity + 1) / 2;
+        const enemy_midpoint = (hero.popularity - 1) / 2;
+        if (heroWins) {
+            const value = isFriend
+                ? linear_transform(hero.relationshipWith(villian), hero.popularity, 1, friend_midpoint, 1)
+                : linear_transform(
+                      -computeEnemyCentrality(gameState, hero, villian),
+                      -1,
+                      1,
+                      hero.popularity,
+                      friend_midpoint
+                  );
+            hitList.push([villian.id, value, villian.name]);
+        } else {
+            const value = isFriend
+                ? linear_transform(
+                      hero.relationshipWith(villian),
+                      -1,
+                      hero.popularity,
+                      enemy_midpoint,
+                      hero.popularity
+                  )
+                : linear_transform(
+                      -computeEnemyCentrality(gameState, hero, villian),
+                      -1,
+                      1,
+                      -1,
+                      enemy_midpoint
+                  );
+            hitList.push([villian.id, value, villian.name]);
+        }
+    }
+    return hitList;
+}
+
+function generateHitList_med_underdog(
+    hitList: [number, number, string][],
+    hero: Houseguest,
+    gameState: GameState
+) {
+    for (const villian of nonEvictedHouseguests(gameState)) {
+        if (hero.id === villian.id) continue;
+        const heroWins: boolean = hero.superiors[villian.id] > hero.powerRanking;
+        const isFriend: boolean = classifyRelationshipHgs(hero, villian) === RelationshipType.Friend;
+        if (isFriend) {
+            const midpoint = (hero.popularity + 1) / 2;
+            const output_start = heroWins ? midpoint : hero.popularity;
+            const output_end = heroWins ? 1 : midpoint;
+            hitList.push([
+                villian.id,
+                linear_transform(
+                    hero.relationshipWith(villian),
+                    hero.popularity,
+                    1,
+                    output_start,
+                    output_end
+                ),
+                villian.name,
+            ]);
+        } else {
+            const centrailty = -computeEnemyCentrality(gameState, hero, villian);
+            const midpoint = (hero.popularity - 1) / 2;
+            const output_start = heroWins ? midpoint : hero.popularity;
+            const output_end = heroWins ? 1 : midpoint;
+            const centrailtyTransformed = linear_transform(
+                centrailty,
+                -1,
+                hero.popularity,
+                output_start,
+                output_end
+            );
+            hitList.push([villian.id, centrailtyTransformed, villian.name]);
+        }
+    }
+    return hitList;
 }
 
 function generateHitList_med_statusquo(
@@ -42,7 +140,6 @@ function generateHitList_med_statusquo(
         if (hero.id === villian.id) continue;
         pushWinrateWithinRelationshipTier(hitList, villian, hero);
     }
-    console.log("!!!!!!!");
     return hitList;
 }
 
@@ -54,29 +151,14 @@ function generateHitList_high_underdog(
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
         if (classifyRelationshipHgs(hero, villian) !== RelationshipType.Friend) {
-            pushEnemyCentrailty(hitList, villian, hero, gameState, computeNonfriendCentrality);
+            pushEnemyCentrailty(hitList, villian, hero, gameState);
         } else {
             pushRelationship(hitList, villian, hero);
         }
     }
     return hitList;
 }
-// enemies are sorted by centrailty, non-enemies are normal
-function generateHitList_high_MoR(
-    hitList: [number, number, string][],
-    hero: Houseguest,
-    gameState: GameState
-) {
-    for (const villian of nonEvictedHouseguests(gameState)) {
-        if (hero.id === villian.id) continue;
-        if (classifyRelationshipHgs(hero, villian) === RelationshipType.Enemy) {
-            pushEnemyCentrailty(hitList, villian, hero, gameState, computeEnemyCentrality);
-        } else {
-            pushRelationship(hitList, villian, hero);
-        }
-    }
-    return hitList;
-}
+
 function generateHitList_high_statusquo(
     hitList: [number, number, string][],
     hero: Houseguest,
@@ -92,14 +174,12 @@ function pushEnemyCentrailty(
     hitList: [number, number, string][],
     villian: Houseguest,
     hero: Houseguest,
-    gameState: GameState,
-    compareFcn: (gameState: GameState, hero: Houseguest, villian: Houseguest) => number
+    gameState: GameState
 ) {
-    const enemyCap = hero.popularity;
     // we flip it to make it negative, since its something we as hero dislike
-    const centrailty = -compareFcn(gameState, hero, villian);
+    const centrailty = -computeEnemyCentrality(gameState, hero, villian);
     // do a linear transform on centrailty to have it be from -1 to enemyCap instead of from -1 to 1 /
-    const centrailtyTransformed = linear_transform(centrailty, -1, 1, -1, enemyCap);
+    const centrailtyTransformed = linear_transform(centrailty, -1, 1, -1, hero.popularity);
     hitList.push([villian.id, centrailtyTransformed, villian.name]);
 }
 function linear_transform(
@@ -113,6 +193,10 @@ function linear_transform(
 }
 function pushRelationship(hitList: [number, number, string][], villian: Houseguest, hero: Houseguest) {
     hitList.push([villian.id, hero.relationshipWith(villian), villian.name]);
+}
+
+function pushWinrate(hitList: [number, number, string][], villian: Houseguest, hero: Houseguest) {
+    hitList.push([villian.id, linear_transform(hero.superiors[villian.id], 0, 1, -1, 1), villian.name]);
 }
 
 function pushWinrateWithinRelationshipTier(
@@ -137,3 +221,10 @@ function pushWinrateWithinRelationshipTier(
         ]);
     }
 }
+
+// TODO: here's what we're going to do. abandon targets.ts, instead make a generateExcuse() function, where given a decision and a list of hgs, and a hero,
+// give an excuse for why hero made the decision. also it could be a positive or negative decision (veto/vote to save or voting someone out)  /
+
+// TODO: also for veto, save people whom in your hit list are above your friendship threshold
+
+// function generateReason(hero: Houseguest, , gameState: GameState) {

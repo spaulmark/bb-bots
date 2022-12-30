@@ -6,7 +6,6 @@ import { EpisodeLog } from "../../model/logging/episodelog";
 import { generateCliques } from "../../utils/generateCliques";
 import { refreshHgStats } from "./utilities/evictHouseguest";
 import { cast$ } from "../../subjects/subjects";
-import { generateHitList } from "../../utils/ai/hitList";
 
 export function firstImpressionsMap(hgs: number): { [id: number]: { [id: number]: number } } {
     const sin = Math.sin;
@@ -71,9 +70,7 @@ export function nextEpisode(oldState: GameState, episodeType: EpisodeType): Epis
     });
     newState.cliques = generateCliques(newState);
     const finalState = new GameState(newState);
-    nonEvictedHouseguests(finalState).forEach((hg) => {
-        console.log(hg.name, generateHitList(hg, finalState)); // TODO: delete this
-    });
+
     if (!episodeType.canPlayWith(finalState.remainingPlayers))
         throw new Error(
             `Episode type ${episodeType.name} not playable with ${finalState.remainingPlayers} players`
