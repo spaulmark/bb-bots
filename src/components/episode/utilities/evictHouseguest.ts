@@ -14,7 +14,7 @@ import { getFinalists } from "../../../model/season";
 import { average, roundTwoDigits } from "../../../utils";
 import { pHeroWinsTheFinale } from "../../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
-import { Targets } from "../../../utils/ai/targets";
+import { generateHitList } from "../../../utils/ai/hitList";
 
 export function evictHouseguest(gameState: MutableGameState, id: number): GameState {
     const evictee = getById(gameState, id);
@@ -85,7 +85,6 @@ function updatePopularity(houseguests: Houseguest[], updateDelta: boolean = fals
 
 function updateFriendCounts(houseguests: Houseguest[], gameState: GameState) {
     houseguests.forEach((hero: Houseguest) => {
-        let targets = new Targets(hero);
         let friends = 0;
         let enemies = 0;
         houseguests.forEach((villain) => {
@@ -103,12 +102,13 @@ function updateFriendCounts(houseguests: Houseguest[], gameState: GameState) {
         });
         hero.friends = friends;
         hero.enemies = enemies;
-        if (houseguests.length < 3) return;
-        // this stuff breaks if there are less than 3 players left
-        targets.refreshTargets(gameState, houseguests);
-        hero.targets = targets.getTargets();
-        hero.targets.forEach((target) => {
-            target >= 0 && getById(gameState, target).targetingMe++;
+        const hitList = generateHitList(hero, gameState);
+        hero.hitList = hitList;
+        const targets = [];
+        hero.hitList[0] && targets.push(hero.hitList[0].id);
+        hero.hitList[1] && targets.push(hero.hitList[1].id);
+        targets.forEach((target) => {
+            getById(gameState, target).targetingMe++;
         });
     });
 }

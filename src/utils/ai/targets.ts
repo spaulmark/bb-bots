@@ -1,9 +1,7 @@
-import { exclude, GameState, getById, Houseguest, inJury } from "../../model";
-import { backdoorNPlayers, NumberWithLogic } from "./aiApi";
+import { GameState, getById, Houseguest, inJury } from "../../model";
+import { NumberWithLogic } from "./aiApi";
 import { lowestScore, relationship } from "./aiUtils";
 import { classifyRelationship, classifyTwoWayRelationship, RelationshipType } from "./classifyRelationship";
-
-// abandon all hope ye who enter here
 
 interface RelationshipSummary {
     type: RelationshipType;
@@ -14,16 +12,6 @@ interface RelationshipSummary {
     villainPopularity: number;
     villianName: string;
 }
-
-const deadValue: RelationshipSummary = {
-    type: RelationshipType.Friend,
-    id: -123456789, // to make debugging easier :)
-    pHeroWins: -1,
-    winrate: -1,
-    relationship: 2,
-    villainPopularity: 2,
-    villianName: "This is an error",
-};
 
 export function getRelationshipSummary(hero: Houseguest, villain: Houseguest): RelationshipSummary {
     const doIWin = hero.superiors[villain.id];
@@ -37,27 +25,6 @@ export function getRelationshipSummary(hero: Houseguest, villain: Houseguest): R
         villainPopularity: villain.popularity,
         villianName: villain.name,
     };
-}
-
-export class Targets {
-    private firstTarget: RelationshipSummary = deadValue;
-    private secondTarget: RelationshipSummary = deadValue;
-    private hg: Houseguest;
-
-    constructor(hg: Houseguest) {
-        this.hg = hg;
-    }
-
-    public getTargets(): [number, number] {
-        return [this.firstTarget.id, this.secondTarget.id];
-    }
-    public refreshTargets(gameState: GameState, houseguests: Houseguest[]) {
-        const exclusion = exclude(houseguests, [this.hg]);
-        if (exclusion.length < 2) return;
-        const choices = backdoorNPlayers(this.hg, exclusion, gameState, 2);
-        this.firstTarget = getRelationshipSummary(this.hg, getById(gameState, choices[0].decision));
-        this.secondTarget = getRelationshipSummary(this.hg, getById(gameState, choices[1].decision));
-    }
 }
 
 export enum WinrateStrategy {

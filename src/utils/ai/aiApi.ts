@@ -206,8 +206,7 @@ export function pJurorVotesForHero(juror: Houseguest, hero: Houseguest, villain:
     return result;
 }
 
-// Returns the index of the finalist with the highest relationship with juror
-// only works with 2 finalists
+// only works with 2 finalists, FIXME: make this work for 3+ finalists, by having the juror only vote between their top 2 choices.
 export function castJuryVote(juror: Houseguest, finalists: Houseguest[]): number {
     const choice = Math.abs(rng().randomFloat());
     return choice > pJurorVotesForHero(juror, finalists[0], finalists[1]) ? 1 : 0;
