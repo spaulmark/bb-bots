@@ -2,13 +2,8 @@ import { every } from "lodash";
 import { Houseguest, GameState, exclude, getById, nonEvictedHousguestsSplit } from "../../../model";
 import { backdoorNPlayers, HouseguestWithLogic, NumberWithLogic } from "../../../utils/ai/aiApi";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
-import {
-    shouldKillNew,
-    getRelationshipSummary,
-    selectTargetWithLogic,
-    determineTargetStrategy,
-    TargetStrategy,
-} from "../../../utils/ai/targets";
+import { shouldKillNew, selectTargetWithLogic, TargetStrategy } from "../../../utils/ai/targets";
+import { determineTargetStrategy } from "../../../utils/ai/hitList";
 
 export interface Veto {
     name: string;
@@ -96,17 +91,15 @@ function useSpotlightVeto(
     const checks = basicVetoChecks(hero, nominees, gameState, HoH, optionals);
     if (checks && checks.decision !== null) return checks;
     // use the veto on whoever is the worse target between the 2 nominees
-    const decision = selectTargetWithLogic(
-        getRelationshipSummary(hero, nominees[0]),
-        getRelationshipSummary(hero, nominees[1]),
+    const logic = selectTargetWithLogic(
+        nominees.map((hg) => hg.id),
         hero,
-        gameState,
         "good"
     );
-    return { decision: nominees[decision.decision], reason: decision.reason };
+    return { decision: getById(gameState, logic.decision), reason: logic.reason };
 }
 
-// TODO: fix this mess
+// TODO: fix this mess, save ppl on hit list above friendship threshold
 function useGoldenVeto(
     hero: Houseguest,
     nominees: Houseguest[],

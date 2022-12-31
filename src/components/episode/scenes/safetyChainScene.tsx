@@ -28,7 +28,7 @@ export function generateSafetyChainScene(initialGameState: GameState): [GameStat
     const sceneContent: JSX.Element[] = [];
     let first = true;
     while (chainOrder.length < safeSpots) {
-        const newSafeIndex = options.indexOf(getWorstTarget(currentChooser, options, newGameState));
+        const newSafeIndex = options.indexOf(getWorstTarget(currentChooser, options));
         chainOrder.push(options[newSafeIndex]);
         newGameState.currentLog.votes[currentChooser.id] = first
             ? new PoVvote(options[newSafeIndex].id)

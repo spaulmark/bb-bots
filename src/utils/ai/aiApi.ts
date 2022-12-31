@@ -1,6 +1,6 @@
 import { Houseguest, GameState, exclude, inJury } from "../../model";
 import { rng } from "../BbRandomGenerator";
-import { getRelationshipSummary, shouldKillNew, selectTargetWithLogic } from "./targets";
+import { shouldKillNew, selectTargetWithLogic } from "./targets";
 
 export interface NumberWithLogic {
     decision: number;
@@ -12,27 +12,24 @@ export interface HouseguestWithLogic {
     reason: string;
 }
 
-// Return the index of the eviction target.
+function getIndexFromLogic(nominees: Houseguest[], logic: NumberWithLogic): NumberWithLogic {
+    for (let i = 0; i < nominees.length; i++) {
+        if (nominees[i].id === logic.decision) {
+            return { decision: i, reason: logic.reason };
+        }
+    }
+    throw new Error(`Attempted to vote for a nominee that was not an option.`);
+}
 
-// vote to save, in the future, generalize this to n nominees instead of going 2 by 2
-export function castVoteToSave(
-    hero: Houseguest,
-    nominees: Houseguest[],
-    gameState: GameState
-): NumberWithLogic {
+// Return the index of the save target.
+export function castVoteToSave(hero: Houseguest, nominees: Houseguest[]): NumberWithLogic {
     if (nominees.length === 0) throw new Error("Tried to cast a vote to save with no nominees.");
-    let currentSave: NumberWithLogic = { decision: 0, reason: "" };
-    nominees.forEach((nominee, i) => {
-        if (i === 0) return;
-        const evictionTarget = castEvictionVote(hero, [nominee, nominees[currentSave.decision]], gameState);
-        if (!currentSave.reason) {
-            currentSave.reason = evictionTarget.reason;
-        }
-        if (evictionTarget.decision === 1) {
-            currentSave = { decision: i, reason: evictionTarget.reason };
-        }
-    });
-    return currentSave;
+    const logic: NumberWithLogic = selectTargetWithLogic(
+        nominees.map((hg) => hg.id),
+        hero,
+        "good"
+    );
+    return getIndexFromLogic(nominees, logic);
 }
 
 // returns the index in the array of the person you're voting to evict
@@ -47,17 +44,7 @@ export function castEvictionVote(
     }
     // In the F4 vote, do some genius level mathematics to predict what gives you the best odds of winning given that the
     // person who wins the F3 HoH will evict the person they have the worst odds against
-    if (gameState.remainingPlayers === 4) {
-        // prevents 4 player games from crashing LULW
-        if (!inJury(gameState)) {
-            return selectTargetWithLogic(
-                getRelationshipSummary(hero, nominees[0]),
-                getRelationshipSummary(hero, nominees[1]),
-                hero,
-                gameState,
-                "bad"
-            );
-        }
+    if (gameState.remainingPlayers === 4 && inJury(gameState)) {
         return castF4vote(
             hero,
             nominees[0],
@@ -71,13 +58,12 @@ export function castEvictionVote(
             )[0]
         );
     }
-    return selectTargetWithLogic(
-        getRelationshipSummary(hero, nominees[0]),
-        getRelationshipSummary(hero, nominees[1]),
+    const logic = selectTargetWithLogic(
+        nominees.map((hg) => hg.id),
         hero,
-        gameState,
         "bad"
     );
+    return getIndexFromLogic(nominees, logic);
 }
 
 function winningOddsF3(hero: Houseguest, villain1: Houseguest, villain2: Houseguest): number {
@@ -124,7 +110,7 @@ function castF4vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest, HoH: H
     };
 }
 
-export function getWorstTarget(hero: Houseguest, options: Houseguest[], gameState: GameState): Houseguest {
+export function getWorstTarget(hero: Houseguest, options: Houseguest[]): Houseguest {
     const sortedOptions = [...options];
     // worst target is in position 0
     sortedOptions.sort((hg1, hg2) => {

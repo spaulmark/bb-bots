@@ -1,19 +1,23 @@
 import { GameState, nonEvictedHouseguests } from "../../model/gameState";
 import { Houseguest } from "../../model";
 import { RelationshipType, classifyRelationshipHgs } from "./classifyRelationship";
-import {
-    TargetStrategy,
-    WinrateStrategy,
-    computeEnemyCentrality,
-    determineTargetStrategy,
-    determineWinrateStrategy,
-} from "./targets";
+import { TargetStrategy, WinrateStrategy, computeEnemyCentrality } from "./targets";
 import { linear_transform } from "../utilities";
 
 export interface HitListEntry {
     id: number;
     value: number;
     name: string;
+}
+export function determineWinrateStrategy(hero: Houseguest): WinrateStrategy {
+    if (hero.powerRanking <= 0) return WinrateStrategy.High; // For pre-jury gameplay, or people who are drawing 100% dead
+    if (hero.powerRanking >= 0.45) return WinrateStrategy.High;
+    if (hero.powerRanking <= 1 / 3) return WinrateStrategy.Low;
+    return WinrateStrategy.Medium;
+}
+
+export function determineTargetStrategy(hero: Houseguest): TargetStrategy {
+    return hero.friends > hero.enemies ? TargetStrategy.StatusQuo : TargetStrategy.Underdog;
 }
 
 export function generateHitList(hero: Houseguest, gameState: GameState): HitListEntry[] {
@@ -193,10 +197,3 @@ function pushWinrateWithinRelationshipTier(hitList: HitListEntry[], villian: Hou
         });
     }
 }
-
-// TODO: here's what we're going to do. abandon targets.ts, instead make a generateExcuse() function, where given a decision and a list of hgs, and a hero,
-// give an excuse for why hero made the decision. also it could be a positive or negative decision (veto/vote to save or voting someone out)  /
-
-// TODO: also for veto, save people whom in your hit list are above your friendship threshold
-
-// function generateReason(hero: Houseguest, , gameState: GameState) {
