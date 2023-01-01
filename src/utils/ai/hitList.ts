@@ -42,6 +42,7 @@ export function generateHitList(hero: Houseguest, gameState: GameState): HitList
     }
 }
 
+// low statusquo: vote solely based on winrate
 function generateHitList_low_statusquo(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
@@ -50,6 +51,7 @@ function generateHitList_low_statusquo(hitList: HitListEntry[], hero: Houseguest
     return hitList;
 }
 
+// low underdog: {enemies i can't beat, sorted by centrality} {friends i can't beat, by rel.} {enemies i can beat, by centrality} {friends i can beat, by rel.}
 function generateHitList_low_underdog(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
@@ -90,6 +92,7 @@ function generateHitList_low_underdog(hitList: HitListEntry[], hero: Houseguest,
     return hitList;
 }
 
+// med underdog: {enemies i can't beat; by cent.} {enemies i can beat; by cent.} {friends i can't beat; by rel} {friends i can beat; by rel}
 function generateHitList_med_underdog(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
@@ -128,6 +131,7 @@ function generateHitList_med_underdog(hitList: HitListEntry[], hero: Houseguest,
     return hitList;
 }
 
+// med statusquo: {enemies; by winrate.} {friends; by winrate.}
 function generateHitList_med_statusquo(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
@@ -136,6 +140,7 @@ function generateHitList_med_statusquo(hitList: HitListEntry[], hero: Houseguest
     return hitList;
 }
 
+// high underdog: {enemies by centrality} {friends by rel.}
 function generateHitList_high_underdog(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
@@ -148,6 +153,7 @@ function generateHitList_high_underdog(hitList: HitListEntry[], hero: Houseguest
     return hitList;
 }
 
+// high statusquo: {all by relationship}
 function generateHitList_high_statusquo(hitList: HitListEntry[], hero: Houseguest, gameState: GameState) {
     for (const villian of nonEvictedHouseguests(gameState)) {
         if (hero.id === villian.id) continue;
