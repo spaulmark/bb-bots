@@ -9,6 +9,14 @@ export interface HitListEntry {
     value: number;
     name: string;
 }
+
+export function getFromHitlist(hitList: HitListEntry[], id: number): HitListEntry {
+    for (const entry of hitList) {
+        if (entry.id === id) return entry;
+    }
+    throw new Error(`getFromHitlist: ${id} not found in hitlist`);
+}
+
 export function determineWinrateStrategy(hero: Houseguest): WinrateStrategy {
     if (hero.powerRanking <= 0) return WinrateStrategy.High; // For pre-jury gameplay, or people who are drawing 100% dead
     if (hero.powerRanking >= 0.45) return WinrateStrategy.High;

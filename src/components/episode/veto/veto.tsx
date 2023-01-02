@@ -1,9 +1,8 @@
 import { every } from "lodash";
 import { Houseguest, GameState, exclude, getById, nonEvictedHousguestsSplit } from "../../../model";
 import { backdoorNPlayers, HouseguestWithLogic, NumberWithLogic } from "../../../utils/ai/aiApi";
-import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
 import { shouldKillNew, selectTargetWithLogic, TargetStrategy } from "../../../utils/ai/targets";
-import { determineTargetStrategy } from "../../../utils/ai/hitList";
+import { determineTargetStrategy, getFromHitlist } from "../../../utils/ai/hitList";
 
 export interface Veto {
     name: string;
@@ -99,7 +98,7 @@ function useSpotlightVeto(
     return { decision: getById(gameState, logic.decision), reason: logic.reason };
 }
 
-// TODO: fix this mess, save ppl on hit list above friendship threshold
+// save ppl on hit list above friendship threshold
 function useGoldenVeto(
     hero: Houseguest,
     nominees: Houseguest[],
@@ -109,34 +108,17 @@ function useGoldenVeto(
 ): HouseguestWithLogic {
     const checks = basicVetoChecks(hero, nominees, gameState, HoH, optionals);
     if (checks) return checks;
-    let reason = "None of these nominees are my friends.";
-    let potentialSave: Houseguest | null = null;
-    let alwaysSave: Houseguest | null = null;
-    nominees.forEach((nominee) => {
-        const relationship = classifyRelationship(
-            hero.popularity,
-            nominee.popularity,
-            hero.relationshipWith(nominee)
-        );
-        if (relationship === RelationshipType.Friend) {
-            if (potentialSave) {
-                potentialSave =
-                    hero.relationshipWith(nominee) > hero.relationshipWith(potentialSave)
-                        ? nominee
-                        : potentialSave;
-                reason = `Of these noms, I like ${potentialSave.name} the most.`;
-            } else {
-                reason = `${nominee.name} is my friend.`;
-                potentialSave = nominee;
-            }
-        }
-    });
-    if (alwaysSave) {
-        return { decision: alwaysSave, reason };
-    } else if (potentialSave) {
-        return { decision: potentialSave, reason };
+    const saveThreshold = hero.popularity;
+    const logic = selectTargetWithLogic(
+        nominees.map((hg) => hg.id),
+        hero,
+        "good"
+    );
+    const enemyValue = getFromHitlist(hero.hitList, logic.decision).value;
+    if (enemyValue > saveThreshold) {
+        return { decision: getById(gameState, logic.decision), reason: logic.reason };
     } else {
-        return { decision: null, reason };
+        return { decision: null, reason: "I don't want to save any of these noms." };
     }
 }
 
