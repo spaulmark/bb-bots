@@ -125,7 +125,7 @@ function generateHitList_med_underdog(hitList: HitListEntry[], hero: Houseguest,
             const centrailty = -computeEnemyCentrality(gameState, hero, villian);
             const midpoint = (hero.popularity - 1) / 2;
             const output_start = heroWins ? midpoint : hero.popularity;
-            const output_end = heroWins ? 1 : midpoint;
+            const output_end = heroWins ? hero.popularity : midpoint;
             const centrailtyTransformed = linear_transform(
                 centrailty,
                 -1,
