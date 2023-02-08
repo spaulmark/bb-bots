@@ -1,6 +1,13 @@
-import { GameState, Houseguest, MutableGameState, getById, nonEvictedHousguestsSplit } from "../../../model";
+import {
+    GameState,
+    Houseguest,
+    MutableGameState,
+    exclude,
+    getById,
+    nonEvictedHousguestsSplit,
+} from "../../../model";
 import { Scene } from "./scene";
-import { shuffle } from "lodash";
+import { every, shuffle } from "lodash";
 import { ProfileHouseguest } from "../../memoryWall";
 import { castEvictionVote, castVoteToSave, NumberWithLogic } from "../../../utils/ai/aiApi";
 import { Portraits } from "../../playerPortrait/portraits";
@@ -11,6 +18,7 @@ import { DividerBox } from "../../layout/box";
 import { NomineeVote, NormalVote, HoHVote, SaveVote, VoteType } from "../../../model/logging/voteType";
 import { evictHouseguest } from "../utilities/evictHouseguest";
 import { listNames, listVotes } from "../../../utils/listStrings";
+import { compromiseVote } from "../../../utils/ai/compromise";
 
 function getHighestIndicies(numbers: number[]): number[] {
     const highest = Math.max(...numbers);
@@ -53,6 +61,7 @@ export function generateEvictionScene(
     let outOf = 0;
     const nonVoters = new Set<number>(nominees.map((hg) => hg.id));
     hohArray.forEach((h) => nonVoters.add(h.id));
+
     nonEvictedHousguestsSplit(options.splitIndex, newGameState).forEach((hg) => {
         if (!nonVoters.has(hg.id)) {
             const logic = castVote(hg, nominees, newGameState);
@@ -79,6 +88,13 @@ export function generateEvictionScene(
     let tieVote = pluralities.length > 1;
     let tieBreaker = { decision: -1, reason: "" };
     const tieBreakerHg = options.tieBreaker ? options.tieBreaker.hg : hohArray[0];
+    // TODO: this
+    compromiseVote(
+        nonEvictedHousguestsSplit(options.splitIndex, newGameState).filter((hg) => !nonVoters.has(hg.id)),
+        nominees,
+        tieBreakerHg,
+        options.votingTo === "Evict" ? "bad" : "good"
+    );
     if (tieVote) {
         newGameState.currentLog.outOf++;
         tieBreaker = castVote(
