@@ -73,7 +73,7 @@ function dot(x: number[], y: number[]) {
     return result;
 }
 
-export function magnitude(x: number[]): number {
+function magnitude(x: number[]): number {
     let result = 0;
     x.forEach((x) => (result += x ** 2));
     return Math.sqrt(result);
