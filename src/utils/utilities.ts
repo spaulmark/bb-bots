@@ -18,10 +18,6 @@ export function roundTwoDigits(number: number | undefined) {
     return Math.round(number * 100);
 }
 
-export function max(a: number, b: number) {
-    return a > b ? a : b;
-}
-
 export function intersection<T>(setA: Set<T>, setB: Set<T>): Set<T> {
     let _intersection = new Set<T>();
     for (let elem of setB) {

@@ -1,3 +1,4 @@
+import { max } from "lodash";
 import { Houseguest, GameState, exclude, inJury } from "../../model";
 import { rng } from "../BbRandomGenerator";
 import { shouldKillNew, selectTargetWithLogic } from "./targets";
@@ -45,18 +46,19 @@ export function castEvictionVote(
     // In the F4 vote, do some genius level mathematics to predict what gives you the best odds of winning given that the
     // person who wins the F3 HoH will evict the person they have the worst odds against
     if (gameState.remainingPlayers === 4 && inJury(gameState)) {
-        return castF4vote(
-            hero,
-            nominees[0],
-            nominees[1],
-            // all this work just to get the HoH...
-            exclude(
-                Array.from(gameState.nonEvictedHouseguests.values()).map(
-                    (id) => gameState.houseguestCache[id]
-                ),
-                [nominees[0], nominees[1], hero]
-            )[0]
-        );
+        // if self is in nominees, remove self from options here [causes a crash in bbAus F4]
+        const filteredNoms = nominees.filter((hg) => hg.id !== hero.id);
+        const HoH = exclude(
+            Array.from(gameState.nonEvictedHouseguests.values()).map((id) => gameState.houseguestCache[id]),
+            [filteredNoms[0], filteredNoms[1], hero]
+        )[0];
+        const filteredResult =
+            hero.id === HoH.id
+                ? castF4voteAsHoH(hero, nominees[0], nominees[1], nominees[2])
+                : castF4vote(hero, filteredNoms[0], filteredNoms[1], HoH);
+        const decision = nominees.findIndex((hg) => hg.id === filteredNoms[filteredResult.decision].id);
+        filteredResult.decision = decision;
+        return filteredResult;
     }
     const logic = selectTargetWithLogic(
         nominees.map((hg) => hg.id),
@@ -95,6 +97,26 @@ function castF3Vote(hero: Houseguest, nom0: Houseguest, nom1: Houseguest): Numbe
     return {
         decision,
         reason: `I have better odds of beating ${decision ? nom0.name : nom1.name} in the final 2.`,
+    };
+}
+
+function castF4voteAsHoH(
+    hero: Houseguest,
+    nom0: Houseguest,
+    nom1: Houseguest,
+    nom2: Houseguest
+): NumberWithLogic {
+    const evictNom0 = winningOddsF3(hero, nom1, nom2);
+    const evictNom1 = winningOddsF3(hero, nom0, nom2);
+    const evictNom2 = winningOddsF3(hero, nom0, nom1);
+    const winrates = [evictNom0, evictNom1, evictNom2];
+    const maxWinrate = max(winrates);
+    const decision = winrates.findIndex((i) => i === maxWinrate);
+    return {
+        decision,
+        reason: `Evicting ${
+            [nom0, nom1, nom2][decision].name
+        } gives me better odds of making it to the end and winning.`,
     };
 }
 

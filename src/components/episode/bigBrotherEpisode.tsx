@@ -81,6 +81,8 @@ interface BBVanillaOptions {
     doubleEviction?: boolean;
     veto: Veto | null;
     splitIndex?: number;
+    nomineesCanVote?: boolean;
+    thirdNominee?: boolean;
 }
 
 export function generateBBVanillaScenes(
@@ -95,7 +97,6 @@ export function generateBBVanillaScenes(
     let hohCompScene: Scene;
     const scenes: Scene[] = [];
     const doubleEviction = !!options.doubleEviction;
-    const veto = options.veto;
     const splitIndex = options.splitIndex;
 
     [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, {
@@ -110,30 +111,23 @@ export function generateBBVanillaScenes(
     [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, [hoh], {
         doubleEviction,
         splitIndex,
+        thirdNominee: options.thirdNominee,
     });
     scenes.push(nomCeremonyScene);
 
-    return generateVetoScenesOnwards(
-        veto,
-        currentGameState,
-        hoh,
-        nominees,
-        doubleEviction,
-        scenes,
-        [],
-        splitIndex
-    );
+    return generateVetoScenesOnwards(currentGameState, hoh, nominees, scenes, [], options);
 }
 export function generateVetoScenesOnwards(
-    veto: Veto | null,
     currentGameState: GameState,
     hoh: Houseguest,
     nominees: Houseguest[],
-    doubleEviction: boolean,
     scenes: Scene[],
     immuneHgs: Houseguest[],
-    splitIndex: number | undefined
+    options: BBVanillaOptions
 ) {
+    const splitIndex: number | undefined = options.splitIndex;
+    const veto: Veto | null = options.veto;
+    const doubleEviction: boolean = !!options.doubleEviction;
     let povWinner: Houseguest | undefined = undefined;
     // force no veto if 3 or less houseguests are participating in the episode
     const lessThan3hgs = nonEvictedHousguestsSplit(splitIndex, currentGameState).length <= 3;
@@ -162,6 +156,7 @@ export function generateVetoScenesOnwards(
         doubleEviction,
         votingTo: "Evict",
         splitIndex,
+        nomineesCanVote: options.nomineesCanVote,
     });
 
     scenes.push(evictionScene);

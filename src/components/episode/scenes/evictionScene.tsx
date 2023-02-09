@@ -34,6 +34,7 @@ interface EvictionSceneOptions {
     doubleEviction?: boolean;
     tieBreaker?: TieBreaker;
     splitIndex?: number;
+    nomineesCanVote?: boolean;
 }
 
 export function generateEvictionScene(
@@ -51,19 +52,24 @@ export function generateEvictionScene(
     const votes: Array<ProfileHouseguest[]> = nominees.map((_) => []);
     let lastVoter: Houseguest;
     let outOf = 0;
-    const nonVoters = new Set<number>(nominees.map((hg) => hg.id));
+    const nonVoters = new Set<number>();
+    const votesOfNominees: { [id: number]: string } = {};
+    !options.nomineesCanVote && nominees.forEach((hg) => nonVoters.add(hg.id));
     hohArray.forEach((h) => nonVoters.add(h.id));
-    nonEvictedHousguestsSplit(options.splitIndex, newGameState).forEach((hg) => {
-        if (!nonVoters.has(hg.id)) {
-            const logic = castVote(hg, nominees, newGameState);
-            const result: ProfileHouseguest = { ...hg };
+    nonEvictedHousguestsSplit(options.splitIndex, newGameState).forEach((voter) => {
+        if (!nonVoters.has(voter.id)) {
+            const logic = castVote(voter, nominees, newGameState);
+            const result: ProfileHouseguest = { ...voter };
             result.tooltip = logic.reason;
-            newGameState.currentLog.votes[hg.id] =
+            newGameState.currentLog.votes[voter.id] =
                 options.votingTo === "Evict"
                     ? new NormalVote(nominees[logic.decision].id)
                     : new SaveVote(nominees[logic.decision].id);
             votes[logic.decision].push(result);
-            lastVoter = hg;
+            options.nomineesCanVote &&
+                nominees.some((nom) => nom.id === voter.id) &&
+                (votesOfNominees[voter.id] = result.name);
+            lastVoter = voter;
             outOf++;
         }
     });
@@ -127,8 +133,11 @@ export function generateEvictionScene(
         }
     }
     const evicteesSet = new Set<number>(evictees.map((hg) => hg.id));
-    nominees.forEach((hg) => {
-        newGameState.currentLog.votes[hg.id] = new NomineeVote(evicteesSet.has(hg.id));
+    nominees.forEach((nom) => {
+        newGameState.currentLog.votes[nom.id] = new NomineeVote(
+            evicteesSet.has(nom.id),
+            options.nomineesCanVote ? votesOfNominees[nom.id] : undefined
+        );
     });
 
     const votesPerEvictee: any = {};

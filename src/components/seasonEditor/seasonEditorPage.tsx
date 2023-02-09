@@ -27,6 +27,7 @@ import { getTeamsListContents, TeamsAdderList } from "./teamsAdderList";
 import { Tribe } from "../../model/tribe";
 import { SplitHouse } from "../episode/splitHouse";
 import { Tooltip } from "../tooltip/tooltip";
+import { BbAustralia } from "../episode/australiaEpisode";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -49,6 +50,7 @@ const twists: EpisodeType[] = [
     CoHoH,
     BattleOfTheBlock,
     SplitHouse,
+    BbAustralia,
 ];
 
 let lastJurySize = defaultJurySize(16);
