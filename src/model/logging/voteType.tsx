@@ -81,13 +81,15 @@ export class RunnerUpVote implements VoteType {
 export class NomineeVote implements VoteType {
     id: number = -1;
     evicted: boolean;
+    text: string;
     render = (state: GameState) => (
         <NomineeCell key={getKey()}>
-            <CenteredItallic noMargin={true}>Nominated</CenteredItallic>
+            <CenteredItallic noMargin={true}>{this.text}</CenteredItallic>
         </NomineeCell>
     );
-    constructor(evicted: boolean) {
+    constructor(evicted: boolean, text?: string) {
         this.evicted = evicted;
+        this.text = text || "Nominated";
     }
 }
 

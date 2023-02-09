@@ -26,6 +26,8 @@ import { SafetyChain } from "../episode/safetyChain";
 import { getTeamsListContents, TeamsAdderList } from "./teamsAdderList";
 import { Tribe } from "../../model/tribe";
 import { SplitHouse } from "../episode/splitHouse";
+import { Tooltip } from "../tooltip/tooltip";
+import { BbAustralia } from "../episode/australiaEpisode";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -48,9 +50,15 @@ const twists: EpisodeType[] = [
     CoHoH,
     BattleOfTheBlock,
     SplitHouse,
+    BbAustralia,
 ];
 
 let lastJurySize = defaultJurySize(16);
+let lastHoHPlaysVeto = true;
+
+export function getLastHoHPlaysVeto(): boolean {
+    return lastHoHPlaysVeto;
+}
 
 export function getLastJurySize(): number {
     return lastJurySize;
@@ -78,7 +86,7 @@ function getInitialTribes(): Tribe[] {
 
 const submit = async (jury: number, hohPlaysVeto: boolean): Promise<void> => {
     lastJurySize = jury;
-
+    lastHoHPlaysVeto = hohPlaysVeto;
     const initialTribes = getInitialTribes();
     const cast = cast$.getValue();
     cast$.next({ ...cast, options: { initialTribes } });
@@ -126,18 +134,26 @@ export function SeasonEditorPage(): JSX.Element {
                             margin: "10px",
                         }}
                     >
-                        <div className="field has-addons has-addons-centered" style={{ textAlign: "center" }}>
-                            <p className="field-label is-normal control">
-                                <Label className="label"> HoH Plays Veto?</Label>
-                            </p>
-                            <p className="control">
-                                <input
-                                    type="checkbox"
-                                    checked={hohPlaysVeto}
-                                    onChange={() => setHohPlaysVeto(!hohPlaysVeto)}
-                                />
-                            </p>
-                        </div>
+                        <Tooltip
+                            wide={true}
+                            text="Co-HoHs will still play in veto, but cannot veto their own nomination."
+                        >
+                            <div
+                                className="field has-addons has-addons-centered"
+                                style={{ textAlign: "center" }}
+                            >
+                                <p className="field-label is-normal control">
+                                    <Label className="label"> HoH Plays Veto?</Label>
+                                </p>
+                                <p className="control">
+                                    <input
+                                        type="checkbox"
+                                        checked={hohPlaysVeto}
+                                        onChange={() => setHohPlaysVeto(!hohPlaysVeto)}
+                                    />
+                                </p>
+                            </div>
+                        </Tooltip>
                     </div>
                     <div
                         className="column is-5-desktop is-5-widescreen is-5-fullhd is-12-tablet"

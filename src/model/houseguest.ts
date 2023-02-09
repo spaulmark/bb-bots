@@ -1,6 +1,7 @@
 import { PlayerProfile } from "./playerProfile";
 import { RelationshipMap } from "../utils";
 import { Tribe } from "./tribe";
+import { HitListEntry } from "../utils/ai/hitList";
 
 interface HouseguestInit extends PlayerProfile {
     id: number;
@@ -24,7 +25,7 @@ export class Houseguest extends PlayerProfile {
     public previousPopularity: number = 0;
     readonly relationships: RelationshipMap = {};
 
-    public targets: [number, number] = [this.id, this.id];
+    public hitList: HitListEntry[] = [];
 
     // power rankings range from 0 to 1
     public powerRanking: number = 0;

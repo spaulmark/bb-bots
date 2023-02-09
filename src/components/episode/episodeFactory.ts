@@ -70,6 +70,7 @@ export function nextEpisode(oldState: GameState, episodeType: EpisodeType): Epis
     });
     newState.cliques = generateCliques(newState);
     const finalState = new GameState(newState);
+
     if (!episodeType.canPlayWith(finalState.remainingPlayers))
         throw new Error(
             `Episode type ${episodeType.name} not playable with ${finalState.remainingPlayers} players`

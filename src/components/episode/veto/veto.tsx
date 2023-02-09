@@ -1,14 +1,8 @@
 import { every } from "lodash";
 import { Houseguest, GameState, exclude, getById, nonEvictedHousguestsSplit } from "../../../model";
 import { backdoorNPlayers, HouseguestWithLogic, NumberWithLogic } from "../../../utils/ai/aiApi";
-import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
-import {
-    isBetterTarget,
-    getRelationshipSummary,
-    isBetterTargetWithLogic,
-    determineStrategy,
-    TargetStrategy,
-} from "../../../utils/ai/targets";
+import { shouldKillNew, selectTargetWithLogic, TargetStrategy } from "../../../utils/ai/targets";
+import { determineTargetStrategy, getFromHitlist } from "../../../utils/ai/hitList";
 
 export interface Veto {
     name: string;
@@ -77,7 +71,7 @@ function useBoomerangVeto(
         return { decision: nominees[0], reason: "I want to save both of these noms." };
     }
     // if you would only use it on one of them, only use it if you have low friend counts
-    const strategy = determineStrategy(hero);
+    const strategy = determineTargetStrategy(hero);
     if (strategy === TargetStrategy.StatusQuo) {
         return { decision: null, reason: "I want to evict at least one of these noms." };
     } else {
@@ -96,16 +90,15 @@ function useSpotlightVeto(
     const checks = basicVetoChecks(hero, nominees, gameState, HoH, optionals);
     if (checks && checks.decision !== null) return checks;
     // use the veto on whoever is the worse target between the 2 nominees
-    const invertedDecision = isBetterTargetWithLogic(
-        getRelationshipSummary(hero, nominees[0]),
-        getRelationshipSummary(hero, nominees[1]),
+    const logic = selectTargetWithLogic(
+        nominees.map((hg) => hg.id),
         hero,
-        gameState
+        "good"
     );
-    const decision = invertedDecision.decision === 0 ? 1 : 0;
-    return { decision: nominees[decision], reason: invertedDecision.reason };
+    return { decision: getById(gameState, logic.decision), reason: logic.reason };
 }
 
+// save ppl on hit list above friendship threshold
 function useGoldenVeto(
     hero: Houseguest,
     nominees: Houseguest[],
@@ -115,34 +108,17 @@ function useGoldenVeto(
 ): HouseguestWithLogic {
     const checks = basicVetoChecks(hero, nominees, gameState, HoH, optionals);
     if (checks) return checks;
-    let reason = "None of these nominees are my friends.";
-    let potentialSave: Houseguest | null = null;
-    let alwaysSave: Houseguest | null = null;
-    nominees.forEach((nominee) => {
-        const relationship = classifyRelationship(
-            hero.popularity,
-            nominee.popularity,
-            hero.relationshipWith(nominee)
-        );
-        if (relationship === RelationshipType.Friend) {
-            if (potentialSave) {
-                potentialSave =
-                    hero.relationshipWith(nominee) > hero.relationshipWith(potentialSave)
-                        ? nominee
-                        : potentialSave;
-                reason = `Of these noms, I like ${potentialSave.name} the most.`;
-            } else {
-                reason = `${nominee.name} is my friend.`;
-                potentialSave = nominee;
-            }
-        }
-    });
-    if (alwaysSave) {
-        return { decision: alwaysSave, reason };
-    } else if (potentialSave) {
-        return { decision: potentialSave, reason };
+    const saveThreshold = hero.popularity;
+    const logic = selectTargetWithLogic(
+        nominees.map((hg) => hg.id),
+        hero,
+        "good"
+    );
+    const enemyValue = getFromHitlist(hero.hitList, logic.decision).value;
+    if (enemyValue > saveThreshold) {
+        return { decision: getById(gameState, logic.decision), reason: logic.reason };
     } else {
-        return { decision: null, reason };
+        return { decision: null, reason: "I don't want to save any of these noms." };
     }
 }
 
@@ -174,14 +150,7 @@ function useDiamondVeto(
         };
     }
     // otherwise, replace the person i least want gone
-    const worseTarget: number = isBetterTarget(
-        getRelationshipSummary(hero, nominees[0]),
-        getRelationshipSummary(hero, nominees[1]),
-        hero,
-        gameState
-    )
-        ? 0
-        : 1;
+    const worseTarget: number = shouldKillNew(nominees[0].id, nominees[1].id, hero) ? 0 : 1;
 
     return { decision: nominees[worseTarget], reason: "I would rather see someone else nominated." };
 }

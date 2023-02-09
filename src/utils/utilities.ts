@@ -18,10 +18,6 @@ export function roundTwoDigits(number: number | undefined) {
     return Math.round(number * 100);
 }
 
-export function max(a: number, b: number) {
-    return a > b ? a : b;
-}
-
 export function intersection<T>(setA: Set<T>, setB: Set<T>): Set<T> {
     let _intersection = new Set<T>();
     for (let elem of setB) {
@@ -77,14 +73,23 @@ function dot(x: number[], y: number[]) {
     return result;
 }
 
-export function magnitude(x: number[]): number {
+function magnitude(x: number[]): number {
     let result = 0;
     x.forEach((x) => (result += x ** 2));
     return Math.sqrt(result);
 }
 
-// returns a value between 0 and pi
+export function linear_transform(
+    x: number,
+    input_start: number,
+    input_end: number,
+    output_start: number,
+    output_end: number
+) {
+    return ((x - input_start) / (input_end - input_start)) * (output_end - output_start) + output_start;
+}
 
+// returns a value between 0 and pi
 export function angleBetween(x: number[], y: number[]): number {
     if (x.length !== y.length)
         throw new Error(
