@@ -68,7 +68,7 @@ export function generateEvictionScene(
             votes[logic.decision].push(result);
             options.nomineesCanVote &&
                 nominees.some((nom) => nom.id === voter.id) &&
-                (votesOfNominees[voter.id] = result.name);
+                (votesOfNominees[voter.id] = getById(newGameState, nominees[logic.decision].id).name);
             lastVoter = voter;
             outOf++;
         }
