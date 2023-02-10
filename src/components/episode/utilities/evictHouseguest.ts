@@ -104,9 +104,11 @@ function updateFriendCounts(houseguests: Houseguest[], gameState: GameState) {
         hero.enemies = enemies;
         const hitList = generateHitList(hero, gameState);
         hero.hitList = hitList;
+        const hgSet = new Set(houseguests.map((hg) => hg.id));
+        const hitListbySplit = hero.hitList.filter((entry) => hgSet.has(entry.id));
         const targets = [];
-        hero.hitList[0] && targets.push(hero.hitList[0].id);
-        hero.hitList[1] && targets.push(hero.hitList[1].id);
+        hitListbySplit[0] && targets.push(hitListbySplit[0].id);
+        hitListbySplit[1] && targets.push(hitListbySplit[1].id);
         targets.forEach((target) => {
             getById(gameState, target).targetingMe++;
         });
