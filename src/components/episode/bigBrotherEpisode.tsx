@@ -83,6 +83,7 @@ interface BBVanillaOptions {
     splitIndex?: number;
     nomineesCanVote?: boolean;
     thirdNominee?: boolean;
+    previousHoHcanCompete?: boolean;
 }
 
 export function generateBBVanillaScenes(
@@ -102,6 +103,7 @@ export function generateBBVanillaScenes(
     [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, {
         doubleEviction,
         splitIndex,
+        previousHoHcanCompete: options.previousHoHcanCompete,
     });
     const hoh = hohArray[0];
     scenes.push(hohCompScene);

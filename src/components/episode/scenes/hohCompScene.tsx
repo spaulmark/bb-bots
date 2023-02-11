@@ -19,12 +19,12 @@ interface HohCompOptions {
     doubleEviction?: boolean;
     customText?: string;
     coHoH?: boolean;
-    coHohIsFinal?: boolean;
-    skipHoHWin?: boolean;
-    compName?: string;
+    coHohIsFinal?: boolean; // to distinguish if winning HoH counts as a win (it doesn't in BotB, but does for co-hoh)
+    skipHoHWin?: boolean; // for temporary HoHs, like BotB
     bottomText?: string;
     competitors?: Houseguest[];
     splitIndex?: number;
+    previousHoHcanCompete?: boolean;
 }
 
 export function generateHohCompScene(
@@ -39,9 +39,12 @@ export function generateHohCompScene(
     const coHohIsFinal = options.coHohIsFinal || false;
     const doubleEviction: boolean = options.doubleEviction || false;
     const previousHoh = initialGameState.previousHOH ? initialGameState.previousHOH : [];
-    const competitors = options.competitors || exclude(houseguests, previousHoh);
+    const excludePreviousHoH = options.previousHoHcanCompete ? [] : previousHoh;
+    const competitors = options.competitors || exclude(houseguests, excludePreviousHoH);
     const newHoH: Houseguest = randomPlayer(competitors);
-    const newHoH2: Houseguest = options.coHoH ? randomPlayer(competitors, [newHoH, ...previousHoh]) : newHoH;
+    const newHoH2: Houseguest = options.coHoH
+        ? randomPlayer(competitors, [newHoH, ...excludePreviousHoH])
+        : newHoH;
     // set previous hoh
     if (!options.skipHoHWin) {
         (!coHoH || coHohIsFinal) && (newGameState.previousHOH = [newHoH]);
@@ -64,6 +67,9 @@ export function generateHohCompScene(
               coHoH ? "have" : "has"
           } won Head of Household!`;
 
+    const prevHohText = options.previousHoHcanCompete
+        ? ""
+        : ` As outgoing HoH, ${listNames(previousHoh.map((h) => h.name))} will not compete.`;
     const scene = new Scene({
         title: "HoH Competition",
         gameState: initialGameState,
@@ -80,9 +86,7 @@ export function generateHohCompScene(
                         </CenteredBold>
                     ) : (
                         <Centered>
-                            {`Houseguests, it's time to find a new Head of Household. As outgoing HoH, ${listNames(
-                                previousHoh.map((h) => h.name)
-                            )} will not compete.`}
+                            {`Houseguests, it's time to find a new Head of Household.${prevHohText}`}
                         </Centered>
                     ))
                 )}

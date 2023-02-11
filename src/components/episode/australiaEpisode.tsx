@@ -9,7 +9,8 @@ export const BbAustralia: EpisodeType = {
     emoji: "🇦🇺",
     hasViewsbar: true,
     name: "BB Australia",
-    description: "3 nominees, and no veto. Nominees are able to vote.",
+    description:
+        "3 nominees, and no veto. Nominees are able to vote. The previous HoH participates in the HoH comp.",
     generate,
 };
 
@@ -18,6 +19,7 @@ function generate(initialGamestate: GameState): Episode {
         veto: null,
         thirdNominee: true,
         nomineesCanVote: true,
+        previousHoHcanCompete: true,
     });
     return new Episode({
         gameState: new GameState(episode.gameState),
