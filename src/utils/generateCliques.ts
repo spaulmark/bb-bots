@@ -1,5 +1,5 @@
 import { intersection } from ".";
-import { GameState, Split, getById, getNonevictedSplitMembers, nonEvictedHouseguests } from "../model";
+import { GameState, getById, getNonevictedSplitMembers, nonEvictedHouseguests } from "../model";
 import generateGraph from "./generateGraph";
 import { difference } from "./utilities";
 
