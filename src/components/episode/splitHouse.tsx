@@ -20,6 +20,18 @@ export const SplitHouse: EpisodeType = {
     generate,
 };
 
+export const PersistentSplitHouse: EpisodeType = {
+    canPlayWith: (n: number) => n >= 6,
+    eliminates: 2,
+    arrowsEnabled: true,
+    emoji: "↔️*",
+    hasViewsbar: true,
+    name: "Persistent Split House",
+    description: "A split house that uses the same split as the last week.",
+    splitFunction: useLastSplit,
+    generate,
+};
+
 function generate(initialGamestate: GameState): Episode {
     let currentGameState = new MutableGameState(initialGamestate);
     const scenes: Scene[] = [];
@@ -59,6 +71,12 @@ function generate(initialGamestate: GameState): Episode {
         scenes,
         type: SplitHouse,
     });
+}
+
+function useLastSplit(gameState: GameState): Split[] {
+    return gameState.split.length > 0
+        ? gameState.split
+        : splitHouseRandomly(["Indoors", "Outdoors"])(gameState);
 }
 
 function splitHouseRandomly(names: string[]): (gameState: GameState) => Split[] {

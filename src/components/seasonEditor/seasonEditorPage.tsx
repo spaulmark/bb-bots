@@ -25,7 +25,7 @@ import { TwistAdder } from "./twistAdder";
 import { SafetyChain } from "../episode/safetyChain";
 import { getTeamsListContents, TeamsAdderList } from "./teamsAdderList";
 import { Tribe } from "../../model/tribe";
-import { SplitHouse } from "../episode/splitHouse";
+import { PersistentSplitHouse, SplitHouse } from "../episode/splitHouse";
 import { Tooltip } from "../tooltip/tooltip";
 import { BbAustralia } from "../episode/australiaEpisode";
 
@@ -50,6 +50,7 @@ const twists: EpisodeType[] = [
     CoHoH,
     BattleOfTheBlock,
     SplitHouse,
+    PersistentSplitHouse,
     BbAustralia,
 ];
 
