@@ -1,5 +1,5 @@
 import { intersection } from ".";
-import { GameState, getById, getSplitMembers, nonEvictedHouseguests } from "../model";
+import { GameState, Split, getById, getNonevictedSplitMembers, nonEvictedHouseguests } from "../model";
 import generateGraph from "./generateGraph";
 import { difference } from "./utilities";
 
@@ -25,7 +25,7 @@ export function generateCliques(gameState: GameState): Cliques[][] {
             generateCliquesFromGraph(gameState, generateGraph(gameState, nonEvictedHouseguests(gameState))),
         ];
     gameState.split.forEach((split) => {
-        const g = generateGraph(gameState, getSplitMembers(split, gameState));
+        const g = generateGraph(gameState, getNonevictedSplitMembers(split, gameState));
         result.push(generateCliquesFromGraph(gameState, g));
     });
     return result;

@@ -8,13 +8,14 @@ import {
     getJurors,
     inJury,
     MutableGameState,
-    getSplitMembers,
+    getNonevictedSplitMembers,
 } from "../../../model";
 import { getFinalists } from "../../../model/season";
 import { average, roundTwoDigits } from "../../../utils";
 import { pHeroWinsTheFinale } from "../../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
 import { generateHitList } from "../../../utils/ai/hitList";
+import { generateCliques } from "../../../utils/generateCliques";
 
 export function evictHouseguest(gameState: MutableGameState, id: number): GameState {
     const evictee = getById(gameState, id);
@@ -46,10 +47,11 @@ export function refreshHgStats(
             ? split
             : [{ members: new Set<number>(nonEvictedHouseguests(gameState).map((hg) => hg.id)) }];
     splits.forEach((split) => {
-        const hgs = getSplitMembers(split, gameState);
+        const hgs = getNonevictedSplitMembers(split, gameState);
         updatePopularity(hgs, updateDelta);
         updateFriendCounts(hgs, gameState);
     });
+    gameState.cliques = generateCliques(gameState);
 }
 
 function populateSuperiors(houseguests: Houseguest[]) {

@@ -3,7 +3,6 @@ import { Episode, Houseguest } from "../../model";
 import { EpisodeType, Split } from "./episodes";
 import { angleBetween, rng } from "../../utils";
 import { EpisodeLog } from "../../model/logging/episodelog";
-import { generateCliques } from "../../utils/generateCliques";
 import { refreshHgStats } from "./utilities/evictHouseguest";
 import { cast$ } from "../../subjects/subjects";
 
@@ -68,7 +67,6 @@ export function nextEpisode(oldState: GameState, episodeType: EpisodeType): Epis
     nonEvictedHouseguests(newState).forEach((hg) => {
         hg.previousPopularity = hg.popularity;
     });
-    newState.cliques = generateCliques(newState);
     const finalState = new GameState(newState);
 
     if (!episodeType.canPlayWith(finalState.remainingPlayers))

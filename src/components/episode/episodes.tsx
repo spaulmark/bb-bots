@@ -66,6 +66,13 @@ export function getSplitMembers(split: { members: Set<number> }, gameState: Game
     return Array.from(split.members).map((id) => getById(gameState, id));
 }
 
+export function getNonevictedSplitMembers(
+    split: { members: Set<number> },
+    gameState: GameState
+): Houseguest[] {
+    return getSplitMembers(split, gameState).filter((hg) => !hg.isEvicted);
+}
+
 export interface EpisodeType {
     readonly canPlayWith: (n: number) => boolean;
     readonly eliminates: number;

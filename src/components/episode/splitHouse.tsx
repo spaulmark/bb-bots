@@ -1,5 +1,5 @@
 import { GameState, MutableGameState } from "../../model";
-import { generateBBVanillaScenes } from "./bigBrotherEpisode";
+import { defaultContent, generateBBVanillaScenes } from "./bigBrotherEpisode";
 import { Episode, EpisodeType, nonEvictedHousguestsSplit, Split } from "./episodes";
 import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
@@ -38,6 +38,14 @@ function generate(initialGamestate: GameState): Episode {
     nonEvictedHousguestsSplit(0, currentGameState).forEach((hg) => {
         currentGameState.currentLog.votes[hg.id] = new BlankVote();
     });
+
+    const intermissionScene = new Scene({
+        title: "[Outdoors]",
+        content: defaultContent(currentGameState),
+        gameState: currentGameState,
+    });
+    scenes.push(intermissionScene);
+
     const split1 = generateBBVanillaScenes(currentGameState, {
         veto: GoldenVeto,
         splitIndex: 1,
