@@ -10,7 +10,6 @@ export const DoubleEviction: EpisodeType = {
     eliminates: 1,
     arrowsEnabled: true,
     emoji: "⏩",
-    hasViewsbar: true,
     chainable: true,
     name: "Double Eviction",
     description: "A second round of Big Brother plays out in a single scene.",

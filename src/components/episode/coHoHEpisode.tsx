@@ -8,7 +8,6 @@ export const CoHoH: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
     eliminates: 1,
     arrowsEnabled: true,
-    hasViewsbar: true,
     name: "Co-HoH",
     description:
         "Two HoHs each name one nominee, and are responsible for replacing the person they nominated if the veto is used on them.",

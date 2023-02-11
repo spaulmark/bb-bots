@@ -12,7 +12,6 @@ export const SplitHouse: EpisodeType = {
     eliminates: 2,
     arrowsEnabled: true,
     emoji: "↔️",
-    hasViewsbar: true,
     name: "Split House",
     description:
         "Houseguests are divided into two groups, and each group plays a round of Big Brother, isolated from the others.",
@@ -25,7 +24,6 @@ export const PersistentSplitHouse: EpisodeType = {
     eliminates: 2,
     arrowsEnabled: true,
     emoji: "↔️*",
-    hasViewsbar: true,
     name: "Persistent Split House",
     description: "A split house that uses the same split as the last week.",
     splitFunction: useLastSplit,

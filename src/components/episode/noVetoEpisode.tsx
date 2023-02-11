@@ -7,7 +7,6 @@ export const NoVeto: EpisodeType = {
     eliminates: 1,
     arrowsEnabled: true,
     emoji: "🚫",
-    hasViewsbar: true,
     name: "No Veto",
     description: "A week without a veto.",
     generate: generateNoVeto,

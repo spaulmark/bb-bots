@@ -24,7 +24,7 @@ export class Episode {
     readonly initialGameState: GameState;
     readonly type: EpisodeType;
     get render(): JSX.Element {
-        const viewsBar = this.type.hasViewsbar ? <ViewsBar gameState={this.scenes[0].gameState} /> : null;
+        const viewsBar = this.type.hideViewsBar ? null : <ViewsBar gameState={this.scenes[0].gameState} />;
         return (
             <div>
                 {viewsBar}
@@ -77,7 +77,7 @@ export interface EpisodeType {
     readonly canPlayWith: (n: number) => boolean;
     readonly eliminates: number;
     readonly arrowsEnabled?: boolean;
-    readonly hasViewsbar?: boolean;
+    readonly hideViewsBar?: boolean;
     readonly chainable?: boolean;
     readonly pseudo?: boolean;
     readonly name?: string;

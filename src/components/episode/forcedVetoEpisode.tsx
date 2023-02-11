@@ -8,7 +8,6 @@ export const ForcedVetoEpisode: EpisodeType = {
     eliminates: 1,
     arrowsEnabled: true,
     emoji: "🔦",
-    hasViewsbar: true,
     name: "Forced Veto",
     description: "The veto winner must use the veto.",
     generate: generateForcedVeto,

@@ -19,7 +19,6 @@ export const BigBrotherVanilla: EpisodeType = {
     },
     eliminates: 1,
     arrowsEnabled: true,
-    hasViewsbar: true,
     name: "",
     emoji: "",
     description: "",

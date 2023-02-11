@@ -199,7 +199,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 canPlayWith: () => true,
                 splitFunction: oldEpisode.splitFunction,
                 eliminates: oldEpisode.eliminates + newEpisode.eliminates,
-                hasViewsbar: oldEpisode.hasViewsbar || newEpisode.hasViewsbar,
+                hideViewsBar: oldEpisode.hideViewsBar || newEpisode.hideViewsBar,
                 emoji: `${oldEpisode.emoji} ${newEpisode.emoji}`,
             };
             const newItem: EpisodeType = {

@@ -7,7 +7,6 @@ export const BbAustralia: EpisodeType = {
     eliminates: 1,
     arrowsEnabled: true,
     emoji: "🇦🇺",
-    hasViewsbar: true,
     name: "BB Australia",
     description:
         "3 nominees, and no veto. Nominees are able to vote. The previous HoH participates in the HoH comp.",

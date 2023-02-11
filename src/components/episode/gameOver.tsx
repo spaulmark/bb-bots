@@ -8,7 +8,7 @@ export const GameOver: EpisodeType = {
     canPlayWith: (_: number) => true,
     eliminates: 1,
     arrowsEnabled: false,
-    hasViewsbar: false,
+    hideViewsBar: true,
     description: "",
     emoji: "",
     name: "Game Over",
