@@ -18,7 +18,6 @@ export const BigBrotherVanilla: EpisodeType = {
         return n > 3;
     },
     eliminates: 1,
-    arrowsEnabled: true,
     name: "",
     emoji: "",
     description: "",

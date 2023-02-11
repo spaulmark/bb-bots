@@ -5,7 +5,6 @@ import { EpisodeType, Episode } from "./episodes";
 export const NoVeto: EpisodeType = {
     canPlayWith: (n: number) => n >= 4,
     eliminates: 1,
-    arrowsEnabled: true,
     emoji: "🚫",
     name: "No Veto",
     description: "A week without a veto.",

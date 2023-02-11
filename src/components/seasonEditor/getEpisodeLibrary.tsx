@@ -195,7 +195,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
             const oldEpisode = episodes[episodes.length - 1];
             const newEpisode = item.episode;
             const dynamicEpisodeType = {
-                arrowsEnabled: oldEpisode.arrowsEnabled || newEpisode.arrowsEnabled,
+                arrowsDisabled: oldEpisode.arrowsDisabled || newEpisode.arrowsDisabled,
                 canPlayWith: () => true,
                 splitFunction: oldEpisode.splitFunction,
                 eliminates: oldEpisode.eliminates + newEpisode.eliminates,

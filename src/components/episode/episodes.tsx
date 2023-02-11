@@ -76,7 +76,7 @@ export function getNonevictedSplitMembers(
 export interface EpisodeType {
     readonly canPlayWith: (n: number) => boolean;
     readonly eliminates: number;
-    readonly arrowsEnabled?: boolean;
+    readonly arrowsDisabled?: boolean;
     readonly hideViewsBar?: boolean;
     readonly chainable?: boolean;
     readonly pseudo?: boolean;

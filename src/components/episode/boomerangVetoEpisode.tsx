@@ -6,7 +6,6 @@ import { BoomerangVeto } from "./veto/veto";
 export const BoomerangVetoEpisode: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
     eliminates: 1,
-    arrowsEnabled: true,
     emoji: "🪃",
     description: "A veto that must be discarded or used to save both nominees.",
     name: "Boomerang Veto",

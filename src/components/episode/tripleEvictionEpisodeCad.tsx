@@ -7,7 +7,6 @@ import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 export const TripleEvictionCad: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
     eliminates: 2,
-    arrowsEnabled: true,
     emoji: "🇨🇦",
     chainable: true,
     name: "Triple Eviction",

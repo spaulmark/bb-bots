@@ -107,7 +107,7 @@ export class SidebarController {
         const state = this.view.state;
         if (
             state.episodes[this.selectedEpisode] === undefined ||
-            !state.episodes[this.selectedEpisode].type.arrowsEnabled ||
+            state.episodes[this.selectedEpisode].type.arrowsDisabled ||
             activeScreen$.value !== Screens.Ingame
         ) {
             return;

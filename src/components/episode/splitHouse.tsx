@@ -10,7 +10,6 @@ import { BlankVote } from "../../model/logging/voteType";
 export const SplitHouse: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
     eliminates: 2,
-    arrowsEnabled: true,
     emoji: "↔️",
     name: "Split House",
     description:
@@ -22,7 +21,6 @@ export const SplitHouse: EpisodeType = {
 export const PersistentSplitHouse: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
     eliminates: 2,
-    arrowsEnabled: true,
     emoji: "↔️*",
     name: "Persistent Split House",
     description: "A split house that uses the same split as the last week.",

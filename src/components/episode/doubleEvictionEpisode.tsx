@@ -8,7 +8,6 @@ import { GoldenVeto } from "./veto/veto";
 export const DoubleEviction: EpisodeType = {
     canPlayWith: (n: number) => n >= 4,
     eliminates: 1,
-    arrowsEnabled: true,
     emoji: "⏩",
     chainable: true,
     name: "Double Eviction",

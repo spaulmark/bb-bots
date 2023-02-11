@@ -7,7 +7,7 @@ import { evictHouseguest } from "./utilities/evictHouseguest";
 export const GameOver: EpisodeType = {
     canPlayWith: (_: number) => true,
     eliminates: 1,
-    arrowsEnabled: false,
+    arrowsDisabled: true,
     hideViewsBar: true,
     description: "",
     emoji: "",

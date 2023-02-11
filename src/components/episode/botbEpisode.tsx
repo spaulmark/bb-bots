@@ -10,7 +10,6 @@ import { generateBotbScene } from "./scenes/botbScene";
 export const BattleOfTheBlock: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
     eliminates: 1,
-    arrowsEnabled: true,
     emoji: "⚔️",
     name: "Battle of the Block",
     description:

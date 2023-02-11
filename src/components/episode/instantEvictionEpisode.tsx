@@ -7,7 +7,6 @@ import { Scene } from "./scenes/scene";
 export const InstantEviction: EpisodeType = {
     canPlayWith: (n: number) => n >= 4,
     eliminates: 1,
-    arrowsEnabled: true,
     emoji: "⚡",
     chainable: true,
     name: "Instant Eviction",

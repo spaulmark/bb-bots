@@ -8,7 +8,6 @@ const PregameEpisodeType: EpisodeType = {
     canPlayWith: (n: number) => {
         return n > 2;
     },
-    arrowsEnabled: true,
     emoji: "",
     hideViewsBar: true,
     name: "Pregame",

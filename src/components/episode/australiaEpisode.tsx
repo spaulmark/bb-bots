@@ -5,7 +5,6 @@ import { EpisodeType, Episode } from "./episodes";
 export const BbAustralia: EpisodeType = {
     canPlayWith: (n: number) => n >= 4,
     eliminates: 1,
-    arrowsEnabled: true,
     emoji: "🇦🇺",
     name: "BB Australia",
     description:
