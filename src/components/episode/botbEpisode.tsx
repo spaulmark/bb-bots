@@ -52,9 +52,16 @@ function generateBoB(initialGamestate: GameState): Episode {
     scenes.push(botbscene);
     // then veto onwards plays normally except
     // the winning pair is somehow immune for the week: they can't be backdoored.
-    const vetostuff = generateVetoScenesOnwards(currentGameState, finalhoh, finalnoms, scenes, botbWinners, {
-        veto: GoldenVeto,
-    });
+    const vetostuff = generateVetoScenesOnwards(
+        currentGameState,
+        [finalhoh],
+        finalnoms,
+        scenes,
+        botbWinners,
+        {
+            veto: GoldenVeto,
+        }
+    );
     currentGameState = vetostuff.gameState;
 
     return new Episode({

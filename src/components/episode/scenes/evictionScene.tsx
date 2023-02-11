@@ -23,7 +23,7 @@ function getHighestIndicies(numbers: number[]): number[] {
     return highestIndicies;
 }
 
-interface TieBreaker {
+export interface TieBreaker {
     hg: Houseguest;
     text: string;
     voteType: (id: number) => VoteType;

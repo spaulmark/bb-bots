@@ -1,13 +1,8 @@
-import { GameState, Houseguest, MutableGameState } from "../../model";
+import { GameState } from "../../model";
 import { Episode, EpisodeType } from "./episodes";
-import { Scene } from "./scenes/scene";
 import { GoldenVeto } from "./veto/veto";
-import { generateHohCompScene } from "./scenes/hohCompScene";
-import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
-import { generateVetoCompScene } from "./scenes/vetoCompScene";
-import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
-import { generateEvictionScene } from "./scenes/evictionScene";
 import { PoVvote } from "../../model/logging/voteType";
+import { generateBBVanillaScenes } from "./bigBrotherEpisode";
 
 export const CoHoH: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
@@ -22,55 +17,20 @@ export const CoHoH: EpisodeType = {
 };
 
 function generateCoHoH(initialGamestate: GameState): Episode {
-    // generate (co)-hoh scene
-    let currentGameState = new MutableGameState(initialGamestate);
-    let hohArray: Houseguest[];
-    let hohCompScene: Scene;
-    const scenes: Scene[] = [];
-    [currentGameState, hohCompScene, hohArray] = generateHohCompScene(currentGameState, {
+    const episode = generateBBVanillaScenes(initialGamestate, {
+        veto: GoldenVeto,
         coHoH: true,
         coHohIsFinal: true,
+        tieBreaker: (povWinner) => {
+            return povWinner
+                ? { hg: povWinner, text: "Power of Veto winner", voteType: (id) => new PoVvote(id) }
+                : undefined;
+        },
     });
-    scenes.push(hohCompScene);
-
-    // generate nominations scene
-    let nomCeremonyScene;
-    let nominees: Houseguest[];
-    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hohArray, {});
-    scenes.push(nomCeremonyScene);
-    // veto comp
-    let vetoCompScene;
-    let povWinner: Houseguest;
-    [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
-        currentGameState,
-        hohArray,
-        nominees,
-        { veto: GoldenVeto }
-    );
-    scenes.push(vetoCompScene);
-    // veto replacement scene might be different because each hoh nominated one person, so whoever gets vetoed, that hoh replaces
-    let vetoCeremonyScene;
-
-    [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
-        currentGameState,
-        hohArray,
-        nominees,
-        povWinner,
-        { veto: GoldenVeto }
-    );
-    scenes.push(vetoCeremonyScene);
-
-    // then eviction scene
-    let evictionScene;
-    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hohArray, nominees, {
-        votingTo: "Evict",
-        tieBreaker: { hg: povWinner, text: "Power of Veto winner", voteType: (id) => new PoVvote(id) },
-    });
-    scenes.push(evictionScene);
     return new Episode({
-        gameState: new GameState(currentGameState),
+        gameState: new GameState(episode.gameState),
         initialGamestate,
-        scenes,
+        scenes: episode.scenes,
         type: CoHoH,
     });
 }
