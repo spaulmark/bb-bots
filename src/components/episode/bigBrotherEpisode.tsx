@@ -86,6 +86,8 @@ interface BBVanillaOptions {
     previousHoHcanCompete?: boolean;
     coHoH?: boolean;
     coHohIsFinal?: boolean;
+    votingTo?: "Evict" | "Save";
+    hohCompCustomText?: string;
     tieBreaker?: (hg: Houseguest | undefined) => TieBreaker | undefined; // kind of a hack, might need to be updated later
 }
 
@@ -109,6 +111,7 @@ export function generateBBVanillaScenes(
         previousHoHcanCompete: options.previousHoHcanCompete,
         coHoH: options.coHoH,
         coHohIsFinal: options.coHohIsFinal,
+        customText: options.hohCompCustomText,
     });
     scenes.push(hohCompScene);
 
@@ -160,7 +163,7 @@ export function generateVetoScenesOnwards(
     let evictionScene;
     [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hohArray, nominees, {
         doubleEviction,
-        votingTo: "Evict",
+        votingTo: options.votingTo || "Evict",
         splitIndex,
         nomineesCanVote: options.nomineesCanVote,
         tieBreaker: options.tieBreaker && options.tieBreaker(povWinner),
