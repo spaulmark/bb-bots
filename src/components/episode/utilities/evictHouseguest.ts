@@ -8,13 +8,14 @@ import {
     getJurors,
     inJury,
     MutableGameState,
-    getSplitMembers,
+    getNonevictedSplitMembers,
 } from "../../../model";
 import { getFinalists } from "../../../model/season";
 import { average, roundTwoDigits } from "../../../utils";
 import { pHeroWinsTheFinale } from "../../../utils/ai/aiUtils";
 import { classifyRelationship, RelationshipType } from "../../../utils/ai/classifyRelationship";
 import { generateHitList } from "../../../utils/ai/hitList";
+import { generateCliques } from "../../../utils/generateCliques";
 
 export function evictHouseguest(gameState: MutableGameState, id: number): GameState {
     const evictee = getById(gameState, id);
@@ -46,10 +47,11 @@ export function refreshHgStats(
             ? split
             : [{ members: new Set<number>(nonEvictedHouseguests(gameState).map((hg) => hg.id)) }];
     splits.forEach((split) => {
-        const hgs = getSplitMembers(split, gameState);
+        const hgs = getNonevictedSplitMembers(split, gameState);
         updatePopularity(hgs, updateDelta);
         updateFriendCounts(hgs, gameState);
     });
+    gameState.cliques = generateCliques(gameState);
 }
 
 function populateSuperiors(houseguests: Houseguest[]) {
@@ -104,9 +106,11 @@ function updateFriendCounts(houseguests: Houseguest[], gameState: GameState) {
         hero.enemies = enemies;
         const hitList = generateHitList(hero, gameState);
         hero.hitList = hitList;
+        const hgSet = new Set(houseguests.map((hg) => hg.id));
+        const hitListbySplit = hero.hitList.filter((entry) => hgSet.has(entry.id));
         const targets = [];
-        hero.hitList[0] && targets.push(hero.hitList[0].id);
-        hero.hitList[1] && targets.push(hero.hitList[1].id);
+        hitListbySplit[0] && targets.push(hitListbySplit[0].id);
+        hitListbySplit[1] && targets.push(hitListbySplit[1].id);
         targets.forEach((target) => {
             getById(gameState, target).targetingMe++;
         });

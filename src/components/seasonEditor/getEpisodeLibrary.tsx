@@ -195,11 +195,11 @@ export function getEpisodeLibrary(): EpisodeLibrary {
             const oldEpisode = episodes[episodes.length - 1];
             const newEpisode = item.episode;
             const dynamicEpisodeType = {
-                arrowsEnabled: oldEpisode.arrowsEnabled || newEpisode.arrowsEnabled,
+                arrowsDisabled: oldEpisode.arrowsDisabled || newEpisode.arrowsDisabled,
                 canPlayWith: () => true,
                 splitFunction: oldEpisode.splitFunction,
                 eliminates: oldEpisode.eliminates + newEpisode.eliminates,
-                hasViewsbar: oldEpisode.hasViewsbar || newEpisode.hasViewsbar,
+                hideViewsBar: oldEpisode.hideViewsBar || newEpisode.hideViewsBar,
                 emoji: `${oldEpisode.emoji} ${newEpisode.emoji}`,
             };
             const newItem: EpisodeType = {

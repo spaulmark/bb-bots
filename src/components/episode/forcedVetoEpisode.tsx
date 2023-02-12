@@ -6,9 +6,7 @@ import { SpotlightVeto } from "./veto/veto";
 export const ForcedVetoEpisode: EpisodeType = {
     canPlayWith: (n: number) => n >= 5,
     eliminates: 1,
-    arrowsEnabled: true,
     emoji: "🔦",
-    hasViewsbar: true,
     name: "Forced Veto",
     description: "The veto winner must use the veto.",
     generate: generateForcedVeto,

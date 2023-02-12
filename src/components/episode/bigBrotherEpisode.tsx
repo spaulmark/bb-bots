@@ -3,7 +3,7 @@ import { generateHohCompScene } from "./scenes/hohCompScene";
 import { generateNomCeremonyScene } from "./scenes/nomCeremonyScene";
 import { generateVetoCompScene } from "./scenes/vetoCompScene";
 import { generateVetoCeremonyScene } from "./scenes/vetoCeremonyScene";
-import { generateEvictionScene } from "./scenes/evictionScene";
+import { TieBreaker, generateEvictionScene } from "./scenes/evictionScene";
 import { NextEpisodeButton } from "../nextEpisodeButton/nextEpisodeButton";
 import React from "react";
 import { Scene } from "./scenes/scene";
@@ -18,9 +18,7 @@ export const BigBrotherVanilla: EpisodeType = {
         return n > 3;
     },
     eliminates: 1,
-    arrowsEnabled: true,
-    hasViewsbar: true,
-    name: "BigBrotherVanilla",
+    name: "",
     emoji: "",
     description: "",
     generate: generateBbVanilla,
@@ -83,6 +81,12 @@ interface BBVanillaOptions {
     splitIndex?: number;
     nomineesCanVote?: boolean;
     thirdNominee?: boolean;
+    previousHoHcanCompete?: boolean;
+    coHoH?: boolean;
+    coHohIsFinal?: boolean;
+    votingTo?: "Evict" | "Save";
+    hohCompCustomText?: string;
+    tieBreaker?: (hg: Houseguest | undefined) => TieBreaker | undefined; // kind of a hack, might need to be updated later
 }
 
 export function generateBBVanillaScenes(
@@ -102,24 +106,27 @@ export function generateBBVanillaScenes(
     [currentGameState, hohCompScene, hohArray] = generateHohCompScene(initialGamestate, {
         doubleEviction,
         splitIndex,
+        previousHoHcanCompete: options.previousHoHcanCompete,
+        coHoH: options.coHoH,
+        coHohIsFinal: options.coHohIsFinal,
+        customText: options.hohCompCustomText,
     });
-    const hoh = hohArray[0];
     scenes.push(hohCompScene);
 
     let nomCeremonyScene;
     let nominees: Houseguest[];
-    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, [hoh], {
+    [currentGameState, nomCeremonyScene, nominees] = generateNomCeremonyScene(currentGameState, hohArray, {
         doubleEviction,
         splitIndex,
         thirdNominee: options.thirdNominee,
     });
     scenes.push(nomCeremonyScene);
 
-    return generateVetoScenesOnwards(currentGameState, hoh, nominees, scenes, [], options);
+    return generateVetoScenesOnwards(currentGameState, hohArray, nominees, scenes, [], options);
 }
 export function generateVetoScenesOnwards(
     currentGameState: GameState,
-    hoh: Houseguest,
+    hohArray: Houseguest[],
     nominees: Houseguest[],
     scenes: Scene[],
     immuneHgs: Houseguest[],
@@ -135,7 +142,7 @@ export function generateVetoScenesOnwards(
         let vetoCompScene;
         [currentGameState, vetoCompScene, povWinner] = generateVetoCompScene(
             currentGameState,
-            [hoh],
+            hohArray,
             nominees,
             { veto, doubleEviction, splitIndex }
         );
@@ -144,7 +151,7 @@ export function generateVetoScenesOnwards(
 
         [currentGameState, vetoCeremonyScene, nominees] = generateVetoCeremonyScene(
             currentGameState,
-            [hoh],
+            hohArray,
             nominees,
             povWinner,
             { doubleEviction, veto, immuneHgs, splitIndex }
@@ -152,11 +159,12 @@ export function generateVetoScenesOnwards(
         scenes.push(vetoCeremonyScene);
     }
     let evictionScene;
-    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, [hoh], nominees, {
+    [currentGameState, evictionScene] = generateEvictionScene(currentGameState, hohArray, nominees, {
         doubleEviction,
-        votingTo: "Evict",
+        votingTo: options.votingTo || "Evict",
         splitIndex,
         nomineesCanVote: options.nomineesCanVote,
+        tieBreaker: options.tieBreaker && options.tieBreaker(povWinner),
     });
 
     scenes.push(evictionScene);

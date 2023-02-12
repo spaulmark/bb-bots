@@ -8,9 +8,7 @@ import { GoldenVeto } from "./veto/veto";
 export const DoubleEviction: EpisodeType = {
     canPlayWith: (n: number) => n >= 4,
     eliminates: 1,
-    arrowsEnabled: true,
     emoji: "⏩",
-    hasViewsbar: true,
     chainable: true,
     name: "Double Eviction",
     description: "A second round of Big Brother plays out in a single scene.",

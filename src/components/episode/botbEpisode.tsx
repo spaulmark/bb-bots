@@ -10,9 +10,7 @@ import { generateBotbScene } from "./scenes/botbScene";
 export const BattleOfTheBlock: EpisodeType = {
     canPlayWith: (n: number) => n >= 6,
     eliminates: 1,
-    arrowsEnabled: true,
     emoji: "⚔️",
-    hasViewsbar: true,
     name: "Battle of the Block",
     description:
         "Two HoHs name a total of four nominees. The nominees compete in a competition, and the winners are safe for the week and dethrone the HoH who nominated them.",
@@ -52,9 +50,16 @@ function generateBoB(initialGamestate: GameState): Episode {
     scenes.push(botbscene);
     // then veto onwards plays normally except
     // the winning pair is somehow immune for the week: they can't be backdoored.
-    const vetostuff = generateVetoScenesOnwards(currentGameState, finalhoh, finalnoms, scenes, botbWinners, {
-        veto: GoldenVeto,
-    });
+    const vetostuff = generateVetoScenesOnwards(
+        currentGameState,
+        [finalhoh],
+        finalnoms,
+        scenes,
+        botbWinners,
+        {
+            veto: GoldenVeto,
+        }
+    );
     currentGameState = vetostuff.gameState;
 
     return new Episode({

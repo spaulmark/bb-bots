@@ -6,8 +6,6 @@ export const SafetyChain: EpisodeType = {
     canPlayWith: (n: number) => n >= 3,
     eliminates: 1,
     chainable: true,
-    arrowsEnabled: true,
-    hasViewsbar: true,
     name: "Safety Chain",
     emoji: "⛓️",
     description:

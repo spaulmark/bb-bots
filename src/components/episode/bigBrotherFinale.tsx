@@ -11,8 +11,6 @@ import { HasText } from "../layout/text";
 export const BigBrotherFinale: EpisodeType = {
     canPlayWith: (n: number) => n === 3,
     eliminates: 2,
-    arrowsEnabled: true,
-    hasViewsbar: true,
     generate: generateBbFinale,
 };
 

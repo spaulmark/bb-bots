@@ -8,9 +8,8 @@ const PregameEpisodeType: EpisodeType = {
     canPlayWith: (n: number) => {
         return n > 2;
     },
-    arrowsEnabled: true,
     emoji: "",
-    hasViewsbar: false,
+    hideViewsBar: true,
     name: "Pregame",
     description: "",
     generate: (gameState: GameState) => new PregameEpisode(gameState),
