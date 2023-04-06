@@ -73,6 +73,7 @@ const ListItem = ({
 interface SeasonEditorListProps {
     castSize: number;
     setTwistsValid: (valid: boolean) => void;
+    loadLast: boolean;
 }
 
 interface SeasonEditorListState {
@@ -107,8 +108,10 @@ function shouldIncrement(items: SeasonEditorListItem[], i: number): boolean {
     return false; // exhausted the list, return false
 }
 
+let lastState: SeasonEditorListState = { items: [] };
+let id = 0;
+
 export class SeasonEditorList extends React.Component<SeasonEditorListProps, SeasonEditorListState> {
-    private id: number = 0;
     private subs: Subscription[] = [];
 
     public constructor(props: SeasonEditorListProps) {
@@ -119,14 +122,14 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         for (let i = props.castSize; i > 3; i--) {
             week++;
             elements.push({
-                id: (this.id++).toString(),
+                id: (id++).toString(),
                 weekText: `Week ${week}: F${i}`,
                 episode: BigBrotherVanilla,
                 isValid: true,
             });
         }
         _items = elements;
-        this.state = { items: elements };
+        this.state = props.loadLast ? lastState : { items: elements };
     }
 
     private maxCapacity(): number {
@@ -158,7 +161,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 (value, index, _) => index > 0 && value.episode === BigBrotherVanilla
             );
             const newItem = {
-                id: (this.id++).toString(),
+                id: (id++).toString(),
                 weekText: ``,
                 episode: twist.type,
                 isValid: true,
@@ -186,6 +189,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
 
     public componentWillUnmount(): void {
         this.subs.forEach((sub) => sub.unsubscribe());
+        lastState = this.state;
     }
 
     private refreshItems(newItems: SeasonEditorListItem[], addIndex?: number) {
@@ -215,7 +219,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             while (playerCount > 3) {
                 week++;
                 const item = {
-                    id: (this.id++).toString(),
+                    id: (id++).toString(),
                     weekText: `Week ${week || 1}: F${playerCount}`,
                     episode: BigBrotherVanilla,
                     isValid: true,

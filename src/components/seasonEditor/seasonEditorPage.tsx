@@ -123,7 +123,11 @@ export function SeasonEditorPage(): JSX.Element {
                 </HasText>
                 <hr />
                 <Noselect>
-                    <SeasonEditorList setTwistsValid={setTwistsValid} castSize={castLength} />
+                    <SeasonEditorList
+                        setTwistsValid={setTwistsValid}
+                        castSize={castLength}
+                        loadLast={loadLast}
+                    />
                 </Noselect>
             </div>
             <div className="column" style={{ padding: 20 }}>
