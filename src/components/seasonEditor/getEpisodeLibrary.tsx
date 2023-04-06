@@ -207,8 +207,10 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 generate: (initialGamestate) => {
                     const firstEpisode = oldEpisode.generate(initialGamestate);
                     const secondEpisode = newEpisode.generate(firstEpisode.gameState);
+                    const finalGameState = new GameState(secondEpisode.gameState);
+                    finalGameState.split = []; // FIXME: to prevent persistent split houses from breaking, chainable episodes reset splits
                     return new Episode({
-                        gameState: new GameState(secondEpisode.gameState),
+                        gameState: finalGameState,
                         // extremely important: pseudo stuff like teams happens in the initial gamestate
                         initialGamestate: firstEpisode.initialGameState,
                         scenes: firstEpisode.scenes.concat(secondEpisode.scenes),
