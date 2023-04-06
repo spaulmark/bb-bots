@@ -114,6 +114,7 @@ export function SeasonEditorPage(): JSX.Element {
     useEffect(() => () => {
         lastCastLength = castLength;
     });
+    const loadLast = castLength === lastCastLength;
     return (
         <div className="columns">
             <div className="column is-one-quarter">
@@ -129,11 +130,7 @@ export function SeasonEditorPage(): JSX.Element {
                 <Subheader>Add Twists</Subheader>
                 <div className="columns is-multiline is-centered">
                     {twists.map((type) => (
-                        <TwistAdder
-                            type={type}
-                            key={`${type.name}${type.emoji}`}
-                            loadFromCache={castLength === lastCastLength}
-                        />
+                        <TwistAdder type={type} key={`${type.name}${type.emoji}`} loadFromCache={loadLast} />
                     ))}
                     <div
                         className="column is-5-desktop is-5-widescreen is-5-fullhd is-12-tablet"
@@ -201,7 +198,7 @@ export function SeasonEditorPage(): JSX.Element {
                     </div>
                 </div>
                 <Subheader>🎌 Add Teams</Subheader>
-                <TeamsAdderList />
+                <TeamsAdderList loadLast={loadLast} />
             </div>
             <div className="column is-narrow" style={{ paddingTop: 20, paddingRight: 20 }}>
                 <button
