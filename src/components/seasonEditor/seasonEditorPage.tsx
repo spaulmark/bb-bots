@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { defaultJurySize, GameState, validateJurySize } from "../../model/gameState";
 import { cast$, getCast, newEpisode, pushToMainContentStream, season$ } from "../../subjects/subjects";
@@ -55,6 +55,7 @@ const twists: EpisodeType[] = [
 ];
 
 let lastJurySize = defaultJurySize(16);
+let lastCastLength: number;
 let lastHoHPlaysVeto = true;
 
 export function getLastHoHPlaysVeto(): boolean {
@@ -108,7 +109,11 @@ export function SeasonEditorPage(): JSX.Element {
     const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
     const validJurySize = validateJurySize(parseInt(jurySize), castLength);
     const [areTwistsValid, setTwistsValid] = useState(true);
-    const [hohPlaysVeto, setHohPlaysVeto] = useState(true);
+    const [hohPlaysVeto, setHohPlaysVeto] = useState(lastHoHPlaysVeto);
+    // this is the future react wants
+    useEffect(() => () => {
+        lastCastLength = castLength;
+    });
     return (
         <div className="columns">
             <div className="column is-one-quarter">
@@ -124,7 +129,11 @@ export function SeasonEditorPage(): JSX.Element {
                 <Subheader>Add Twists</Subheader>
                 <div className="columns is-multiline is-centered">
                     {twists.map((type) => (
-                        <TwistAdder type={type} key={`${type.name}${type.emoji}`} />
+                        <TwistAdder
+                            type={type}
+                            key={`${type.name}${type.emoji}`}
+                            loadFromCache={castLength === lastCastLength}
+                        />
                     ))}
                     <div
                         className="column is-5-desktop is-5-widescreen is-5-fullhd is-12-tablet"
