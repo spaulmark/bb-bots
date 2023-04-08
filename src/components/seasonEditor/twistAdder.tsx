@@ -14,7 +14,10 @@ export function getEmoji(episode: EpisodeType): string {
 
 interface TwistAdderProps {
     type: EpisodeType;
+    loadFromCache?: boolean;
 }
+
+const cache: { [id: string]: any } = {};
 
 export class TwistAdder extends React.Component<
     TwistAdderProps,
@@ -24,7 +27,8 @@ export class TwistAdder extends React.Component<
 
     public constructor(props: TwistAdderProps) {
         super(props);
-        this.state = { twistCount: 0, twistCapacity: twistCapacity$.value };
+        const twistCount = props.loadFromCache ? cache[this.props.type.name!] || 0 : 0;
+        this.state = { twistCount, twistCapacity: twistCapacity$.value };
         this.subs = [];
     }
 
@@ -34,6 +38,7 @@ export class TwistAdder extends React.Component<
 
     public componentWillUnmount(): void {
         this.subs.forEach((sub) => sub.unsubscribe());
+        cache[this.props.type.name!] = this.state.twistCount;
     }
 
     public render(): JSX.Element {

@@ -151,6 +151,7 @@ export function generateEvictionScene(
 
     evictees.forEach((evictee) => {
         newGameState = evictHouseguest(newGameState, evictee.id);
+        evictee.isJury = getById(newGameState, evictee.id).isJury;
     });
     const isUnanimous = voteCounts.filter((n) => n !== 0).length === 1;
     const voteCountText = isUnanimous

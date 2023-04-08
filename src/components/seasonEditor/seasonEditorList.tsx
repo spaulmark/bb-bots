@@ -9,6 +9,7 @@ import { getEmoji, twist$ } from "./twistAdder";
 import { min } from "lodash";
 import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { GameState, getById } from "../../model/gameState";
+import _ from "lodash";
 
 const common = `
 padding: 10px;
@@ -73,6 +74,7 @@ const ListItem = ({
 interface SeasonEditorListProps {
     castSize: number;
     setTwistsValid: (valid: boolean) => void;
+    loadLast: boolean;
 }
 
 interface SeasonEditorListState {
@@ -107,8 +109,10 @@ function shouldIncrement(items: SeasonEditorListItem[], i: number): boolean {
     return false; // exhausted the list, return false
 }
 
+let lastState: SeasonEditorListState = { items: [] };
+let id = 0;
+
 export class SeasonEditorList extends React.Component<SeasonEditorListProps, SeasonEditorListState> {
-    private id: number = 0;
     private subs: Subscription[] = [];
 
     public constructor(props: SeasonEditorListProps) {
@@ -119,14 +123,14 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
         for (let i = props.castSize; i > 3; i--) {
             week++;
             elements.push({
-                id: (this.id++).toString(),
+                id: (id++).toString(),
                 weekText: `Week ${week}: F${i}`,
                 episode: BigBrotherVanilla,
                 isValid: true,
             });
         }
-        _items = elements;
-        this.state = { items: elements };
+        !props.loadLast && (_items = elements);
+        this.state = props.loadLast ? lastState : { items: elements };
     }
 
     private maxCapacity(): number {
@@ -158,12 +162,12 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 (value, index, _) => index > 0 && value.episode === BigBrotherVanilla
             );
             const newItem = {
-                id: (this.id++).toString(),
+                id: (id++).toString(),
                 weekText: ``,
-                episode: twist.type,
+                episode: { ...twist.type },
                 isValid: true,
             };
-
+            newItem.episode.name = twist.type.name;
             newItems.splice(twist.type.chainable ? chainableInsertAt : nonChainableInsertAt, 0, newItem);
             this.refreshItems(newItems);
         } else {
@@ -173,19 +177,20 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 const equalTeamsLookupIds = twist.type.teamsLookupId
                     ? twist.type.teamsLookupId === item.episode.teamsLookupId
                     : false;
-                return item.episode === twist.type || equalTeamsLookupIds;
+                return item.episode.name === twist.type.name || equalTeamsLookupIds;
             });
             this.refreshItems(newItems, i);
         }
     }
 
     public componentDidMount() {
-        twistCapacity$.next(this.maxCapacity());
+        !this.props.loadLast && twistCapacity$.next(this.maxCapacity());
         this.subs.push(twist$.subscribe((twist) => this.addRemoveTwist(twist)));
     }
 
     public componentWillUnmount(): void {
         this.subs.forEach((sub) => sub.unsubscribe());
+        lastState = this.state;
     }
 
     private refreshItems(newItems: SeasonEditorListItem[], addIndex?: number) {
@@ -215,7 +220,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             while (playerCount > 3) {
                 week++;
                 const item = {
-                    id: (this.id++).toString(),
+                    id: (id++).toString(),
                     weekText: `Week ${week || 1}: F${playerCount}`,
                     episode: BigBrotherVanilla,
                     isValid: true,
@@ -229,7 +234,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             }
             this.refreshItems(finalItems);
         }
-        _items = finalItems;
+        _items = _.cloneDeep(finalItems);
         this.setState({ items: finalItems });
         this.props.setTwistsValid(finalItems.every((item) => item.isValid));
     }

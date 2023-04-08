@@ -33,7 +33,7 @@ export function generateTripleEvictionCad(initialGamestate: GameState): Episode 
         new Scene({
             title: "Triple Eviction",
             content: <div>{episode.scenes.map((scene) => scene.content)}</div>,
-            gameState: currentGameState,
+            gameState: initialGamestate,
         })
     );
     return new Episode({

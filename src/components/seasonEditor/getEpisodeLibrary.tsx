@@ -9,6 +9,7 @@ import { hasLogBeenModified } from "../../model/logging/episodelog";
 import { TeamAdderProps } from "./teamsAdder";
 import { _items, deleteTeams, _castSize } from "./seasonEditorList";
 import { isNotWellDefined } from "../../utils";
+import _ from "lodash";
 
 export function getEpisodeLibrary(): EpisodeLibrary {
     const generate = (_: any) => {
@@ -19,7 +20,7 @@ export function getEpisodeLibrary(): EpisodeLibrary {
     // generate teams
     let finalX = _castSize;
     const teamIdtoFinalX = new Map<number, number>();
-    const _mappedItems = _items.map((item) => {
+    const _mappedItems = _.cloneDeep(_items).map((item) => {
         if (item.episode.teamsLookupId !== undefined) {
             // if a team ends when it starts, don't use it FIXME: this will break 10000% when returnees happen
             // eslint-disable-next-line
@@ -207,8 +208,10 @@ export function getEpisodeLibrary(): EpisodeLibrary {
                 generate: (initialGamestate) => {
                     const firstEpisode = oldEpisode.generate(initialGamestate);
                     const secondEpisode = newEpisode.generate(firstEpisode.gameState);
+                    const finalGameState = new GameState(secondEpisode.gameState);
+                    finalGameState.split = []; // FIXME: to prevent persistent split houses from breaking, chainable episodes reset splits
                     return new Episode({
-                        gameState: new GameState(secondEpisode.gameState),
+                        gameState: finalGameState,
                         // extremely important: pseudo stuff like teams happens in the initial gamestate
                         initialGamestate: firstEpisode.initialGameState,
                         scenes: firstEpisode.scenes.concat(secondEpisode.scenes),
