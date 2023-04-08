@@ -177,14 +177,14 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 const equalTeamsLookupIds = twist.type.teamsLookupId
                     ? twist.type.teamsLookupId === item.episode.teamsLookupId
                     : false;
-                return item.episode === twist.type || equalTeamsLookupIds;
+                return item.episode.name === twist.type.name || equalTeamsLookupIds;
             });
             this.refreshItems(newItems, i);
         }
     }
 
     public componentDidMount() {
-        twistCapacity$.next(this.maxCapacity());
+        !this.props.loadLast && twistCapacity$.next(this.maxCapacity());
         this.subs.push(twist$.subscribe((twist) => this.addRemoveTwist(twist)));
     }
 
