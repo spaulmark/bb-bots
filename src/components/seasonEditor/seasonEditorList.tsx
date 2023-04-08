@@ -129,7 +129,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
                 isValid: true,
             });
         }
-        _items = elements;
+        !props.loadLast && (_items = elements);
         this.state = props.loadLast ? lastState : { items: elements };
     }
 
