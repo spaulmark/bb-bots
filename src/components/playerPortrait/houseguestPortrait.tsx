@@ -179,7 +179,7 @@ export class HouseguestPortrait extends React.Component<PortraitProps, PortraitS
             ? { backgroundColor: props.tribe.color, color: textColor(props.tribe.color) }
             : {};
         let Portrait = MemoryWallPortrait;
-        if (props.isJury) {
+        if (props.isJury && props.isEvicted) {
             Portrait = Jury;
             tribeStyle = {
                 backgroundColor: "#5d5340",
@@ -232,6 +232,6 @@ const TribeStyle = styled.div`
 
 function getImageClass(props: PortraitProps) {
     let imageClass = props.isEvicted ? Grayscale : Normal;
-    imageClass = props.isJury ? Sepia : imageClass;
+    imageClass = props.isJury && props.isEvicted ? Sepia : imageClass;
     return imageClass;
 }
