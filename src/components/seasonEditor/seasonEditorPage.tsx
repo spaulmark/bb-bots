@@ -106,15 +106,16 @@ const submit = async (jury: number, hohPlaysVeto: boolean): Promise<void> => {
 
 export function SeasonEditorPage(): JSX.Element {
     const castLength = getCast().length;
-    const [jurySize, setJurySize] = useState(`${defaultJurySize(castLength)}`);
+    const loadLast = castLength === lastCastLength;
+    const [jurySize, setJurySize] = useState(loadLast ? `${lastJurySize}` : `${defaultJurySize(castLength)}`);
     const validJurySize = validateJurySize(parseInt(jurySize), castLength);
     const [areTwistsValid, setTwistsValid] = useState(true);
     const [hohPlaysVeto, setHohPlaysVeto] = useState(lastHoHPlaysVeto);
     // this is the future react wants
     useEffect(() => () => {
         lastCastLength = castLength;
+        lastJurySize = parseInt(jurySize);
     });
-    const loadLast = castLength === lastCastLength;
     return (
         <div className="columns">
             <div className="column is-one-quarter">
