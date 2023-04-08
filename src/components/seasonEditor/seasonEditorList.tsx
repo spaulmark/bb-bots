@@ -9,6 +9,7 @@ import { getEmoji, twist$ } from "./twistAdder";
 import { min } from "lodash";
 import { removeFirstNMatching, removeLast1Matching } from "../../utils";
 import { GameState, getById } from "../../model/gameState";
+import _ from "lodash";
 
 const common = `
 padding: 10px;
@@ -163,10 +164,10 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             const newItem = {
                 id: (id++).toString(),
                 weekText: ``,
-                episode: twist.type,
+                episode: { ...twist.type },
                 isValid: true,
             };
-
+            newItem.episode.name = twist.type.name;
             newItems.splice(twist.type.chainable ? chainableInsertAt : nonChainableInsertAt, 0, newItem);
             this.refreshItems(newItems);
         } else {
@@ -233,7 +234,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             }
             this.refreshItems(finalItems);
         }
-        _items = finalItems;
+        _items = _.cloneDeep(finalItems);
         this.setState({ items: finalItems });
         this.props.setTwistsValid(finalItems.every((item) => item.isValid));
     }
