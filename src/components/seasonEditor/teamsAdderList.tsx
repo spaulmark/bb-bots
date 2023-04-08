@@ -31,7 +31,7 @@ export function getTeamsListContents(): { [id: number]: TeamAdderProps } {
 export class TeamsAdderList extends React.Component<{ loadLast: boolean }, TeamsAdderListState> {
     public constructor(props: Readonly<{ loadLast: boolean }>) {
         super(props);
-        _teams = {};
+        !props.loadLast && (_teams = {});
         this.state = props.loadLast ? this.loadDumpedState() : { items: {}, id: 1 };
     }
 
