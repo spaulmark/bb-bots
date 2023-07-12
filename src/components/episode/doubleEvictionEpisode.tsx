@@ -29,10 +29,9 @@ function generateDoubleEviction(initialGamestate: GameState): Episode {
         new Scene({
             title: "Double Eviction",
             content: <div>{doubleEviction.scenes.map((scene) => scene.content)}</div>,
-            gameState: doubleEviction.gameState,
+            gameState: initialGamestate,
         })
     );
-
     return new Episode({
         gameState: new GameState(currentGameState),
         initialGamestate,
