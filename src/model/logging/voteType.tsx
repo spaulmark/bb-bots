@@ -62,7 +62,7 @@ export class BlankVote implements VoteType {
 
 export class WinnerVote implements VoteType {
     id: number = 1; // unused
-    render = (state: GameState) => (
+    render = (_: GameState) => (
         <WinnerCell key={"winner---"}>
             <Centered noMargin={true}>Winner</Centered>
         </WinnerCell>
@@ -71,7 +71,7 @@ export class WinnerVote implements VoteType {
 
 export class RunnerUpVote implements VoteType {
     id: number = 1; // unused
-    render = (state: GameState) => (
+    render = (_: GameState) => (
         <RunnerUpCell key={"runnerUp---"}>
             <Centered noMargin={true}>Finalist</Centered>
         </RunnerUpCell>
@@ -82,7 +82,7 @@ export class NomineeVote implements VoteType {
     id: number = -1;
     evicted: boolean;
     text: string;
-    render = (state: GameState) => (
+    render = (_: GameState) => (
         <NomineeCell key={getKey()}>
             <CenteredItallic noMargin={true}>{this.text}</CenteredItallic>
         </NomineeCell>
