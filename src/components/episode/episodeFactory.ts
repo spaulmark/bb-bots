@@ -21,6 +21,10 @@ export function firstImpressionsMap(hgs: number): { [id: number]: { [id: number]
         const φ = Math.acos(2 * v - 1);
         // convert spherical co-ords to cartesian co-ords
         compatibilityMap[i] = [sin(θ) * cos(φ), sin(θ) * sin(φ), cos(θ)];
+        // extremely rare 1 in a billion edge case that would crash the game
+        if (compatibilityMap[i][0] == 0 && compatibilityMap[i][1] == 0 && compatibilityMap[i][2] == 0) {
+            compatibilityMap[i] = [1, 0, 0];
+        }
     }
 
     for (let i = 0; i < hgs; i++) {
