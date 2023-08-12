@@ -228,12 +228,12 @@ export function getEpisodeLibrary(): EpisodeLibrary {
     }
 
     const result: EpisodeLibrary = {};
-    let playersRemaining = _castSize;
+    let phase = 0;
     for (const episode of episodes) {
         if (episode !== BigBrotherVanilla) {
-            result[playersRemaining] = episode;
+            result[phase] = episode;
         }
-        playersRemaining -= episode.eliminates;
+        phase++;
     }
     return result;
 }

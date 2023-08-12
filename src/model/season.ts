@@ -20,18 +20,19 @@ export class Season {
     }
 
     public renderEpisode(gameState: GameState): Episode {
-        return nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers));
+        return nextEpisode(gameState, this.whichEpisodeType(gameState.remainingPlayers, gameState.phase));
     }
 
-    public whichEpisodeType(players: number) {
+    public whichEpisodeType(players: number, phase: number) {
+        if (this.episodeLibrary[phase]) {
+            return this.episodeLibrary[phase];
+        }
+        // FIXME: will need to change for F3s and alternate endgames
         if (players === 3) {
             return BigBrotherFinale;
         }
         if (players === 2) {
             return GameOver;
-        }
-        if (this.episodeLibrary[players]) {
-            return this.episodeLibrary[players];
         }
         return BigBrotherVanilla;
     }
