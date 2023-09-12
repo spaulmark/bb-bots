@@ -4,7 +4,7 @@
 
 Big Brother Bots is a simulator for the reality show Big Brother.
 
-Choose characters from 300+ collections, or upload your own, then add twists and watch as everyone votes each other out until one winner remains! You can contact me on github or at `Prof. Plum#8114`.
+Choose characters from 300+ collections, or upload your own, then add twists and watch as everyone votes each other out until one winner remains! You can contact me on github or at `.prof.plum`.
 
 <p align="center">
     <img width="" src="https://spaulmark.github.io/src/bb-bots.png" alt="Preview Image">
