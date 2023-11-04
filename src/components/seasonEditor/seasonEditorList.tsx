@@ -194,16 +194,21 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
     }
 
     private refreshItems(newItems: SeasonEditorListItem[], addIndex?: number) {
+        // find how much to reduce cast size by for late joiners
+        let reduceBy = 0;
+        for (const item of newItems) {
+            reduceBy += item.episode.reduceCastSizeBy || 0;
+        }
         const finalItems = [];
         let week: number = 1;
-        let playerCount: number = this.props.castSize;
+        let playerCount: number = this.props.castSize - reduceBy;
+        let initialPlayerCount: number = playerCount;
+        let firstItem = true;
         let i = 0;
         for (const item of newItems) {
             const increment = shouldIncrement(newItems, i);
             const chainable: boolean = !!item.episode.chainable;
-            // FIXME: playerCount !== this.props.castSize // may become invalid when we do battlebacks
-            // because you could have a battleback to maxplayers immediately into a double eviction
-            const isValidChain: boolean = chainable ? playerCount !== this.props.castSize : true;
+            const isValidChain: boolean = chainable ? playerCount !== initialPlayerCount || !firstItem : true;
             const isValid = item.episode.canPlayWith(playerCount) && isValidChain;
             item.weekText = `Week ${week}: F${playerCount}`;
             item.isValid = isValid;
@@ -214,6 +219,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
             }
             increment && week++;
             i++;
+            firstItem = false;
         }
         // if we have to add new vanilla episodes b/c we dont have enough to get to F4, add them
         if (playerCount > 3) {

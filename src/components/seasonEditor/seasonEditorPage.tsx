@@ -28,6 +28,7 @@ import { Tribe } from "../../model/tribe";
 import { PersistentSplitHouse, SplitHouse } from "../episode/splitHouse";
 import { Tooltip } from "../tooltip/tooltip";
 import { BbAustralia } from "../episode/australiaEpisode";
+import { LateJoiner } from "../episode/lateJoiner";
 
 const Subheader = styled.h3`
     text-align: center;
@@ -52,6 +53,7 @@ const twists: EpisodeType[] = [
     SplitHouse,
     PersistentSplitHouse,
     BbAustralia,
+    LateJoiner,
 ];
 
 let lastJurySize = defaultJurySize(16);

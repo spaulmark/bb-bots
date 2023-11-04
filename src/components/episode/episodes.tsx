@@ -81,6 +81,7 @@ export interface EpisodeType {
     readonly chainable?: boolean;
     readonly pseudo?: boolean;
     readonly name?: string;
+    readonly reduceCastSizeBy?: number;
     readonly emoji?: string;
     readonly description?: string;
     readonly teamsLookupId?: number;
