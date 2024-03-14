@@ -1,10 +1,10 @@
 import React from "react";
-import { Subject, Subscription } from "rxjs";
+import { Subject } from "rxjs";
 import { NumericInputStyle } from "../castingScreen/numericInput";
 import { EpisodeType } from "../episode/episodes";
 import { Tooltip } from "../tooltip/tooltip";
-import { twistCapacity$ } from "./seasonEditorList";
 import { Label } from "./seasonEditorPage";
+import { BehaviorSubject } from "rx";
 
 export const twist$ = new Subject<{ type: EpisodeType; add: boolean }>();
 
@@ -15,6 +15,7 @@ export function getEmoji(episode: EpisodeType): string {
 interface TwistAdderProps {
     type: EpisodeType;
     loadFromCache?: boolean;
+    capacity$: any;
 }
 
 const cache: { [id: string]: any } = {};
@@ -23,17 +24,22 @@ export class TwistAdder extends React.Component<
     TwistAdderProps,
     { twistCount: number; twistCapacity: number }
 > {
-    private subs: Subscription[];
+    private subs: any[];
 
     public constructor(props: TwistAdderProps) {
         super(props);
         const twistCount = props.loadFromCache ? cache[this.props.type.name!] || 0 : 0;
-        this.state = { twistCount, twistCapacity: twistCapacity$.value };
+        this.state = { twistCount, twistCapacity: props.capacity$.getValue() };
         this.subs = [];
     }
 
     public componentDidMount(): void {
-        this.subs.push(twistCapacity$.subscribe((twistCapacity) => this.setState({ twistCapacity })));
+        const subject: BehaviorSubject<number> = this.props.capacity$;
+        this.subs.push(
+            subject.subscribe((twistCapacity) => {
+                return this.setState({ twistCapacity });
+            })
+        );
     }
 
     public componentWillUnmount(): void {

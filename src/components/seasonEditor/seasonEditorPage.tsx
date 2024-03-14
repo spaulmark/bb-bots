@@ -19,7 +19,7 @@ import { selectPlayer } from "../playerPortrait/selectedPortrait";
 import { Noselect } from "../playerPortrait/setupPortrait";
 import { PregameScreen } from "../pregameScreen/pregameScreen";
 import { Screens } from "../topbar/topBar";
-import { SeasonEditorList, _items } from "./seasonEditorList";
+import { SeasonEditorList, _items, lateJoinerCapacity$, twistCapacity$ } from "./seasonEditorList";
 import { getEpisodeLibrary } from "./getEpisodeLibrary";
 import { TwistAdder } from "./twistAdder";
 import { SafetyChain } from "../episode/safetyChain";
@@ -136,9 +136,17 @@ export function SeasonEditorPage(): JSX.Element {
             <div className="column" style={{ padding: 20 }}>
                 <Subheader>Add Twists</Subheader>
                 <div className="columns is-multiline is-centered">
-                    {twists.map((type) => (
-                        <TwistAdder type={type} key={`${type.name}${type.emoji}`} loadFromCache={loadLast} />
-                    ))}
+                    {twists.map((type) => {
+                        const capacity = type.name === "Late Joiner" ? lateJoinerCapacity$ : twistCapacity$;
+                        return (
+                            <TwistAdder
+                                type={type}
+                                key={`${type.name}${type.emoji}`}
+                                loadFromCache={loadLast}
+                                capacity$={capacity}
+                            />
+                        );
+                    })}
                     <div
                         className="column is-5-desktop is-5-widescreen is-5-fullhd is-12-tablet"
                         style={{

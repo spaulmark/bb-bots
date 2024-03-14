@@ -89,6 +89,7 @@ interface SeasonEditorListItem {
 }
 
 export const twistCapacity$ = new BehaviorSubject<number>(0);
+export const lateJoinerCapacity$ = new BehaviorSubject<number>(0);
 
 function shouldIncrement(items: SeasonEditorListItem[], i: number): boolean {
     if (i + 1 >= items.length) return false; // there is no current item (or next item), so who cares
@@ -134,19 +135,40 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
     }
 
     private maxCapacity(): number {
-        return this.props.castSize - 3;
+        const magicFinalistsNumber = 3; // FIXME: magic number for finale
+        return this.props.castSize - magicFinalistsNumber; // FIXME: magic number for finale or something
     }
 
-    private updateTwistCapacity(newCapacity: number) {
-        twistCapacity$.next(newCapacity);
+    private maxLateJoinerCapacity(): number {
+        const magicFinalistsNumber = 3; // FIXME: magic number for finale
+        return this.props.castSize - magicFinalistsNumber - 2;
+    }
+
+    private updateTwistCapacity(newCapacity: number, subject: BehaviorSubject<number>) {
+        console.log(`updating to ${newCapacity} from ${subject.value}`);
+        subject.next(newCapacity);
     }
 
     private addRemoveTwist(twist: { type: EpisodeType; add: boolean }) {
-        this.updateTwistCapacity(
-            twist.add
-                ? min([twistCapacity$.value - twist.type.eliminates, this.maxCapacity()]) || 0
-                : twistCapacity$.value + twist.type.eliminates
-        );
+        if (twist.type.name === "Late Joiner") {
+            // console.log([lateJoinerCapacity$.value - -twist.type.eliminates, this.props.maxCapacity]);
+            this.updateTwistCapacity(
+                twist.add
+                    ? min([
+                          lateJoinerCapacity$.value - -twist.type.eliminates,
+                          this.maxLateJoinerCapacity(),
+                      ]) || 0
+                    : lateJoinerCapacity$.value + -twist.type.eliminates,
+                lateJoinerCapacity$
+            );
+        } else {
+            this.updateTwistCapacity(
+                twist.add
+                    ? min([twistCapacity$.value - twist.type.eliminates, this.maxCapacity()]) || 0
+                    : twistCapacity$.value + twist.type.eliminates,
+                twistCapacity$
+            );
+        }
         // add or remove the twist
         if (twist.add) {
             // remove X vanilla episodes, then add the twist
@@ -185,6 +207,7 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
 
     public componentDidMount() {
         !this.props.loadLast && twistCapacity$.next(this.maxCapacity());
+        !this.props.loadLast && lateJoinerCapacity$.next(this.maxLateJoinerCapacity());
         this.subs.push(twist$.subscribe((twist) => this.addRemoveTwist(twist)));
     }
 
