@@ -145,13 +145,11 @@ export class SeasonEditorList extends React.Component<SeasonEditorListProps, Sea
     }
 
     private updateTwistCapacity(newCapacity: number, subject: BehaviorSubject<number>) {
-        console.log(`updating to ${newCapacity} from ${subject.value}`);
         subject.next(newCapacity);
     }
 
     private addRemoveTwist(twist: { type: EpisodeType; add: boolean }) {
         if (twist.type.name === "Late Joiner") {
-            // console.log([lateJoinerCapacity$.value - -twist.type.eliminates, this.props.maxCapacity]);
             this.updateTwistCapacity(
                 twist.add
                     ? min([
