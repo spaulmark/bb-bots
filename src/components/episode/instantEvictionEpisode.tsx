@@ -26,7 +26,7 @@ function generateInstantEviction(initialGamestate: GameState): Episode {
         new Scene({
             title: "Instant Eviction",
             content: <div>{doubleEviction.scenes.map((scene) => scene.content)}</div>,
-            gameState: doubleEviction.gameState,
+            gameState: initialGamestate,
         })
     );
 

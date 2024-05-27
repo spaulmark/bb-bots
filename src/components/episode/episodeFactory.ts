@@ -20,12 +20,16 @@ export function firstImpressionsMap(hgs: number): { [id: number]: { [id: number]
         const θ = 2 * Math.PI * u;
         const φ = Math.acos(2 * v - 1);
         // convert spherical co-ords to cartesian co-ords
-        compatibilityMap[i] = [sin(θ) * cos(φ), sin(θ) * sin(φ), cos(θ)];
+        compatibilityMap[i] = [sin(φ) * cos(θ), sin(θ) * sin(φ), cos(φ)];
+        // extremely rare 1 in a billion edge case that would crash the game
+        if (compatibilityMap[i][0] === 0 && compatibilityMap[i][1] === 0 && compatibilityMap[i][2] === 0) {
+            compatibilityMap[i] = [1, 0, 0];
+        }
     }
 
     for (let i = 0; i < hgs; i++) {
         for (let j = i + 1; j < hgs; j++) {
-            // creates a bunch of mutual relationships based on points on a sphere
+            // creates a bunch of mutual relationships based on points on (or inside) a sphere
             const impression = 1 - (2 * angleBetween(compatibilityMap[i], compatibilityMap[j])) / Math.PI;
             map[i][j] = impression;
             map[j][i] = impression;
