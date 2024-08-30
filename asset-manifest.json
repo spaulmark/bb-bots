@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/bb-bots/static/css/main.252fd328.css",
-    "main.js": "/bb-bots/static/js/main.f35ac884.js",
+    "main.js": "/bb-bots/static/js/main.78d061df.js",
     "index.html": "/bb-bots/index.html",
     "main.252fd328.css.map": "/bb-bots/static/css/main.252fd328.css.map",
-    "main.f35ac884.js.map": "/bb-bots/static/js/main.f35ac884.js.map"
+    "main.78d061df.js.map": "/bb-bots/static/js/main.78d061df.js.map"
   },
   "entrypoints": [
     "static/css/main.252fd328.css",
-    "static/js/main.f35ac884.js"
+    "static/js/main.78d061df.js"
   ]
 }
