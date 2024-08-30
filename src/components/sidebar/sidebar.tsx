@@ -38,7 +38,7 @@ export class Sidebar extends React.Component<{}, SidebarState> {
             name = name.substr(name.indexOf("/") + 1) || name;
             cast.push({
                 name,
-                imageURL: `${baseUrl}/Big Brother ${player}.png`,
+                imageURL: `${baseUrl}Big Brother ${player}.png`,
             });
         }
 
